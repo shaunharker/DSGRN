@@ -36,7 +36,7 @@ To clarify we give an example. Consider a network node named X1 with 3 inputs (X
 
 [[NetworkComponentExample]]
 .Network Component Example
-image::images/network_component.png[Network Component Example]
+image::doc/images/network_component.png[Network Component Example]
 
 Then we have $n = 3$, $m = 2$, and the logic $L$ is associated with a partition of $n$ into $k=2$ groups of sizes $p_1 = 1$ and $p_2 = 2$. This results in the following name:
 
@@ -135,7 +135,7 @@ The following C++ code converts between the binning representation and the hex r
 |
 [[NetworkSpecFile]]
 .Network Specification Example
-image::images/network_graphviz.png[Network Specification File Example,200,400]
+image::doc/images/network_graphviz.png[Network Specification File Example,200,400]
 
 .2+|
 A _network specification file_ is a text file which describes the interactions in a gene regulatory network. The specification file contains newline separated lines which describe each network node and the structure of its inputs. Each line is of the form `X : L`, where `X` is the name of the network node (which we will call the _target of the line_, and `L` is an expression corresponding to the logic. Network node names may be any sequence of alphanumeric characters. In particular, spaces are not allowed. Logic expressions are sequences of node names joined together with whitespace, parentheses, ``+`` signs, and ``~`` signs. The whitespace and parentheses are optional and ignored except as separators. Nodes appearing in a logic  are called _source nodes of the line_ and indicate a repressing edge when prefixed by ``~`` and an activating edge otherwise. Source nodes are partitioned into _factors_: Consecutively appearing source nodes in a logic expression belong to the same factor provided there is an intervening ``+`` symbol, and we extend this to non-consecutive source nodes via transitive closure.  The partitioning of source nodes into factors corresponds to the partition associated with the logic of the target node.
