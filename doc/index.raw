@@ -1,0 +1,1728 @@
+DSGRN Technical Documentation
+=============================
+Shaun Harker <sharker@math.rutgers.edu>
+v1.0, 2015-05-21
+:toc: right
+:stem: latexmath
+:source-highlighter: highlight.js
+:highlightjs-theme: railscasts
+
+== Purpose
+
+Here we document technical information regarding the DSGRN (_Dynamic Signatures for Genetic Regulatory Networks_) project.
+
+* _Network Component Description Files_
+* _Network Component Parameters_
+* _Network Specification Files_
+
+
+
+== Network Components
+
+A network component is a building block of a network. It consists of a node, the number of input edges, the number of output edges, and a _logic_, which is an algebraic combination of variables associated with the input edges. In particular, we assume this algebraic combination is a product of sums, each input variable occurs precisely once, and all coefficients are unity.
+
+=== Logics and Partitions
+The logic $L$, as a product of sums, can be associated with a partitioning of the inputs into $k$ groups of sizes $p_1, p_2, p_3, \cdots, p_k$, where $p_1 + p_2 + p_3 + ... + p_k = n$ and without loss $p_1 \leq p_2 \leq p_3 \leq \cdots \leq p_k$. We call $(p_1, p_2, \cdots, p_k)$ the _partition associated with the logic_. 
+
+=== Description Files
+
+Given a network node, its _description triple_ is the tuple $(n,m,(p_1, p_2, \cdots, p_k))$ where $n$ is the number of inputs, $m$ is the number of outputs, and $(p_1, p_2, \cdots, p_k)$ is the partition associated with the logic.
+
+We maintain a repository of files which contain information about various network components. They are named in accordance to their description triple, using underscores as separators:
+
+`n_m_p1_p2_p3_..._pk`
+
+To clarify we give an example. Consider a network node named X1 with 3 inputs (X0, X3, and X4) and 2 outputs (X2 and X5), with a logic of $(\mathrm{X3}+\mathrm{X0})\mathrm{X4}$. See the following figure:
+
+[[NetworkComponentExample]]
+.Network Component Example
+image::images/network_component.png[Network Component Example]
+
+Then we have $n = 3$, $m = 2$, and the logic $L$ is associated with a partition of $n$ into $k=2$ groups of sizes $p_1 = 1$ and $p_2 = 2$. This results in the following name:
+
+``` shell
+3_2_1_2.txt
+```
+
+== Parameter Representation
+
+A parameter can be understood as a set of inequalities between various input combinations and output thresholds for a network node. We give two conventions for representing parameters. The first is the _binning representation_ and the second is the _hex representation_. The binning representation is more succinct, but we will prefer the hex representation because it lends itself to a more convenient comparison of parameters.
+
+=== Binning Representation
+The _binning representation_ of a parameter arises by giving the _bin_ for each of the $2^n$ input combinations. A bin is a number in $\{0,1,\cdots,m\}$ which determines the comparison between the input combination and the output edge. In particular a bin number of $k$ indicates that the input combination activates edges $j$ for $j < k$. More precisely, a _binning representation_ of parameter is the function
+
+$p: \{0,1\}^n \rightarrow \{0,1,\cdots,m\},$
+
+where $p(i) > j$ iff the input combination $i$ activates edge $j$.
+
+Programmatically, $p$ may be encoded as an array of $2^n$ binning values. For example in our C++ implementation we store the binning representation as
+
+``` cpp
+std::vector<int64_t> bin_; 
+```
+
+NOTE: This is not as space efficient as possible. A more careful implementation would only require $2^n \lceil \log_2 m \rceil$ bits rather than $64 \cdot 2^n$.
+
+=== Hex Representation
+In the _hex representation_, we explicitly record the status of each of the comparisons between the $2^n$ input combinations and the $m$ output thresholds. Generically, comparisons are either $<$ or $>,$ which we may represent respectively as the binary bits $0$ or $1$. Accordingly, a _hex representation_ encodes a $2^n m$ length sequence of bits as a hexadecimal code. The hex codes strings are presented in big-endian fashion, meaning that reading from left to right the most significant nybbles (4-bit characters) come first. 
+
+We choose the following convention for the ordering of the bits. For $0 \leq i < 2^n$ and $0 \leq j < m$, let $b_{ij} = 1$ if input i activates output j and let $b_{ij} = 0$ otherwise. We order the bits $b_{ij}$ so that the $(mi + j)$th binary digit (where the 0th digit is the least significant) is $b_{ij}$. 
+
+To continue the above example (<<NetworkComponentExample>>), we list the contents of the network component description file for the $(3,2,(1,2))$ component:
+
+``` shell
+> cat 3_2_1_2.txt | tr '\n' ' '
+0000 4000 4040 4400 4440 4444 5000 5040 5050 5400 5440 5444 5450 5454 5500 5540 5544 5550 5554 5555 C000 C040 C0C0 C400 C440 C444 C4C0 C4C4 CC00 CC40 CC44 CCC0 CCC4 CCCC D000 D040 D050 D0C0 D0D0 D400 D440 D444 D450 D454 D4C0 D4C4 D4D0 D4D4 D500 D540 D544 D550 D554 D555 D5D0 D5D4 D5D5 DC00 DC40 DC44 DCC0 DCC4 DCCC DCD0 DCD4 DCDC DD00 DD40 DD44 DD50 DD54 DD55 DDC0 DDC4 DDCC DDD0 DDD4 DDD5 DDDC DDDD F000 F040 F050 F0C0 F0D0 F0F0 F400 F440 F450 F4C0 F4D0 F4D4 F4F0 F4F4 F500 F540 F550 F554 F555 F5D0 F5D4 F5D5 F5F0 F5F4 F5F5 FC00 FC40 FCC0 FCC4 FCCC FCD0 FCD4 FCDC FCF0 FCF4 FCFC FD00 FD40 FD44 FD50 FD54 FD55 FDC0 FDC4 FDCC FDD0 FDD4 FDD5 FDDC FDDD FDF0 FDF4 FDF5 FDFC FDFD FF00 FF40 FF44 FF50 FF54 FF55 FFC0 FFC4 FFCC FFD0 FFD4 FFD5 FFDC FFDD FFF0 FFF4 FFF5 FFFC FFFD FFFF
+```
+
+NOTE: The `cat` command reads the file and writes it to standard output, which is piped `|` to the `tr '\n' ' '` command, which replaces newlines with spaces. In the file itself the hex codes are separated by newlines.
+
+We see that the network component description file contains the 155 hex codes which represent the network node parameters.
+
+=== Comparison
+
+As mentioned, the binning representation (if implemented carefully) has a space advantage over the hex representation. The hex representation has its own advantages:
+
+* They can be encoded as a simple string
+* Adjacent parameters differ by one bit in this representation
+* They have meaning independent of the threshold ordering
+
+=== Conversion
+
+The following C++ code converts between the binning representation and the hex representation:
+
+``` cpp
+  /// hex 
+  ///   Return a hex code X which represents the parameter. The 
+  ///   hex code represents a binary string in big-endian fashion. 
+  ///   For 0 <= i < 2^n and 0 <= j < m, let b_{ij} be the
+  ///   the (i*m + j)th binary digit of X (where the 0th digit is
+  ///   the least significant).
+  ///   Then b_{ij} = 1 if input i activates output j
+  ///        b_{ij} = 0    otherwise
+  std::string hex ( void ) const {
+    std::string X;
+    int64_t N = ( 1 << n );
+    char nybble = 0, mask = 1;
+    auto flush_nybble = [&] () { 
+      // Hex digits 0-9
+      if ( nybble < 10 ) X.push_back((char)(nybble + '0'));
+      // Hex digits A-F
+      else X.push_back((char)(nybble - 10 + 'A'));
+      nybble = 0; mask = 1;
+    };
+    for ( int64_t i = 0; i < N; ++ i ) {
+      for ( int64_t j = 0; j < m; ++ j ) {
+        if ( bin_[i] > j ) nybble |= mask;
+        mask <<= 1; if ( mask == 16 ) flush_nybble();
+      }
+    }
+    if ( mask != 1 ) flush_nybble ();
+    // Put into big-endian form.
+    std::reverse( X . begin(), X . end () );
+    return result;
+  }
+```
+
+
+== Networks
+
+=== Network Spec Files
+
+
+[cols="^1a,<2a"]
+|===
+|
+[[NetworkSpecFile]]
+.Network Specification Example
+image::images/network_graphviz.png[Network Specification File Example,200,400]
+
+.2+|
+A _network specification file_ is a text file which describes the interactions in a gene regulatory network. The specification file contains newline separated lines which describe each network node and the structure of its inputs. Each line is of the form `X : L`, where `X` is the name of the network node (which we will call the _target of the line_, and `L` is an expression corresponding to the logic. Network node names may be any sequence of alphanumeric characters. In particular, spaces are not allowed. Logic expressions are sequences of node names joined together with whitespace, parentheses, ``+`` signs, and ``~`` signs. The whitespace and parentheses are optional and ignored except as separators. Nodes appearing in a logic  are called _source nodes of the line_ and indicate a repressing edge when prefixed by ``~`` and an activating edge otherwise. Source nodes are partitioned into _factors_: Consecutively appearing source nodes in a logic expression belong to the same factor provided there is an intervening ``+`` symbol, and we extend this to non-consecutive source nodes via transitive closure.  The partitioning of source nodes into factors corresponds to the partition associated with the logic of the target node.
+
+To the left we show a graphviz-rendering of a network specification file, where the activating edges are represented by normal arrowheads, the repressing edges are represented by blunt arrowheads, and the partitioning of input edges is represented by color coding. 
+
+<|
+``` xml
+X : (X + Y3) ~Z ~W1
+Y1 : X
+Y2 : (Y1 + W1)
+Y3 : Y2(~W1)
+Z : X(~W2)
+W1 : Y2(~W2)
+W2 : W1
+```
+Network Specification File
+|===
+
+NOTE: The syntax for network specification files will be extended to accommodate imposition of constraints on parameters such as threshold ordering and activation ordering. These extensions will be done in a backward-compatible way.
+
+=== Network Builder
+
+We provide a tool, http://math.rutgers.edu/~sharker/NetworkBuilder[Network Builder], for graphically constructing networks and outputting network specification files. This tool also determines the number of parameters associated with a given network. The tool is browser based -- so in fact we can embed it in the documentation! Here it is:
+
+
+++++
+<iframe 
+  id="frame" 
+  src="http://math.rutgers.edu/~sharker/NetworkBuilder/index.html"
+  width="100%"
+  height="700" 
+  scrolling="no">
+</iframe>
+++++
+
+== High-level API
+
+=== DSGRN Tutorial
+
+To begin with, we tell DSGRN what network we are interested in. Let's study the network `2D_Example_C.txt`:
+
+``` shell
+X : (X)(~Y)
+Y : (~X)(Y)
+```
+
+To do this we type:
+
+``` shell
+> dsgrn network ./networks/2D_Example_C.txt
+```
+
+This produces a file called `dsgrn.session` in the current working directory. You can delete it when you are done. It just remembers which network we want to study. If you change directories and call `dsgrn` again, it won't find the session file and will have forgotten about the network.
+
+Anyhow, we can visualize the network using DSGRN by asking it for a graphviz representation of the network. To do this, we type:
+
+``` shell
+> dsgrn network draw > network.gv
+```
+
+Here we used the shell redirection operator `>` to pipe the output to the file `network.gv`. We can open this up with Graphviz and we get the following image:
+++++
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.36.0 (20140111.2315)
+ -->
+<!-- Title: %3 Pages: 1 -->
+<svg width="80pt" height="116pt"
+ viewBox="0.00 0.00 80.00 116.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 112)">
+<title>%3</title>
+<polygon fill="aliceblue" stroke="none" points="-4,4 -4,-112 76,-112 76,4 -4,4"/>
+<!-- X -->
+<g id="node1" class="node"><title>X</title>
+<ellipse fill="beige" stroke="black" cx="27" cy="-90" rx="27" ry="18"/>
+<text text-anchor="middle" x="27" y="-86.3" font-family="Times,serif" font-size="14.00">X</text>
+</g>
+<!-- X&#45;&gt;X -->
+<g id="edge2" class="edge"><title>X&#45;&gt;X</title>
+<path fill="none" stroke="darkgoldenrod" d="M46.895,-102.432C59.688,-105.675 72,-101.531 72,-90 72,-81.6218 65.5006,-77.1433 57.0395,-76.5644"/>
+<polygon fill="darkgoldenrod" stroke="darkgoldenrod" points="56.5019,-73.1004 46.895,-77.5679 57.191,-80.0665 56.5019,-73.1004"/>
+</g>
+<!-- Y -->
+<g id="node2" class="node"><title>Y</title>
+<ellipse fill="beige" stroke="black" cx="27" cy="-18" rx="27" ry="18"/>
+<text text-anchor="middle" x="27" y="-14.3" font-family="Times,serif" font-size="14.00">Y</text>
+</g>
+<!-- X&#45;&gt;Y -->
+<g id="edge4" class="edge"><title>X&#45;&gt;Y</title>
+<path fill="none" stroke="darkgoldenrod" d="M21.1601,-72.411C20.1381,-63.0465 19.9768,-51.2238 20.6763,-41.0836"/>
+<polygon fill="darkgoldenrod" stroke="darkgoldenrod" points="16.0529,-36.5208 26.0156,-37.3842 25.8429,-39.3767 15.8802,-38.5133 16.0529,-36.5208"/>
+<polyline fill="none" stroke="darkgoldenrod" points="21.1206,-35.9562 20.6889,-40.9375 "/>
+</g>
+<!-- Y&#45;&gt;X -->
+<g id="edge1" class="edge"><title>Y&#45;&gt;X</title>
+<path fill="none" stroke="black" d="M32.8794,-35.9562C33.879,-45.3841 34.0178,-57.2161 33.2959,-67.3118"/>
+<polygon fill="black" stroke="black" points="37.9091,-71.8604 27.9489,-70.9695 28.127,-68.9775 38.0873,-69.8683 37.9091,-71.8604"/>
+<polyline fill="none" stroke="black" points="32.8399,-72.411 33.2853,-67.4308 "/>
+</g>
+<!-- Y&#45;&gt;Y -->
+<g id="edge3" class="edge"><title>Y&#45;&gt;Y</title>
+<path fill="none" stroke="black" d="M46.895,-30.4321C59.688,-33.6753 72,-29.5312 72,-18 72,-9.62183 65.5006,-5.14331 57.0395,-4.56444"/>
+<polygon fill="black" stroke="black" points="56.5019,-1.10045 46.895,-5.56787 57.191,-8.06645 56.5019,-1.10045"/>
+</g>
+</g>
+</svg>
+++++
+
+Next, we ask about parameters. Let's find out how many parameters there are. 
+
+``` shell
+> dsgrn parameter
+```
+
+``` shell
+There are 1600 parameters.
+```
+
+Looks good. Later we should add a feature that tells us how many there are for each cohort of output orderings. In this case it happens to be 4 cohorts of 400, since there are 2 output orders for both $X$ and $Y$.
+
+Let's pick a parameter out of a hat: 126. Let's ask DSGRN about parameter 126. First, we will ask it to give us a JSON-string representing the parameter:
+
+``` shell
+> dsgrn parameter json 126
+```
+
+``` shell
+[["X",[2,2,"C0"],[0,1]],["Y",[2,2,"C0"],[0,1]]]
+```
+
+This is telling us that for this parameter, node $X$ has the logic `[2,2,"C0"]` associated with it (2 inputs, 2 outputs, and hex code `C0`) and the output ordering `[0,1]`. The outputs have a natural ordering inherited from the sequence in which they appear in the network file; the `[0,1]` indicates an identity permutation of this natural ordering. Thus the outputs are ordered `X` then `Y`. Had it been `[1,0]` this would mean the other way around! In general, the $k$th out-ordered edge is the `p[k]` th node, where `p` is the permutation array. 
+
+We can ask about which parameter inequalities this logic/order corresponds to:
+
+``` shell
+> dsgrn parameter inequalities 126
+```
+``` shell
+["{
+L(X,X) L(Y,X) < THETA(X,X),
+U(X,X) L(Y,X) < THETA(X,X),
+L(X,X) U(Y,X) < THETA(X,X),
+THETA(X,Y) < U(X,X) U(Y,X)
+},{
+THETA(X,X) < THETA(X,Y)
+}",
+"{
+L(X,Y) L(Y,Y) < THETA(Y,X),
+U(X,Y) L(Y,Y) < THETA(Y,X),
+L(X,Y) U(Y,Y) < THETA(Y,X),
+THETA(Y,Y) < U(X,Y) U(Y,Y)
+},{
+THETA(Y,X) < THETA(Y,Y)
+}"]
+```
+
+Neat. Let's try to turn around and find out the index (i.e. 126) from the JSON-string it hands us:
+
+``` shell
+> dsgrn parameter index '[["X",[2,2,"C0"],[0,1]],["Y",[2,2,"C0"],[0,1]]]'
+```
+``` shell
+libc++abi.dylib: terminating with uncaught exception of type std::runtime_error: Feature not implemented
+```
+
+_Oh no!_ The function to make indices out of the internal representation of parameters hasn’t been written yet. Don’t worry, this will be implemented soon. (Maybe it already has been and I haven’t gotten around to updating this doc yet!) In the meantime, how do we know the internal representation is correct? Well, we can print out the parameter inequalities:
+
+``` shell
+> dsgrn parameter inequalities '[["X",[2,2,"C0"],[0,1]],["Y",[2,2,"C0"],[0,1]]]'
+```
+``` shell
+["{
+L(X,X) L(Y,X) < THETA(X,X),
+U(X,X) L(Y,X) < THETA(X,X),
+L(X,X) U(Y,X) < THETA(X,X),
+THETA(X,Y) < U(X,X) U(Y,X)
+},{
+THETA(X,X) < THETA(X,Y)
+}",
+"{
+L(X,Y) L(Y,Y) < THETA(Y,X),
+U(X,Y) L(Y,Y) < THETA(Y,X),
+L(X,Y) U(Y,Y) < THETA(Y,X),
+THETA(Y,Y) < U(X,Y) U(Y,Y)
+},{
+THETA(Y,X) < THETA(Y,Y)
+}"]
+```
+
+They are the same. Hooray!
+
+Now let's start doing dynamics. We can ask it to create a domain graph:
+
+``` shell
+> dsgrn domaingraph json '[["X",[2,2,"C0"],[0,1]],["Y",[2,2,"C0"],[0,1]]]'
+```
+``` shell
+[[0],[2],[2],[0],[1,3],[2,4],[6],[6],[5,7]]
+```
+
+Here we had asked for json output, so what we have is a nested json array giving an adjacency list representation of the domain graph. This is not visually appealing, so let's ask for a graphviz representation instead:
+
+``` shell
+> dsgrn domaingraph graphviz '[["X",[2,2,"C0"],[0,1]],["Y",[2,2,"C0"],[0,1]]]’ > dg.gv
+```
+
+Here we used `>` to pipe the output to the file dg.gv. We can open this up with Graphviz and we get the following image:
+
+++++
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.36.0 (20140111.2315)
+ -->
+<!-- Title: %3 Pages: 1 -->
+<svg width="188pt" height="332pt"
+ viewBox="0.00 0.00 188.00 332.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 328)">
+<title>%3</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-328 184,-328 184,4 -4,4"/>
+<!-- 0 -->
+<g id="node1" class="node"><title>0</title>
+<ellipse fill="none" stroke="black" cx="135" cy="-18" rx="27" ry="18"/>
+<text text-anchor="middle" x="135" y="-14.3" font-family="Times,serif" font-size="14.00">0</text>
+</g>
+<!-- 0&#45;&gt;0 -->
+<g id="edge1" class="edge"><title>0&#45;&gt;0</title>
+<path fill="none" stroke="black" d="M154.895,-30.4321C167.688,-33.6753 180,-29.5312 180,-18 180,-9.62183 173.501,-5.14331 165.039,-4.56444"/>
+<polygon fill="black" stroke="black" points="164.502,-1.10045 154.895,-5.56787 165.191,-8.06645 164.502,-1.10045"/>
+</g>
+<!-- 1 -->
+<g id="node2" class="node"><title>1</title>
+<ellipse fill="none" stroke="black" cx="63" cy="-90" rx="27" ry="18"/>
+<text text-anchor="middle" x="63" y="-86.3" font-family="Times,serif" font-size="14.00">1</text>
+</g>
+<!-- 2 -->
+<g id="node3" class="node"><title>2</title>
+<ellipse fill="none" stroke="black" cx="27" cy="-18" rx="27" ry="18"/>
+<text text-anchor="middle" x="27" y="-14.3" font-family="Times,serif" font-size="14.00">2</text>
+</g>
+<!-- 1&#45;&gt;2 -->
+<g id="edge2" class="edge"><title>1&#45;&gt;2</title>
+<path fill="none" stroke="black" d="M54.6504,-72.7646C50.2885,-64.2831 44.8531,-53.7144 39.9587,-44.1974"/>
+<polygon fill="black" stroke="black" points="42.9904,-42.4395 35.3043,-35.1473 36.7654,-45.6409 42.9904,-42.4395"/>
+</g>
+<!-- 2&#45;&gt;2 -->
+<g id="edge3" class="edge"><title>2&#45;&gt;2</title>
+<path fill="none" stroke="black" d="M46.895,-30.4321C59.688,-33.6753 72,-29.5312 72,-18 72,-9.62183 65.5006,-5.14331 57.0395,-4.56444"/>
+<polygon fill="black" stroke="black" points="56.5019,-1.10045 46.895,-5.56787 57.191,-8.06645 56.5019,-1.10045"/>
+</g>
+<!-- 3 -->
+<g id="node4" class="node"><title>3</title>
+<ellipse fill="none" stroke="black" cx="135" cy="-90" rx="27" ry="18"/>
+<text text-anchor="middle" x="135" y="-86.3" font-family="Times,serif" font-size="14.00">3</text>
+</g>
+<!-- 3&#45;&gt;0 -->
+<g id="edge4" class="edge"><title>3&#45;&gt;0</title>
+<path fill="none" stroke="black" d="M135,-71.6966C135,-63.9827 135,-54.7125 135,-46.1124"/>
+<polygon fill="black" stroke="black" points="138.5,-46.1043 135,-36.1043 131.5,-46.1044 138.5,-46.1043"/>
+</g>
+<!-- 4 -->
+<g id="node5" class="node"><title>4</title>
+<ellipse fill="none" stroke="black" cx="63" cy="-162" rx="27" ry="18"/>
+<text text-anchor="middle" x="63" y="-158.3" font-family="Times,serif" font-size="14.00">4</text>
+</g>
+<!-- 4&#45;&gt;1 -->
+<g id="edge5" class="edge"><title>4&#45;&gt;1</title>
+<path fill="none" stroke="black" d="M63,-143.697C63,-135.983 63,-126.712 63,-118.112"/>
+<polygon fill="black" stroke="black" points="66.5001,-118.104 63,-108.104 59.5001,-118.104 66.5001,-118.104"/>
+</g>
+<!-- 4&#45;&gt;3 -->
+<g id="edge6" class="edge"><title>4&#45;&gt;3</title>
+<path fill="none" stroke="black" d="M77.5703,-146.834C87.7499,-136.938 101.524,-123.546 113.031,-112.359"/>
+<polygon fill="black" stroke="black" points="115.474,-114.865 120.204,-105.385 110.595,-109.846 115.474,-114.865"/>
+</g>
+<!-- 5 -->
+<g id="node6" class="node"><title>5</title>
+<ellipse fill="none" stroke="black" cx="63" cy="-234" rx="27" ry="18"/>
+<text text-anchor="middle" x="63" y="-230.3" font-family="Times,serif" font-size="14.00">5</text>
+</g>
+<!-- 5&#45;&gt;2 -->
+<g id="edge7" class="edge"><title>5&#45;&gt;2</title>
+<path fill="none" stroke="black" d="M49.2496,-218.069C41.0392,-208.1 31.381,-194.247 27,-180 13.0495,-134.634 17.6057,-78.6157 22.2554,-46.0362"/>
+<polygon fill="black" stroke="black" points="25.7481,-46.3512 23.8093,-35.9353 18.8294,-45.2869 25.7481,-46.3512"/>
+</g>
+<!-- 5&#45;&gt;4 -->
+<g id="edge8" class="edge"><title>5&#45;&gt;4</title>
+<path fill="none" stroke="black" d="M63,-215.697C63,-207.983 63,-198.712 63,-190.112"/>
+<polygon fill="black" stroke="black" points="66.5001,-190.104 63,-180.104 59.5001,-190.104 66.5001,-190.104"/>
+</g>
+<!-- 6 -->
+<g id="node7" class="node"><title>6</title>
+<ellipse fill="none" stroke="black" cx="135" cy="-162" rx="27" ry="18"/>
+<text text-anchor="middle" x="135" y="-158.3" font-family="Times,serif" font-size="14.00">6</text>
+</g>
+<!-- 6&#45;&gt;6 -->
+<g id="edge9" class="edge"><title>6&#45;&gt;6</title>
+<path fill="none" stroke="black" d="M154.895,-174.432C167.688,-177.675 180,-173.531 180,-162 180,-153.622 173.501,-149.143 165.039,-148.564"/>
+<polygon fill="black" stroke="black" points="164.502,-145.1 154.895,-149.568 165.191,-152.066 164.502,-145.1"/>
+</g>
+<!-- 7 -->
+<g id="node8" class="node"><title>7</title>
+<ellipse fill="none" stroke="black" cx="135" cy="-234" rx="27" ry="18"/>
+<text text-anchor="middle" x="135" y="-230.3" font-family="Times,serif" font-size="14.00">7</text>
+</g>
+<!-- 7&#45;&gt;6 -->
+<g id="edge10" class="edge"><title>7&#45;&gt;6</title>
+<path fill="none" stroke="black" d="M135,-215.697C135,-207.983 135,-198.712 135,-190.112"/>
+<polygon fill="black" stroke="black" points="138.5,-190.104 135,-180.104 131.5,-190.104 138.5,-190.104"/>
+</g>
+<!-- 8 -->
+<g id="node9" class="node"><title>8</title>
+<ellipse fill="none" stroke="black" cx="99" cy="-306" rx="27" ry="18"/>
+<text text-anchor="middle" x="99" y="-302.3" font-family="Times,serif" font-size="14.00">8</text>
+</g>
+<!-- 8&#45;&gt;5 -->
+<g id="edge11" class="edge"><title>8&#45;&gt;5</title>
+<path fill="none" stroke="black" d="M90.6504,-288.765C86.2885,-280.283 80.8531,-269.714 75.9587,-260.197"/>
+<polygon fill="black" stroke="black" points="78.9904,-258.439 71.3043,-251.147 72.7654,-261.641 78.9904,-258.439"/>
+</g>
+<!-- 8&#45;&gt;7 -->
+<g id="edge12" class="edge"><title>8&#45;&gt;7</title>
+<path fill="none" stroke="black" d="M107.35,-288.765C111.712,-280.283 117.147,-269.714 122.041,-260.197"/>
+<polygon fill="black" stroke="black" points="125.235,-261.641 126.696,-251.147 119.01,-258.439 125.235,-261.641"/>
+</g>
+</g>
+</svg>
+++++
+
+We might improve this by setting the positions using the actual positions of domain in space (though it isn't clear the best way to do this for higher than 2 dimensions).
+
+
+And we could also pass the parameter by it’s index:
+
+``` shell
+> dsgrn domaingraph json 126
+```
+``` shell
+[[0],[2],[2],[0],[1,3],[2,4],[6],[6],[5,7]]
+```
+
+``` shell
+> dsgrn domaingraph graphviz 126
+```
+
+Very similarly, we can also get wall graphs:
+
+``` shell
+> dsgrn wallgraph json 126
+```
+``` shell
+[[12,1],[13],[12],[2],[1],[3,4],[13],[2,14],[14],[3,4,8],[8],[5,6],[],[],[]]
+```
+
+``` shell
+> dsgrn wallgraph graphviz 126 > wg.gv
+```
+
+++++
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.36.0 (20140111.2315)
+ -->
+<!-- Title: %3 Pages: 1 -->
+<svg width="405pt" height="332pt"
+ viewBox="0.00 0.00 405.00 332.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 328)">
+<title>%3</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-328 401,-328 401,4 -4,4"/>
+<!-- 0 -->
+<g id="node1" class="node"><title>0</title>
+<ellipse fill="none" stroke="black" cx="154" cy="-162" rx="27" ry="18"/>
+<text text-anchor="middle" x="154" y="-158.3" font-family="Times,serif" font-size="14.00">0</text>
+</g>
+<!-- 1 -->
+<g id="node2" class="node"><title>1</title>
+<ellipse fill="none" stroke="black" cx="99" cy="-90" rx="27" ry="18"/>
+<text text-anchor="middle" x="99" y="-86.3" font-family="Times,serif" font-size="14.00">1</text>
+</g>
+<!-- 0&#45;&gt;1 -->
+<g id="edge2" class="edge"><title>0&#45;&gt;1</title>
+<path fill="none" stroke="black" d="M142.066,-145.811C134.786,-136.546 125.337,-124.52 117.146,-114.094"/>
+<polygon fill="black" stroke="black" points="119.841,-111.86 110.911,-106.159 114.337,-116.185 119.841,-111.86"/>
+</g>
+<!-- 12 -->
+<g id="node13" class="node"><title>12</title>
+<ellipse fill="none" stroke="black" cx="182" cy="-18" rx="27" ry="18"/>
+<text text-anchor="middle" x="182" y="-14.3" font-family="Times,serif" font-size="14.00">12</text>
+</g>
+<!-- 0&#45;&gt;12 -->
+<g id="edge1" class="edge"><title>0&#45;&gt;12</title>
+<path fill="none" stroke="black" d="M157.377,-143.871C162.171,-119.564 170.993,-74.8187 176.673,-46.0132"/>
+<polygon fill="black" stroke="black" points="180.11,-46.6775 178.611,-36.1893 173.242,-45.3232 180.11,-46.6775"/>
+</g>
+<!-- 13 -->
+<g id="node14" class="node"><title>13</title>
+<ellipse fill="none" stroke="black" cx="79" cy="-18" rx="27" ry="18"/>
+<text text-anchor="middle" x="79" y="-14.3" font-family="Times,serif" font-size="14.00">13</text>
+</g>
+<!-- 1&#45;&gt;13 -->
+<g id="edge3" class="edge"><title>1&#45;&gt;13</title>
+<path fill="none" stroke="black" d="M94.1586,-72.055C91.8984,-64.1446 89.1542,-54.5398 86.6251,-45.6879"/>
+<polygon fill="black" stroke="black" points="89.9095,-44.4427 83.7969,-35.789 83.1788,-46.3658 89.9095,-44.4427"/>
+</g>
+<!-- 2 -->
+<g id="node3" class="node"><title>2</title>
+<ellipse fill="none" stroke="black" cx="226" cy="-90" rx="27" ry="18"/>
+<text text-anchor="middle" x="226" y="-86.3" font-family="Times,serif" font-size="14.00">2</text>
+</g>
+<!-- 2&#45;&gt;12 -->
+<g id="edge4" class="edge"><title>2&#45;&gt;12</title>
+<path fill="none" stroke="black" d="M216.016,-73.1159C210.503,-64.345 203.537,-53.2637 197.347,-43.4162"/>
+<polygon fill="black" stroke="black" points="200.23,-41.425 191.945,-34.8212 194.303,-45.1502 200.23,-41.425"/>
+</g>
+<!-- 3 -->
+<g id="node4" class="node"><title>3</title>
+<ellipse fill="none" stroke="black" cx="226" cy="-162" rx="27" ry="18"/>
+<text text-anchor="middle" x="226" y="-158.3" font-family="Times,serif" font-size="14.00">3</text>
+</g>
+<!-- 3&#45;&gt;2 -->
+<g id="edge5" class="edge"><title>3&#45;&gt;2</title>
+<path fill="none" stroke="black" d="M226,-143.697C226,-135.983 226,-126.712 226,-118.112"/>
+<polygon fill="black" stroke="black" points="229.5,-118.104 226,-108.104 222.5,-118.104 229.5,-118.104"/>
+</g>
+<!-- 4 -->
+<g id="node5" class="node"><title>4</title>
+<ellipse fill="none" stroke="black" cx="82" cy="-162" rx="27" ry="18"/>
+<text text-anchor="middle" x="82" y="-158.3" font-family="Times,serif" font-size="14.00">4</text>
+</g>
+<!-- 4&#45;&gt;1 -->
+<g id="edge6" class="edge"><title>4&#45;&gt;1</title>
+<path fill="none" stroke="black" d="M86.1152,-144.055C88.0081,-136.261 90.3004,-126.822 92.4237,-118.079"/>
+<polygon fill="black" stroke="black" points="95.8457,-118.819 94.8046,-108.275 89.0434,-117.167 95.8457,-118.819"/>
+</g>
+<!-- 5 -->
+<g id="node6" class="node"><title>5</title>
+<ellipse fill="none" stroke="black" cx="82" cy="-234" rx="27" ry="18"/>
+<text text-anchor="middle" x="82" y="-230.3" font-family="Times,serif" font-size="14.00">5</text>
+</g>
+<!-- 5&#45;&gt;3 -->
+<g id="edge7" class="edge"><title>5&#45;&gt;3</title>
+<path fill="none" stroke="black" d="M103.248,-222.671C127.602,-210.832 167.719,-191.331 195.428,-177.862"/>
+<polygon fill="black" stroke="black" points="197.202,-180.891 204.665,-173.371 194.141,-174.595 197.202,-180.891"/>
+</g>
+<!-- 5&#45;&gt;4 -->
+<g id="edge8" class="edge"><title>5&#45;&gt;4</title>
+<path fill="none" stroke="black" d="M82,-215.697C82,-207.983 82,-198.712 82,-190.112"/>
+<polygon fill="black" stroke="black" points="85.5001,-190.104 82,-180.104 78.5001,-190.104 85.5001,-190.104"/>
+</g>
+<!-- 6 -->
+<g id="node7" class="node"><title>6</title>
+<ellipse fill="none" stroke="black" cx="27" cy="-90" rx="27" ry="18"/>
+<text text-anchor="middle" x="27" y="-86.3" font-family="Times,serif" font-size="14.00">6</text>
+</g>
+<!-- 6&#45;&gt;13 -->
+<g id="edge9" class="edge"><title>6&#45;&gt;13</title>
+<path fill="none" stroke="black" d="M38.5405,-73.4647C45.2727,-64.4021 53.9015,-52.7865 61.4597,-42.6119"/>
+<polygon fill="black" stroke="black" points="64.3381,-44.6064 67.4918,-34.4918 58.7189,-40.4322 64.3381,-44.6064"/>
+</g>
+<!-- 7 -->
+<g id="node8" class="node"><title>7</title>
+<ellipse fill="none" stroke="black" cx="298" cy="-162" rx="27" ry="18"/>
+<text text-anchor="middle" x="298" y="-158.3" font-family="Times,serif" font-size="14.00">7</text>
+</g>
+<!-- 7&#45;&gt;2 -->
+<g id="edge10" class="edge"><title>7&#45;&gt;2</title>
+<path fill="none" stroke="black" d="M283.43,-146.834C273.25,-136.938 259.476,-123.546 247.969,-112.359"/>
+<polygon fill="black" stroke="black" points="250.405,-109.846 240.796,-105.385 245.526,-114.865 250.405,-109.846"/>
+</g>
+<!-- 14 -->
+<g id="node15" class="node"><title>14</title>
+<ellipse fill="none" stroke="black" cx="334" cy="-90" rx="27" ry="18"/>
+<text text-anchor="middle" x="334" y="-86.3" font-family="Times,serif" font-size="14.00">14</text>
+</g>
+<!-- 7&#45;&gt;14 -->
+<g id="edge11" class="edge"><title>7&#45;&gt;14</title>
+<path fill="none" stroke="black" d="M306.35,-144.765C310.712,-136.283 316.147,-125.714 321.041,-116.197"/>
+<polygon fill="black" stroke="black" points="324.235,-117.641 325.696,-107.147 318.01,-114.439 324.235,-117.641"/>
+</g>
+<!-- 8 -->
+<g id="node9" class="node"><title>8</title>
+<ellipse fill="none" stroke="black" cx="370" cy="-162" rx="27" ry="18"/>
+<text text-anchor="middle" x="370" y="-158.3" font-family="Times,serif" font-size="14.00">8</text>
+</g>
+<!-- 8&#45;&gt;14 -->
+<g id="edge12" class="edge"><title>8&#45;&gt;14</title>
+<path fill="none" stroke="black" d="M361.65,-144.765C357.288,-136.283 351.853,-125.714 346.959,-116.197"/>
+<polygon fill="black" stroke="black" points="349.99,-114.439 342.304,-107.147 343.765,-117.641 349.99,-114.439"/>
+</g>
+<!-- 9 -->
+<g id="node10" class="node"><title>9</title>
+<ellipse fill="none" stroke="black" cx="226" cy="-234" rx="27" ry="18"/>
+<text text-anchor="middle" x="226" y="-230.3" font-family="Times,serif" font-size="14.00">9</text>
+</g>
+<!-- 9&#45;&gt;3 -->
+<g id="edge13" class="edge"><title>9&#45;&gt;3</title>
+<path fill="none" stroke="black" d="M226,-215.697C226,-207.983 226,-198.712 226,-190.112"/>
+<polygon fill="black" stroke="black" points="229.5,-190.104 226,-180.104 222.5,-190.104 229.5,-190.104"/>
+</g>
+<!-- 9&#45;&gt;4 -->
+<g id="edge14" class="edge"><title>9&#45;&gt;4</title>
+<path fill="none" stroke="black" d="M204.752,-222.671C180.398,-210.832 140.281,-191.331 112.572,-177.862"/>
+<polygon fill="black" stroke="black" points="113.859,-174.595 103.335,-173.371 110.798,-180.891 113.859,-174.595"/>
+</g>
+<!-- 9&#45;&gt;8 -->
+<g id="edge15" class="edge"><title>9&#45;&gt;8</title>
+<path fill="none" stroke="black" d="M247.248,-222.671C271.602,-210.832 311.719,-191.331 339.428,-177.862"/>
+<polygon fill="black" stroke="black" points="341.202,-180.891 348.665,-173.371 338.141,-174.595 341.202,-180.891"/>
+</g>
+<!-- 10 -->
+<g id="node11" class="node"><title>10</title>
+<ellipse fill="none" stroke="black" cx="370" cy="-234" rx="27" ry="18"/>
+<text text-anchor="middle" x="370" y="-230.3" font-family="Times,serif" font-size="14.00">10</text>
+</g>
+<!-- 10&#45;&gt;8 -->
+<g id="edge16" class="edge"><title>10&#45;&gt;8</title>
+<path fill="none" stroke="black" d="M370,-215.697C370,-207.983 370,-198.712 370,-190.112"/>
+<polygon fill="black" stroke="black" points="373.5,-190.104 370,-180.104 366.5,-190.104 373.5,-190.104"/>
+</g>
+<!-- 11 -->
+<g id="node12" class="node"><title>11</title>
+<ellipse fill="none" stroke="black" cx="54" cy="-306" rx="27" ry="18"/>
+<text text-anchor="middle" x="54" y="-302.3" font-family="Times,serif" font-size="14.00">11</text>
+</g>
+<!-- 11&#45;&gt;5 -->
+<g id="edge17" class="edge"><title>11&#45;&gt;5</title>
+<path fill="none" stroke="black" d="M60.6356,-288.411C63.9134,-280.216 67.9442,-270.14 71.6181,-260.955"/>
+<polygon fill="black" stroke="black" points="74.9477,-262.055 75.412,-251.47 68.4484,-259.455 74.9477,-262.055"/>
+</g>
+<!-- 11&#45;&gt;6 -->
+<g id="edge18" class="edge"><title>11&#45;&gt;6</title>
+<path fill="none" stroke="black" d="M51.2652,-287.834C49.6497,-277.469 47.6119,-263.989 46,-252 39.6994,-205.135 33.4853,-150.44 29.9579,-118.377"/>
+<polygon fill="black" stroke="black" points="33.435,-117.975 28.8684,-108.415 26.4765,-118.736 33.435,-117.975"/>
+</g>
+</g>
+</svg>
+++++
+
+Again, this might be improved by setting the position of the nodes using where the walls are in space rather than letting Graphviz choose.
+
+Time for Morse theory. Here we ask for a Morse decomposition, which is essentially a Morse Graph which is annotated with the list of domains (the software is set up to calculate the Morse decomposition using the domain graph representation):
+
+``` shell
+> dsgrn morsedecomposition json 126
+```
+``` shell
+[[],[],[]]
+```
+
+Hmm, this isn't great, since it lacks the phase space annotatation. That will be fixed! Meanwhile the graphviz output does have the appropriate annotations:
+
+``` shell
+> dsgrn morsedecomposition graphviz 126 > md.gv
+```
+
+++++
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.36.0 (20140111.2315)
+ -->
+<!-- Title: g Pages: 1 -->
+<svg width="206pt" height="44pt"
+ viewBox="0.00 0.00 206.00 44.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 40)">
+<title>g</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-40 202,-40 202,4 -4,4"/>
+<!-- 0 -->
+<g id="node1" class="node"><title>0</title>
+<ellipse fill="none" stroke="black" cx="27" cy="-18" rx="27" ry="18"/>
+<text text-anchor="middle" x="27" y="-14.3" font-family="Times,serif" font-size="14.00">6</text>
+</g>
+<!-- 1 -->
+<g id="node2" class="node"><title>1</title>
+<ellipse fill="none" stroke="black" cx="99" cy="-18" rx="27" ry="18"/>
+<text text-anchor="middle" x="99" y="-14.3" font-family="Times,serif" font-size="14.00">2</text>
+</g>
+<!-- 2 -->
+<g id="node3" class="node"><title>2</title>
+<ellipse fill="none" stroke="black" cx="171" cy="-18" rx="27" ry="18"/>
+<text text-anchor="middle" x="171" y="-14.3" font-family="Times,serif" font-size="14.00">0</text>
+</g>
+</g>
+</svg>
+++++
+
+Here we see the vertices are annotated with all the domains in the strongly connected component of the domain graph. Which in this case is just singletons sets. How boring! Maybe I should have picked a more interesting example.
+
+Next up: Morse graphs. Same drill: we can give it the parameter either by index or by json string, and we can request either json output or graphviz output:
+
+``` shell
+> dsgrn morsegraph json 126
+```
+``` shell
+{"poset":[[],[],[]],"annotations":[["FP"],["FP"],["FP OFF"]]}
+```
+
+``` shell
+> dsgrn morsegraph json '[["X",[2,2,"C0"],[0,1]],["Y",[2,2,"C0"],[0,1]]]'
+```
+``` shell
+{"poset":[[],[],[]],"annotations":[["FP"],["FP"],["FP OFF"]]}
+```
+
+``` shell
+> dsgrn morsegraph graphviz 126
+```
+
+++++
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.36.0 (20140111.2315)
+ -->
+<!-- Title: %3 Pages: 1 -->
+<svg width="231pt" height="44pt"
+ viewBox="0.00 0.00 231.00 44.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 40)">
+<title>%3</title>
+<polygon fill="white" stroke="none" points="-4,4 -4,-40 227,-40 227,4 -4,4"/>
+<!-- 0 -->
+<g id="node1" class="node"><title>0</title>
+<ellipse fill="none" stroke="black" cx="27" cy="-18" rx="27" ry="18"/>
+<text text-anchor="middle" x="27" y="-14.3" font-family="Times,serif" font-size="14.00">FP</text>
+</g>
+<!-- 1 -->
+<g id="node2" class="node"><title>1</title>
+<ellipse fill="none" stroke="black" cx="99" cy="-18" rx="27" ry="18"/>
+<text text-anchor="middle" x="99" y="-14.3" font-family="Times,serif" font-size="14.00">FP</text>
+</g>
+<!-- 2 -->
+<g id="node3" class="node"><title>2</title>
+<ellipse fill="none" stroke="black" cx="184" cy="-18" rx="39.4691" ry="18"/>
+<text text-anchor="middle" x="184" y="-14.3" font-family="Times,serif" font-size="14.00">FP OFF</text>
+</g>
+</g>
+</svg>
+++++
+
+To wrap up, here is a summary of DSGRN's current syntax. Any path from the green diamond to the red octagon is a valid DSGRN command:
+
+++++
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+ "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<!-- Generated by graphviz version 2.36.0 (20140111.2315)
+ -->
+<!-- Title: %3 Pages: 1 -->
+<svg width="100%" height="100%"
+ viewBox="0.00 0.00 776.00 732.00" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 728)">
+<title>%3</title>
+<polygon fill="aliceblue" stroke="none" points="-4,4 -4,-728 772,-728 772,4 -4,4"/>
+<!-- start -->
+<g id="node1" class="node"><title>start</title>
+<polygon fill="green" stroke="black" points="555,-724 528,-706 555,-688 582,-706 555,-724"/>
+</g>
+<!-- dsgrn -->
+<g id="node9" class="node"><title>dsgrn</title>
+<ellipse fill="beige" stroke="black" cx="555" cy="-634" rx="31.2965" ry="18"/>
+<text text-anchor="middle" x="555" y="-630.3" font-family="Times,serif" font-size="14.00">dsgrn</text>
+</g>
+<!-- start&#45;&gt;dsgrn -->
+<g id="edge1" class="edge"><title>start&#45;&gt;dsgrn</title>
+<path fill="none" stroke="black" d="M555,-687.697C555,-679.983 555,-670.712 555,-662.112"/>
+<polygon fill="black" stroke="black" points="558.5,-662.104 555,-652.104 551.5,-662.104 558.5,-662.104"/>
+</g>
+<!-- command -->
+<g id="node2" class="node"><title>command</title>
+<ellipse fill="beige" stroke="black" cx="418" cy="-418" rx="1.8" ry="1.8"/>
+</g>
+<!-- parameter -->
+<g id="node13" class="node"><title>parameter</title>
+<ellipse fill="beige" stroke="black" cx="46" cy="-346" rx="46.1964" ry="18"/>
+<text text-anchor="middle" x="46" y="-342.3" font-family="Times,serif" font-size="14.00">parameter</text>
+</g>
+<!-- command&#45;&gt;parameter -->
+<g id="edge9" class="edge"><title>command&#45;&gt;parameter</title>
+<path fill="none" stroke="black" d="M416.444,-416.818C398.717,-414.725 233.059,-394.749 102,-364 98.1592,-363.099 94.1953,-362.08 90.2339,-361"/>
+<polygon fill="black" stroke="black" points="91.0398,-357.59 80.4637,-358.221 89.1246,-364.323 91.0398,-357.59"/>
+</g>
+<!-- domaingraph -->
+<g id="node14" class="node"><title>domaingraph</title>
+<ellipse fill="beige" stroke="black" cx="295" cy="-346" rx="58.2422" ry="18"/>
+<text text-anchor="middle" x="295" y="-342.3" font-family="Times,serif" font-size="14.00">domaingraph</text>
+</g>
+<!-- command&#45;&gt;domaingraph -->
+<g id="edge10" class="edge"><title>command&#45;&gt;domaingraph</title>
+<path fill="none" stroke="black" d="M416.619,-416.214C408.223,-411.436 363.317,-385.879 330.506,-367.207"/>
+<polygon fill="black" stroke="black" points="332.036,-364.05 321.613,-362.146 328.573,-370.134 332.036,-364.05"/>
+</g>
+<!-- wallgraph -->
+<g id="node15" class="node"><title>wallgraph</title>
+<ellipse fill="beige" stroke="black" cx="418" cy="-346" rx="46.1964" ry="18"/>
+<text text-anchor="middle" x="418" y="-342.3" font-family="Times,serif" font-size="14.00">wallgraph</text>
+</g>
+<!-- command&#45;&gt;wallgraph -->
+<g id="edge11" class="edge"><title>command&#45;&gt;wallgraph</title>
+<path fill="none" stroke="black" d="M418,-416.01C418,-411.414 418,-391.644 418,-374.436"/>
+<polygon fill="black" stroke="black" points="421.5,-374.211 418,-364.211 414.5,-374.211 421.5,-374.211"/>
+</g>
+<!-- morsedecomposition -->
+<g id="node16" class="node"><title>morsedecomposition</title>
+<ellipse fill="beige" stroke="black" cx="569" cy="-346" rx="86.1637" ry="18"/>
+<text text-anchor="middle" x="569" y="-342.3" font-family="Times,serif" font-size="14.00">morsedecomposition</text>
+</g>
+<!-- command&#45;&gt;morsedecomposition -->
+<g id="edge12" class="edge"><title>command&#45;&gt;morsedecomposition</title>
+<path fill="none" stroke="black" d="M419.305,-416.395C428.558,-412.105 485.048,-385.918 525.908,-366.976"/>
+<polygon fill="black" stroke="black" points="527.542,-370.077 535.142,-362.696 524.597,-363.726 527.542,-370.077"/>
+</g>
+<!-- morsegraph -->
+<g id="node17" class="node"><title>morsegraph</title>
+<ellipse fill="beige" stroke="black" cx="165" cy="-346" rx="53.4184" ry="18"/>
+<text text-anchor="middle" x="165" y="-342.3" font-family="Times,serif" font-size="14.00">morsegraph</text>
+</g>
+<!-- command&#45;&gt;morsegraph -->
+<g id="edge13" class="edge"><title>command&#45;&gt;morsegraph</title>
+<path fill="none" stroke="black" d="M416.384,-416.553C401.262,-412.369 283.549,-379.8 214.692,-360.749"/>
+<polygon fill="black" stroke="black" points="215.477,-357.334 204.905,-358.041 213.61,-364.081 215.477,-357.334"/>
+</g>
+<!-- parameterspec -->
+<g id="node3" class="node"><title>parameterspec</title>
+<ellipse fill="beige" stroke="black" cx="289" cy="-146" rx="1.8" ry="1.8"/>
+</g>
+<!-- ParameterJSON -->
+<g id="node7" class="node"><title>ParameterJSON</title>
+<ellipse fill="beige" stroke="black" cx="302" cy="-90" rx="89.5377" ry="18"/>
+<text text-anchor="middle" x="302" y="-86.3" font-family="Times,serif" font-size="14.00">JSON EXPRESSION</text>
+</g>
+<!-- parameterspec&#45;&gt;ParameterJSON -->
+<g id="edge28" class="edge"><title>parameterspec&#45;&gt;ParameterJSON</title>
+<path fill="none" stroke="black" d="M289.226,-144.063C290.018,-140.77 292.777,-129.311 295.529,-117.88"/>
+<polygon fill="black" stroke="black" points="298.958,-118.59 297.896,-108.049 292.152,-116.952 298.958,-118.59"/>
+</g>
+<!-- ParameterIndex -->
+<g id="node8" class="node"><title>ParameterIndex</title>
+<ellipse fill="beige" stroke="black" cx="557" cy="-90" rx="49.0941" ry="18"/>
+<text text-anchor="middle" x="557" y="-86.3" font-family="Times,serif" font-size="14.00">INTEGER</text>
+</g>
+<!-- parameterspec&#45;&gt;ParameterIndex -->
+<g id="edge29" class="edge"><title>parameterspec&#45;&gt;ParameterIndex</title>
+<path fill="none" stroke="black" d="M290.442,-144.709C305.316,-141.712 431.744,-116.238 505.014,-101.475"/>
+<polygon fill="black" stroke="black" points="505.871,-104.873 514.982,-99.4663 504.488,-98.0105 505.871,-104.873"/>
+</g>
+<!-- end -->
+<g id="node4" class="node"><title>end</title>
+<polygon fill="red" stroke="black" points="655.319,-10.5442 655.319,-25.4558 634.63,-36 605.37,-36 584.681,-25.4558 584.681,-10.5442 605.37,-7.10543e-15 634.63,-0 655.319,-10.5442"/>
+<text text-anchor="middle" x="620" y="-14.3" font-family="Times,serif" font-size="14.00" fill="white">STOP</text>
+</g>
+<!-- jsonorindex -->
+<g id="node5" class="node"><title>jsonorindex</title>
+<ellipse fill="beige" stroke="black" cx="169" cy="-274" rx="1.8" ry="1.8"/>
+</g>
+<!-- json -->
+<g id="node19" class="node"><title>json</title>
+<ellipse fill="beige" stroke="black" cx="245" cy="-202" rx="27" ry="18"/>
+<text text-anchor="middle" x="245" y="-198.3" font-family="Times,serif" font-size="14.00">json</text>
+</g>
+<!-- jsonorindex&#45;&gt;json -->
+<g id="edge20" class="edge"><title>jsonorindex&#45;&gt;json</title>
+<path fill="none" stroke="black" d="M169.854,-272.214C174.95,-267.52 201.822,-242.769 221.988,-224.195"/>
+<polygon fill="black" stroke="black" points="224.613,-226.536 229.597,-217.187 219.871,-221.387 224.613,-226.536"/>
+</g>
+<!-- index -->
+<g id="node20" class="node"><title>index</title>
+<ellipse fill="beige" stroke="black" cx="169" cy="-202" rx="31.2965" ry="18"/>
+<text text-anchor="middle" x="169" y="-198.3" font-family="Times,serif" font-size="14.00">index</text>
+</g>
+<!-- jsonorindex&#45;&gt;index -->
+<g id="edge21" class="edge"><title>jsonorindex&#45;&gt;index</title>
+<path fill="none" stroke="black" d="M169,-272.01C169,-267.414 169,-247.644 169,-230.436"/>
+<polygon fill="black" stroke="black" points="172.5,-230.211 169,-220.211 165.5,-230.211 172.5,-230.211"/>
+</g>
+<!-- jsonorgraphviz -->
+<g id="node6" class="node"><title>jsonorgraphviz</title>
+<ellipse fill="beige" stroke="black" cx="307" cy="-274" rx="1.8" ry="1.8"/>
+</g>
+<!-- jsonorgraphviz&#45;&gt;json -->
+<g id="edge22" class="edge"><title>jsonorgraphviz&#45;&gt;json</title>
+<path fill="none" stroke="black" d="M306.304,-272.214C302.229,-267.614 281.096,-243.754 264.769,-225.32"/>
+<polygon fill="black" stroke="black" points="267.38,-222.989 258.13,-217.824 262.14,-227.63 267.38,-222.989"/>
+</g>
+<!-- graphviz -->
+<g id="node21" class="node"><title>graphviz</title>
+<ellipse fill="beige" stroke="black" cx="332" cy="-202" rx="42.3701" ry="18"/>
+<text text-anchor="middle" x="332" y="-198.3" font-family="Times,serif" font-size="14.00">graphviz</text>
+</g>
+<!-- jsonorgraphviz&#45;&gt;graphviz -->
+<g id="edge23" class="edge"><title>jsonorgraphviz&#45;&gt;graphviz</title>
+<path fill="none" stroke="black" d="M307.281,-272.214C308.787,-267.995 316.08,-247.575 322.357,-230"/>
+<polygon fill="black" stroke="black" points="325.817,-230.719 325.884,-220.124 319.225,-228.364 325.817,-230.719"/>
+</g>
+<!-- ParameterJSON&#45;&gt;end -->
+<g id="edge30" class="edge"><title>ParameterJSON&#45;&gt;end</title>
+<path fill="none" stroke="black" d="M359.956,-76.2423C422.356,-62.5065 520.208,-40.9668 576.395,-28.5986"/>
+<polygon fill="black" stroke="black" points="577.37,-31.9679 586.383,-26.3999 575.865,-25.1316 577.37,-31.9679"/>
+</g>
+<!-- ParameterIndex&#45;&gt;end -->
+<g id="edge31" class="edge"><title>ParameterIndex&#45;&gt;end</title>
+<path fill="none" stroke="black" d="M571.612,-72.7646C579.413,-64.0964 589.177,-53.2479 597.887,-43.5702"/>
+<polygon fill="black" stroke="black" points="600.5,-45.8983 604.588,-36.1239 595.297,-41.2155 600.5,-45.8983"/>
+</g>
+<!-- dsgrn&#45;&gt;command -->
+<g id="edge7" class="edge"><title>dsgrn&#45;&gt;command</title>
+<path fill="none" stroke="black" d="M544.703,-616.915C514.335,-569.48 426.753,-432.673 418.609,-419.951"/>
+</g>
+<!-- network -->
+<g id="node10" class="node"><title>network</title>
+<ellipse fill="beige" stroke="black" cx="617" cy="-562" rx="39.9464" ry="18"/>
+<text text-anchor="middle" x="617" y="-558.3" font-family="Times,serif" font-size="14.00">network</text>
+</g>
+<!-- dsgrn&#45;&gt;network -->
+<g id="edge2" class="edge"><title>dsgrn&#45;&gt;network</title>
+<path fill="none" stroke="black" d="M568.76,-617.465C576.754,-608.439 586.992,-596.88 595.978,-586.735"/>
+<polygon fill="black" stroke="black" points="598.838,-588.784 602.849,-578.977 593.598,-584.142 598.838,-588.784"/>
+</g>
+<!-- FILENAME -->
+<g id="node11" class="node"><title>FILENAME</title>
+<ellipse fill="beige" stroke="black" cx="617" cy="-490" rx="56.3173" ry="18"/>
+<text text-anchor="middle" x="617" y="-486.3" font-family="Times,serif" font-size="14.00">FILENAME</text>
+</g>
+<!-- network&#45;&gt;FILENAME -->
+<g id="edge3" class="edge"><title>network&#45;&gt;FILENAME</title>
+<path fill="none" stroke="black" d="M617,-543.697C617,-535.983 617,-526.712 617,-518.112"/>
+<polygon fill="black" stroke="black" points="620.5,-518.104 617,-508.104 613.5,-518.104 620.5,-518.104"/>
+</g>
+<!-- draw -->
+<g id="node12" class="node"><title>draw</title>
+<ellipse fill="beige" stroke="black" cx="740" cy="-418" rx="28.3955" ry="18"/>
+<text text-anchor="middle" x="740" y="-414.3" font-family="Times,serif" font-size="14.00">draw</text>
+</g>
+<!-- network&#45;&gt;draw -->
+<g id="edge4" class="edge"><title>network&#45;&gt;draw</title>
+<path fill="none" stroke="black" d="M638.03,-546.47C651.503,-536.559 668.86,-522.619 682,-508 699.613,-488.404 715.631,-462.962 726.349,-444.302"/>
+<polygon fill="black" stroke="black" points="729.456,-445.917 731.309,-435.486 723.355,-442.484 729.456,-445.917"/>
+</g>
+<!-- FILENAME&#45;&gt;command -->
+<g id="edge8" class="edge"><title>FILENAME&#45;&gt;command</title>
+<path fill="none" stroke="black" d="M580.5,-476.161C526.641,-457.216 430.945,-423.554 419.194,-419.42"/>
+</g>
+<!-- FILENAME&#45;&gt;end -->
+<g id="edge5" class="edge"><title>FILENAME&#45;&gt;end</title>
+<path fill="none" stroke="black" d="M630.675,-472.248C650.007,-446.816 683,-396.206 683,-347 683,-347 683,-347 683,-145 683,-106.714 659.443,-68.1369 641.138,-43.9405"/>
+<polygon fill="black" stroke="black" points="643.849,-41.7249 634.93,-36.0058 638.336,-46.0384 643.849,-41.7249"/>
+</g>
+<!-- draw&#45;&gt;end -->
+<g id="edge6" class="edge"><title>draw&#45;&gt;end</title>
+<path fill="none" stroke="black" d="M738.024,-399.978C735.11,-373.355 730,-320.226 730,-275 730,-275 730,-275 730,-145 730,-109.394 719.836,-99.3182 697,-72 685.019,-57.6673 668.245,-45.5082 653.41,-36.4659"/>
+<polygon fill="black" stroke="black" points="654.883,-33.273 644.483,-31.247 651.35,-39.3159 654.883,-33.273"/>
+</g>
+<!-- parameter&#45;&gt;jsonorindex -->
+<g id="edge14" class="edge"><title>parameter&#45;&gt;jsonorindex</title>
+<path fill="none" stroke="black" d="M71.1877,-330.666C104.362,-311.786 159.497,-280.408 167.91,-275.62"/>
+</g>
+<!-- inequalities -->
+<g id="node18" class="node"><title>inequalities</title>
+<ellipse fill="beige" stroke="black" cx="53" cy="-274" rx="52.4675" ry="18"/>
+<text text-anchor="middle" x="53" y="-270.3" font-family="Times,serif" font-size="14.00">inequalities</text>
+</g>
+<!-- parameter&#45;&gt;inequalities -->
+<g id="edge15" class="edge"><title>parameter&#45;&gt;inequalities</title>
+<path fill="none" stroke="black" d="M47.7303,-327.697C48.5017,-319.983 49.4288,-310.712 50.2888,-302.112"/>
+<polygon fill="black" stroke="black" points="53.7771,-302.403 51.2896,-292.104 46.8118,-301.706 53.7771,-302.403"/>
+</g>
+<!-- domaingraph&#45;&gt;jsonorgraphviz -->
+<g id="edge16" class="edge"><title>domaingraph&#45;&gt;jsonorgraphviz</title>
+<path fill="none" stroke="black" d="M297.966,-327.697C301.187,-308.911 305.989,-280.895 306.862,-275.807"/>
+</g>
+<!-- wallgraph&#45;&gt;jsonorgraphviz -->
+<g id="edge17" class="edge"><title>wallgraph&#45;&gt;jsonorgraphviz</title>
+<path fill="none" stroke="black" d="M394.731,-330.326C364.725,-311.403 315.484,-280.35 307.973,-275.614"/>
+</g>
+<!-- morsedecomposition&#45;&gt;jsonorgraphviz -->
+<g id="edge18" class="edge"><title>morsedecomposition&#45;&gt;jsonorgraphviz</title>
+<path fill="none" stroke="black" d="M518.173,-331.42C446.744,-312.336 323.643,-279.447 308.535,-275.41"/>
+</g>
+<!-- morsegraph&#45;&gt;jsonorgraphviz -->
+<g id="edge19" class="edge"><title>morsegraph&#45;&gt;jsonorgraphviz</title>
+<path fill="none" stroke="black" d="M194.078,-330.666C232.701,-311.626 297.11,-279.875 305.977,-275.505"/>
+</g>
+<!-- inequalities&#45;&gt;parameterspec -->
+<g id="edge25" class="edge"><title>inequalities&#45;&gt;parameterspec</title>
+<path fill="none" stroke="black" d="M62.7493,-256.044C75.3678,-235.684 99.3005,-202.031 129,-184 186.515,-149.081 273.963,-147.099 287.276,-147.003"/>
+</g>
+<!-- json&#45;&gt;parameterspec -->
+<g id="edge24" class="edge"><title>json&#45;&gt;parameterspec</title>
+<path fill="none" stroke="black" d="M257.256,-185.958C268.648,-171.977 284.408,-152.636 288.17,-148.019"/>
+</g>
+<!-- index&#45;&gt;parameterspec -->
+<g id="edge26" class="edge"><title>index&#45;&gt;parameterspec</title>
+<path fill="none" stroke="black" d="M192.708,-190.331C224.948,-175.824 279.58,-151.239 287.919,-147.486"/>
+</g>
+<!-- graphviz&#45;&gt;parameterspec -->
+<g id="edge27" class="edge"><title>graphviz&#45;&gt;parameterspec</title>
+<path fill="none" stroke="black" d="M319.099,-184.798C308.016,-170.88 293.284,-152.38 289.774,-147.972"/>
+</g>
+</g>
+</svg>
+++++
+
+=== Database Tutorial
+
+`Signatures` is a program which computes databses of Morse graphs for an entire Parameter graph. Here is a demonstration.
+
+First, we use the `Signatures` program to create an SQLite database:
+
+``` shell
+mpiexec -np 5 ./Signatures ../../networks/2D_Example_C.txt ../../data/logic/ ./2D_Example_C.db
+```
+
+Tada! Now we have an SQLite database. This is a small example that computes in seconds even on a laptop. So... looks like we're done here, everybody go home.
+
+Just kidding! We have work to do. Let's examine the output. How can we get at this data and how can we use it? To get the full power here, we need to use a database query language. The most widely known is called SQL, which stands for Structured Query Language, and SQLite uses this. 
+
+==== A crash course in SQL
+
+Ultimately, we will have wonderful web interfaces to examine this database, but for right now, since it is an SQLite database, we can use the SQL query interface. So what follows is a tutorial to SQL, tailored to the needs of using it to query the database of dynamic sigatures computed by DSGRN.
+
+Let's fire up SQLite's interactive interface:
+``` shell
+sqlite3 2D_Example_C.db
+```
+
+Now we should see the prompt:
+``` shell
+sqlite>
+```
+
+So far, so good.
+
+==== Tables
+
+A database is comprised of tables; we can ask SQLite about what tables we have:
+``` shell
+sqlite> .tables
+```
+```shell
+MorseGraphAnnotations  MorseGraphVertices     Signatures           
+MorseGraphEdges        MorseGraphViz        
+```
+
+The information produced by `Signatures` is in these tables. Each table has a number of columns and rows. The columns are named. We can find out about the columns of each table by asking about the database's "schema":
+
+``` shell
+sqlite> .schema
+```
+```shell
+CREATE TABLE Signatures (ParameterIndex INTEGER PRIMARY KEY, MorseGraphIndex INTEGER);
+CREATE TABLE MorseGraphViz (MorseGraphIndex INTEGER PRIMARY KEY, Graphviz TEXT);
+CREATE TABLE MorseGraphVertices (MorseGraphIndex INTEGER, Vertex INTEGER);
+CREATE TABLE MorseGraphEdges (MorseGraphIndex INTEGER, Source INTEGER, Target INTEGER);
+CREATE TABLE MorseGraphAnnotations (MorseGraphIndex INTEGER, Vertex INTEGER, Label TEXT);
+CREATE INDEX Signatures2 on Signatures (MorseGraphIndex, ParameterIndex);
+CREATE INDEX MorseGraphAnnotations3 on MorseGraphAnnotations (Label, MorseGraphIndex);
+CREATE INDEX MorseGraphViz2 on MorseGraphViz (Graphviz, MorseGraphIndex);
+CREATE INDEX MorseGraphVertices1 on MorseGraphVertices (MorseGraphIndex, Vertex);
+CREATE INDEX MorseGraphVertices2 on MorseGraphVertices (Vertex, MorseGraphIndex);
+CREATE INDEX MorseGraphEdges1 on MorseGraphEdges (MorseGraphIndex);
+CREATE INDEX MorseGraphAnnotations1 on MorseGraphAnnotations (MorseGraphIndex);
+```
+
+What we see here are the commands that were invoked to create the tables and indices. Indices are data structures formed on tables to speed up different types of queries. Indexing is extremely important; we'll talk about it later. For now, we'll focus on the tables. Consider the `Signatures` table. There are two columns: `ParameterIndex` and `MorseGraphIndex`. Both hold integer data. The `ParameterIndex` is marked `INTEGER PRIMARY KEY`, which tells SQLite that it doesn't need to add its customary implicit `rowid` column; it can assume the `ParameterIndex` data can serve that function equally well (in particular, we will never attempt to insert two rows with the same `ParameterIndex` value).
+
+
+==== Selecting things
+
+To learn more about tables we will want to see their contents. In order to get at the contents of a table, we use the `SELECT` command. Time for an example. The table `MorseGraphViz` contains a list of MorseGraphs in a somewhat human-readable graphviz format, so let's take a look at that one.
+
+We'll type
+``` shell
+sqlite> select * from MorseGraphViz;
+```
+
+The `*` here says you want to know the values for all the columns. 
+
+```shell
+0|digraph {
+0[label="FP"];
+1[label="FP ON"];
+}
+
+1|digraph {
+0[label="FP ON"];
+}
+
+2|digraph {
+0[label="FP ON"];
+1[label="FP"];
+}
+```
+
+skip a few...
+
+``` shell
+18|digraph {
+0[label="FP ON"];
+1[label="FP"];
+2[label="FP ON"];
+3[label="FP"];
+4[label="FP"];
+}
+
+19|digraph {
+0[label="FP ON"];
+1[label="FP"];
+2[label="FP"];
+3[label="FP ON"];
+4[label="FP"];
+}
+```
+
+skip a few more...
+
+```
+27|digraph {
+0[label="FP ON"];
+1[label="FP ON"];
+2[label="FP"];
+3[label="FP"];
+4[label="FP OFF"];
+}
+```
+
+As we can see, the database computation recorded 28 distinct Morse graphs. By way of example, we notice Morse graphs 18 and 19 are isomorphic, so by distinct we mean having a distinct representation rather than not being isomorphic. Later, we will add a feature that attempts to reduce the number of Morse graphs by heuristic approaches to graph canonicalization. For now, we can query about both representations at the same time, which is a nice example anyway. We will look in the table `Signatures`, which provides a mapping between parameter indices and the Morse graphs that occur:
+
+``` shell
+sqlite> select * from Signatures where MorseGraphIndex=18 or MorseGraphIndex=19;
+```
+```shell
+147|18
+207|18
+307|18
+1389|18
+1390|18
+1392|18
+150|19
+155|19
+210|19
+215|19
+310|19
+315|19
+1409|19
+1410|19
+1412|19
+1449|19
+1450|19
+1452|19
+```
+
+==== Indexing
+
+Let's stop a moment and think about how the database answered that last query. Was it efficient? One approach which would be absolutely terrible is if the database software scanned the `Signature` table in entirety and returned all the matching rows. For large databases, this would be ridiculously slow. It is called a _full table scan_. Full table scans are to be prevented whenever possible. The means of preventing full table scans is _indexing_. With indexes, the database maintains a copy of the database sorted by other columns. So having sorted the `Signatures` table by the `MorseGraphIndex` column, one can pull out the matching rows extremely efficiently (just as one can look up a word in a dictionary efficiently). Looking back at the schema, we see that such an index was in fact constructed by DSGRN's computation:
+
+``` shell
+CREATE INDEX Signatures2 on Signatures (MorseGraphIndex, ParameterIndex);
+```
+
+Thus, these sorts of queries should be fast. We can actually ask SQLite how it plans to accomplish a query, and make sure it is using our index to do it right, rather than do a full table scan:
+
+```shell
+sqlite> explain query plan select * from Signatures where MorseGraphIndex=18 or MorseGraphIndex=19;
+```
+```shell
+0|0|0|SEARCH TABLE Signatures USING COVERING INDEX Signatures2 (MorseGraphIndex=?)
+0|0|0|EXECUTE LIST SUBQUERY 1
+```
+
+Seems legit. What happens if it didn't have that index?
+
+```
+sqlite> drop index Signatures2;
+sqlite> explain query plan select * from Signatures where MorseGraphIndex=18 or MorseGraphIndex=19;
+```
+```shell
+0|0|0|SCAN TABLE Signatures
+```
+
+Oh no! The dreaded full table scan! Quick, rebuild the index!
+
+```shell
+sqlite> CREATE INDEX Signatures2 on Signatures (MorseGraphIndex, ParameterIndex);
+```
+
+Let's try another query. For the network we are considering, there were 4 cohorts of 400 parameters. We might only be interested in a particular cohort (i.e. ordering of thresholds) so we only care about, for instance, parameters 0 through 399. We could make a similar query, but restricted to the first 400 parameters:
+
+``` shell
+sqlite> select * from Signatures where (MorseGraphIndex=18 or MorseGraphIndex=19) and ParameterIndex < 400;
+```
+```shell
+147|18
+207|18
+307|18
+150|19
+155|19
+210|19
+215|19
+310|19
+315|19
+```
+
+Here SQLite should again use the index, first quickly determining which rows satisfy `MorseGraphIndex=18 or MorseGraphIndex=19` and then among these rows using the sorting of `ParameterIndex` to quickly retrieve the rows associated with the `ParameterIndex < 400` cohort. This is a more complex usage of the index; see SQLite's nice explanation of https://www.sqlite.org/queryplanner.html[query planning] for more details.
+
+==== Selecting Individual Columns
+
+Back to the example. Let's say we do not care which parameter was assigned Morse graph 18 and which was assigned 19 since they are, after all, isomorphic. We can instruct to only give the column corresponding the parameter index, dropping the column which distinguishes between 18 and 19:
+
+``` shell
+sqlite> select ParameterIndex from Signatures where (MorseGraphIndex=18 or MorseGraphIndex=19) and ParameterIndex < 400;
+```
+```shell
+147
+207
+307
+150
+155
+210
+215
+310
+315
+```
+
+We could also ask for the columns out of order, or the same column more than once. For example:
+``` shell
+sqlite> select ParameterIndex,ParameterIndex,MorseGraphIndex,ParameterIndex from Signatures where (MorseGraphIndex=18 or MorseGraphIndex=19) and ParameterIndex < 400;
+```
+
+```shell
+147|147|18|147
+207|207|18|207
+307|307|18|307
+150|150|19|150
+155|155|19|155
+210|210|19|210
+215|215|19|215
+310|310|19|310
+315|315|19|315
+```
+
+
+==== Group concatenation
+
+We may prefer a comma separated list rather than a long column, so we can use the `GROUP_CONCAT` feature:
+
+``` shell
+sqlite> select GROUP_CONCAT(ParameterIndex) from Signatures where MorseGraphIndex=18 or MorseGraphIndex=19 and ParameterIndex < 400;
+```
+```shell
+147,207,307,1389,1390,1392,150,155,210,215,310,315
+```
+
+If this seems sort of strange, good. It's an example of an _aggregate function_, and we'll talk about those more later.
+
+==== Joining tables
+
+An important tool to use database structures is the `join`. This lets us combine two tables based on matches in a certain way. Let's consider an example. Suppose we want to find all parameters where the Morse graph has at least 4 vertices. Since vertices in a Morse graph are indexed contiguously beginning at zero, this is the collection of parameters for which the Morse graph contains the vertex `3`. This gives us a hackish trick for quickly selecting them by querying the `MorseGraphVertices` table for `Vertex=3`. The select will be fast, since we have the following index available:
+
+```shell
+CREATE INDEX MorseGraphVertices2 on MorseGraphVertices (Vertex, MorseGraphIndex);
+```
+
+SQLite will use this index to quickly answer the following query:
+
+```shell
+sqlite> select GROUP_CONCAT(MorseGraphIndex) from MorseGraphVertices where Vertex=3;
+```
+```shell
+8,10,13,16,18,19,21,22,24,25,26,27
+```
+
+But wait; these aren't the parameters with Morse graphs having at least 4 vertices; these are the Morse graphs themselves. We need to turn around and look up parameters associated with these Morse graphs. Here is how _NOT_ to do it:
+
+``` shell
+sqlite> select ParameterIndex from Signatures where MorseGraphIndex=8 or MorseGraphIndex=10 or ...
+```
+
+Nope! Ack! Don't do that. Instead, try this:
+
+```shell
+sqlite> create temp table GotAtLeastFour as select MorseGraphIndex from MorseGraphVertices where Vertex=3;
+```
+
+Now `GotAtLeastFour` is the table of results we were just considering. We told SQLite it was temporary, so it knows this isn't going to be a permanent citizen of our database. We can use it with the `Signatures` table as follows:
+
+```shell
+sqlite> select GROUP_CONCAT(ParameterIndex) from Signatures natural join GotAtLeastFour;
+```
+```shell
+693,713,1007,1047,1269,1270,1271,1272,1273,1391,1393,1493,990,995,1010,1015,1050,1055,122,127,182,187,282,287,288,688,821,822,861,862,866,867,868,922,927,982,986,988,1082,1087,1088,1266,1267,1268,1386,1387,1388,1488,142,202,222,227,302,322,327,328,728,732,753,1289,1290,1291,1292,1293,1411,1413,1451,1453,1513,1553,147,207,307,1389,1390,1392,150,155,210,215,310,315,1409,1410,1412,1449,1450,1452,308,312,317,692,708,717,752,1492,1512,1552,144,204,224,230,235,304,324,330,332,335,337,737,549,550,552,609,610,612,709,710,712,733,738,773,778,987
+```
+
+The `natural join` was the http://en.wikipedia.org/wiki/Join_(SQL)#Natural_join_.28.E2.8B.88.29[magic mustard] here. The `natural` keyword is shorthand to tell it to perform a join on the columns with the same name. A `join` is a procedure whereby two tables are combined together into a single table on the basis of matching entries. 
+
+We can get rid of that temporary table now:
+```shell
+sqlite> drop table GotAtLeastFour;
+```
+
+Good riddance. In fact, we never needed that pesky tempory table in the first place:
+
+```shell
+sqlite> select GROUP_CONCAT(ParameterIndex) from Signatures natural join (select MorseGraphIndex from MorseGraphVertices where Vertex=3);
+```
+```shell
+693,713,1007,1047,1269,1270,1271,1272,1273,1391,1393,1493,990,995,1010,1015,1050,1055,122,127,182,187,282,287,288,688,821,822,861,862,866,867,868,922,927,982,986,988,1082,1087,1088,1266,1267,1268,1386,1387,1388,1488,142,202,222,227,302,322,327,328,728,732,753,1289,1290,1291,1292,1293,1411,1413,1451,1453,1513,1553,147,207,307,1389,1390,1392,150,155,210,215,310,315,1409,1410,1412,1449,1450,1452,308,312,317,692,708,717,752,1492,1512,1552,144,204,224,230,235,304,324,330,332,335,337,737,549,550,552,609,610,612,709,710,712,733,738,773,778,987
+```
+
+We should stay in the habit of always making sure the queries we run are efficient:
+```shell
+sqlite> explain query plan select GROUP_CONCAT(ParameterIndex) from Signatures natural join (select MorseGraphIndex from MorseGraphVertices where Vertex=3);
+```
+```shell
+0|0|1|SEARCH TABLE MorseGraphVertices USING COVERING INDEX MorseGraphVertices2 (Vertex=?)
+0|1|0|SEARCH TABLE Signatures USING COVERING INDEX Signatures2 (MorseGraphIndex=?)
+```
+We see its plan involves using the proper indices, so it seems right.
+
+==== Counting things
+
+The last example was pretty fancy, so let's do something a little more basic: counting.
+
+There is a command `COUNT` which lets you count things:
+
+```shell
+sqlite> select COUNT(*) from Signatures;
+```
+```shell
+1600
+```
+
+Those are our 1600 parameters. There is also a `distinct` keyword, which lets us select only when a new item is found. Here is an example of its use:
+
+```shell
+sqlite> select COUNT(distinct MorseGraphIndex) from Signatures;
+```
+```shell
+28
+```
+
+Looks great, but _beware!_ You might assume these are fast operations, the former taking $O(1)$ time and the latter taking (for an indexed table) $O(n \log N)$ time, where $n$ is the count returned and $N$ is the number of rows. However, SQLite has apparently http://www.mail-archive.com/sqlite-users@sqlite.org/msg10279.html[made a deliberate design decision] which forces a full table scan whenever `COUNT` is used. We can actually speed up the latter:
+
+```shell
+sqlite> select COUNT(*) from (select distinct MorseGraphIndex from Signatures);
+```
+This still runs a full table scan with `COUNT`, but it does it on the small table returned by the interior `SELECT`. Meanwhile, the `select distinct MorseGraphIndex from Signatures` _does the right thing_:
+
+```shell
+sqlite> explain query plan select distinct MorseGraphIndex from Signatures;
+```
+```
+0|0|0|SCAN TABLE Signatures USING COVERING INDEX Signatures2
+```
+
+Well, hopefully does the right thing. Technically, the asymptotically best solution is based on skipping from key to key with repeated binary searches, not scanning the entire indexed table. http://sqlite.1065341.n5.nabble.com/Index-performance-td72375.html[Word on the street] is that this so-called skip-scan algorithm is only considered when there are more than 50 rows for each distinct value. In the current example, there are around 57 (we'll see this later in an example), but the database is very small, so it might not bother. Definitely worth checking out as things scale up!
+
+==== Aggregate functions
+
+The two expressions we have seen, `GROUP_CONCAT` and `COUNT` are examples of what are known as _aggregate functions_. The idea of an aggregate function is that it takes a column and compresses it into a single item. If `A` is an aggregate function, then there is some seed value (for `GROUP_CONCAT` it is the empty string, for `COUNT` it is 0) and upon processing a new item it updates the value according to what it sees. For `GROUP_CONCAT` it affixes the next item with a comma delimiter. For `COUNT` it adds one. 
+
+In fact, we can combine aggregate functions together in queries in comma-concatenated lists. When we do this, we can regard vanilla column entries as aggregate functions as well: `MorseGraphIndex` can be understood as the aggregate function that reads a row and updates its value to be the entry in the `MorseGraphIndex` column. Here is an example:
+
+```shell
+sqlite> select MorseGraphIndex,COUNT(Vertex) from MorseGraphVertices;
+```
+Which yields:
+```shell
+27|89
+```
+
+The 89 makes sense; this is the total number of vertices in all the Morse graphs combined. But what is the 27? It isn't the number of Morse graphs; there are 28 of them. The answer is that it is simply the last value of the ``MorseGraphIndex`` field encountered while processing the rows with the aggregate function.
+
+For a very ridiculous example (purely to illustrate the behavior of aggregate functions):
+
+```shell
+sqlite> select GROUP_CONCAT(MorseGraphIndex),GROUP_CONCAT(Vertex) from MorseGraphVertices;
+```
+```shell
+0,0,1,2,2,3,3,3,4,4,4,5,5,6,7,7,7,8,8,8,8,9,9,9,10,10,10,10,11,11,12,12,12,13,13,13,13,14,14,15,16,16,16,16,17,17,17,18,18,18,18,18,19,19,19,19,19,20,20,20,21,21,21,21,22,22,22,22,23,23,23,24,24,24,24,25,25,25,25,25,26,26,26,26,27,27,27,27,27|0,1,0,0,1,0,1,2,0,1,2,0,1,0,0,1,2,0,1,2,3,0,1,2,0,1,2,3,0,1,0,1,2,0,1,2,3,0,1,0,0,1,2,3,0,1,2,0,1,2,3,4,0,1,2,3,4,0,1,2,0,1,2,3,0,1,2,3,0,1,2,0,1,2,3,0,1,2,3,4,0,1,2,3,0,1,2,3,4
+```
+
+This has made comma-concatenated lists out of every `MorseGraphIndex` field and every `Vertex` field, and made a row with two columns out of them.
+
+
+==== Grouping things
+
+At this point one might get the idea that aggregate functions are a one-trick pony, good for counting the number of rows or concatenating entries from a single column but yielding nonsense in all other situations. This is because we have not yet covered the `GROUP BY` syntax, which makes aggregate functions far more useful.
+
+The `GROUP BY` command tells a `SELECT` statement to break the rows into groups based on chosen columns. For example, `GROUP BY MorseGraphIndex` would tell SQLite you wanted to look at the table in several groups, each group having some given value in the `MorseGraphIndex` field. It automatically assumes you mean to use aggregate functions. The aggregate functions don't process the entire table and produce a single row, but rather process each group and produce a table with rows corresponding to each group. This is quite useful.
+
+We'll illustrate this by example. Let's figure out which Morse graphs have more than 50 parameters corresponding to them. We tackle this by first creating a table with rows reporting the number of parameters associated to each Morse graph. Then we select those rows for which there are more than 50 parameters.
+
+```shell
+sqlite> select MorseGraphIndex,COUNT(*) as Frequency from Signatures group by MorseGraphIndex order by Frequency desc;
+```
+
+``` shell
+6|418
+14|266
+2|204
+1|126
+17|74
+0|70
+9|69
+11|64
+5|50
+7|47
+12|33
+13|30
+3|23
+16|22
+15|16
+8|12
+19|12
+22|12
+21|10
+24|8
+20|7
+4|6
+10|6
+18|6
+26|4
+23|3
+25|1
+27|1
+```
+
+Wonderful! But how did it work? There are several new pieces of syntax. First, we see the `count(*) as Frequency`. This tells SQLite that the thing it is computing with the aggregate function `count(*)` is something that you want to refer to by the name `Frequency`. Later, we have the phrase `order by Frequency desc` which tells SQLite you want the final table to be ordered by the `Frequency` column in descending order. Finally, saving the best for last, we have the `group by MorseGraphIndex`. The `GROUP BY` feature tells SQLite that we want to break the table into groups based on the value of the `MorseGraphIndex` column. It then "evaluates" the aggregate function `MorseGraphIndex,COUNT(*)` over each group, and the output for each group is the row consisting of the `MorseGraphIndex` for the group and the number of rows in that group. Which is what we wanted! So along with `GROUP BY`, aggregate functions become powerful tools.
+
+As a quick aside, we can now calculate the average number of parameters associated to a Morse graph by using the `AVG` aggregate function:
+```shell
+sqlite> select AVG(Frequency) from MorseGraphClasses;
+```
+```shell
+57.1428571428571
+```
+
+Anyhow, we are now ready to give the list of all Morse graphs have more than 50 parameters corresponding to them:
+
+```shell
+sqlite> select GROUP_CONCAT(MorseGraphIndex) from (select MorseGraphIndex,count(*) as Frequency from Signatures group by MorseGraphIndex order by Frequency desc) where Frequency > 50;
+6,14,2,1,17,0,9,11
+```
+
+==== More grouping
+
+Let's do an even more glamorous example of grouping. Let's create a table with three columns. The first column will be `MorseGraphIndex`, the second column will be `Frequency`, and the third column will be `ParameterIndices`. Also, let's make sure the table is sorted in descending order on the `Frequency` column. 
+
+```shell
+sqlite> create temp table MorseGraphClasses as select MorseGraphIndex,COUNT(*) as Frequency,GROUP_CONCAT(ParameterIndex) from Signatures group by MorseGraphIndex order by Frequency desc;
+```
+
+Is this table what we want? Instead of `SELECT * FROM MorseGraphClasses`, let's instead go with
+
+```shell
+sqlite> select * from MorseGraphClasses where Frequency < 10
+```
+```shell
+24|8|549,550,552,609,610,612,709,710
+20|7|777,1429,1430,1432,1469,1470,1472
+4|6|372,377,1030,1035,1070,1075
+10|6|990,995,1010,1015,1050,1055
+18|6|147,207,307,1389,1390,1392
+26|4|733,738,773,778
+23|3|232,237,637
+25|1|712
+27|1|987
+```
+
+Great! Just what we wanted. But is it doing it efficiently? You'd think because we told it `order by Frequency desc` it would know that it could use binary search to do this query. Nope! 
+
+```shell
+sqlite> explain query plan select * from MorseGraphClasses where Frequency < 10; 
+```
+```shell
+0|0|0|SCAN TABLE MorseGraphClasses
+```
+
+Ah, the dreaded full table scan. Probably the rationale is that you could later insert rows which break this property, so it cannot make this assumption. To prevent the full table scan we could index our new table:
+
+```shell
+sqlite> create index MorseGraphClasses2 on MorseGraphClasses (Frequency);
+```
+
+Now the database software has twigged to the better plan:
+
+```shell
+sqlite> explain query plan select * from MorseGraphClasses where Frequency < 10; 
+```
+```shell
+0|0|0|SEARCH TABLE MorseGraphClasses USING INDEX MorseGraphClasses2 (Frequency<?)
+```
+
+==== Even more grouping
+
+Let's revisit the example with finding Morse graphs with a certain number of vertices. Before, we used a hackish trick that relied on the fact a Morse graph had a vertex with index $k$ if and only if it had at least $k+1$ vertices. Using grouping, we don't need to rely on such tricks.
+
+We'll make a table which lists each Morse graph according to the number of vertices it has in descending order.
+
+```shell
+sqlite> create temp table MorseGraphVertexCount as select MorseGraphIndex,COUNT(*) as VertexCount from MorseGraphVertices group by MorseGraphIndex order by VertexCount desc;
+```
+
+Now let's select the ones with more than 3 vertices:
+```
+sqlite> select GROUP_CONCAT(MorseGraphIndex) from MorseGraphVertexCount where VertexCount > 3;
+```
+```shell
+18,19,25,27,8,10,13,16,21,22,24,26
+```
+
+This is the same collection of Morse graphs we found earlier, albeit in a different order.
+
+==== Combinations of Labels
+
+Our Morse graphs come equipped with annotations. These are visible in the graphviz records, but they are also available in the `MorseGraphAnnotations` table. This lets us use the querying capabilities. We might be interested in querying for various logical combinations of annotations applied to a Morse graph, and then learning which parameters are associated.
+
+Let's say we are interested in finding all parameters which have a Morse graph that has an annotation "FP OFF", an annotation "FC", but do not have the annotation "FP ON". We can accomplish this as follows:
+
+```shell
+sqlite> create temp table HasFPOFF as select MorseGraphIndex from MorseGraphAnnotations where Label="FP OFF";
+sqlite> create temp table HasFC as select MorseGraphIndex from MorseGraphAnnotations where Label="FC";
+sqlite> create temp table HasFPON as select MorseGraphIndex from MorseGraphAnnotations where Label="FP ON";
+sqlite> select GROUP_CONCAT(ParameterIndex) from Signatures natural join (select * from HasFPOFF union select * from HasFC except select * from HasFPON);
+```
+```shell
+1,2,6,7,8,21,22,26,27,28,61,62,66,67,68,120,180,280,406,407,408,426,427,428,466,467,468,520,521,522,580,581,582,680,681,682,801,802,806,807,808,820,860,920,980,1080,1206,1207,1208,1220,1221,1222,1260,1261,1262,1320,1321,1322,1380,1381,1382,1480,1481,1482,121,126,128,181,186,188,281,286,526,527,528,586,587,588,686,687,826,827,828,921,926,928,981,1081,1086,1226,1227,1228,1326,1327,1328,1486,1487,0,20,60,400,401,402,420,421,422,460,461,462,800,1200,1201,1202
+```
+
+We check the query plans to make sure this is happening efficiently:
+```shell
+sqlite> explain query plan select MorseGraphIndex from MorseGraphAnnotations where Label="FP ON";
+```
+```shell
+0|0|0|SEARCH TABLE MorseGraphAnnotations USING COVERING INDEX MorseGraphAnnotations3 (Label=?)
+```
+```shell
+sqlite> explain query plan select GROUP_CONCAT(ParameterIndex) from Signatures natural join (select * from HasFPOFF union select * from HasFC except select * from HasFPON);
+```
+```shell
+3|0|0|SCAN TABLE HasFPOFF
+4|0|0|SCAN TABLE HasFC
+2|0|0|COMPOUND SUBQUERIES 3 AND 4 USING TEMP B-TREE (UNION)
+5|0|0|SCAN TABLE HasFPON
+1|0|0|COMPOUND SUBQUERIES 2 AND 5 USING TEMP B-TREE (EXCEPT)
+0|0|1|SCAN SUBQUERY 1
+0|1|0|SEARCH TABLE Signatures USING AUTOMATIC COVERING INDEX (MorseGraphIndex=?)
+```
+
+Looks good.
+
+==== A Lesson in Query Planning
+
+It is important to make sure that the database is being efficient in answering queries. Just because there is an efficient way to do something does not mean that SQLite will translate our intent into an efficient search. We earlier saw an example where we needed to create an index to get SQLite to do the right thing. We noticed with the `COUNT` function that SQLite forced full table scans. Here we give another example where SQLite actually has the correct indices, but doesn't do the most efficient thing. To this end we try using the `distinct` keyword with `GROUP_CONCAT`:
+
+```shell
+sqlite> select GROUP_CONCAT(distinct MorseGraphIndex) from Signatures; 
+```
+```shell
+15,11,6,2,0,1,14,7,9,12,13,16,22,5,17,18,19,3,23,21,4,24,8,25,26,20,27,10
+```
+
+This result is a little bit disturbing: it is simply the Morse graph indices occurring in the `Signatures` table in the order which they appear. This implies that SQLite chose a full table scan to satisfy this query! Let's check:
+
+```shell
+sqlite> explain query plan select GROUP_CONCAT(distinct MorseGraphIndex) from Signatures;
+```
+
+```shell
+0|0|0|SCAN TABLE Signatures
+```
+
+A full table scan! Terrible! The culprit is the `GROUP_CONCAT` and not `distinct`, as the following shows:
+
+```shell
+sqlite> select distinct MorseGraphIndex from Signatures;
+```
+which returns
+```
+0
+1
+2
+...
+```
+
+This indicates the query used the index efficiently:
+```shell
+sqlite> explain query plan select distinct MorseGraphIndex from Signatures;
+```
+```shell
+0|0|0|SCAN TABLE Signatures USING COVERING INDEX Signatures2
+```
+
+Is this a bug in SQLite? Well, we could argue that SQLite believed that we were very much interested in the order the distinct `MorseGraphIndex` elements occurred, row by row, in the `Signatures` table. Thus a full table scan was required to ascertain this ordering.
+
+So if I wanted the comma-separated list without a slow full-table scan, a solution would be
+
+```shell
+sqlite> select GROUP_CONCAT(MorseGraphIndex) from (select distinct MorseGraphIndex from Signatures);
+```
+```shell
+0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27
+```
+```shell
+sqlite> explain query plan select GROUP_CONCAT(MorseGraphIndex) from (select distinct MorseGraphIndex from Signatures);
+```
+```shell
+1|0|0|SCAN TABLE Signatures USING COVERING INDEX Signatures2
+0|0|0|SCAN SUBQUERY 1
+```
+
+The moral of the story here is to check the query plans, especially when you are using aggregate functions. The difference between $O(N)$ time full table scan versus a $O(n \log N)$ time binary search is dramatic for usual choices of $n$ and $N$. 
+
+== Low-level API
+
+=== Network Interface
+
+The C++ interface for handling networks is as follows:
+
+``` cpp
+/// Network
+///   This class holds network data.
+///     * Loads specification files
+///     * Outputs Graphviz visualizations
+///     * Provides an interface to networks
+class Network {
+public:
+  /// load
+  ///   load from network specification file
+  void 
+  load ( const char* filename );
+
+  /// size
+  ///   Return the number of nodes in the network
+  int
+  size ( void ) const;
+
+  /// index
+  ///   Return index of node given name string
+  int 
+  index ( std::string const& name ) const;
+
+  /// name
+  ///   Return name of node (given by index)
+  std::string const&
+  name ( int index ) const;
+
+  /// inputs
+  ///   Return a list of inputs to a node
+  std::vector<int> const&
+  inputs ( int index ) const;
+
+  /// outputs
+  ///   Return a list of outputs to a node
+  std::vector<int> const&
+  outputs ( int index ) const;
+
+  /// logic
+  ///   Return the logic of a node (given by index)
+  std::vector<std::vector<int>> const&
+  logic ( int index ) const;
+
+  /// interaction
+  ///   Return the interaction type of an edge
+  ///   False for repression, true for activation
+  bool
+  interaction ( int source, int target ) const;
+
+  /// graphviz
+  ///   Return a graphviz string (dot language)
+  std::string
+  graphviz ( std::vector<std::string> const& theme = 
+  { "aliceblue", // background color
+    "beige",     // node color
+    "black", "darkgoldenrod", "blue", "orange", "red", "yellow" // edge group colors
+  } ) const;
+```
+
+This is more-or-less self-documenting. The methods `name` and `index` provide inverse look-up tables that give either the name of a node or its index given the other piece of information. Edges may be queried via `interaction` to see if they are activating or repressing; a query on a non-existent edge results in undefined behavior (likely a segmentation fault). The logic of a network node can be obtained through the method `logic` and the return type is 
+
+``` cpp
+std::vector<std::vector<int>> const&
+```
+
+The inner `std::vector<int>` represents a logic factor as an array of node indices, and the outer `std::vector` stores a logic as an array of logic factors.
+
+The `graphviz` method returns a dot language representation of the network (see <<NetworkSpecFile>> for an example). The color theme is an array of color names starting with the background color, followed by node color, and then input factor colors (i.e. input edges are colored according to which factor they belong to in the target node's logic). If there are more factors for some node than colors specified, then it rotates back to the first (and some groups become indistinguishable). This behavior can be used to disable the coloring of edges according to group by only giving three colors in the theme, which would then be background color, node color, and edge color.
+

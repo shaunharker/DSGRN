@@ -1,3 +1,13 @@
+# Executables
+NetworkComponents
+DSGRN
+
+# Session file
+dsgrn.session
+
+# Mac OS X files
+.DS_Store
+
 # Compiled Object files
 *.slo
 *.lo
@@ -23,6 +33,12 @@
 *.lib
 
 # Executables
+*.x
 *.exe
 *.out
 *.app
+
+# Data
+*.dat
+*.db
+
