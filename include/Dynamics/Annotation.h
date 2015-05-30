@@ -93,6 +93,11 @@ end ( void ) const {
   return annotations_ . end ();
 }
 
+inline std::string const& Annotation_::
+operator [] ( uint64_t i ) const {
+  return annotations_[i];
+}
+
 inline void Annotation_::
 append ( std::string const& label ) {
   annotations_ . push_back ( label );

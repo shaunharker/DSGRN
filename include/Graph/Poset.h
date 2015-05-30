@@ -5,14 +5,14 @@
 #ifndef DSGRN_POSET_H
 #define DSGRN_POSET_H
 
-#include "Graph/Digraph.h"
-
 #include <algorithm>
 #include <cstdlib>
 #include <unordered_set>
 
 #include "boost/serialization/serialization.hpp"
 #include "boost/serialization/base_object.hpp"
+
+#include "Graph/Digraph.h"
 
 /// class Poset_
 class Poset_ : public Digraph_ {

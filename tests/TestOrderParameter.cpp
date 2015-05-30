@@ -5,7 +5,7 @@
 #include <iostream>
 #include <vector>
 
-#include "DSGRN.h"
+#include "DSGRN.hpp"
 
 int main ( void ) {
   OrderParameter p;

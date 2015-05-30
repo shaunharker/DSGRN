@@ -5,9 +5,8 @@
 #ifndef DSGRN_MORSEGRAPH_H
 #define DSGRN_MORSEGRAPH_H
 
-#include "Dynamics/Annotation.h"
-#include "Dynamics/MorseDecomposition.h"
-#include "Graph/Poset.h"
+#include "DSGRN.h"
+
 #include "Database/SHA256.h"
 #include "Database/json.h"
 

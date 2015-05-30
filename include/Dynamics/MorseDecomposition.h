@@ -10,10 +10,7 @@
 #include <vector>
 #include <unordered_set>
 
-#include "Graph/Digraph.h"
-#include "Graph/Components.h"
-#include "Graph/Poset.h"
-#include "Graph/StrongComponents.h"
+#include "DSGRN.h"
 
 class MorseDecomposition_ {
 public:

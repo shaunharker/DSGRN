@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "DSGRN.h"
+#include "DSGRN.hpp"
 
 Network network;
 

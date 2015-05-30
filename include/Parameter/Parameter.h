@@ -10,10 +10,8 @@
 #include <iostream>
 #include <sstream>
 
-#include "Phase/Domain.h"
-#include "Parameter/Network.h"
-#include "Parameter/LogicParameter.h"
-#include "Parameter/OrderParameter.h"
+#include "DSGRN.h"
+
 #include "Database/json.h"
 
 class Parameter_ {

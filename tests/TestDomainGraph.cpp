@@ -9,7 +9,7 @@
 #include <string>
 #include <fstream>
 
-#include "DSGRN.h"
+#include "DSGRN.hpp"
 
 int main ( int argc, char * argv [] ) {
   // Load a network file

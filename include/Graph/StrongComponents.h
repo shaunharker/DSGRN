@@ -5,7 +5,6 @@
 #ifndef DSGRN_STRONGCOMPONENTS_H
 #define DSGRN_STRONGCOMPONENTS_H
 
-#include "Graph/Poset.h"
 #include <functional>
 #include <algorithm>
 #include <memory>
@@ -14,7 +13,7 @@
 #include <unordered_set>
 #include <unordered_map>
 
-#include "Graph/Components.h"
+#include "DSGRN.h"
 
 Components
 StrongComponents ( Digraph const digraph );

@@ -11,10 +11,8 @@
 #include <cstdlib>
 #include <iostream>
 #include <sstream>
-#include "Phase/Domain.h"
-#include "Phase/Wall.h"
-#include "Graph/Digraph.h"
-#include "Dynamics/Annotation.h"
+
+#include "DSGRN.h"
 
 class WallGraph_ {
 public:

@@ -13,8 +13,8 @@
 #include <sstream>
 #include <exception>
 #include <stdexcept>
-#include "Parameter/Network.h"
-#include "Parameter/Parameter.h"
+
+#include "DSGRN.h"
 
 class ParameterGraph_ {
 public:
