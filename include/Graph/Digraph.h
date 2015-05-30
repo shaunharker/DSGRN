@@ -14,20 +14,20 @@
 #include "boost/serialization/serialization.hpp"
 #include "boost/serialization/vector.hpp"
 
-/// class Digraph
+/// class Digraph_
 ///   This class handles storage of edges between 
 ///   vertices in the form of adjacency lists.
-class Digraph {
+class Digraph_ {
 public:
   /// adjacencies (getter)
   ///   Return vector of Vertices which are out-edge adjacencies of input v
   std::vector<uint64_t> const&
-  adjacencies ( uint64_t const& v ) const;
+  adjacencies ( uint64_t v ) const;
 
   /// adjacencies (setter)
   ///   Return vector of Vertices which are out-edge adjacencies of input v
   std::vector<uint64_t> &
-  adjacencies ( uint64_t const& v );
+  adjacencies ( uint64_t v );
 
   /// size
   ///   Return number of vertices
@@ -65,7 +65,7 @@ public:
 
   /// operator <<
   ///   Emit data to stream in graphviz format
-  friend std::ostream& operator << ( std::ostream& stream, Digraph const& dg );
+  friend std::ostream& operator << ( std::ostream& stream, Digraph_ const& dg );
 
 protected:
   std::vector<std::vector<uint64_t>> adjacencies_;
@@ -80,38 +80,38 @@ protected:
   
 };
 
-inline std::vector<uint64_t> const& Digraph::
-adjacencies ( uint64_t const& v ) const {
+inline std::vector<uint64_t> const& Digraph_::
+adjacencies ( uint64_t v ) const {
   return adjacencies_ [ v ];
 }
 
-inline std::vector<uint64_t> & Digraph::
-adjacencies ( uint64_t const& v ) {
+inline std::vector<uint64_t> & Digraph_::
+adjacencies ( uint64_t v ) {
   return adjacencies_ [ v ];
 }
 
-inline uint64_t Digraph::
+inline uint64_t Digraph_::
 size ( void ) const {
   return adjacencies_.size();
 }
 
-inline void Digraph::
+inline void Digraph_::
 resize ( uint64_t n ) {
   adjacencies_ . resize ( n );
 }
   
-inline uint64_t Digraph::
+inline uint64_t Digraph_::
 add_vertex ( void ) {
   adjacencies_ . push_back ( std::vector<uint64_t> () );
   return adjacencies_ . size () - 1;
 }
 
-inline void Digraph::
+inline void Digraph_::
 add_edge ( uint64_t source, uint64_t target ) {
   adjacencies_[source].push_back(target);
 }
 
-inline std::string Digraph::
+inline std::string Digraph_::
 stringify ( void ) const {
   std::stringstream ss;
   ss << "[";
@@ -130,7 +130,7 @@ stringify ( void ) const {
   return ss . str ();
 }
 
-inline void Digraph::
+inline void Digraph_::
 parse ( std::string const& str ) {
   std::shared_ptr<JSON::Array> array = JSON::toArray(JSON::parse(str));
   uint64_t N = array -> size ();
@@ -144,7 +144,7 @@ parse ( std::string const& str ) {
   }
 }
 
-inline std::ostream& operator << ( std::ostream& stream, Digraph const& dg ) {
+inline std::ostream& operator << ( std::ostream& stream, Digraph_ const& dg ) {
   stream << "digraph {\n";
   for ( uint64_t v = 0; v < dg . size (); ++ v ) {
     stream << v << ";\n";

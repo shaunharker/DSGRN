@@ -8,7 +8,7 @@
 #include <vector>
 #include <cstdlib>
 
-/// class Domain
+/// class Domain_
 ///   This class allows for n-tuples with non-negative
 ///   entries less than specified limits (set in the
 ///   the constructor). It provides operator () to access
@@ -18,13 +18,17 @@
 ///   carried to the next digit, and so forth. Incrementing
 ///   the largest domain within the limits results in an
 ///   invalid domain (and isValid stops returning true).
-class Domain {
+class Domain_ {
 public:
-  /// Domain
+  /// Domain_
+  ///   Default constructor
+  Domain_ ( void );
+
+  /// Domain_
   ///   Construct domain object as
   ///   (0,0,...,0) in 
   ///   {0,1,..,limits[0]-1}x...x{0,1,..,limits[D]-1}
-  Domain ( std::vector<uint64_t> const& limits );
+  Domain_ ( std::vector<uint64_t> const& limits );
 
   /// operator []
   ///   Return dth component
@@ -33,13 +37,13 @@ public:
 
   /// operator ++ (preincrement)
   ///   Advance through domain traversal pattern
-  Domain & 
+  Domain_ & 
   operator ++ ( void );
 
   /// operator ++ (postincrement)
   ///   Advance through domain traversal pattern
   ///   but return copy of unadvanced domain
-  Domain 
+  Domain_ 
   operator ++ ( int );
 
   /// size
@@ -97,8 +101,11 @@ private:
   uint64_t D_;
 };
 
-inline Domain::
-Domain ( std::vector<uint64_t> const& limits ) 
+inline Domain_::
+Domain_ ( void ) {}
+  
+inline Domain_::
+Domain_ ( std::vector<uint64_t> const& limits ) 
   : limits_(limits) {
   index_ = 0;
   D_ = limits_ . size ();
@@ -111,12 +118,12 @@ Domain ( std::vector<uint64_t> const& limits )
   }
 }
 
-inline uint64_t Domain::
+inline uint64_t Domain_::
 operator [] ( uint64_t d ) const {
   return data_[d];
 }
 
-inline Domain & Domain::
+inline Domain_ & Domain_::
 operator ++ ( void ) {
   for ( uint64_t d = 0; d < D_; ++ d ) {
     if ( ++ data_ [ d ] < limits_ [ d ] ) break;
@@ -126,24 +133,24 @@ operator ++ ( void ) {
   return *this;
 }
 
-inline Domain Domain::
+inline Domain_ Domain_::
 operator ++ ( int ) {
-  Domain result = *this;
+  Domain_ result = *this;
   ++ (*this);
   return result;
 }
 
-inline uint64_t Domain::
+inline uint64_t Domain_::
 size ( void ) const {
   return limits_ . size ();
 }
 
-inline uint64_t Domain::
+inline uint64_t Domain_::
 index ( void ) const {
   return index_;
 }
 
-inline void Domain::
+inline void Domain_::
 setIndex ( uint64_t i ) {
   index_ = i;
   for ( uint64_t d = 0; d < D_; ++ d ) {
@@ -152,27 +159,27 @@ setIndex ( uint64_t i ) {
   }
 }
 
-inline uint64_t Domain::
+inline uint64_t Domain_::
 left ( uint64_t d ) const {
   return index_ - offset_[d];
 }
 
-inline uint64_t Domain::
+inline uint64_t Domain_::
 right ( uint64_t d ) const {
   return index_ + offset_[d];
 }
 
-inline bool Domain::
+inline bool Domain_::
 isMin ( uint64_t d ) const {
   return data_[d] == 0;
 }
 
-inline bool Domain::
+inline bool Domain_::
 isMax ( uint64_t d ) const {
   return data_[d] == limits_[d]-1;
 }
 
-inline bool Domain::
+inline bool Domain_::
 isValid ( void ) const {
   return index_ < max_;
 }

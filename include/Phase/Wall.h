@@ -8,15 +8,15 @@
 #include <vector>
 #include <cstdlib>
 
-class Wall {
+class Wall_ {
 public:
-  /// Wall 
+  /// Wall_ 
   ///   Default constructor
-  Wall ( void );
+  Wall_ ( void );
 
-  /// Wall
+  /// Wall_
   ///   Construct from domain collapse (see assign)
-  Wall ( Domain const& dom, uint64_t collapse_dim, int direction );
+  Wall_ ( Domain const& dom, uint64_t collapse_dim, int direction );
 
   /// assign 
   ///   Create wall from domain, dimension of collapse, 
@@ -34,21 +34,21 @@ private:
   uint64_t index_;
 };
 
-inline Wall::
-Wall ( void ) {}
+inline Wall_::
+Wall_ ( void ) {}
 
-inline Wall::
-Wall ( Domain const& dom, uint64_t collapse_dim, int direction ) {
+inline Wall_::
+Wall_ ( Domain const& dom, uint64_t collapse_dim, int direction ) {
   assign ( dom, collapse_dim, direction );
 }
 
-inline void Wall::
+inline void Wall_::
 assign ( Domain const& dom, uint64_t collapse_dim, int direction ) {
   uint64_t dom_index = (direction == 1) ? dom . right (collapse_dim) : dom . index ();
   index_ = (dom_index << dom . size ()) | (1LL << collapse_dim);
 }
   
-inline uint64_t Wall::
+inline uint64_t Wall_::
 index ( void ) const {
   return index_;
 }

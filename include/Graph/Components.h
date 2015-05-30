@@ -7,9 +7,10 @@
 
 #include <vector>
 #include <memory>
+#include <unordered_map>
 #include <cstdlib>
 
-class Components {
+class Components_ {
 public:
   typedef std::vector<std::shared_ptr<std::vector<uint64_t>>>::const_iterator iterator;
 
@@ -50,7 +51,7 @@ private:
   std::unordered_map<uint64_t, uint64_t> which_component_;
 };
 
-inline void Components::
+inline void Components_::
 assign ( std::vector<std::shared_ptr<std::vector<uint64_t>>> const& SCCs ) {
   which_component_ . clear ();
   components_ = SCCs;
@@ -61,27 +62,27 @@ assign ( std::vector<std::shared_ptr<std::vector<uint64_t>>> const& SCCs ) {
   }
 }
 
-inline Components::iterator Components::
+inline Components_::iterator Components_::
 begin ( void ) const {
   return components_ . begin ();
 }
 
-inline Components::iterator Components::
+inline Components_::iterator Components_::
 end ( void ) const {
   return components_ . end ();
 }
 
-inline uint64_t Components::
+inline uint64_t Components_::
 size ( void ) const {
   return components_ . size ();
 }
 
-inline std::shared_ptr<std::vector<uint64_t>> Components::
+inline std::shared_ptr<std::vector<uint64_t>> Components_::
 operator [] ( uint64_t i ) const {
   return components_ [ i ];
 }
 
-inline uint64_t Components::
+inline uint64_t Components_::
 whichComponent ( uint64_t i ) const {
   auto it = which_component_ . find ( i );
   if ( it == which_component_  . end () ) return components_ . size ();

@@ -1,6 +1,7 @@
 /// MorseDecomposition.h
 /// Shaun Harker
 /// 2015-05-24
+
 #ifndef DSGRN_MORSEDECOMPOSITION_H
 #define DSGRN_MORSEDECOMPOSITION_H
 
@@ -14,13 +15,13 @@
 #include "Graph/Poset.h"
 #include "Graph/StrongComponents.h"
 
-class MorseDecomposition {
+class MorseDecomposition_ {
 public:
   /// assign
   ///   Create a Morse Decomposition given
   ///   a digraph.
   void
-  assign ( std::shared_ptr<Digraph const> digraph );
+  assign ( Digraph const& digraph );
 
   /// assign
   ///   Create a Morse Decomposition given
@@ -28,27 +29,27 @@ public:
   ///   (This method is provided in case 
   ///    strong components already computed.)
   void
-  assign ( std::shared_ptr<Digraph const> digraph, 
-           std::shared_ptr<Components const> components );
+  assign ( Digraph const& digraph, 
+           Components const& components );
 
   /// poset 
   ///   Return the underlying partial order
-  std::shared_ptr<Poset const>
+  Poset const
   poset ( void ) const;
 
   /// components 
   ///   Return recurrent components 
-  std::shared_ptr<Components const>
+  Components const
   components ( void ) const;
 
   /// operator <<
   ///   Stream information to graphviz format
-  friend std::ostream& operator << ( std::ostream& stream, MorseDecomposition const& md );
+  friend std::ostream& operator << ( std::ostream& stream, MorseDecomposition_ const& md );
 
 private:
-  std::shared_ptr<Digraph const> digraph_;
-  std::shared_ptr<Components> recurrent_;
-  std::shared_ptr<Poset> poset_;
+  Digraph digraph_;
+  Components recurrent_;
+  Poset poset_;
   /// _canonicalize
   ///   Renumber the vertices in a "canonical" fashion
   ///   given the available information. (Note: not every
@@ -56,29 +57,29 @@ private:
   void _canonicalize ( void );
 };
 
-inline void MorseDecomposition::
-assign ( std::shared_ptr<Digraph const> digraph ) {
-  std::shared_ptr<Components> components = StrongComponents ( digraph );
+inline void MorseDecomposition_::
+assign ( Digraph const& digraph ) {
+  Components components = StrongComponents ( digraph );
   assign ( digraph, components );
 }
 
-inline void MorseDecomposition::
-assign ( std::shared_ptr<Digraph const> digraph, 
-         std::shared_ptr<Components const> components ) {
-  poset_ . reset ( new Poset );
-  recurrent_ . reset ( new Components );
+inline void MorseDecomposition_::
+assign ( Digraph const& digraph, 
+         Components const& components ) {
+  poset_ = Poset ();
+  recurrent_ = Components ();
   std::vector<std::shared_ptr<std::vector<uint64_t>>> recurrent_components;
   std::vector<uint64_t> recurrent_indices;
   uint64_t u_comp = 0;
   uint64_t recurrent_count = 0;
   std::unordered_map<uint64_t, std::unordered_set<uint64_t>> reach_info;
-  for ( auto const& component : *components ) {
+  for ( auto const& component : components ) {
     bool is_recurrent = false;
     if ( component -> size () > 1 ) { 
       is_recurrent = true;
     } else {
       uint64_t u = (*component)[0];
-      std::vector<uint64_t> const& children = digraph -> adjacencies ( u );
+      std::vector<uint64_t> const& children = digraph . adjacencies ( u );
       for ( uint64_t v : children ) {
         if ( u == v ) {
           is_recurrent = true;
@@ -91,9 +92,9 @@ assign ( std::shared_ptr<Digraph const> digraph,
       recurrent_components . push_back ( component );
       recurrent_indices . push_back ( u_comp );
       reach_info [ u_comp ] . insert ( recurrent_count );
-      poset_ -> add_vertex ();
+      poset_ . add_vertex ();
       for ( uint64_t ancestor : reach_info [ u_comp ] ) {
-        poset_ -> add_edge ( ancestor, recurrent_count );
+        poset_ . add_edge ( ancestor, recurrent_count );
       }
       ++ recurrent_count;
     }
@@ -101,11 +102,11 @@ assign ( std::shared_ptr<Digraph const> digraph,
     for ( uint64_t u : *component ) {
       // Find the children
       std::vector<uint64_t> const& children =
-        digraph -> adjacencies ( u );
+        digraph . adjacencies ( u );
       // Find the components the children live in
       std::unordered_set<uint64_t> target_components;
       for ( uint64_t v : children ) {
-        uint64_t v_comp = components -> whichComponent ( v );
+        uint64_t v_comp = components . whichComponent ( v );
         target_components . insert ( v_comp );
       }
       // Propagate reachability data into the target components
@@ -118,36 +119,36 @@ assign ( std::shared_ptr<Digraph const> digraph,
     reach_info . erase ( u_comp );
     ++ u_comp;
   }   
-  recurrent_ -> assign ( recurrent_components );
-  poset_ -> reduction ();
+  recurrent_ . assign ( recurrent_components );
+  poset_ . reduction ();
   _canonicalize ();
 }
 
-inline std::shared_ptr<Poset const> MorseDecomposition::
+inline Poset const MorseDecomposition_::
 poset ( void ) const {
   return poset_;
 }
 
-inline std::shared_ptr<Components const> MorseDecomposition::
+inline Components const MorseDecomposition_::
 components ( void ) const {
   return recurrent_;
 }
 
-inline std::ostream& operator << ( std::ostream& stream, MorseDecomposition const& md ) {
-  std::shared_ptr<Poset const> poset = md . poset ();
+inline std::ostream& operator << ( std::ostream& stream, MorseDecomposition_ const& md ) {
+  Poset const poset = md . poset ();
   stream << "digraph g {\n";
-  for ( uint64_t v = 0; v < poset -> size (); ++ v ) {
+  for ( uint64_t v = 0; v < poset . size (); ++ v ) {
     stream << v;
     stream << "[label=\"";
     bool first_item = true;
-    for ( uint64_t u : * (* md . recurrent_) [ v ] ) {
+    for ( uint64_t u : * md . recurrent_ [ v ] ) {
       if ( first_item ) first_item = false; else stream << ", ";
       stream << u;
     }
     stream << "\"];\n";
   }
-  for ( uint64_t source = 0; source < poset -> size (); ++ source ) {
-    for ( uint64_t target : poset -> adjacencies ( source ) ) {
+  for ( uint64_t source = 0; source < poset . size (); ++ source ) {
+    for ( uint64_t target : poset . adjacencies ( source ) ) {
       stream << source << " -> " << target << ";\n";
     }
   }
@@ -155,7 +156,7 @@ inline std::ostream& operator << ( std::ostream& stream, MorseDecomposition cons
   return stream;
 }
 
-inline void MorseDecomposition::
+inline void MorseDecomposition_::
 _canonicalize ( void ) {
 }
 

@@ -6,9 +6,7 @@
 #include <vector>
 #include <cstdlib>
 
-#include "Parameter/ParameterGraph.h"
-#include "Phase/DomainGraph.h"
-#include "Dynamics/MorseDecomposition.h"
+#include "DSGRN.h"
 
 int main ( int argc, char * argv [] ) {
   // Load a network file
@@ -16,8 +14,8 @@ int main ( int argc, char * argv [] ) {
   std::string filename;
   if ( argc < 2 ) filename = "networks/network2.txt";
   else filename = argv[1];
-  std::shared_ptr<Network> network ( new Network );
-  network -> load ( filename );
+  Network network;
+  network . load ( filename );
 
   // Construct a parameter graph
   std::cout << "Construct parameter graph.\n";
@@ -28,8 +26,8 @@ int main ( int argc, char * argv [] ) {
   std::cout << "Fetch random parameter.\n";
   uint64_t N = pg . size ();
   uint64_t param_index = rand () % N;
-  std::shared_ptr<Parameter> param = pg. parameter ( param_index );
-  std::cout << "Chose " << *param << "\n";
+  Parameter param = pg. parameter ( param_index );
+  std::cout << "Chose " << param << "\n";
 
   // Construct the domain graph
   std::cout << "Construct domain graph.\n";

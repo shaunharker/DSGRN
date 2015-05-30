@@ -14,10 +14,12 @@
 #include "boost/serialization/serialization.hpp"
 #include "boost/serialization/string.hpp"
 
-/// Annotation
+#include "Database/json.h"
+
+/// Annotation_
 ///   A lightweight string container
 ///   used to annotate Morse Graphs
-class Annotation {
+class Annotation_ {
 public:
 
   /// iterator
@@ -61,7 +63,7 @@ public:
 
   /// operator <<
   ///   Output list of annotations
-  friend std::ostream& operator << ( std::ostream& stream, Annotation const& a );
+  friend std::ostream& operator << ( std::ostream& stream, Annotation_ const& a );
 private:
   std::vector<std::string> annotations_;
 
@@ -76,27 +78,27 @@ private:
 };
 
 
-inline uint64_t Annotation::
+inline uint64_t Annotation_::
 size ( void ) const {
   return annotations_ . size ();
 }
 
-inline Annotation::iterator Annotation::
+inline Annotation_::iterator Annotation_::
 begin ( void ) const {
   return annotations_ . begin ();
 }
 
-inline Annotation::iterator Annotation::
+inline Annotation_::iterator Annotation_::
 end ( void ) const {
   return annotations_ . end ();
 }
 
-inline void Annotation::
+inline void Annotation_::
 append ( std::string const& label ) {
   annotations_ . push_back ( label );
 }
 
-inline std::string Annotation::
+inline std::string Annotation_::
 stringify ( void ) const {
   std::stringstream ss;
   ss << "[";
@@ -109,7 +111,7 @@ stringify ( void ) const {
   return ss . str ();
 }
 
-inline void Annotation::
+inline void Annotation_::
 parse ( std::string const& str ) {
   std::shared_ptr<JSON::Array> array = JSON::toArray(JSON::parse(str));
   annotations_ . clear ();
@@ -120,7 +122,7 @@ parse ( std::string const& str ) {
   } 
 }
 
-inline std::ostream& operator << ( std::ostream& stream, Annotation const& a ) {
+inline std::ostream& operator << ( std::ostream& stream, Annotation_ const& a ) {
   stream << "{";
   bool first = true;
   for ( auto x : a . annotations_ ) {

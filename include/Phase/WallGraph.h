@@ -16,47 +16,47 @@
 #include "Graph/Digraph.h"
 #include "Dynamics/Annotation.h"
 
-class WallGraph {
+class WallGraph_ {
 public:
   /// assign
   ///   Construct based on parameter and network
   void
-  assign ( std::shared_ptr<Parameter const> parameter );
+  assign ( Parameter const parameter );
 
   /// digraph
   ///   Return underlying digraph
-  std::shared_ptr<Digraph const>
+  Digraph const
   digraph ( void ) const;  
 
   /// annotate
-  Annotation
+  Annotation const
   annotate ( std::vector<uint64_t> const& vertices ) const;
 
   /// operator <<
   ///   Emit data to stream in graphviz format
-  friend std::ostream& operator << ( std::ostream& stream, WallGraph const& dg );
+  friend std::ostream& operator << ( std::ostream& stream, WallGraph_ const& dg );
 
 private:
-  std::shared_ptr<Digraph> digraph_;
-  std::shared_ptr<Parameter const> parameter_;
+  Digraph digraph_;
+  Parameter parameter_;
   std::unordered_map<uint64_t, uint64_t> wall_index_to_vertex_;
   std::vector<uint64_t> vertex_to_dimension_;
 };
 
-inline void WallGraph::
-assign ( std::shared_ptr<Parameter const> parameter ) {
+inline void WallGraph_::
+assign ( Parameter const parameter ) {
   wall_index_to_vertex_ . clear ();
   vertex_to_dimension_ . clear ();
   parameter_ = parameter;
-  int D = parameter -> network() -> size ();
-  std::vector<uint64_t> limits = parameter -> network() -> domains ();
-  digraph_ . reset ( new Digraph );
+  int D = parameter . network() . size ();
+  std::vector<uint64_t> limits = parameter . network() . domains ();
+  digraph_ = Digraph ();
   // Make wall indices
   for ( Domain dom (limits); dom.isValid(); ++ dom ) {
     for ( int d = 0; d < D; ++ d ) {
       if ( not dom . isMin(d) ) {
         Wall wall ( dom, d, -1 );
-        uint64_t v = digraph_ -> add_vertex ();
+        uint64_t v = digraph_ . add_vertex ();
         wall_index_to_vertex_ [ wall.index() ] = v;
         //std::cout << "Created wall with index " << wall.index() << " = vertex " << v << "\n";
         vertex_to_dimension_ . push_back ( d );
@@ -72,7 +72,7 @@ assign ( std::shared_ptr<Parameter const> parameter ) {
         Wall wall ( dom, d, -1 );
         //std::cout << "Wallcheck. Left wall (dim " << d << ") of domain " 
         //          << dom.index() << " is wall " << wall.index() << "\n";
-        if ( parameter -> absorbing ( dom, d, -1 ) ) {
+        if ( parameter . absorbing ( dom, d, -1 ) ) {
           absorbing . push_back ( wall );
         } else {
           entrance . push_back ( wall );
@@ -82,7 +82,7 @@ assign ( std::shared_ptr<Parameter const> parameter ) {
         Wall wall ( dom, d, 1 );
         //std::cout << "Wallcheck. Right wall (dim " << d << ") of domain " 
         //          << dom.index() << " is wall " << wall.index() << "\n";
-        if ( parameter -> absorbing ( dom, d, 1 ) ) {
+        if ( parameter . absorbing ( dom, d, 1 ) ) {
           absorbing . push_back ( wall );
         } else {
           entrance . push_back ( wall );
@@ -94,11 +94,11 @@ assign ( std::shared_ptr<Parameter const> parameter ) {
         uint64_t i = wall_index_to_vertex_ [ x.index() ];
         uint64_t j = wall_index_to_vertex_ [ y.index() ]; 
         //std::cout << "Adding wall-wall edge " << i << " -> " << j << "\n";       
-        digraph_ -> add_edge ( i, j );
+        digraph_ . add_edge ( i, j );
       }
     }
     if ( absorbing . empty () ) {
-      uint64_t attract = digraph_ -> add_vertex ();
+      uint64_t attract = digraph_ . add_vertex ();
       vertex_to_dimension_ . push_back ( D );
       // (annotations wants to know how many variables pass 1st threshold
       // for domains)
@@ -108,20 +108,20 @@ assign ( std::shared_ptr<Parameter const> parameter ) {
       for ( Wall const& x : entrance ) {
         uint64_t i = wall_index_to_vertex_ [ x.index() ];
         //std::cout << "Adding wall-domain edge " << i << " -> " << attract << "\n";       
-        digraph_ -> add_edge ( i, attract );
+        digraph_ . add_edge ( i, attract );
       }
     }
   }
 }
 
-inline std::shared_ptr<Digraph const> WallGraph::
+inline Digraph const WallGraph_::
 digraph ( void ) const {
   return digraph_;
 }
 
-inline Annotation WallGraph::
+inline Annotation const WallGraph_::
 annotate ( std::vector<uint64_t> const& vertices ) const {
-  uint64_t D = parameter_ -> network() -> size ();
+  uint64_t D = parameter_ . network() . size ();
   std::vector<uint64_t> signature;
   bool all_on = true;
   bool all_off = true;
@@ -152,8 +152,8 @@ annotate ( std::vector<uint64_t> const& vertices ) const {
   return a;
 }
 
-inline std::ostream& operator << ( std::ostream& stream, WallGraph const& dg ) {
-  stream << * dg . digraph ();
+inline std::ostream& operator << ( std::ostream& stream, WallGraph_ const& dg ) {
+  stream << dg . digraph ();
   return stream;
 }
 

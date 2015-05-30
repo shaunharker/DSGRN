@@ -11,7 +11,7 @@
 #include <sstream>
 #include <cstdlib>
 
-class LogicParameter {
+class LogicParameter_ {
 public:
   /// assign
   ///   Assign data
@@ -42,7 +42,7 @@ public:
 
   /// operator <<
   ///   Output debug data to stream
-  friend std::ostream& operator << ( std::ostream& stream, LogicParameter const& p );
+  friend std::ostream& operator << ( std::ostream& stream, LogicParameter_ const& p );
 
 private:
   std::string hex_;
@@ -51,7 +51,7 @@ private:
   uint64_t m_;
 };
 
-inline void LogicParameter::
+inline void LogicParameter_::
 assign ( uint64_t n, uint64_t m, std::string const& hex ) {
   hex_ = hex;
   n_ = n;
@@ -72,7 +72,7 @@ assign ( uint64_t n, uint64_t m, std::string const& hex ) {
   comp_ . resize ( N );
 }
 
-inline bool LogicParameter::
+inline bool LogicParameter_::
 operator () ( std::vector<bool> const& input_combination, uint64_t output ) const {
   uint64_t i = 0;
   uint64_t bit = 1;
@@ -83,19 +83,19 @@ operator () ( std::vector<bool> const& input_combination, uint64_t output ) cons
   return comp_ [ i*m_ + output ];
 }
 
-inline bool LogicParameter::
+inline bool LogicParameter_::
 operator () ( uint64_t bit ) const {
   return comp_ [ bit ];
 }
 
-inline std::string LogicParameter::
+inline std::string LogicParameter_::
 stringify ( void ) const {
   std::stringstream ss;
   ss << "[" << n_ << "," << m_ << ",\"" << hex_ << "\"]";
   return ss . str ();
 } 
 
-inline void LogicParameter::
+inline void LogicParameter_::
 parse ( std::string const& str ) {
   std::string s = str;
   auto validcharacter = [] (char c) {
@@ -112,7 +112,7 @@ parse ( std::string const& str ) {
 }
 
 
-inline std::ostream& operator << ( std::ostream& stream, LogicParameter const& p ) {
+inline std::ostream& operator << ( std::ostream& stream, LogicParameter_ const& p ) {
   stream << p.stringify ();
   return stream;
 }

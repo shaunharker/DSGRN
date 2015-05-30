@@ -6,7 +6,7 @@
 #include <string>
 #include <fstream>
 
-#include "Parameter/Network.h"
+#include "DSGRN.h"
 
 int main ( int argc, char * argv [] ) {
   // Load network

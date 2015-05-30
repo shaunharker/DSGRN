@@ -8,13 +8,9 @@
 #include <memory>
 #include <string>
 
-#include "Parameter/ParameterGraph.h"
-#include "Phase/DomainGraph.h"
-#include "Phase/WallGraph.h"
-#include "Dynamics/MorseDecomposition.h"
-#include "Dynamics/MorseGraph.h"
+#include "DSGRN.h"
 
-std::shared_ptr<Network> network ( new Network );
+Network network;
 
 void helpmessage ( void ) {
   std::cout << " DSGRN (Dynamic Signatures for Gene Regulatory Networks)\n"
@@ -55,17 +51,17 @@ void helpmessage ( void ) {
 
 
 
-std::shared_ptr<Parameter> 
+Parameter
 parse_parameter ( std::string const& s ) {
-  std::shared_ptr<Parameter> p;
+  Parameter p;
   if ( s[0] >= '0' && s[0] <= '9' ) {
     ParameterGraph pg;
     pg . assign ( network, "./data/logic/" );
     p = pg . parameter ( std::stoll(s) );   
   } else {
-    p . reset ( new Parameter );
-    p -> assign ( network );
-    p -> parse ( s );
+    p = Parameter ();
+    p . assign ( network );
+    p . parse ( s );
   }
   return p;
 }
@@ -84,8 +80,8 @@ void parameter ( int argc, char * argv [] ) {
     pg . assign ( network, "./data/logic/" );
     uint64_t N = pg . size ();
     for ( uint64_t i = 0; i < N; ++ i ) {
-      std::shared_ptr<Parameter> p = pg . parameter ( i );
-      std::cout << * p << "\n";
+      Parameter p = pg . parameter ( i );
+      std::cout << p << "\n";
     }
     return;
   }
@@ -94,12 +90,12 @@ void parameter ( int argc, char * argv [] ) {
     return;
   }
   std::string s = argv[3];
-  std::shared_ptr<Parameter> p = parse_parameter ( s );
+  Parameter p = parse_parameter ( s );
   if ( command == "inequalities" ) {
-    std::cout << p -> inequalities ();
+    std::cout << p . inequalities ();
   }
   if ( command == "json" ) {
-    std::cout << p -> stringify ();
+    std::cout << p . stringify ();
   }
   if ( command == "index" ) {
     ParameterGraph pg;
@@ -115,14 +111,14 @@ void domaingraph ( int argc, char * argv [] ) {
     return;
   }
   std::string s = argv[3];
-  std::shared_ptr<Parameter> p = parse_parameter ( s );
-  std::shared_ptr<DomainGraph> dg ( new DomainGraph );
-  dg -> assign ( p );
+  Parameter p = parse_parameter ( s );
+  DomainGraph dg;
+  dg . assign ( p );
   if ( command == "json" ) {
-    std::cout << dg -> digraph() -> stringify ();
+    std::cout << dg . digraph() . stringify ();
   } 
   if ( command == "graphviz" ) {
-    std::cout << *dg;
+    std::cout << dg;
   } 
 }
 
@@ -133,14 +129,14 @@ void wallgraph ( int argc, char * argv [] ) {
     return;
   }
   std::string s = argv[3];
-  std::shared_ptr<Parameter> p = parse_parameter ( s );
-  std::shared_ptr<WallGraph> wg ( new WallGraph );
-  wg -> assign ( p );
+  Parameter p = parse_parameter ( s );
+  WallGraph wg;
+  wg . assign ( p );
   if ( command == "json" ) {
-    std::cout << wg -> digraph() -> stringify ();
+    std::cout << wg . digraph() . stringify ();
   } 
   if ( command == "graphviz" ) {
-    std::cout << *wg;
+    std::cout << wg;
   } 
 }
 
@@ -152,16 +148,16 @@ void morsedecomposition ( int argc, char * argv [] ) {
     return;
   }
   std::string s = argv[3];
-  std::shared_ptr<Parameter> p = parse_parameter ( s );
-  std::shared_ptr<DomainGraph> dg ( new DomainGraph );
-  dg -> assign ( p );
-  std::shared_ptr<MorseDecomposition> md ( new MorseDecomposition );
-  md -> assign ( dg -> digraph () );
+  Parameter p = parse_parameter ( s );
+  DomainGraph dg;
+  dg . assign ( p );
+  MorseDecomposition md;
+  md . assign ( dg . digraph () );
   if ( command == "json" ) {
-    std::cout << md -> poset() -> stringify ();
+    std::cout << md . poset() . stringify ();
   } 
   if ( command == "graphviz" ) {
-    std::cout << *md;
+    std::cout << md;
   } 
 }
 
@@ -172,11 +168,11 @@ void morsegraph ( int argc, char * argv [] ) {
     return;
   }
   std::string s = argv[3];
-  std::shared_ptr<Parameter> p = parse_parameter ( s );
-  std::shared_ptr<DomainGraph> dg ( new DomainGraph );
-  dg -> assign ( p );
-  std::shared_ptr<MorseDecomposition> md ( new MorseDecomposition );
-  md -> assign ( dg -> digraph () );
+  Parameter p = parse_parameter ( s );
+  DomainGraph dg;
+  dg . assign ( p );
+  MorseDecomposition md;
+  md . assign ( dg . digraph () );
   MorseGraph mg;
   mg . assign ( dg, md );
   if ( command == "json" ) {
@@ -196,7 +192,7 @@ int load_network_from_session ( void ) {
   std::string filename;
   std::getline ( infile, filename );
   infile . close ();
-  network -> load ( filename );
+  network . load ( filename );
   return 0;
 }
 
@@ -222,11 +218,11 @@ int main ( int argc, char * argv [] ) {
     if ( filename == "graphviz" || filename == "draw" ) {
       int rc = load_network_from_session ();
       if ( rc == 1 ) return rc;
-      std::cout << network -> graphviz ();
+      std::cout << network . graphviz ();
       return 0;
     }
     //std::cout << "loading network " << filename << "\n";
-    network -> load ( filename );
+    network . load ( filename );
     //std::cout << "setting environment variable...\n";
     std::ofstream outfile ( "dsgrn.session" );
     outfile << filename << "\n";
@@ -235,7 +231,7 @@ int main ( int argc, char * argv [] ) {
     if ( argc == 1 ) return 0;
     command = argv[1];
     if ( command == "graphviz" ) {
-      std::cout << network -> graphviz ();
+      std::cout << network . graphviz ();
       return 0;
     }
   } else {

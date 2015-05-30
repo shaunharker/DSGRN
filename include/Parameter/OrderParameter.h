@@ -11,14 +11,14 @@
 #include <cstdlib>
 #include <sstream>
 
-/// class OrderParameter
+/// class OrderParameter_
 ///   Consider all permutations of m elements,
 ///   indexed by contiguous integers in lexigraphical
 ///   order. This class provides methods which 
 ///   allow one to convert between this indexing
 ///   and the permutations, along with some convenience 
 ///   functionality (i.e. applying permutations)
-class OrderParameter {
+class OrderParameter_ {
 public:
   /// assign (by index)
   ///   Initialize to the kth permutation of n items
@@ -69,7 +69,7 @@ public:
 
   /// operator <<
   ///   Output debug data to stream
-  friend std::ostream& operator << ( std::ostream& stream, OrderParameter const& p );
+  friend std::ostream& operator << ( std::ostream& stream, OrderParameter_ const& p );
 
 private:
   std::vector<uint64_t> permute_;
@@ -82,7 +82,7 @@ private:
   static uint64_t _tail_rep_to_index ( std::vector<uint64_t> const& tail_rep );
 };
 
-inline void OrderParameter::
+inline void OrderParameter_::
 assign ( uint64_t m, uint64_t k ) {
   k_ = k;
   m_ = m;
@@ -93,7 +93,7 @@ assign ( uint64_t m, uint64_t k ) {
   for ( uint64_t i = 0; i < m_; ++ i ) inverse_[permute_[i]]=i;
 }
 
-inline void OrderParameter::
+inline void OrderParameter_::
 assign ( std::vector<uint64_t> const& perm ) {
   m_ = perm . size ();
   permute_ = perm;
@@ -102,39 +102,39 @@ assign ( std::vector<uint64_t> const& perm ) {
   for ( uint64_t i = 0; i < m_; ++ i ) inverse_[permute_[i]]=i;
 }
 
-inline uint64_t OrderParameter::
+inline uint64_t OrderParameter_::
 operator () ( uint64_t i ) const {
   return permute_ [ i ];
 }
 
-inline uint64_t OrderParameter::
+inline uint64_t OrderParameter_::
 inverse ( uint64_t i ) const {
   return inverse_ [ i ];
 }
 
-inline  std::vector<uint64_t> const& OrderParameter::
+inline  std::vector<uint64_t> const& OrderParameter_::
 permutation ( void ) const {
   return permute_;
 }
 
-inline uint64_t OrderParameter::
+inline uint64_t OrderParameter_::
 index ( void ) const {
   return k_;
 }
 
-inline uint64_t OrderParameter::
+inline uint64_t OrderParameter_::
 size ( void ) const {
   return m_;
 }
 
-inline std::string OrderParameter::
+inline std::string OrderParameter_::
 stringify ( void ) const {
   std::stringstream ss;
   ss << *this;
   return ss . str ();
 } 
 
-inline void OrderParameter::
+inline void OrderParameter_::
 parse ( std::string const& str ) {
   std::string s = str;
   auto validcharacter = [] (char c) {
@@ -151,7 +151,7 @@ parse ( std::string const& str ) {
   for ( uint64_t i = 0; i < m_; ++ i ) inverse_[permute_[i]]=i;
 }
 
-inline std::ostream& operator << ( std::ostream& stream, OrderParameter const& p ) {
+inline std::ostream& operator << ( std::ostream& stream, OrderParameter_ const& p ) {
   stream << "[";
   for ( uint64_t i = 0; i < p.m_; ++ i ) {
     if ( i > 0 ) stream << ",";
@@ -161,7 +161,7 @@ inline std::ostream& operator << ( std::ostream& stream, OrderParameter const& p
   return stream;
 }
 
-inline std::vector<uint64_t> OrderParameter::
+inline std::vector<uint64_t> OrderParameter_::
 _index_to_tail_rep ( uint64_t index ) {
   std::vector<uint64_t> tail_rep;
   uint64_t i = 1;
@@ -173,7 +173,7 @@ _index_to_tail_rep ( uint64_t index ) {
   return tail_rep;
 }
 
-inline std::vector<uint64_t> OrderParameter::
+inline std::vector<uint64_t> OrderParameter_::
 _tail_rep_to_perm ( std::vector<uint64_t> const& tail_rep ) {
   // Note: This algorithm is suboptimal. It requires O(n^2) time
   //       but there is an O(n log n) algorithm. An optimal 
@@ -191,7 +191,7 @@ _tail_rep_to_perm ( std::vector<uint64_t> const& tail_rep ) {
   return perm;
 }
 
-inline std::vector<uint64_t> OrderParameter:: 
+inline std::vector<uint64_t> OrderParameter_:: 
 _perm_to_tail_rep ( std::vector<uint64_t> const& perm ) {
   // Note: This algorithm is suboptimal. It requires O(n^2) time
   //       but there is an O(n log n) algorithm. An optimal 
@@ -208,7 +208,7 @@ _perm_to_tail_rep ( std::vector<uint64_t> const& perm ) {
   return tail_rep;
 }
 
-inline uint64_t OrderParameter:: 
+inline uint64_t OrderParameter_:: 
 _tail_rep_to_index ( std::vector<uint64_t> const& tail_rep ) {
   uint64_t result;
   uint64_t factorial = 1;

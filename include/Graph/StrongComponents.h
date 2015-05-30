@@ -16,15 +16,15 @@
 
 #include "Graph/Components.h"
 
-std::shared_ptr<Components>
-StrongComponents ( std::shared_ptr<Digraph const> digraph );
+Components
+StrongComponents ( Digraph const digraph );
 
 // Tarjan's Algorithm
 // See http://en.wikipedia.org/wiki/Tarjan's_strongly_connected_components_algorithm
-inline std::shared_ptr<Components>
-StrongComponents ( std::shared_ptr<Digraph const> digraph ) {
-  std::shared_ptr<Components> components ( new Components );
-  uint64_t N = digraph -> size ();
+inline Components
+StrongComponents ( Digraph const digraph ) {
+  Components components;
+  uint64_t N = digraph . size ();
   uint64_t n = 0;
   std::vector<std::shared_ptr<std::vector<uint64_t>>> SCCs;
   std::vector<uint64_t> lowlink (N, N);
@@ -34,7 +34,7 @@ StrongComponents ( std::shared_ptr<Digraph const> digraph ) {
   std::function<void(uint64_t)> strongconnect = [&] (uint64_t v) {
     lowlink[v] = index[v] = n ++;
     S . push_back ( v );
-    std::vector<uint64_t> const& children = digraph -> adjacencies ( v );
+    std::vector<uint64_t> const& children = digraph . adjacencies ( v );
     for ( uint64_t child : children ) { 
       if ( index [ child ] == N ) {
         strongconnect ( child );
@@ -60,7 +60,7 @@ StrongComponents ( std::shared_ptr<Digraph const> digraph ) {
     strongconnect ( v );
   } 
   std::reverse ( SCCs . begin (), SCCs . end () );
-  components -> assign ( SCCs );
+  components . assign ( SCCs );
   return components;
 }
 

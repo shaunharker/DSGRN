@@ -19,12 +19,12 @@
 
 #include <boost/functional/hash.hpp>
 
-/// Network
+/// Network_
 ///   This class holds network data.
 ///     * Loads specification files
 ///     * Outputs Graphviz visualizations
 ///     * Provides an interface to networks
-class Network {
+class Network_ {
 public:
   /// load
   ///   load from network specification file
@@ -102,52 +102,52 @@ private:
 };
 
 
-inline void Network::
+inline void Network_::
 load ( std::string const& filename ) {
   _parse ( _lines ( filename ) );
 }
 
-inline uint64_t Network::
+inline uint64_t Network_::
 size ( void ) const {
   return name_by_index_ . size ();
 }
 
-inline uint64_t Network::
+inline uint64_t Network_::
 index ( std::string const& name ) const {
   return index_by_name_ . find ( name ) -> second;
 }
 
-inline std::string const& Network::
+inline std::string const& Network_::
 name ( uint64_t index ) const {
   return name_by_index_[index];
 }
 
-inline std::vector<uint64_t> const& Network:: 
+inline std::vector<uint64_t> const& Network_:: 
 inputs ( uint64_t index ) const {
   return inputs_[index];
 }
 
-inline std::vector<uint64_t> const& Network:: 
+inline std::vector<uint64_t> const& Network_:: 
 outputs ( uint64_t index ) const {
   return outputs_[index];
 }
 
-inline std::vector<std::vector<uint64_t>> const& Network::
+inline std::vector<std::vector<uint64_t>> const& Network_::
 logic ( uint64_t index ) const {
   return logic_by_index_ [ index ];
 }
 
-inline bool Network::
+inline bool Network_::
 interaction ( uint64_t source, uint64_t target ) const {
   return edge_type_ . find ( std::make_pair ( source, target ) ) -> second;
 }
 
-inline uint64_t Network::
+inline uint64_t Network_::
 order ( uint64_t source, uint64_t target ) const {
   return order_ . find ( std::make_pair ( source, target ) ) -> second;
 }
 
-inline  std::vector<uint64_t> Network::
+inline  std::vector<uint64_t> Network_::
 domains ( void ) const {
   std::vector<uint64_t> result;
   for ( auto const& output : outputs_ ) {
@@ -156,7 +156,7 @@ domains ( void ) const {
   return result;
 }
   
-inline std::string Network::
+inline std::string Network_::
 graphviz ( std::vector<std::string> const& theme ) const {
   std::stringstream result;
   // std::cout << "graphviz. Looping through nodes.\n";
@@ -210,7 +210,7 @@ namespace DSGRN_parse_tools {
 
 /// lines
 ///   Open the network file and read it line by line
-inline std::vector<std::string> Network::
+inline std::vector<std::string> Network_::
 _lines ( std::string const& filename ) {
   std::vector<std::string> result;
   std::ifstream infile ( filename );
@@ -227,7 +227,7 @@ _lines ( std::string const& filename ) {
 
 /// parse
 ///   Iterate through lines and produce data structures
-inline void Network::
+inline void Network_::
 _parse ( std::vector<std::string> const& lines ) {
   using namespace DSGRN_parse_tools;
   std::vector<std::string> logic_strings;
@@ -322,7 +322,7 @@ _parse ( std::vector<std::string> const& lines ) {
       uint64_t max_rhs = * std::max_element ( rhs.begin(), rhs.end() );
       if ( max_lhs < max_rhs ) return true;
       if ( max_lhs > max_rhs ) return false;
-      throw std::logic_error ( "Thrown from Network.h\n");
+      throw std::logic_error ( "Thrown from Network_.h\n");
       return false;
     };
     // Put the logic struct into a canonical ordering.

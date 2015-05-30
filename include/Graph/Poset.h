@@ -14,8 +14,8 @@
 #include "boost/serialization/serialization.hpp"
 #include "boost/serialization/base_object.hpp"
 
-/// class Poset
-class Poset : public Digraph {
+/// class Poset_
+class Poset_ : public Digraph_ {
 public:
   /// reduction
   ///   Perform a transitive reduction
@@ -29,11 +29,11 @@ private:
   friend class boost::serialization::access;
   template<class Archive>
   void serialize(Archive & ar, const unsigned int version) {
-    ar & boost::serialization::base_object<Digraph>(*this);
+    ar & boost::serialization::base_object<Digraph_>(*this);
   }
 };
 
-inline void Poset::
+inline void Poset_::
 reduction ( void ) {
   // Algorithm: Remove self-edges, and remove edges which 
   // can be given by a double-hop
