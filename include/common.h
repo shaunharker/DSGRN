@@ -31,7 +31,7 @@
 
 #include "boost/functional/hash.hpp"
 
-#include "Database/json.h"
-#include "Database/SHA256.h"
+#include "Tools/json.h"
+#include "Tools/SHA256.h"
 
 #endif

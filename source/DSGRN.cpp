@@ -2,11 +2,7 @@
 /// Shaun Harker
 /// 2015-05-24
 
-#include <iostream>
-#include <fstream>
-#include <cstdint>
-#include <string>
-
+#include "common.h"
 #include "DSGRN.h"
 
 Network network;

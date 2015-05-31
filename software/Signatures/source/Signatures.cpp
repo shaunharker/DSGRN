@@ -1,15 +1,6 @@
 /// Main algorithm
 
-#include <iostream>
-#include <fstream>
-#include <vector>
-#include <string>
-#include <cstdint>
-#include <utility>
-
 #include "Signatures.h"
-#include "delegator/delegator.h" 
-#include "DSGRN.h"
 
 using namespace sqlite;
 

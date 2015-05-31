@@ -5,8 +5,9 @@
 #ifndef DSGRB_PARAMETERSIGNATUREPROCESS_H
 #define DSGRB_PARAMETERSIGNATUREPROCESS_H
 
+#include "common.h"
 #include "delegator/delegator.h"
-#include "Database/sqlambda.h"
+#include "Tools/sqlambda.h"
 #include "DSGRN.h"
 
 class Signatures : public Coordinator_Worker_Process {

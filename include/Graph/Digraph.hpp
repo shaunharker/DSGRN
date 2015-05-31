@@ -9,15 +9,6 @@
 #define INLINE_IF_HEADER_ONLY
 #endif
 
-#include <vector>
-#include <cstdint>
-#include <iostream>
-#include <sstream>
-#include "Database/json.h"
-
-#include "boost/serialization/serialization.hpp"
-#include "boost/serialization/vector.hpp"
-
 #include "Digraph.h"
 
 INLINE_IF_HEADER_ONLY Digraph::
