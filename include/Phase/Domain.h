@@ -5,8 +5,7 @@
 #ifndef DSGRN_DOMAIN_H
 #define DSGRN_DOMAIN_H
 
-#include <vector>
-#include <cstdlib>
+#include "common.h"
 
 /// class Domain
 ///   This class allows for n-tuples with non-negative
@@ -20,11 +19,22 @@
 ///   invalid domain (and isValid stops returning true).
 class Domain {
 public:
-  /// Domain
+  /// Domain_
+  ///   Default constructor
+  Domain ( void );
+
+  /// Domain_
   ///   Construct domain object as
   ///   (0,0,...,0) in 
   ///   {0,1,..,limits[0]-1}x...x{0,1,..,limits[D]-1}
   Domain ( std::vector<uint64_t> const& limits );
+
+  /// assign
+  ///   Construct domain object as
+  ///   (0,0,...,0) in 
+  ///   {0,1,..,limits[0]-1}x...x{0,1,..,limits[D]-1}
+  void
+  assign ( std::vector<uint64_t> const& limits );
 
   /// operator []
   ///   Return dth component
@@ -88,6 +98,10 @@ public:
   bool
   isValid ( void ) const;
 
+  /// operator <<
+  ///   Output to stream
+  friend std::ostream& operator << ( std::ostream& stream, Domain const& dom );
+
 private:
   std::vector<uint64_t> data_;
   std::vector<uint64_t> limits_; 
@@ -95,86 +109,19 @@ private:
   uint64_t index_;
   uint64_t max_;
   uint64_t D_;
+  /// serialize
+  ///   For use with BOOST Serialization library,
+  ///   which is used by the cluster-delegator MPI package
+  friend class boost::serialization::access;
+  template<class Archive>
+  void serialize(Archive & ar, const unsigned int version) {
+    ar & data_;
+    ar & limits_;
+    ar & offset_;
+    ar & index_;
+    ar & max_;
+    ar & D_;
+  }
 };
-
-inline Domain::
-Domain ( std::vector<uint64_t> const& limits ) 
-  : limits_(limits) {
-  index_ = 0;
-  D_ = limits_ . size ();
-  data_ . resize ( D_, 0 );
-  offset_ . resize ( D_ );
-  max_ = 1;
-  for ( uint64_t d = 0; d < D_; ++ d ) {
-    offset_[d] = max_;
-    max_ *= limits_ [ d ];
-  }
-}
-
-inline uint64_t Domain::
-operator [] ( uint64_t d ) const {
-  return data_[d];
-}
-
-inline Domain & Domain::
-operator ++ ( void ) {
-  for ( uint64_t d = 0; d < D_; ++ d ) {
-    if ( ++ data_ [ d ] < limits_ [ d ] ) break;
-    data_ [ d ] = 0;
-  }
-  ++ index_;
-  return *this;
-}
-
-inline Domain Domain::
-operator ++ ( int ) {
-  Domain result = *this;
-  ++ (*this);
-  return result;
-}
-
-inline uint64_t Domain::
-size ( void ) const {
-  return limits_ . size ();
-}
-
-inline uint64_t Domain::
-index ( void ) const {
-  return index_;
-}
-
-inline void Domain::
-setIndex ( uint64_t i ) {
-  index_ = i;
-  for ( uint64_t d = 0; d < D_; ++ d ) {
-    data_ [ d ] = i % limits_ [ d ];
-    i /= limits_ [ d ];
-  }
-}
-
-inline uint64_t Domain::
-left ( uint64_t d ) const {
-  return index_ - offset_[d];
-}
-
-inline uint64_t Domain::
-right ( uint64_t d ) const {
-  return index_ + offset_[d];
-}
-
-inline bool Domain::
-isMin ( uint64_t d ) const {
-  return data_[d] == 0;
-}
-
-inline bool Domain::
-isMax ( uint64_t d ) const {
-  return data_[d] == limits_[d]-1;
-}
-
-inline bool Domain::
-isValid ( void ) const {
-  return index_ < max_;
-}
 
 #endif

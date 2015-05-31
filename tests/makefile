@@ -1,6 +1,7 @@
 CFLAGS := 
 CXXFLAGS := -std=c++11 -O3 -DNDEBUG -I../include
-LDLIBS := -lsqlite3
+LDFLAGS := -L../lib
+LDLIBS := -lsqlite3 -ldsgrn
 
 %.x : %.o
 	$(CXX) $(LDFLAGS) $< $(LDLIBS) -o $@

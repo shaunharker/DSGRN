@@ -45,7 +45,7 @@
 #define SHA256_H
 #include <string>
 #include <cstring>
-#include <cstdlib>
+#include <cstdint>
 #include <fstream>
 
 /// sha256

@@ -5,39 +5,40 @@
 #ifndef DSGRN_MORSEGRAPH_H
 #define DSGRN_MORSEGRAPH_H
 
-#include "Dynamics/Annotation.h"
+#include "common.h"
+
 #include "Dynamics/MorseDecomposition.h"
+#include "Dynamics/Annotation.h"
 #include "Graph/Poset.h"
-#include "Database/SHA256.h"
-#include "Database/json.h"
 
-#include <memory>
-#include <cstdlib>
-#include <string>
-#include <sstream>
-#include <unordered_map>
+struct MorseGraph_;
 
-#include "boost/serialization/serialization.hpp"
-#include "boost/serialization/shared_ptr.hpp"
-#include "boost/serialization/unordered_map.hpp"
-
-/// class MorseGraph
+/// class MorseGraph_
 class MorseGraph  {
 public:
+  /// constructor
+  MorseGraph ( void );
+
   /// assign (Morse Decomposition)
   ///   Assign data to Morse Graph
-  template < class SwitchingGraph > void
-  assign ( std::shared_ptr<SwitchingGraph> sg,
-           std::shared_ptr<MorseDecomposition> md );
+  template < class SwitchingGraph>
+  MorseGraph ( SwitchingGraph const& sg,
+               MorseDecomposition const& md );
+
+  /// assign (Morse Decomposition)
+  ///   Assign data to Morse Graph
+  template < class SwitchingGraph> void
+  assign ( SwitchingGraph const& sg,
+           MorseDecomposition const& md );
 
   /// poset
   ///   Access poset
-  std::shared_ptr<Poset const>
+  Poset const
   poset ( void ) const;
 
   /// annotation
   ///   Return the annotation on vertex v.
-  Annotation const&
+  Annotation const
   annotation ( uint64_t v ) const;
 
   /// SHA
@@ -60,9 +61,7 @@ public:
   friend std::ostream& operator << ( std::ostream& stream, MorseGraph const& md );
 
 private:
-  std::shared_ptr<Poset> poset_;
-  std::unordered_map<uint64_t, Annotation> annotations_;
-
+  std::shared_ptr<MorseGraph_> data_;
   /// _canonicalize
   ///   Renumber the vertices in a "canonical" fashion
   ///   given the available information. (Note: not every
@@ -75,98 +74,44 @@ private:
   friend class boost::serialization::access;
   template<class Archive>
   void serialize(Archive & ar, const unsigned int version) {
+    ar & data_;
+  }
+};
+
+struct MorseGraph_ {
+  Poset poset_;
+  std::unordered_map<uint64_t, Annotation> annotations_;
+  /// serialize
+  ///   For use with BOOST Serialization library,
+  ///   which is used by the cluster-delegator MPI package
+  friend class boost::serialization::access;
+  template<class Archive>
+  void serialize(Archive & ar, const unsigned int version) {
     ar & poset_;
     ar & annotations_;
   }
 };
 
+template < class SwitchingGraph > MorseGraph::
+MorseGraph ( SwitchingGraph const& sg,
+             MorseDecomposition const& md ) {
+  assign ( sg, md );
+}
+
 template < class SwitchingGraph > void MorseGraph::
-assign ( std::shared_ptr<SwitchingGraph> sg,
-         std::shared_ptr<MorseDecomposition> md ) {
+assign ( SwitchingGraph const& sg,
+         MorseDecomposition const& md ) {
+  data_ . reset ( new MorseGraph_ );
   // Copy the poset
-  poset_ . reset ( new Poset );
-  (*poset_) = * md -> poset ();
+  data_ -> poset_ = md . poset ();
   // Compute the annotations
-  uint64_t N = poset_ -> size ();
+  uint64_t N = data_ -> poset_ . size ();
   for ( uint64_t v = 0; v < N; ++ v ) {
-    annotations_[v] = sg -> annotate ( * (* md -> components ()) [ v ] );
+    data_ -> annotations_[v] = sg . annotate ( * md . components () [ v ] );
   }
   // Canonicalize the graph
   _canonicalize ();
 }
 
-inline std::shared_ptr<Poset const> MorseGraph::
-poset ( void ) const {
-  return poset_;
-}
-
-inline Annotation const& MorseGraph::
-annotation ( uint64_t v ) const {
-  return annotations_ . find ( v ) -> second;
-}
-
-inline std::string MorseGraph::
-stringify ( void ) const {
-  std::stringstream ss;
-  ss << "{\"poset\":";
-  ss << poset_ -> stringify ();
-  ss << ",\"annotations\":[";
-  uint64_t N = poset_ -> size ();
-  bool first = true;
-  for ( uint64_t v = 0; v < N; ++ v ) {
-    if ( first ) first = false; else ss << ",";
-    ss << annotation ( v ) . stringify ();
-  }
-  ss << "]}";
-  return ss . str ();
-}
-
-inline void MorseGraph::
-parse ( std::string const& str ) {
-  std::shared_ptr<JSON::Object> json = JSON::toObject(JSON::parse(str));
-  poset_ . reset ( new Poset );
-  poset_ -> parse ( JSON::stringify ( (*json)[std::string("poset")] ));
-  annotations_ . clear ();
-  std::shared_ptr<JSON::Array> annotation_array = 
-    JSON::toArray((*json)[std::string("annotations")]);
-  uint64_t N = annotation_array -> size ();
-  for ( uint64_t v = 0; v < N; ++ v ) {
-    annotations_ [ v ] . parse ( JSON::stringify ( (*annotation_array)[v] ));
-  } 
-}
-
-
-inline std::ostream& operator << ( std::ostream& stream, MorseGraph const& md ) {
-  std::shared_ptr<Poset const> poset = md . poset ();
-  stream << "digraph {\n";
-  for ( uint64_t v = 0; v < poset -> size (); ++ v ) {
-    stream << v;
-    stream << "[label=\"";
-    bool first_item = true;
-    for ( auto s : md . annotation ( v ) ) {
-      if ( first_item ) first_item = false; else stream << ", ";
-      stream << s;
-    }
-    stream << "\"];\n";
-  }
-  for ( uint64_t source = 0; source < poset -> size (); ++ source ) {
-    for ( uint64_t target : poset -> adjacencies ( source ) ) {
-      stream << source << " -> " << target << ";\n";
-    }
-  }
-  stream << "}\n";
-  return stream;
-}
-
-inline std::string MorseGraph::
-SHA256 ( void ) const {
-  std::stringstream ss;
-  ss << *this;
-  return sha256 ( ss . str () );
-}
-  
-inline void MorseGraph::
-_canonicalize ( void ) {
-}
 
 #endif

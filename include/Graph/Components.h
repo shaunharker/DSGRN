@@ -5,13 +5,20 @@
 #ifndef DSGRN_COMPONENTS_H
 #define DSGRN_COMPONENTS_H
 
-#include <vector>
-#include <memory>
-#include <cstdlib>
+#include "common.h"
+
+struct Components_;
 
 class Components {
 public:
   typedef std::vector<std::shared_ptr<std::vector<uint64_t>>>::const_iterator iterator;
+
+  /// Components
+  Components ( void );
+
+  /// Components
+  ///   Assign data
+  Components ( std::vector<std::shared_ptr<std::vector<uint64_t>>> const& SCCs );
 
   /// assign
   ///   Assign data
@@ -44,48 +51,35 @@ public:
   uint64_t
   whichComponent ( uint64_t i ) const;
   
+  /// operator <<
+  ///   Output to stream
+  friend std::ostream& operator << ( std::ostream& stream, Components const& c );
+
 private: 
+  std::shared_ptr<Components_> data_;
+  /// serialize
+  ///   For use with BOOST Serialization library,
+  ///   which is used by the cluster-delegator MPI package
+  friend class boost::serialization::access;
+  template<class Archive>
+  void serialize(Archive & ar, const unsigned int version) {
+    ar & data_;
+  }
+};
+
+struct Components_ {
   // Gives reverse topological sort when flattened
   std::vector<std::shared_ptr<std::vector<uint64_t>>> components_;
   std::unordered_map<uint64_t, uint64_t> which_component_;
-};
-
-inline void Components::
-assign ( std::vector<std::shared_ptr<std::vector<uint64_t>>> const& SCCs ) {
-  which_component_ . clear ();
-  components_ = SCCs;
-  for ( uint64_t comp_num = 0; comp_num < components_ . size (); ++ comp_num ) {
-    for ( uint64_t v : * components_ [ comp_num ] ) {
-      which_component_ [ v ] = comp_num;
-    }
+  /// serialize
+  ///   For use with BOOST Serialization library,
+  ///   which is used by the cluster-delegator MPI package
+  friend class boost::serialization::access;
+  template<class Archive>
+  void serialize(Archive & ar, const unsigned int version) {
+    ar & components_;
+    ar & which_component_;
   }
-}
-
-inline Components::iterator Components::
-begin ( void ) const {
-  return components_ . begin ();
-}
-
-inline Components::iterator Components::
-end ( void ) const {
-  return components_ . end ();
-}
-
-inline uint64_t Components::
-size ( void ) const {
-  return components_ . size ();
-}
-
-inline std::shared_ptr<std::vector<uint64_t>> Components::
-operator [] ( uint64_t i ) const {
-  return components_ [ i ];
-}
-
-inline uint64_t Components::
-whichComponent ( uint64_t i ) const {
-  auto it = which_component_ . find ( i );
-  if ( it == which_component_  . end () ) return components_ . size ();
-  return it -> second;
-}
+};
 
 #endif

@@ -5,10 +5,10 @@
 #ifndef DSGRB_PARAMETERSIGNATUREPROCESS_H
 #define DSGRB_PARAMETERSIGNATUREPROCESS_H
 
+#include "common.h"
 #include "delegator/delegator.h"
-#include "Database/sqlambda.h"
-#include "Parameter/ParameterGraph.h"
-#include "Dynamics/MorseGraph.h"
+#include "Tools/sqlambda.h"
+#include "DSGRN.h"
 
 class Signatures : public Coordinator_Worker_Process {
 public:
@@ -26,6 +26,6 @@ private:
   uint64_t current_job_;
   sqlite::database db_;
   std::unordered_map<std::string, uint64_t> mg_lookup_;
-  uint64_t insertMorseGraph ( std::shared_ptr<MorseGraph> mg );
+  uint64_t insertMorseGraph ( MorseGraph const& mg );
 };
 #endif

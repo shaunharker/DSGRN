@@ -2,14 +2,14 @@
 /// Shaun Harker
 /// 2015-05-26
 
-#ifndef DSGRN_H
-#define DSGRN_H
+#ifndef DSGRN_JSON_H
+#define DSGRN_JSON_H
 
 #include <memory>
 #include <stack>
 #include <vector>
 #include <unordered_map>
-#include <cstdlib>
+#include <cstdint>
 #include <string>
 #include <sstream>
 #include <exception>
