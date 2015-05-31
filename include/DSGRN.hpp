@@ -1,11 +1,8 @@
 /// DSGRN.hpp
 /// Shaun Harker
 /// 2015-05-29
-/// This file provides implementations for the user classes of DSGRN
-/// Note: These implementations tend to be defined by macros since they
-///       are rather repetitious. The methods in this file merely redirect
-///       from the shared_ptr wrapper to the underlying implementation class.
-///       See "Idiom.h" for the macro definitions.
+/// 
+/// Note: include this file for header-only use
 
 #ifndef DSGRN_HPP
 #define DSGRN_HPP
