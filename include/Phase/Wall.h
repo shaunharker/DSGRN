@@ -5,18 +5,19 @@
 #ifndef DSGRN_WALL_H
 #define DSGRN_WALL_H
 
-#include <vector>
-#include <cstdlib>
+#include "common.h"
 
-class Wall_ {
+#include "Phase/Domain.h"
+
+class Wall {
 public:
-  /// Wall_ 
+  /// Wall 
   ///   Default constructor
-  Wall_ ( void );
+  Wall ( void );
 
   /// Wall_
   ///   Construct from domain collapse (see assign)
-  Wall_ ( Domain const& dom, uint64_t collapse_dim, int direction );
+  Wall ( Domain const& dom, uint64_t collapse_dim, int direction );
 
   /// assign 
   ///   Create wall from domain, dimension of collapse, 
@@ -30,27 +31,20 @@ public:
   uint64_t
   index ( void ) const;
 
+  /// operator <<
+  ///   Output to stream
+  friend std::ostream& operator << ( std::ostream& stream, Wall const& w );
+
 private:
   uint64_t index_;
+  /// serialize
+  ///   For use with BOOST Serialization library,
+  ///   which is used by the cluster-delegator MPI package
+  friend class boost::serialization::access;
+  template<class Archive>
+  void serialize(Archive & ar, const unsigned int version) {
+    ar & index_;
+  }
 };
-
-inline Wall_::
-Wall_ ( void ) {}
-
-inline Wall_::
-Wall_ ( Domain const& dom, uint64_t collapse_dim, int direction ) {
-  assign ( dom, collapse_dim, direction );
-}
-
-inline void Wall_::
-assign ( Domain const& dom, uint64_t collapse_dim, int direction ) {
-  uint64_t dom_index = (direction == 1) ? dom . right (collapse_dim) : dom . index ();
-  index_ = (dom_index << dom . size ()) | (1LL << collapse_dim);
-}
-  
-inline uint64_t Wall_::
-index ( void ) const {
-  return index_;
-}
 
 #endif

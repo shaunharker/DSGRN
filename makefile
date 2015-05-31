@@ -34,11 +34,12 @@ else
 endif
 
 CXXFLAGS := -std=c++11 -O3 -DNDEBUG -I./include
-LDLIBS := -lsqlite3
+LDFLAGS := -L./lib
+LDLIBS := -lsqlite3 -ldsgrn
 
 VPATH := source
 # List of targets
-all: DSGRN library
+all: library DSGRN
 	mv DSGRN ./bin/dsgrn
 
 library:
@@ -46,16 +47,15 @@ library:
 	ar rcs libdsgrn.a dsgrn.o
 	$(CXX) $(CXXFLAGS) $(SHAREDFLAG) -o libdsgrn.$(SHAREDEXT) -x c++ ./include/DSGRN.hpp
 	mv libdsgrn* ./lib
-	rm -f dsgrn.o
+	rm dsgrn.o
 
 test:
 	$(MAKE) -C tests
 
 install:
-	cp ./bin/dsgrn /usr/local/bin/dsgrn
 	cp ./lib/libdsgrn.a /usr/local/lib/libdsgrn.a
-	cp ./lib/libdsgrn.$(SHAREDEXT) /usr/local/libdsgrn.$(SHAREDEXT)
-
+	cp ./lib/libdsgrn.$(SHAREDEXT) /usr/local/lib/libdsgrn.$(SHAREDEXT)
+	cp ./bin/dsgrn /usr/local/bin/dsgrn
 clean:
 	rm -f ./tests/*.x
 	rm -f ./bin/*

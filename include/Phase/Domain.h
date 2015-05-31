@@ -5,10 +5,9 @@
 #ifndef DSGRN_DOMAIN_H
 #define DSGRN_DOMAIN_H
 
-#include <vector>
-#include <cstdlib>
+#include "common.h"
 
-/// class Domain_
+/// class Domain
 ///   This class allows for n-tuples with non-negative
 ///   entries less than specified limits (set in the
 ///   the constructor). It provides operator () to access
@@ -18,17 +17,24 @@
 ///   carried to the next digit, and so forth. Incrementing
 ///   the largest domain within the limits results in an
 ///   invalid domain (and isValid stops returning true).
-class Domain_ {
+class Domain {
 public:
   /// Domain_
   ///   Default constructor
-  Domain_ ( void );
+  Domain ( void );
 
   /// Domain_
   ///   Construct domain object as
   ///   (0,0,...,0) in 
   ///   {0,1,..,limits[0]-1}x...x{0,1,..,limits[D]-1}
-  Domain_ ( std::vector<uint64_t> const& limits );
+  Domain ( std::vector<uint64_t> const& limits );
+
+  /// assign
+  ///   Construct domain object as
+  ///   (0,0,...,0) in 
+  ///   {0,1,..,limits[0]-1}x...x{0,1,..,limits[D]-1}
+  void
+  assign ( std::vector<uint64_t> const& limits );
 
   /// operator []
   ///   Return dth component
@@ -37,13 +43,13 @@ public:
 
   /// operator ++ (preincrement)
   ///   Advance through domain traversal pattern
-  Domain_ & 
+  Domain & 
   operator ++ ( void );
 
   /// operator ++ (postincrement)
   ///   Advance through domain traversal pattern
   ///   but return copy of unadvanced domain
-  Domain_ 
+  Domain 
   operator ++ ( int );
 
   /// size
@@ -92,6 +98,10 @@ public:
   bool
   isValid ( void ) const;
 
+  /// operator <<
+  ///   Output to stream
+  friend std::ostream& operator << ( std::ostream& stream, Domain const& dom );
+
 private:
   std::vector<uint64_t> data_;
   std::vector<uint64_t> limits_; 
@@ -99,89 +109,19 @@ private:
   uint64_t index_;
   uint64_t max_;
   uint64_t D_;
+  /// serialize
+  ///   For use with BOOST Serialization library,
+  ///   which is used by the cluster-delegator MPI package
+  friend class boost::serialization::access;
+  template<class Archive>
+  void serialize(Archive & ar, const unsigned int version) {
+    ar & data_;
+    ar & limits_;
+    ar & offset_;
+    ar & index_;
+    ar & max_;
+    ar & D_;
+  }
 };
-
-inline Domain_::
-Domain_ ( void ) {}
-  
-inline Domain_::
-Domain_ ( std::vector<uint64_t> const& limits ) 
-  : limits_(limits) {
-  index_ = 0;
-  D_ = limits_ . size ();
-  data_ . resize ( D_, 0 );
-  offset_ . resize ( D_ );
-  max_ = 1;
-  for ( uint64_t d = 0; d < D_; ++ d ) {
-    offset_[d] = max_;
-    max_ *= limits_ [ d ];
-  }
-}
-
-inline uint64_t Domain_::
-operator [] ( uint64_t d ) const {
-  return data_[d];
-}
-
-inline Domain_ & Domain_::
-operator ++ ( void ) {
-  for ( uint64_t d = 0; d < D_; ++ d ) {
-    if ( ++ data_ [ d ] < limits_ [ d ] ) break;
-    data_ [ d ] = 0;
-  }
-  ++ index_;
-  return *this;
-}
-
-inline Domain_ Domain_::
-operator ++ ( int ) {
-  Domain_ result = *this;
-  ++ (*this);
-  return result;
-}
-
-inline uint64_t Domain_::
-size ( void ) const {
-  return limits_ . size ();
-}
-
-inline uint64_t Domain_::
-index ( void ) const {
-  return index_;
-}
-
-inline void Domain_::
-setIndex ( uint64_t i ) {
-  index_ = i;
-  for ( uint64_t d = 0; d < D_; ++ d ) {
-    data_ [ d ] = i % limits_ [ d ];
-    i /= limits_ [ d ];
-  }
-}
-
-inline uint64_t Domain_::
-left ( uint64_t d ) const {
-  return index_ - offset_[d];
-}
-
-inline uint64_t Domain_::
-right ( uint64_t d ) const {
-  return index_ + offset_[d];
-}
-
-inline bool Domain_::
-isMin ( uint64_t d ) const {
-  return data_[d] == 0;
-}
-
-inline bool Domain_::
-isMax ( uint64_t d ) const {
-  return data_[d] == limits_[d]-1;
-}
-
-inline bool Domain_::
-isValid ( void ) const {
-  return index_ < max_;
-}
 
 #endif

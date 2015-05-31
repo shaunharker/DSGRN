@@ -3,12 +3,13 @@
 /// 2015-05-24
 
 #include <iostream>
+#include <fstream>
 #include <vector>
-#include <cstdlib>
+#include <cstdint>
 #include <memory>
 #include <string>
 
-#include "DSGRN.hpp"
+#include "DSGRN.h"
 
 int main ( int argc, char * argv [] ) {
   // Load a network file
@@ -16,13 +17,11 @@ int main ( int argc, char * argv [] ) {
   std::string filename;
   if ( argc < 2 ) filename = "networks/network2.txt";
   else filename = argv[1];
-  Network network;
-  network . load ( filename );
+  Network network ( filename );
 
   // Construct a parameter graph
   std::cout << "Construct parameter graph.\n";
-  ParameterGraph pg;
-  pg . assign ( network, "../data/logic/" );
+  ParameterGraph pg ( network, "../data/logic/" );
 
   // Fetch a random parameter from the parameter graph
   std::cout << "Fetch random parameter.\n";
@@ -33,18 +32,15 @@ int main ( int argc, char * argv [] ) {
 
   // Construct the domain graph
   std::cout << "Construct domain graph.\n";
-  DomainGraph dg;
-  dg . assign ( param );
+  DomainGraph dg ( param );
 
   // Compute the Morse Decomposition
   std::cout << "Construct Morse Decomposition.\n";
-  MorseDecomposition md;
-  md . assign ( dg . digraph () );
+  MorseDecomposition md ( dg . digraph () );
 
   // Construct Morse Graph
   std::cout << "Construct Morse Graph\n";
-  MorseGraph mg;
-  mg . assign ( dg, md );
+  MorseGraph mg ( dg, md );
 
   // Save a graphviz file for the poset
   std::cout << "Save graphviz.\n";

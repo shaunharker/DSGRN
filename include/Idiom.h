@@ -56,29 +56,10 @@
 ///   Under no circumstances use a const& member variable!
 
 #define IMPLEMENT(method) { return impl_ -> method; }
-#define CONSTRUCT(object) { impl_ . reset ( new object ); }
+#define CONSTRUCT(X) { impl_ . reset ( new X ## _ ); }
 #define CHAIN(method) { impl_ -> method; return *this; }
-#define INTERFACE(X) class X ## _ ; struct X : public Pimpl< X ## _ >
-
-template<class T> 
-class Pimpl {
-protected: 
-  std::shared_ptr<T> impl_; 
-public: 
-  /// Default constructor
-  Pimpl (void) { impl_ . reset ( new T ); }
-
-  /// operator <<
-  ///   Stream information to graphviz format
-  friend std::ostream& 
-  operator << ( std::ostream& stream, 
-                Pimpl<T> const& t ) { return stream << *t.impl_; }
-
-  /// serialize
-  ///   Boost serialization support
-  friend class boost::serialization::access;
-  template<class Archive> void 
-  serialize(Archive & ar, const unsigned int version) { ar & impl_; }
-};
+#define INTERFACE(X) class X ## _ ; class X { std::shared_ptr< X ## _ > impl_; public:
+#define STREAM(S,x) { return S << * x . impl_; }
+#define SERIALIZE(ar) { ar & impl_; }
 
 #endif

@@ -4,18 +4,16 @@
 
 #include <iostream>
 #include <vector>
-#include <cstdlib>
+#include <cstdint>
 
-#include "DSGRN.hpp"
+#include "DSGRN.h"
 
 int main ( int argc, char * argv [] ) {
   std::string filename;
   if ( argc < 2 ) filename = "networks/network2.txt";
   else filename = argv[1];
-  Network network;
-  network . load ( filename );
-  ParameterGraph pg;
-  pg . assign ( network, "../data/logic/" );
+  Network network ( filename );
+  ParameterGraph pg ( network, "../data/logic/" );
   std::cout << pg << "\n";
   uint64_t N = pg . size ();
   for ( uint64_t i = 0; i < N; ++ i ) {

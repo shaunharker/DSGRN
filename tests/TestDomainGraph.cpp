@@ -4,12 +4,12 @@
 
 #include <iostream>
 #include <vector>
-#include <cstdlib>
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <fstream>
 
-#include "DSGRN.hpp"
+#include "DSGRN.h"
 
 int main ( int argc, char * argv [] ) {
   // Load a network file
@@ -17,13 +17,11 @@ int main ( int argc, char * argv [] ) {
   std::string filename;
   if ( argc < 2 ) filename = "networks/network2.txt";
   else filename = argv[1];
-  Network network;
-  network . load ( filename );
+  Network network ( filename );
 
   // Construct a parameter graph
   std::cout << "Construct parameter graph.\n";
-  ParameterGraph pg;
-  pg . assign ( network, "../data/logic/" );
+  ParameterGraph pg ( network, "../data/logic/" );
 
   // Fetch a random parameter from the parameter graph
   std::cout << "Fetch random parameter.\n";
@@ -34,8 +32,7 @@ int main ( int argc, char * argv [] ) {
 
   // Construct the domain graph
   std::cout << "Construct domain graph.\n";
-  DomainGraph dg;
-  dg . assign ( param );
+  DomainGraph dg ( param );
 
   // Save a graphviz file for the domain graph.
   std::cout << "Save graphviz.\n";

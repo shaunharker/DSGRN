@@ -3,12 +3,11 @@
 /// 2015-05-24
 
 #include <iostream>
-#include <vector>
-#include <cstdlib>
-#include <memory>
+#include <fstream>
+#include <cstdint>
 #include <string>
 
-#include "DSGRN.hpp"
+#include "DSGRN.h"
 
 Network network;
 
@@ -55,12 +54,10 @@ Parameter
 parse_parameter ( std::string const& s ) {
   Parameter p;
   if ( s[0] >= '0' && s[0] <= '9' ) {
-    ParameterGraph pg;
-    pg . assign ( network, "./data/logic/" );
+    ParameterGraph pg ( network, "./data/logic/" );
     p = pg . parameter ( std::stoll(s) );   
   } else {
-    p = Parameter ();
-    p . assign ( network );
+    p = Parameter ( network );
     p . parse ( s );
   }
   return p;
@@ -68,16 +65,14 @@ parse_parameter ( std::string const& s ) {
 
 void parameter ( int argc, char * argv [] ) {
   if ( argc == 2 ) {
-    ParameterGraph pg;
-    pg . assign ( network, "./data/logic/" );
+    ParameterGraph pg ( network, "./data/logic/" );
     uint64_t N = pg . size ();
     std::cout << "There are " << N << " parameters.\n";
     return;
   }
   std::string command = argv[2];
   if ( command == "list" ) {
-    ParameterGraph pg;
-    pg . assign ( network, "./data/logic/" );
+    ParameterGraph pg ( network, "./data/logic/" );
     uint64_t N = pg . size ();
     for ( uint64_t i = 0; i < N; ++ i ) {
       Parameter p = pg . parameter ( i );
@@ -98,8 +93,7 @@ void parameter ( int argc, char * argv [] ) {
     std::cout << p . stringify ();
   }
   if ( command == "index" ) {
-    ParameterGraph pg;
-    pg . assign ( network, "./data/logic/" );
+    ParameterGraph pg ( network, "./data/logic/" );
     std::cout << pg . index ( p );
   }
 }
@@ -112,8 +106,7 @@ void domaingraph ( int argc, char * argv [] ) {
   }
   std::string s = argv[3];
   Parameter p = parse_parameter ( s );
-  DomainGraph dg;
-  dg . assign ( p );
+  DomainGraph dg ( p );
   if ( command == "json" ) {
     std::cout << dg . digraph() . stringify ();
   } 
@@ -130,8 +123,7 @@ void wallgraph ( int argc, char * argv [] ) {
   }
   std::string s = argv[3];
   Parameter p = parse_parameter ( s );
-  WallGraph wg;
-  wg . assign ( p );
+  WallGraph wg ( p );
   if ( command == "json" ) {
     std::cout << wg . digraph() . stringify ();
   } 
@@ -149,8 +141,7 @@ void morsedecomposition ( int argc, char * argv [] ) {
   }
   std::string s = argv[3];
   Parameter p = parse_parameter ( s );
-  DomainGraph dg;
-  dg . assign ( p );
+  DomainGraph dg ( p );
   MorseDecomposition md;
   md . assign ( dg . digraph () );
   if ( command == "json" ) {
@@ -169,12 +160,9 @@ void morsegraph ( int argc, char * argv [] ) {
   }
   std::string s = argv[3];
   Parameter p = parse_parameter ( s );
-  DomainGraph dg;
-  dg . assign ( p );
-  MorseDecomposition md;
-  md . assign ( dg . digraph () );
-  MorseGraph mg;
-  mg . assign ( dg, md );
+  DomainGraph dg ( p );
+  MorseDecomposition md ( dg . digraph () );
+  MorseGraph mg ( dg, md );
   if ( command == "json" ) {
     std::cout << mg . stringify ();
   } 

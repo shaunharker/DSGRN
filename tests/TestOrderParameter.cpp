@@ -5,14 +5,12 @@
 #include <iostream>
 #include <vector>
 
-#include "DSGRN.hpp"
+#include "DSGRN.h"
 
 int main ( void ) {
-  OrderParameter p;
-  p . assign ( 10, 123456 );
+  OrderParameter p ( 10, 123456 );
   std::vector<uint64_t> perm = p . permutation ();
-  OrderParameter q;
-  q . assign ( perm );
+  OrderParameter q ( perm );
   if ( q . index () != 123456 ) {
     std::cout << "OrderParameter test FAILED.\n";
     return 1;

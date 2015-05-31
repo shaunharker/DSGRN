@@ -1,14 +1,15 @@
 /// Main algorithm
 
+#include <iostream>
+#include <fstream>
+#include <vector>
+#include <string>
+#include <cstdint>
+#include <utility>
+
 #include "Signatures.h"
 #include "delegator/delegator.h" 
-#include "Database/sqlambda.h"
-#include "Parameter/Network.h"
-#include "Parameter/Parameter.h"
-#include "Parameter/ParameterGraph.h"
-#include "Phase/DomainGraph.h"
-#include "Dynamics/MorseDecomposition.h"
-#include "Dynamics/MorseGraph.h"
+#include "DSGRN.h"
 
 using namespace sqlite;
 
@@ -17,7 +18,7 @@ int main ( int argc, char * argv [] ) {
     std::cout << "Please supply the following arguments:\n" 
                   " --> network specification file \n"
                   " --> logic data folder \n"
-                  " --> output folder \n";
+                  " --> output file \n";
     return 1;
   }
   delegator::Start ();
@@ -32,8 +33,8 @@ command_line ( int argc, char * argv [] ) {
   logic_folder_ = argv[2];
   database_filename_ = argv[3];
   // Load the network file and initialize the parameter graph
-  std::shared_ptr<Network> network ( new Network );
-  network -> load ( network_spec_filename_ );
+  Network network;
+  network . load ( network_spec_filename_ );
   pg_ . assign ( network, logic_folder_ );
   std::cout << "Parameter Graph size = " << pg_ . size () << "\n";
 }
@@ -75,16 +76,13 @@ work ( Message & result, const Message & job ) const {
   // Perform the work
   std::vector<uint64_t> parameter_indices;
   job >> parameter_indices;
-  typedef std::pair<uint64_t, std::shared_ptr<MorseGraph>> Result_t;
+  typedef std::pair<uint64_t, MorseGraph> Result_t;
   std::vector<Result_t> result_data;
   for ( uint64_t pi : parameter_indices ) {
-    std::shared_ptr<Parameter> param = pg_ . parameter ( pi );
-    std::shared_ptr<DomainGraph> dg ( new DomainGraph );
-    dg -> assign ( param );
-    std::shared_ptr<MorseDecomposition> md ( new MorseDecomposition );
-    md -> assign ( dg -> digraph () );
-    std::shared_ptr<MorseGraph> mg ( new MorseGraph );
-    mg -> assign ( dg, md );
+    Parameter param = pg_ . parameter ( pi );
+    DomainGraph dg ( param );
+    MorseDecomposition md ( dg . digraph () );
+    MorseGraph mg ( dg, md );
     Result_t r ( pi,  mg );
     result_data . push_back ( r );
   }
@@ -94,7 +92,7 @@ work ( Message & result, const Message & job ) const {
 void Signatures::
 accept ( const Message &result ) {
   // Accept the results
-  typedef std::pair<uint64_t, std::shared_ptr<MorseGraph>> Result_t;
+  typedef std::pair<uint64_t, MorseGraph> Result_t;
   std::vector<Result_t> result_data;
   result >> result_data;
 
@@ -125,23 +123,17 @@ finalize ( void ) {
   // Create the indices
   db_ . exec ( "create index if not exists Signatures2 on Signatures (MorseGraphIndex, ParameterIndex);");
   db_ . exec ( "create index if not exists MorseGraphAnnotations3 on MorseGraphAnnotations (Label, MorseGraphIndex);");
-  //db_ . exec ( "create index if not exists MorseGraphSHA2 on MorseGraphSHA (SHA);");
   db_ . exec ( "create index if not exists MorseGraphViz2 on MorseGraphViz (Graphviz, MorseGraphIndex);");
-
-  // Are these necessary?
   db_ . exec ( "create index if not exists MorseGraphVertices1 on MorseGraphVertices (MorseGraphIndex, Vertex);");
   db_ . exec ( "create index if not exists MorseGraphVertices2 on MorseGraphVertices (Vertex, MorseGraphIndex);");
   db_ . exec ( "create index if not exists MorseGraphEdges1 on MorseGraphEdges (MorseGraphIndex);");
   db_ . exec ( "create index if not exists MorseGraphAnnotations1 on MorseGraphAnnotations (MorseGraphIndex);");
-
-  // Close the database
-  // happens on exit
 }
 
 uint64_t Signatures::
-insertMorseGraph ( std::shared_ptr<MorseGraph> mg ) {
+insertMorseGraph ( MorseGraph const& mg ) {
   std::stringstream ss;
-  ss << * mg;
+  ss << mg;
   std::string gv = ss . str ();
   if ( mg_lookup_ . count ( gv ) ) return mg_lookup_ [ gv ];
   uint64_t mgi = mg_lookup_ . size ();
@@ -152,56 +144,22 @@ insertMorseGraph ( std::shared_ptr<MorseGraph> mg ) {
   prepped . bind ( mgi, gv ) . exec ();
   //std::cout << "Inserting into MorseGraphVertices\n";
   prepped = db_ . prepare ( "insert into MorseGraphVertices (MorseGraphIndex, Vertex) values (?, ?);" );
-  uint64_t N = mg -> poset () -> size ();
+  uint64_t N = mg . poset () . size ();
   for ( uint64_t v = 0; v < N; ++ v ) prepped . bind ( mgi, v ) . exec ();
   //std::cout << "Inserting into MorseGraphEdges\n";
   prepped = db_ . prepare ( "insert into MorseGraphEdges (MorseGraphIndex, Source, Target) values (?, ?, ?);" );
   for ( uint64_t source = 0; source < N; ++ source ) { 
-    for ( uint64_t target : mg -> poset () -> adjacencies ( source ) ) {
+    for ( uint64_t target : mg . poset () . adjacencies ( source ) ) {
       prepped . bind ( mgi, source, target ) . exec ();
     }
   }
   //std::cout << "Inserting into MorseGraphAnnotations\n";
   prepped = db_ . prepare ( "insert into MorseGraphAnnotations (MorseGraphIndex, Vertex, Label) values (?, ?, ?);" );
   for ( uint64_t v = 0; v < N; ++ v ) { 
-    Annotation const& a = mg -> annotation ( v );
+    Annotation const& a = mg . annotation ( v );
     for ( std::string const& label : a ) { 
       prepped . bind ( mgi, v, label ) . exec ();
     }
   }
   return mgi;
 }
-
-/*
-uint64_t Signatures::
-insertMorseGraph ( std::shared_ptr<MorseGraph> mg ) {
-  std::string sha = mg -> SHA256 ();
-  if ( mg_lookup_ . count ( sha ) ) return mg_lookup_ [ sha ];
-  uint64_t mgi = mg_lookup_ . size ();
-  mg_lookup_ [ sha ] = mgi;
-  statement prepped;
-  //std::cout << "Inserting into MorseGraphSHA\n";
-  prepped = db_ . prepare ( "insert into MorseGraphSHA (MorseGraphIndex, SHA) values (?, ?);" );
-  prepped . bind ( mgi, sha ) . exec ();
-  //std::cout << "Inserting into MorseGraphVertices\n";
-  prepped = db_ . prepare ( "insert into MorseGraphVertices (MorseGraphIndex, Vertex) values (?, ?);" );
-  uint64_t N = mg -> poset () -> size ();
-  for ( uint64_t v = 0; v < N; ++ v ) prepped . bind ( mgi, v ) . exec ();
-  //std::cout << "Inserting into MorseGraphEdges\n";
-  prepped = db_ . prepare ( "insert into MorseGraphEdges (MorseGraphIndex, Source, Target) values (?, ?, ?);" );
-  for ( uint64_t source = 0; source < N; ++ source ) { 
-    for ( uint64_t target : mg -> poset () -> adjacencies ( source ) ) {
-      prepped . bind ( mgi, source, target ) . exec ();
-    }
-  }
-  //std::cout << "Inserting into MorseGraphAnnotations\n";
-  prepped = db_ . prepare ( "insert into MorseGraphAnnotations (MorseGraphIndex, Vertex, Label) values (?, ?, ?);" );
-  for ( uint64_t v = 0; v < N; ++ v ) { 
-    Annotation const& a = mg -> annotation ( v );
-    for ( std::string const& label : a ) { 
-      prepped . bind ( mgi, v, label ) . exec ();
-    }
-  }
-  return mgi;
-}
-*/

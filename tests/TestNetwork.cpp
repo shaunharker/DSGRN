@@ -6,7 +6,7 @@
 #include <string>
 #include <fstream>
 
-#include "DSGRN.hpp"
+#include "DSGRN.h"
 
 int main ( int argc, char * argv [] ) {
   // Load network
