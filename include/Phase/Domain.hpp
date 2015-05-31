@@ -68,11 +68,11 @@ index ( void ) const {
 
 INLINE_IF_HEADER_ONLY void Domain::
 setIndex ( uint64_t i ) {
- index_ = i;
- for ( uint64_t d = 0; d < D_; ++ d ) {
-  data_ [ d ] = i %  limits_ [ d ];
-  i /=  limits_ [ d ];
-}
+  index_ = i;
+  for ( uint64_t d = 0; d < D_; ++ d ) {
+    data_ [ d ] = i %  limits_ [ d ];
+    i /=  limits_ [ d ];
+  }
 }
 
 INLINE_IF_HEADER_ONLY uint64_t Domain::
