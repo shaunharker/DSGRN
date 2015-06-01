@@ -320,7 +320,7 @@ public:
     if ( mask != 1 ) flush_nybble ();
     // Put into big-endian form.
     std::reverse( X . begin(), X . end () );
-    return result;
+    return X;
   }
 
   /// prettyPrint
