@@ -68,6 +68,7 @@ stringify ( void ) const {
 
 INLINE_IF_HEADER_ONLY void LogicParameter::
 parse ( std::string const& str ) {
+  //std::cout << "LogicParameter::parse(" << str << ")\n";
   std::string s = str;
   auto validcharacter = [] (char c) {
     if ( c >= '0' && c <= '9' ) return true;
@@ -76,10 +77,13 @@ parse ( std::string const& str ) {
   };
   for ( char & c : s ) if ( not validcharacter ( c ) ) c = ' ';
   std::stringstream ss ( s );
-  ss >> data_ -> n_;
-  ss >> data_ -> m_;
-  ss >> data_ -> hex_;
-  assign ( data_ -> n_, data_ -> m_, data_ ->hex_ );
+  uint64_t n, m;
+  std::string hex;
+  ss >> n;
+  ss >> m;
+  ss >> hex;
+  //std::cout << "  Parsed (" << n << ", " << m << ", " << hex << ")\n";
+  assign ( n, m, hex );
 }
 
 

@@ -82,6 +82,7 @@ stringify ( void ) const {
 
 INLINE_IF_HEADER_ONLY void OrderParameter::
 parse ( std::string const& str ) {
+  //std::cout << "OrderParameter::parse(" << str << ")\n";
   std::string s = str;
   auto validcharacter = [] (char c) {
     if ( c >= '0' && c <= '9' ) return true;
