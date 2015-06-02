@@ -169,7 +169,7 @@ inequalities ( void ) const {
       return input_ss . str ();
     };
     auto output_string = [&](uint64_t j) {
-      uint64_t target = network() . outputs ( d ) [ j ];
+      uint64_t target = network() . outputs ( d ) [ data_ -> order_[d](j) ];
       std::string target_name = network() . name(target);
       std::stringstream output_ss;
       output_ss << "THETA(" << node_name << "," << target_name << ")";
@@ -195,7 +195,7 @@ inequalities ( void ) const {
     first = true;
     for ( uint64_t j = 0; j < m; ++ j ) {
       if ( first ) first = false; else ss << " < ";
-      ss << output_string ( data_ -> order_[d](j) );
+      ss << output_string ( j );
     }
     ss << "\n}\"";
   }
