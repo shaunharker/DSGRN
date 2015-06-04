@@ -39,60 +39,50 @@ assign ( Digraph const& digraph,
          Components const& components ) {
   data_ . reset ( new MorseDecomposition_ );
   data_ -> poset_ = Poset ();
-  data_ -> recurrent_ = Components ();
-  std::vector<std::shared_ptr<std::vector<uint64_t>>> recurrent_components;
+  data_ -> components_ = components;
+
+  uint64_t C = components . size ();
+  uint64_t R = components . recurrentComponents () . size ();
   std::vector<uint64_t> recurrent_indices;
-  uint64_t u_comp = 0;
-  uint64_t recurrent_count = 0;
-  std::unordered_map<uint64_t, std::unordered_set<uint64_t>> reach_info;
-  for ( auto const& component : components ) {
-    bool is_recurrent = false;
-    if ( component -> size () > 1 ) { 
-      is_recurrent = true;
-    } else {
-      uint64_t u = (*component)[0];
-      std::vector<uint64_t> const& children = digraph . adjacencies ( u );
-      for ( uint64_t v : children ) {
-        if ( u == v ) {
-          is_recurrent = true;
-          break;
-        }
-      }
-    }
-    if ( is_recurrent ) {
-      // Recurrent component
-      recurrent_components . push_back ( component );
-      recurrent_indices . push_back ( u_comp );
-      reach_info [ u_comp ] . insert ( recurrent_count );
+  for ( uint64_t i = 0; i < C; ++ i ) {
+    if ( components . isRecurrent ( i ) ) {
+      recurrent_indices . push_back ( i );
       data_ -> poset_ . add_vertex ();
-      for ( uint64_t ancestor : reach_info [ u_comp ] ) {
-        data_ ->poset_ . add_edge ( ancestor, recurrent_count );
-      }
-      ++ recurrent_count;
     }
-    // Loop through all vertices in the components
-    for ( uint64_t u : *component ) {
-      // Find the children
-      std::vector<uint64_t> const& children =
-        digraph . adjacencies ( u );
-      // Find the components the children live in
-      std::unordered_set<uint64_t> target_components;
-      for ( uint64_t v : children ) {
-        uint64_t v_comp = components . whichComponent ( v );
-        target_components . insert ( v_comp );
-      }
-      // Propagate reachability data into the target components
-      for ( uint64_t v_comp : target_components ) {
-        for ( uint64_t recurrent : reach_info [ u_comp ] ) {
-          reach_info [ v_comp ] . insert ( recurrent ); 
+  }
+  // Proceed in cohorts of 64
+  uint64_t num_cohorts = R / 64;
+  if ( R % 64 != 0 ) ++ num_cohorts;
+  std::vector<uint64_t> reach_info ( C, 0 );
+  for ( uint64_t cohort = 0; cohort < num_cohorts; ++ cohort ) {
+    if ( cohort > 0 ) std::fill ( reach_info.begin(), reach_info.end(), 0);
+    uint64_t source = 64LL*cohort;
+    for ( uint64_t i = 0; i < 64; ++ i, ++ source ) {
+      if ( source == R ) break;
+      reach_info [ recurrent_indices [ source ] ] = (1LL << i);
+    }
+    uint64_t parent_comp = 0;
+    for ( auto const& component : components ) { 
+      for ( uint64_t u : component ) {
+        std::vector<uint64_t> const& children = digraph . adjacencies ( u );
+        for ( uint64_t v : children ) {
+          uint64_t child_comp = components . whichComponent ( v );
+          reach_info [ child_comp ] |= reach_info [ parent_comp ];
         }
       }
+      ++ parent_comp;
     }
-    reach_info . erase ( u_comp );
-    ++ u_comp;
-  }   
-  data_ ->recurrent_ . assign ( recurrent_components );
-  data_ ->poset_ . reduction ();
+    for ( uint64_t i = 0; i < R; ++ i ) {
+      uint64_t code = reach_info [ recurrent_indices [ i ] ];
+      uint64_t ancestor = 64*cohort;
+      while ( code != 0 ) {
+        if ( code & 1 ) data_ -> poset_ . add_edge ( ancestor, i );
+        code >>= 1;
+        ++ ancestor;
+      }
+    }
+  } 
+  data_ -> poset_ . reduction ();
   _canonicalize ();
 }
 
@@ -103,7 +93,12 @@ poset ( void ) const {
 
 INLINE_IF_HEADER_ONLY Components const MorseDecomposition::
 components ( void ) const {
-  return data_ ->recurrent_;
+  return data_ -> components_;
+}
+
+INLINE_IF_HEADER_ONLY Components::ComponentContainer const MorseDecomposition::
+recurrent ( void ) const {
+  return data_ -> components_ . recurrentComponents ();
 }
 
 INLINE_IF_HEADER_ONLY std::ostream& operator << ( std::ostream& stream, MorseDecomposition const& md ) {
@@ -113,7 +108,7 @@ INLINE_IF_HEADER_ONLY std::ostream& operator << ( std::ostream& stream, MorseDec
     stream << v;
     stream << "[label=\"";
     bool first_item = true;
-    for ( uint64_t u : * md . data_ ->recurrent_ [ v ] ) {
+    for ( uint64_t u : md . recurrent () [ v ] ) {
       if ( first_item ) first_item = false; else stream << ", ";
       stream << u;
     }

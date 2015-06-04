@@ -59,6 +59,17 @@ operator () ( uint64_t bit ) const {
   return data_ -> comp_ [ bit ];
 }
 
+INLINE_IF_HEADER_ONLY uint64_t LogicParameter::
+bin ( uint64_t input_combination ) const {
+  uint64_t result = 0;
+  uint64_t start = input_combination * data_ -> m_;
+  uint64_t end = start + data_ -> m_;
+  for ( uint64_t bit = start; bit < end; ++ bit ) {
+    if ( data_ -> comp_ [ bit ] ) ++ result; else break;
+  }
+  return result;
+}
+
 INLINE_IF_HEADER_ONLY std::string LogicParameter::
 stringify ( void ) const {
   std::stringstream ss;

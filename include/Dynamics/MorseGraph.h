@@ -107,7 +107,7 @@ assign ( SwitchingGraph const& sg,
   // Compute the annotations
   uint64_t N = data_ -> poset_ . size ();
   for ( uint64_t v = 0; v < N; ++ v ) {
-    data_ -> annotations_[v] = sg . annotate ( * md . components () [ v ] );
+    data_ -> annotations_[v] = sg . annotate ( md . recurrent () [ v ] );
   }
   // Canonicalize the graph
   _canonicalize ();

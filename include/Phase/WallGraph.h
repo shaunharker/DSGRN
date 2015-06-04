@@ -9,6 +9,7 @@
 
 #include "Parameter/Parameter.h"
 #include "Graph/Digraph.h"
+#include "Graph/Components.h"
 #include "Dynamics/Annotation.h"
 
 struct WallGraph_;
@@ -34,7 +35,7 @@ public:
 
   /// annotate
   Annotation const
-  annotate ( std::vector<uint64_t> const& vertices ) const;
+  annotate ( Component const& vertices ) const;
 
   /// operator <<
   ///   Emit data to stream in graphviz format

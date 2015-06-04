@@ -33,6 +33,12 @@ public:
   bool
   operator () ( uint64_t bit ) const;
 
+  /// bin
+  ///   Return bin number corresponding to input combination
+  ///   (uses uint64_t, assumes there are 64 or fewer inputs)
+  uint64_t 
+  bin ( uint64_t input_combination ) const;
+
   /// stringify
   ///   Return a JSON-style string
   ///    of form [n,m,"hex"]

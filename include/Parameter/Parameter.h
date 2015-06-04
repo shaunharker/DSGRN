@@ -60,6 +60,20 @@ public:
   bool
   absorbing ( Domain const& dom, int collapse_dim, int direction ) const;
 
+  /// labelling
+  ///   Returns a data structure representing if each wall is an
+  ///   entrance or absorbing. The data structure is
+  ///   currently limited to handling networks with at most 32 nodes.
+  ///   The result is a vector of uint64_t. The vector is indexed by
+  ///   domain index. For domain indexing, see Domain.h. 
+  ///   Each uint64_t entry has bits corresponding to each of the
+  ///   2*d walls in the following pattern:
+  ///     left-0, left-1, left-2, ..., left-(d-1), 
+  ///     right-0, right-1, ... right(d-1)
+  ///   A bit of 0 means entrance and 1 means absorbing.
+  std::vector<uint64_t>
+  labelling ( void ) const;
+
   /// network
   ///   Return network
   Network const

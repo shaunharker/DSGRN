@@ -100,7 +100,7 @@ digraph ( void ) const {
 }
 
 INLINE_IF_HEADER_ONLY Annotation const WallGraph::
-annotate ( std::vector<uint64_t> const& vertices ) const {
+annotate ( Component const& vertices ) const {
   uint64_t D = data_ ->parameter_ . network() . size ();
   std::vector<uint64_t> signature;
   bool all_on = true;

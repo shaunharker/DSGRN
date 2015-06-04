@@ -9,6 +9,7 @@
 #include "Parameter/Parameter.h"
 #include "Graph/Digraph.h"
 #include "Dynamics/Annotation.h"
+#include "Graph/Components.h"
 
 struct DomainGraph_;
 
@@ -33,7 +34,7 @@ public:
 
   /// annotate
   Annotation const
-  annotate ( std::vector<uint64_t> const& vertices ) const;
+  annotate ( Component const& vertices ) const;
 
   /// operator <<
   ///   Emit data to stream in graphviz format

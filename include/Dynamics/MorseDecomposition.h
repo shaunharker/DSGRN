@@ -56,9 +56,14 @@ public:
   poset ( void ) const;
 
   /// components 
-  ///   Return recurrent components 
+  ///   Return all components 
   Components const
   components ( void ) const;
+
+  /// components 
+  ///   Return recurrent components 
+  Components::ComponentContainer const
+  recurrent ( void ) const;
 
   /// operator <<
   ///   Stream information to graphviz format
@@ -83,7 +88,7 @@ private:
 
 struct MorseDecomposition_ {
   Digraph digraph_;
-  Components recurrent_;
+  Components components_;
   Poset poset_;
   /// serialize
   ///   For use with BOOST Serialization library,
@@ -92,7 +97,7 @@ struct MorseDecomposition_ {
   template<class Archive>
   void serialize(Archive & ar, const unsigned int version) {
     ar & digraph_;
-    ar & recurrent_;
+    ar & components_;
     ar & poset_;
   }
 };

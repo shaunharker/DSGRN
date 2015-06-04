@@ -61,10 +61,6 @@ absorbing ( Domain const& dom, int collapse_dim, int direction ) const {
   int thres = dom [ collapse_dim ];
   if ( direction == -1 ) thres -= 1;
   //std::cout << "  Threshold # = " << thres << "\n";
-  int outedge = data_ -> order_ [ collapse_dim ] ( thres );
-  //std::cout << "  This corresponds to the " << outedge << "th out-edge of node " << collapse_dim << "\n";
-  int switching_dim = data_ -> network_ . outputs ( collapse_dim ) [ outedge ];
-  //std::cout << "  This edge points to node " << switching_dim << " (i.e. this is the switching dimension.)\n";
   std::vector<bool> input_combination;
   //std::cout << "  Forming input combination by analyzing inputs of node " << collapse_dim << ".\n";
   for ( int source : data_ -> network_ . inputs ( collapse_dim ) ) {
@@ -95,6 +91,116 @@ absorbing ( Domain const& dom, int collapse_dim, int direction ) const {
     //std::cout << "  Hence the right wall is " << ((not flow_direction)?"not ":"") << "absorbing.\n";
     return flow_direction;
   }
+}
+
+INLINE_IF_HEADER_ONLY std::vector<uint64_t> Parameter::
+labelling ( void ) const {
+  std::vector<uint64_t> result;
+  uint64_t D = network () . size ();
+
+  // pre-allocated vectors (for efficiency)
+  std::vector<uint64_t> lower_limits ( D );
+  std::vector<uint64_t> upper_limits ( D );
+  std::vector<uint64_t> dom ( D );
+  std::vector<uint64_t> width ( D );
+
+  std::vector<uint64_t> limits = network () . domains ();
+  std::vector<uint64_t> jump ( D ); // index offset in each dim
+  uint64_t N = 1;
+  for ( uint64_t d = 0; d < D; ++ d ) {
+    jump[d] =  N;
+    N *= limits [ d ];
+  }
+  // N is now number of domains
+  // Domains are implicitly indexed. 
+  // "jump" is an array telling us how much to change the index
+  //   to move +1 in each dimension
+  result . resize ( N, 0 );
+  for ( int d = 0; d < D; ++ d ) {
+    uint64_t n = network() . inputs ( d ) . size ();
+    uint64_t numInComb = ( 1LL << n );
+    //uint64_t num_debug_domains = 0;
+    for ( uint64_t in = 0; in < numInComb; ++ in ) {
+      /// What bin does the target point land in for dimension d?
+      uint64_t bin = data_ -> logic_ [ d ] . bin ( in );
+      /// Which domains have this input combination for dimension d?
+      std::fill ( lower_limits.begin(), lower_limits.end(), 0 );
+      upper_limits = limits;
+      uint64_t sources = network () . inputs ( d ) . size ();
+      for ( uint64_t inorder = 0; inorder < sources; ++ inorder ) {
+        //std::cout << "Dim " << d << ", in = " << in << " inorder = " << inorder << "\n";
+        uint64_t source = network () . inputs ( d ) [ inorder ];
+        //std::cout << "source = " << source << "\n";
+        bool activating = network () . interaction ( source, d );
+        //std::cout << "high is activating? " << ( activating ? "yes" : "no" ) << "\n";
+        int outorder = network () . order ( source, d );
+        //std::cout << "outorder = " << outorder << "\n";
+        bool side = in & ( 1LL << inorder );
+        //std::cout << "on activating side? " << ( side ? "yes" : "no" ) << "\n";
+        uint64_t thres = data_ -> order_ [ source ] . inverse ( outorder ) + 1;
+        //std::cout << "critical bin = " << thres << "\n";
+        if ( activating ^ side ) {
+          //std::cout << "Case A.\n";
+          lower_limits[source] = 0;
+          upper_limits[source] = thres;  
+        } else {
+          //std::cout << "Case B.\n";
+          lower_limits[source] = thres;
+          upper_limits[source] = limits [ source ]; 
+        }
+      }
+      /// Iterate through two zones:
+      ///   Zone 1. domain left of bin
+      ///   Zone 2. domain right of bin
+      ///   Note. domains matching bin do not 
+      ///         require anything to be done
+      auto apply_mask = [&] ( uint64_t mask ) {
+        // Iterate between lower and upper limits applying mask
+        uint64_t dom_index = 0;
+        dom = lower_limits;
+        for ( uint64_t k = 0; k < D; ++ k ) { 
+          width[k] = upper_limits[k] - lower_limits[k];
+          dom_index += jump[k] * lower_limits[k];
+          if ( width[k] == 0 ) return;
+        }
+        while ( 1 ) {
+          // apply mask
+          result [ dom_index ] |= mask;
+          // next domain
+          for ( uint64_t k = 0; k < D; ++ k ) {
+            ++ dom[k];
+            dom_index += jump[k];
+            if ( dom[k] < upper_limits[k] ) break;
+            dom[k] = lower_limits[k];
+            dom_index -= width[k] * jump[k];
+          }
+          // If we are back to start, return
+          bool done = true;
+          for ( uint64_t k = 0; k < D; ++ k ) {
+            if ( dom[k] != lower_limits[k] ) done = false;
+          }
+          if ( done ) break;
+        }
+      };
+
+      uint64_t left = lower_limits [ d ];
+      uint64_t right = upper_limits [ d ];
+
+      // Zone 1. (Flows to right.)
+      if ( bin > left ) { 
+        lower_limits [ d ] = left;
+        upper_limits [ d ] = bin;
+        apply_mask (1LL << (D+d)); 
+      }
+      // Zone 2. (Flows to left.)
+      if ( bin+1 < right ) {
+        lower_limits [ d ] = bin + 1;
+        upper_limits [ d ] = right;
+        apply_mask (1LL << d);
+      }
+    }
+  }
+  return result;
 }
 
 INLINE_IF_HEADER_ONLY Network const Parameter::
