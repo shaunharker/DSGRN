@@ -1,0 +1,2 @@
+#!/bin/bash
+dsgrn network ../networks/3D_Cycle_H.txt morsegraph graphviz '[["X1",[3,3,"FFB600"],[0,1,2]],["X2",[1,2,"4"],[0,1]],["X3",[2,1,"A"],[0]]]'

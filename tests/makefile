@@ -7,13 +7,11 @@ LDLIBS := -lsqlite3 -ldsgrn
 	$(CXX) $(LDFLAGS) $< $(LDLIBS) -o $@
 
 # List of targets
-all: TestNetwork.x TestOrderParameter.x TestParameterGraph.x TestDomainGraph.x TestMorseDecomposition.x TestMorseGraph.x TestJSON.x
+all: TestNetwork.x TestOrderParameter.x TestParameterGraph.x TestDomainGraph.x TestMorseDecomposition.x TestMorseGraph.x TestJSON.x runtests
+
+runtests:
+	./test.sh
 
 clean:
 	rm -f *.x
 	rm -f *.gv
-
-
-
-
-
