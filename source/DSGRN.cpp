@@ -208,11 +208,13 @@ int main ( int argc, char * argv [] ) {
     //std::cout << "loading network " << filename << "\n";
     network . load ( filename );
     //std::cout << "setting environment variable...\n";
-    std::ofstream outfile ( "dsgrn.session" );
-    outfile << filename << "\n";
-    outfile . close ();
     argc -= 2; argv += 2;
-    if ( argc == 1 ) return 0;
+    if ( argc == 1 ) {
+      std::ofstream outfile ( "dsgrn.session" );
+      outfile << filename << "\n";
+      outfile . close ();
+      return 0;
+    }
     command = argv[1];
     if ( command == "graphviz" ) {
       std::cout << network . graphviz ();
