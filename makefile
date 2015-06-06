@@ -13,7 +13,7 @@ else
     UNAME_S := $(shell uname -s)
     ifeq ($(UNAME_S),Linux)
         CCFLAGS += -D LINUX
-	SHAREDFLAG := -shared
+	SHAREDFLAG := -shared -fPIC
 	SHAREDEXT := so
     endif
     ifeq ($(UNAME_S),Darwin)

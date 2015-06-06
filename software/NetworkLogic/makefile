@@ -5,6 +5,5 @@ LDLIBS := -lsqlite3
 VPATH = ./source
 all: NetworkLogic
 
-
 clean:
 	rm -f NetworkLogic
