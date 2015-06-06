@@ -14,13 +14,13 @@
 #include "boost/iterator/counting_iterator.hpp"
 #include "boost/iterator/transform_iterator.hpp"
 
-typedef boost::sub_range < std::vector<uint64_t const> > Component;
+typedef boost::sub_range < std::vector<uint64_t> > Component;
 
 struct Components_;
 
 class Components {
 public:
-  typedef boost::function < Component const ( int64_t ) > Functor;
+  typedef boost::function < Component ( int64_t ) > Functor;
   typedef boost::transform_iterator<Functor, boost::counting_iterator<int64_t> > iterator;
   typedef boost::iterator_range<iterator> ComponentContainer;
 
@@ -108,12 +108,12 @@ struct Components_ {
   /// component
   ///  Return the ith component
   Component 
-  _component ( int64_t i ) const;
+  _component ( int64_t i );
 
   /// recurrentComponent
   ///    Return the "rank"th recurrent component
   Component 
-  _recurrentComponent ( int64_t rank ) const;
+  _recurrentComponent ( int64_t rank );
 
   /// serialize
   ///   For use with BOOST Serialization library,

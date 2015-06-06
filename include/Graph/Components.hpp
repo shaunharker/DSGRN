@@ -136,7 +136,7 @@ operator << ( std::ostream& stream, Components const& c ) {
   /// component
   ///  Return the ith component
 INLINE_IF_HEADER_ONLY Component Components_:: 
-_component ( int64_t i ) const {
+_component ( int64_t i ) {
   return Component ( vertices_ . begin () + component_select_ [ i ], 
                      vertices_ . begin () + component_select_ [ i + 1 ] );
 }
@@ -144,7 +144,7 @@ _component ( int64_t i ) const {
 /// recurrentComponent
 ///    Return the "rank"th recurrent component
 INLINE_IF_HEADER_ONLY Component Components_:: 
-_recurrentComponent ( int64_t rank ) const {
+_recurrentComponent ( int64_t rank ) {
   return _component ( recurrent_select_ [ rank ] );
 }
 #endif
