@@ -23,6 +23,7 @@ private:
   std::string logic_folder_;
   std::string database_filename_;
   ParameterGraph pg_;
+  Network network_;
   uint64_t current_job_;
   sqlite::database db_;
   std::unordered_map<std::string, uint64_t> mg_lookup_;

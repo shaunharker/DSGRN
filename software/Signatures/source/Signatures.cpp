@@ -24,9 +24,8 @@ command_line ( int argc, char * argv [] ) {
   logic_folder_ = argv[2];
   database_filename_ = argv[3];
   // Load the network file and initialize the parameter graph
-  Network network;
-  network . load ( network_spec_filename_ );
-  pg_ . assign ( network, logic_folder_ );
+  network_ . load ( network_spec_filename_ );
+  pg_ . assign ( network_, logic_folder_ );
   std::cout << "Parameter Graph size = " << pg_ . size () << "\n";
 }
 
@@ -43,6 +42,18 @@ initialize ( void ) {
   db_ . exec ( "create table if not exists MorseGraphEdges (MorseGraphIndex INTEGER, Source INTEGER, Target INTEGER);" );
   db_ . exec ( "create table if not exists MorseGraphAnnotations (MorseGraphIndex INTEGER, Vertex INTEGER, Label TEXT);" );
 
+  // Create Network metadata
+
+  // Get Network Name from database filename
+  auto lastslash = database_filename_.find_last_of("/"); 
+  auto lastdot = database_filename_.find_last_of("."); 
+  if ( lastslash == std::string::npos ) lastslash = 0; else ++ lastslash;
+  if ( lastdot == std::string::npos ) lastdot = database_filename_ . size ();
+  std::string network_name = database_filename_.substr(lastslash, lastdot - lastslash); 
+
+  db_ . exec ( "create table if not exists Network ( Name TEXT, Dimension INTEGER, Specification TEXT, Graphviz TEXT);");
+  statement prepped = db_ . prepare ( "insert into Network (Name, Dimension, Specification, Graphviz) values (?, ?, ?, ?);");
+  prepped . bind ( network_name, network_ . size(), network_ . specification (), network_ . graphviz () ) . exec ();
   current_job_ = 0;
 }
 

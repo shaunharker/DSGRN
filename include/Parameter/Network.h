@@ -77,6 +77,11 @@ public:
   std::vector<uint64_t>
   domains ( void ) const;
 
+  /// specification
+  ///    Return the specification string (i.e. network spec file)
+  std::string
+  specification ( void ) const;
+
   /// graphviz
   ///   Return a graphviz string (dot language)
   std::string
@@ -112,6 +117,7 @@ struct Network_ {
   std::unordered_map<std::pair<uint64_t,uint64_t>, bool, boost::hash<std::pair<uint64_t,uint64_t>>> edge_type_;
   std::unordered_map<std::pair<uint64_t,uint64_t>, uint64_t, boost::hash<std::pair<uint64_t,uint64_t>>> order_;
   std::vector<std::vector<std::vector<uint64_t>>> logic_by_index_;
+  std::string specification_;
   /// serialize
   ///   For use with BOOST Serialization library,
   ///   which is used by the cluster-delegator MPI package
@@ -125,6 +131,7 @@ struct Network_ {
     ar & edge_type_;
     ar & order_;
     ar & logic_by_index_;
+    ar & specification_;
   }
 };
 

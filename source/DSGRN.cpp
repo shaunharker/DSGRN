@@ -13,7 +13,7 @@ void helpmessage ( void ) {
                " Usage: \n"
                "   dsgrn network NETWORKFILE \n"
                "      This enables omission of the network file in subsequent commands.\n"
-               "      The network is stored to a file called \"dsgrn.session\" in "
+               "      The network is stored to a file called \"dsgrn.session\" in \n"
                "      the current working directory. This file can be deleted without\n"
                "      consequences.\n\n"
                "   dsgrn [network NETWORKFILE] parameter list\n\n"

@@ -75,7 +75,12 @@ domains ( void ) const {
   }
   return result;
 }
-  
+
+INLINE_IF_HEADER_ONLY std::string Network::
+specification ( void ) const {
+  return data_ -> specification_;
+}
+
 INLINE_IF_HEADER_ONLY std::string Network::
 graphviz ( std::vector<std::string> const& theme ) const {
   std::stringstream result;
@@ -137,11 +142,14 @@ _lines ( std::string const& filename ) {
   if ( not infile . good () ) { 
     throw std::runtime_error ( "Problem loading network file " + filename + "\n");
   }
+  std::string spec;
   std::string line;
   while ( std::getline ( infile, line ) ) {
     result . push_back ( line );
+    spec += line + '\n';
   }
   infile . close ();
+  data_ -> specification_ = spec;
   return result;
 }
 
