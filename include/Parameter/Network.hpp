@@ -10,6 +10,7 @@
 #endif
 
 #include "Network.h"
+#include "Tools/sqlambda.h"
 
 INLINE_IF_HEADER_ONLY Network::
 Network ( void ) { 
@@ -24,7 +25,38 @@ Network ( std::string const& filename ) {
 INLINE_IF_HEADER_ONLY void Network::
 load ( std::string const& filename ) {
   data_ . reset ( new Network_ );
-  _parse ( _lines ( filename ) );
+  // Check extension on filename.
+  auto lastdot = filename.find_last_of("."); 
+  std::string extension;
+  if ( lastdot == std::string::npos ) { 
+    extension = ".txt"; // Assume network file specification
+  } else {
+    extension = filename.substr(lastdot); 
+  }
+  // If it is a .txt, assume it is a network specification
+  // file.
+  if ( extension == ".txt" ) {
+    std::ifstream infile ( filename );
+    if ( not infile . good () ) { 
+      throw std::runtime_error ( "Problem loading network file " + filename + "\n");
+    }
+    std::string line;
+    while ( std::getline ( infile, line ) ) {
+      data_ -> specification_ += line + '\n';
+    }
+    infile . close ();
+  }
+  // If it is a .db, assume it is an sqlite3 database
+  // and the network spec is in the Specification 
+  // column of the "Network" table.
+  if ( extension == ".db" ) {
+      sqlite::database db ( filename );
+      sqlite::statement stmt = db . prepare ( "select Specification from Network;");
+      stmt . forEach ( [&] ( std::string spec ) {
+        data_ -> specification_ = spec;
+      });
+  }
+  _parse ( _lines () );
 }
 
 INLINE_IF_HEADER_ONLY uint64_t Network::
@@ -133,23 +165,16 @@ namespace DSGRN_parse_tools {
   }
 }
 
-/// lines
+/// _lines
 ///   Open the network file and read it line by line
 INLINE_IF_HEADER_ONLY std::vector<std::string> Network::
-_lines ( std::string const& filename ) {
+_lines ( void ) {
   std::vector<std::string> result;
-  std::ifstream infile ( filename );
-  if ( not infile . good () ) { 
-    throw std::runtime_error ( "Problem loading network file " + filename + "\n");
-  }
-  std::string spec;
+  std::stringstream spec ( data_ -> specification_ );
   std::string line;
-  while ( std::getline ( infile, line ) ) {
+  while ( std::getline ( spec, line ) ) {
     result . push_back ( line );
-    spec += line + '\n';
   }
-  infile . close ();
-  data_ -> specification_ = spec;
   return result;
 }
 

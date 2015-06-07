@@ -97,7 +97,7 @@ public:
 private:
   std::shared_ptr<Network_> data_;
 
-  std::vector<std::string> _lines ( std::string const& filename );
+  std::vector<std::string> _lines ( void );
   void _parse ( std::vector<std::string> const& lines );
   /// serialize
   ///   For use with BOOST Serialization library,
