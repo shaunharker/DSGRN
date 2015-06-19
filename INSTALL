@@ -39,7 +39,7 @@ cd software/NetworkLogic
 make
 ./NetworkLogic
 ## wait
-mkdir /usr/local/share/DSGRN/logic
+mkdir -p /usr/local/share/DSGRN/logic
 cp *.dat /usr/local/share/DSGRN/logic
 
 2. Download them from somewhere and put them in place.
