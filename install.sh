@@ -14,8 +14,10 @@ if [ $# -ge 1 ]; then
         PREFIX=`pwd -P`
     fi
     echo "DSGRN will be installed in '${PREFIX}'"    
-    ARGUMENT="-DCMAKE_INSTALL_PREFIX=${PREFIX} -DUSER_INCLUDE_PATH=${PREFIX}/include -DUSER_LIBRARY_PATH=${PREFIX}/lib"
+    ARGUMENT="-DMYPREFIX=${PREFIX} -DCMAKE_INSTALL_PREFIX=${PREFIX} -DUSER_INCLUDE_PATH=${PREFIX}/include -DUSER_LIBRARY_PATH=${PREFIX}/lib"
 
+else
+    ARGUMENT="-DMYPREFIX=/usr/local"
 fi
 
 cd ${CUR_DIR}

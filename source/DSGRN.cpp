@@ -53,7 +53,7 @@ Parameter
 parse_parameter ( std::string const& s ) {
   Parameter p;
   if ( s[0] >= '0' && s[0] <= '9' ) {
-    ParameterGraph pg ( network, "./data/logic/" );
+    ParameterGraph pg ( network );
     p = pg . parameter ( std::stoll(s) );   
   } else {
     p = Parameter ( network );
@@ -64,14 +64,14 @@ parse_parameter ( std::string const& s ) {
 
 void parameter ( int argc, char * argv [] ) {
   if ( argc == 2 ) {
-    ParameterGraph pg ( network, "./data/logic/" );
+    ParameterGraph pg ( network );
     uint64_t N = pg . size ();
     std::cout << "There are " << N << " parameters.\n";
     return;
   }
   std::string command = argv[2];
   if ( command == "list" ) {
-    ParameterGraph pg ( network, "./data/logic/" );
+    ParameterGraph pg ( network );
     uint64_t N = pg . size ();
     for ( uint64_t i = 0; i < N; ++ i ) {
       Parameter p = pg . parameter ( i );
@@ -92,7 +92,7 @@ void parameter ( int argc, char * argv [] ) {
     std::cout << p . stringify ();
   }
   if ( command == "index" ) {
-    ParameterGraph pg ( network, "./data/logic/" );
+    ParameterGraph pg ( network );
     std::cout << pg . index ( p );
   }
 }

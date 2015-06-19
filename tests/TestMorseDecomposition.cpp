@@ -20,7 +20,7 @@ int main ( int argc, char * argv [] ) {
 
   // Construct a parameter graph
   std::cout << "Construct parameter graph.\n";
-  ParameterGraph pg ( network, "../data/logic/" );
+  ParameterGraph pg ( network );
 
   // Fetch a random parameter from the parameter graph
   std::cout << "Fetch random parameter.\n";

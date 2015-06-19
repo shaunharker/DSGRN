@@ -13,7 +13,7 @@ int main ( int argc, char * argv [] ) {
   if ( argc < 2 ) filename = "networks/network2.txt";
   else filename = argv[1];
   Network network ( filename );
-  ParameterGraph pg ( network, "../data/logic/" );
+  ParameterGraph pg ( network );
   std::cout << pg << "\n";
   uint64_t N = pg . size ();
   for ( uint64_t i = 0; i < N; ++ i ) {
