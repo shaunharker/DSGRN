@@ -26,10 +26,11 @@ The prerequisites are:
 * C++11 compiler
 * Boost 1.58
 * sqlite3 
+* cmake
 
 For distributed computations, OpenMPI is also required.
 
-TIP: For Mac OS X: C++11 comes along with the standard command line tools. Sqlite3 is also packaged along with Mac OS X. For Boost and OpenMPI I recommend using the "homebrew" installer.
+TIP: For Mac OS X: C++11 comes along with the standard command line tools. Sqlite3 is also packaged along with Mac OS X. For Boost, cmake, and OpenMPI I recommend using the "homebrew" installer.
 
 
 === Step 2. Build DSGRN
