@@ -216,7 +216,7 @@ stringify ( void ) const {
   for ( uint64_t d = 0; d < D; ++ d ) {
     if ( d > 0 ) ss << ",";
     ss << "[\"" << network() . name ( d ) << "\"," 
-       << data_ -> logic_[d] <<","<< data_ -> order_[d] << "]";
+       << data_ -> logic_[d] << "," << data_ -> order_[d] << "]";
   }
   ss << "]";
   return ss . str ();

@@ -300,7 +300,36 @@ _parse ( std::vector<std::string> const& lines ) {
 }
 
 INLINE_IF_HEADER_ONLY std::ostream& operator << ( std::ostream& stream, Network const& network ) {
-  stream << network . graphviz ();
+  stream << "[";
+  bool first1 = true;
+  for ( uint64_t v = 0; v < network.size (); ++ v ) {
+    if ( first1 ) first1 = false; else stream << ",";
+    stream << "[\"" << network.name(v) << "\","; // node
+    std::vector<std::vector<uint64_t>> logic_struct = network.logic ( v );
+    stream << "["; // logic_struct
+    bool first2 = true;
+    for ( auto const& part : logic_struct ) {
+      if ( first2 ) first2 = false; else stream << ",";
+      stream << "["; // factor
+      bool first3 = true;
+      for ( uint64_t source : part ) {
+        if ( first3 ) first3 = false; else stream << ",";
+        std::string head = network.interaction(source,v) ? "" : "~";
+        stream << "\"" << head << network.name(source) << "\"";
+      }
+      stream << "]"; // factor
+    }
+    stream << "],"; // logic_struct
+    stream << "["; // outputs
+    bool first4 = true;
+    for ( uint64_t target : network.outputs ( v ) ) {
+      if ( first4 ) first4 = false; else stream << ",";
+      stream << "\"" << network.name(target) << "\"";
+    }
+    stream << "]"; // outputs 
+    stream << "]"; // node
+  }  
+  stream << "]"; // network
   return stream;
 }
 

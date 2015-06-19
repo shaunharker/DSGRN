@@ -36,7 +36,7 @@ assign ( Network const& network, std::string const& path ) {
     data_ -> reorderings_ *= data_ -> order_place_values_ . back ();
     std::vector<std::vector<uint64_t>> const& logic_struct = data_ -> network_ . logic ( d );
     std::stringstream ss;
-    ss << path << n <<  "_" << m;
+    ss << path << "/" << n <<  "_" << m;
     for ( auto const& p : logic_struct ) ss <<  "_" << p.size();
     ss << ".dat";
     //std::cout << "Acquiring logic data in " << ss.str() << "\n";

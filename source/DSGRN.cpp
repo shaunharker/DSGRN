@@ -34,6 +34,9 @@ void helpmessage ( void ) {
                "   dsgrn [network NETWORKFILE] morsegraph (graphviz|json) PARAMETER\n"
                "      Computes the Morse graph corresponding to the\n"
                "      provided parameter and outputs in specified form.      \n\n"
+               "   dsgrn [network NETWORKFILE] analyze morseset NUMBER PARAMETER\n"
+               "      Returns a digraph associated with the indicated Morse set along\n"
+               "      with other information\n"
                " Notes:  The notation [] means optional. The notation (a|b|c) means to\n"
                "         write either a, b, or c.\n"
                "         NETWORKFILE indicates the filename of the network file. \n"
@@ -167,6 +170,61 @@ void morsegraph ( int argc, char * argv [] ) {
   } 
 }
 
+void analyze ( int argc, char * argv [] ) {
+  std::string command = argv[2];
+  if ( command == "morseset" ) {
+    std::string ms_index_str = argv[3];
+    int64_t ms_index = std::stoll(ms_index_str);
+    std::string s = argv[4];
+    Parameter p = parse_parameter ( s );
+    DomainGraph dg ( p );
+    MorseDecomposition md ( dg . digraph () );
+    MorseGraph mg ( dg, md );  
+    if ( md . recurrent () . size () < ms_index ) {
+      std::cout << "Invalid Morse set: There are only " << md . recurrent () . size () << " morse sets.\n";
+      return;
+    }
+    std::stringstream ss;
+    ss << "{\"network\":" << network << ",\"parameter\":" << p . stringify () << ",";
+    ss << "\"graph\":";
+    std::vector<uint64_t> vertices;
+    std::unordered_map<uint64_t, uint64_t> reindex;
+    for ( uint64_t v : md . recurrent () [ ms_index ] ) {
+      reindex [ v ] = vertices . size ();
+      vertices . push_back ( v );
+    }
+    ss << "[";
+    bool outerfirst = true;
+    for ( uint64_t v : vertices ) {
+      if ( outerfirst ) outerfirst = false; else ss << ",";
+      ss << "[";
+      bool innerfirst = true;
+      for ( uint64_t u : dg . digraph () . adjacencies ( v ) ) {
+        if ( reindex . count ( u ) ) {
+          if ( innerfirst ) innerfirst = false; else ss << ",";
+          ss << reindex[u];
+        }
+      }
+      ss << "]";
+    }
+    ss << "],";
+    ss << "\"cells\":";
+    ss << "[";
+    uint64_t N = vertices . size ();
+    Domain dom ( p . network () . domains () );
+    outerfirst = true;
+    for ( uint64_t i = 0; i < N; ++ i ) {
+      if ( outerfirst ) outerfirst = false; else ss << ",";
+      dom . setIndex ( vertices [ i ] );
+      ss << dom;
+    }
+    ss << "]}";
+    std::cout << ss . str () << "\n";
+  } else {
+    std::cout << "Unrecognized command: analyze " << command << "\n";
+  }
+}
+
 int load_network_from_session ( void ) {
   std::ifstream infile ( "dsgrn.session" );
   if ( not infile ) {
@@ -257,6 +315,11 @@ int main ( int argc, char * argv [] ) {
       (command == "MorseGraph") ||
       (command == "morsegraph") ) {
     morsegraph ( argc, argv );
+    return 0;
+  }
+
+  if ( command == "analyze" ) {
+    analyze ( argc, argv );
     return 0;
   }
 

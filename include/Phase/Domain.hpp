@@ -106,7 +106,7 @@ operator << ( std::ostream& stream, Domain const& dom ) {
     bool first = true;
     for ( uint64_t d = 0; d < dom . size (); ++ d ) {
       if ( first ) first = false; else stream << ",";
-      stream << dom[d];
+      stream << "[" << dom[d] << "," << dom[d]+1 << "]";
     }
     stream << "]";
 return stream;

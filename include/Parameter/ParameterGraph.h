@@ -21,14 +21,14 @@ public:
   ///   Assign a network to the parameter graph
   ///   Search in path for logic .dat files
   ParameterGraph ( Network const& network, 
-                   std::string const& path = std::string("./data/logic/") );
+                   std::string const& path = std::string("/usr/local/share/DSGRN/logic") );
 
   /// assign
   ///   Assign a network to the parameter graph
   ///   Search in path for logic .dat files
   void
   assign ( Network const& network, 
-           std::string const& path = std::string("./data/logic/") );
+           std::string const& path = std::string("/usr/local/share/DSGRN/logic") );
 
   /// size
   ///   Return the number of parameters
