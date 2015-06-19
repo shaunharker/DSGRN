@@ -1,5 +1,5 @@
-DSGRN Technical Documentation
-=============================
+DSGRN Documentation
+===================
 Shaun Harker <sharker@math.rutgers.edu>
 v1.0, 2015-05-21
 :toc: right
@@ -10,6 +10,82 @@ v1.0, 2015-05-21
 == Purpose
 
 Here we document technical information regarding the https://github.com/shaunharker/DSGRN[DSGRN] (_Dynamic Signatures for Genetic Regulatory Networks_) project.
+
+== Installation
+
+The installation proceeds in three stages.
+
+1. Install the prerequisites.
+2. Build and install the DSGRN software.
+3. Compute/acquire "logic" resources and put them in place.
+
+=== Step 1. Install Prerequisites
+
+The prerequisites are:
+
+* C++11 compiler
+* Boost 1.58
+* sqlite3 
+
+For distributed computations, OpenMPI is also required.
+
+TIP: For Mac OS X: C++11 comes along with the standard command line tools. Sqlite3 is also packaged along with Mac OS X. For Boost and OpenMPI I recommend using the "homebrew" installer.
+
+
+=== Step 2. Build DSGRN
+
+After the prerequisites are installed, cd to the main DSGRN directory and type the following:
+
+```bash
+./install.sh
+```
+
+This will attempt to install the program "dsgrn" into 
+```bash
+  /usr/local/bin
+```
+and libraries into 
+```bash
+  /usr/local/lib.
+```
+
+If this is not suitable, you can do the following instead:
+
+```bash
+./install.sh /some/other/path
+```
+
+which will put things in
+
+```bash
+/some/other/path/bin
+/some/other/path/lib
+```
+
+=== Step 3. Logic Resources
+
+In order for the software to work, certain resource files must be created or otherwise obtained and put into place into either the default location
+```bash
+  /usr/local/share/DSGRN/logic
+```
+or else if you used an alternative installation prefix, e.g. `/some/other/path`, then you must put these resource files in 
+```bash
+  /some/other/path/share/DSGRN/logic
+```
+To obtain these resource files there are two options:
+
+A) Build them yourself.
+```bash
+cd software/NetworkLogic
+make
+./NetworkLogic
+## wait
+mkdir -p /usr/local/share/DSGRN/logic
+cp *.dat /usr/local/share/DSGRN/logic
+```
+Once again `/usr/local` will be `/some/other/path` for non-standard installs.
+
+B) Download them from somewhere else where they have already been built and put them in place. (Currently they are not publicly hosted, however.)
 
 
 == Network Components
