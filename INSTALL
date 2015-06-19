@@ -1,0 +1,47 @@
+
+The installation proceeds in three stages.
+First, install the prerequisites.
+Second, build and install the DSGRN software.
+Third, emplace the "logic" resources.
+
+Step 1. Install Prerequisites
+
+The prerequisites are:
+
+C++11 compiler
+Boost 1.58
+Open MPI
+
+For Mac OS X: 
+  C++11 comes along with the standard command line tools.
+  For Boost and OpenMPI I recommend using the "homebrew" installer.
+
+
+Step 2. Build DSGRN
+
+After the prerequisites are installed, cd to the main DSGRN directory and type the following:
+
+make
+make test       # optional
+make install
+
+"make install" will copy a binary "dsgrn" into /usr/local/bin
+and it will copy libraries into /usr/local/lib.
+
+In order for the software to work, certain resource files must also be
+put into place into /usr/local/share/DSGRN/logic
+
+To obtain these resource files there are two options:
+
+1. Build them yourself.
+
+cd software/NetworkLogic
+make
+./NetworkLogic
+## wait
+mkdir /usr/local/share/DSGRN/logic
+cp *.dat /usr/local/share/DSGRN/logic
+
+2. Download them from somewhere and put them in place.
+(Currently they are not publicly hosted.)
+
