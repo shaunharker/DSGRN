@@ -13,7 +13,13 @@ Here we document technical information regarding the https://github.com/shaunhar
 
 == Installation
 
-The installation proceeds in three stages.
+To obtain the software from the repository, change directory to where every you want the `DSGRN` folder to be on your system, and type (assuming you have `git`)
+
+```bash
+git clone https://github.com/shaunharker/DSGRN
+```
+
+From here, the installation proceeds in three stages.
 
 1. Install the prerequisites.
 2. Build and install the DSGRN software.
@@ -24,7 +30,7 @@ The installation proceeds in three stages.
 The prerequisites are:
 
 * C++11 compiler
-* Boost 1.58
+* Boost 1.58 (or higher)
 * sqlite3 
 * cmake
 
