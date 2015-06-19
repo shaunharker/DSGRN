@@ -1,1 +1,1 @@
-dsgrn network ../networks/4D_Model2.txt morsegraph graphviz '[["X",[3,3,"FF8EC8"],[2,0,1]],["Y1",[1,1,"2"],[0]],["Y2",[1,1,"2"],[0]],["Z",[1,1,"2"],[0]]]'
+dsgrn network ../networks/4D_Example.txt morsegraph graphviz '[["X",[3,3,"FF8EC8"],[2,0,1]],["Y1",[1,1,"2"],[0]],["Y2",[1,1,"2"],[0]],["Z",[1,1,"2"],[0]]]'
