@@ -1,9 +1,7 @@
 # add the executable
 
 set ( LIBS      ${LIBS}
-                boost_system
-                boost_thread
-                boost_serialization 
+                ${Boost_LIBRARIES}
                 sqlite3 )
 
 add_library ( libdsgrn STATIC library.cpp )

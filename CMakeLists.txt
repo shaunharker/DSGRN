@@ -15,7 +15,10 @@ add_definitions( -DINSTALLPREFIX="${MYPREFIX}" )
 
 MESSAGE( STATUS "Chose the following prefix: " ${MYPREFIX} )
 
-include_directories( ./include /usr/local/include /opt/local/include ${USER_INCLUDE_PATH} )
+# Boost support
+find_package(Boost 1.58.0 REQUIRED COMPONENTS system thread serialization)
+
+include_directories( ./include /usr/local/include /opt/local/include ${Boost_INCLUDE_DIRS} ${USER_INCLUDE_PATH} )
 
 link_directories( ${USER_LIBRARY_PATH} /usr/local/lib /opt/local/lib )
 
