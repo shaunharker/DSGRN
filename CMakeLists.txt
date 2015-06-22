@@ -11,19 +11,13 @@ else()
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -stdlib=libc++ -O3 -DNDEBUG")
 endif()
 
-# Append directories in case people use MacPorts
-list(APPEND CMAKE_LIBRARY_PATH /opt/local/lib)
-list(APPEND CMAKE_INCLUDE_PATH /opt/local/include)
-
 add_definitions( -DINSTALLPREFIX="${MYPREFIX}" )
 
 MESSAGE( STATUS "Chose the following prefix: " ${MYPREFIX} )
 
-include_directories( ./include 
-                     /usr/local/include
-		                 ${USER_INCLUDE_PATH} )
+include_directories( ./include /usr/local/include /opt/local/include ${USER_INCLUDE_PATH} )
 
-link_directories( ${USER_LIBRARY_PATH} /usr/local/lib )
+link_directories( ${USER_LIBRARY_PATH} /usr/local/lib /opt/local/lib )
 
 
 # Tell it where to put the products
