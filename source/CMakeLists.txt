@@ -12,7 +12,7 @@ set_target_properties( libdsgrnshared PROPERTIES OUTPUT_NAME dsgrn )
 target_link_libraries ( libdsgrnshared ${LIBS} )
 
 add_executable ( dsgrn DSGRN.cpp )
-target_link_libraries ( dsgrn ${LIBS} libdsgrn )
+target_link_libraries ( dsgrn libdsgrn ${LIBS} )
 
 install(TARGETS dsgrn libdsgrn libdsgrnshared
         RUNTIME DESTINATION bin
