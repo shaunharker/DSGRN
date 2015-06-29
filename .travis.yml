@@ -1,4 +1,4 @@
-#sudo: false
+sudo: false
 language: cpp
 compiler:
   - gcc
@@ -20,9 +20,13 @@ notifications:
     on_success: change
     on_failure: always
 before_install:
+# boost
   - ./.install/boost.sh thread,system,serialization `pwd`
-  - sudo ./.install/sqlite3.sh
-  - sudo pip install cpp-coveralls
+# sqlite3
+  - ./.install/sqlite3.sh ./ 
+# cpp-coveralls
+  - export PATH=$HOME/.local/bin:$PATH
+  - pip install cpp-coveralls --user `whoami`
 script: 
   - ./software/NetworkLogic/install.sh `pwd`
   - mkdir -p share/DSGRN/logic
