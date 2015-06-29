@@ -1,3 +1,12 @@
+ACKNOWLEDGEMENTS
+================
 
-* SHA-256 C++ code from http://www.zedwood.com/article/cpp-sha256-function. See applicable files for their license details.
+This software includes:
+
+JSON for Modern C++
+Copyright © 2013-2015 Niels Lohmann (MIT License)
+https://github.com/nlohmann/json
+(Note: This has been modified very slightly to give "stringify" method.)
+
+SHA-256 C++ code from http://www.zedwood.com/article/cpp-sha256-function. See applicable files for their license details.
 

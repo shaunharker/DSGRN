@@ -31,7 +31,8 @@
 
 #include "boost/functional/hash.hpp"
 
-#include "Tools/json.h"
 #include "Tools/SHA256.h"
+#include "Tools/json.hpp"
+using json = nlohmann::json;
 
 #endif

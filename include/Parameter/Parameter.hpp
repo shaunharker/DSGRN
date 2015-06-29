@@ -224,16 +224,15 @@ stringify ( void ) const {
 
 INLINE_IF_HEADER_ONLY void Parameter::
 parse ( std::string const& str ) {
-  std::shared_ptr<JSON::Array> json = JSON::toArray(JSON::parse(str));
+  json p = json::parse(str);
   data_ -> logic_ . clear ();
   data_ -> order_ . clear ();
-  for ( auto value : *json ) {
+  for ( auto network_node : p ) {
     data_ -> logic_ . push_back ( LogicParameter () );
     data_ -> order_ . push_back ( OrderParameter () );
-    std::shared_ptr<JSON::Array> node = toArray(value);
     // (*node)[0] has node name, which we ignore.
-    data_ -> logic_ . back() . parse ( JSON::stringify ( (*node)[1] ));
-    data_ -> order_ . back() . parse ( JSON::stringify ( (*node)[2] ));
+    data_ -> logic_ . back() . parse ( json::stringify ( network_node[1] )); //TODO inefficient
+    data_ -> order_ . back() . parse ( json::stringify ( network_node[2] )); //TODO inefficient
   }
 }
 

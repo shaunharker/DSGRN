@@ -30,9 +30,9 @@ INLINE_IF_HEADER_ONLY std::string MorseGraph::
 stringify ( void ) const {
   std::stringstream ss;
   ss << "{\"poset\":";
-  ss << data_ ->poset_ . stringify ();
+  ss << data_ -> poset_ . stringify ();
   ss << ",\"annotations\":[";
-  uint64_t N = data_ ->poset_ . size ();
+  uint64_t N = data_ -> poset_ . size ();
   bool first = true;
   for ( uint64_t v = 0; v < N; ++ v ) {
     if ( first ) first = false; else ss << ",";
@@ -44,14 +44,13 @@ stringify ( void ) const {
 
 INLINE_IF_HEADER_ONLY void MorseGraph::
 parse ( std::string const& str ) {
-  std::shared_ptr<JSON::Object> json = JSON::toObject(JSON::parse(str));
-  data_ -> poset_ . parse ( JSON::stringify ( (*json)[std::string("poset")] ));
+  json mg = json::parse(str);
+  data_ -> poset_ . parse ( json::stringify ( mg["poset"] )); //TODO: inefficient
   data_ -> annotations_ . clear ();
-  std::shared_ptr<JSON::Array> annotation_array = 
-    JSON::toArray((*json)[std::string("annotations")]);
-  uint64_t N = annotation_array -> size ();
+  json annotation_array = mg["annotations"];
+  uint64_t N = annotation_array . size ();
   for ( uint64_t v = 0; v < N; ++ v ) {
-    data_ ->annotations_ [ v ] . parse ( JSON::stringify ( (*annotation_array)[v] ));
+    data_ -> annotations_ [ v ] . parse ( json::stringify ( annotation_array[v] )); //TODO: inefficient
   } 
 }
 

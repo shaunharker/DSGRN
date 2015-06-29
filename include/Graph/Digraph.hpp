@@ -68,14 +68,14 @@ stringify ( void ) const {
 
 INLINE_IF_HEADER_ONLY void Digraph::
 parse ( std::string const& str ) {
-  std::shared_ptr<JSON::Array> array = JSON::toArray(JSON::parse(str));
-  uint64_t N = array -> size ();
+  json array = json::parse(str);
+  uint64_t N = array . size ();
   data_ -> adjacencies_ . clear ();
   data_ -> adjacencies_ . resize ( N );
   for ( uint64_t source = 0; source < N; ++ source ) {
-    std::shared_ptr<JSON::Array> adjlist = JSON::toArray((*array)[source]);
-    for ( auto target : *adjlist ) {
-      data_ -> adjacencies_[source] . push_back ( *JSON::toInteger(target) );
+    json adjlist = array[source];
+    for ( auto target : adjlist ) {
+      data_ -> adjacencies_[source] . push_back ( target );
     }
   }
 }

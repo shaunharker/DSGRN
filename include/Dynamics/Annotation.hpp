@@ -56,12 +56,10 @@ return ss . str ();
 
 INLINE_IF_HEADER_ONLY void Annotation::
 parse ( std::string const& str ) {
-  std::shared_ptr<JSON::Array> array = JSON::toArray(JSON::parse(str));
+  json array = json::parse(str);
   data_ -> annotations_ . clear ();
-  uint64_t N = array -> size ();
-  for ( uint64_t v = 0; v < N; ++ v ) {
-    std::shared_ptr<JSON::String> js = JSON::toString((*array)[v]);
-    data_ -> annotations_ . push_back ( *js );
+  for ( std::string const& s : array ) {
+    data_ -> annotations_ . push_back ( s );
   } 
 }
 
