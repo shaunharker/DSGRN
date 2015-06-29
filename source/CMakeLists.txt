@@ -11,7 +11,7 @@ add_library ( libdsgrnshared SHARED library.cpp )
 set_target_properties( libdsgrnshared PROPERTIES OUTPUT_NAME dsgrn )
 target_link_libraries ( libdsgrnshared ${LIBS} )
 
-add_executable ( dsgrn dsgrn.cpp )
+add_executable ( dsgrn DSGRN.cpp )
 target_link_libraries ( dsgrn ${LIBS} libdsgrn )
 
 install(TARGETS dsgrn libdsgrn libdsgrnshared
