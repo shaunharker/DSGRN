@@ -26,7 +26,7 @@ mkdir build
 cd build
 # Note: we pass `which g++` because apparently
 #  CMake doesn't necessarily pick the compiler on the path
-cmake -DCMAKE_CXX_COMPILER=`which g++` $ARGUMENT ..
+cmake $ARGUMENT ..
 make || exit 1
 make install || exit 1
 make test || exit 1
