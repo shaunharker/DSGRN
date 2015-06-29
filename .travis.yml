@@ -1,4 +1,4 @@
-sudo: false
+#sudo: false
 language: cpp
 compiler:
   - gcc
@@ -10,7 +10,6 @@ addons:
     sources:
     - ubuntu-toolchain-r-test
     packages:
-    - sqlite3
     - gcc-4.8
     - g++-4.8
     - clang
@@ -28,5 +27,7 @@ before_install:
   - ./bootstrap.sh --with-libraries=thread,system,serialization > /dev/null
   - ./b2 --prefix=../ install > /dev/null
   - cd ..
-  - dpkg -s sqlite3
-  
+  # The default version of sqlite on travis doesn't support bulk inserts.
+  - sudo apt-add-repository -y ppa:travis-ci/sqlite3
+  - sudo apt-get -y update
+  - sudo apt-get -y install sqlite3=3.7.15.1-1~travis1
