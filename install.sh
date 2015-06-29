@@ -1,9 +1,7 @@
 #!/bin/bash
 CUR_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 if [ $# -ge 1 ]; then
-    # The user supplied an argument
     PREFIX=${1}
-    # Get absolute path name of install directory
     mkdir -p "${PREFIX}" 2> /dev/null
     cd "${PREFIX}" > /dev/null 2>&1
     if [ $? != 0 ] ; then
@@ -20,12 +18,16 @@ else
     ARGUMENT="-DMYPREFIX=/usr/local"
 fi
 
+if [ $# -ge 2 ]; then
+    ARGUMENT="$ARGUMENT -DCMAKE_BUILD_TYPE=${2}"
+else
+    ARGUMENT="$ARGUMENT -DCMAKE_BUILD_TYPE=Release"
+fi
+
 cd ${CUR_DIR}
 rm -rf build
 mkdir build
 cd build
-# Note: we pass `which g++` because apparently
-#  CMake doesn't necessarily pick the compiler on the path
 cmake $ARGUMENT ..
 make || exit 1
 make install || exit 1
