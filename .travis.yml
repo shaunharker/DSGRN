@@ -1,0 +1,15 @@
+language: cpp
+compiler:
+  - gcc
+  - clang
+script: install.sh
+notifications:
+  email:
+    recipients:
+      - sharker81@gmail.com
+    on_success: change
+    on_failure: always
+before_script:
+  - sudo apt-get update -qq
+  - sudo apt-get install libboost-thread-dev libboost-system-dev libboost-serialization-dev
+  - sudo apt-get install -qq cmake sqlite3
