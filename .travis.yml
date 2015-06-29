@@ -2,7 +2,7 @@ language: cpp
 compiler:
   - gcc
   - clang
-script: install.sh
+script: sudo ./install.sh
 notifications:
   email:
     recipients:
