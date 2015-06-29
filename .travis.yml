@@ -33,6 +33,6 @@ before_install:
 script: 
   - ./software/NetworkLogic/install.sh
   - mkdir -p share/DSGRN/logic
-  - ./software/NetworkLogic/NetworkLogic 4
+  - ./software/NetworkLogic/bin/NetworkLogic 4
   - cp *.dat share/DSGRN/logic/
   - ./install.sh ./
