@@ -28,3 +28,5 @@ before_install:
   - ./bootstrap.sh --with-libraries=thread,system,serialization > /dev/null
   - ./b2 --prefix=../ install > /dev/null
   - cd ..
+  - dpkg -s sqlite3
+  
