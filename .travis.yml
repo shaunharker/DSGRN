@@ -2,9 +2,9 @@ sudo: false
 language: cpp
 compiler:
   - gcc
-  - clang
-install:
-- if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
+#  - clang
+#install:
+#- if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
 addons:
   apt:
     sources:
@@ -12,7 +12,8 @@ addons:
     packages:
     - gcc-4.8
     - g++-4.8
-    - clang
+    - gcov-4.8
+#    - clang
 notifications:
   email:
     recipients:
@@ -28,6 +29,8 @@ before_install:
   - export PATH=$HOME/.local/bin:$PATH
   - pip install cpp-coveralls --user `whoami`
 script: 
+  - which gcc
+  - which gcov
   - ./software/NetworkLogic/install.sh `pwd`
   - mkdir -p share/DSGRN/logic
   - ./software/NetworkLogic/bin/NetworkLogic 4
