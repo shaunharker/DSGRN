@@ -71,5 +71,7 @@ add_subdirectory (source)
 #########
 
 enable_testing()
-add_test( all ../tests/test.sh )
-
+add_test( test1 ../tests/test.sh test1 )
+add_test( test2 ../tests/test.sh test2 )
+add_test( test3 ../tests/test.sh test3 )
+add_test( test4 ../tests/test.sh test4 )
