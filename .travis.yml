@@ -1,16 +1,28 @@
+sudo: false
 language: cpp
 compiler:
   - gcc
   - clang
-script: sudo ./install.sh
+install:
+- if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
+addons:
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test
+    - boost-latest
+    packages:
+    - libboost-thread1.55-dev
+    - libboost-system1.55-dev
+    - libboost-serialization1.55-dev
+    - sqlite3
+    - gcc-4.8
+    - g++-4.8
+    - clang
+script: ./install.sh ./
 notifications:
   email:
     recipients:
       - sharker81@gmail.com
     on_success: change
     on_failure: always
-before_script:
-  - sudo add-apt-repository ppa:boost-latest/ppa -y
-  - sudo apt-get update -qq
-  - sudo apt-get install libboost-thread1.55-dev libboost-system1.55-dev libboost-serialization1.55-dev
-  - sudo apt-get install -qq cmake sqlite3
+

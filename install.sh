@@ -27,6 +27,6 @@ cd build
 # Note: we pass `which g++` because apparently
 #  CMake doesn't necessarily pick the compiler on the path
 cmake -DCMAKE_CXX_COMPILER=`which g++` $ARGUMENT ..
-make
-make install
-make test || echo "One or more tests failed."
+make || exit 1
+make install || exit 1
+make test || exit 1
