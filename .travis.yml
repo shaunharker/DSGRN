@@ -35,6 +35,6 @@ script:
   - mkdir -p share/DSGRN/logic
   - ./software/NetworkLogic/bin/NetworkLogic 4
   - cp *.dat share/DSGRN/logic/
-  - export PATH=$PATH:`pwd`
+  - export PATH=$PATH:`pwd`/bin
   - ./install.sh ./
   - cat build/Testing/Temporary/LastTest.log
