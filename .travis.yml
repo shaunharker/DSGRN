@@ -36,3 +36,4 @@ script:
   - ./software/NetworkLogic/bin/NetworkLogic 4
   - cp *.dat share/DSGRN/logic/
   - ./install.sh ./
+  - cat build/Testing/Temporary/LastTest.log
