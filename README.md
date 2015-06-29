@@ -1,6 +1,8 @@
 # DSGRN
 Dynamic Signatures of Gene Regulatory Networks
 
+[![Build Status](https://travis-ci.org/shaunharker/DSGRN.svg?branch=master)](https://travis-ci.org/shaunharker/DSGRN)
+
 This project uses computational dynamics to produce
 dynamical surveys of switching models of gene regulatory 
 networks. The resulting data is stored into a database
