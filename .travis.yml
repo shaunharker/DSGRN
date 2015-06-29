@@ -9,11 +9,7 @@ addons:
   apt:
     sources:
     - ubuntu-toolchain-r-test
-    - boost-latest
     packages:
-    - libboost-thread1.55-dev
-    - libboost-system1.55-dev
-    - libboost-serialization1.55-dev
     - sqlite3
     - gcc-4.8
     - g++-4.8
@@ -25,4 +21,11 @@ notifications:
       - sharker81@gmail.com
     on_success: change
     on_failure: always
+before_install:
+  - wget http://downloads.sourceforge.net/project/boost/boost/1.58.0/boost_1_58_0.tar.bz
+  - tar xfz boost_1_58_0.tar.bz
+  - cd boost_1_58_0
+  - ./bootstrap.sh --with-libraries=thread,system,serialization
+  - ./b2 --prefix=../ install
+  - cd ..
 

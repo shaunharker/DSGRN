@@ -30,7 +30,7 @@ message( STATUS "Chose the following prefix: " ${MYPREFIX} )
 # Packages #
 ############
 
-find_package(Boost 1.55.0 REQUIRED COMPONENTS system thread serialization)
+find_package(Boost 1.58.0 REQUIRED COMPONENTS system thread serialization)
 
 #######################
 # Include Directories #
