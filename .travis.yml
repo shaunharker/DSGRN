@@ -37,4 +37,4 @@ script:
   - cp *.dat share/DSGRN/logic/
   - export PATH=$PATH:`pwd`/bin
   - ./install.sh ./
-#  - cat build/Testing/Temporary/LastTest.log
+  - cat build/Testing/Temporary/LastTest.log
