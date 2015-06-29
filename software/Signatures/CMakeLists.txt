@@ -1,6 +1,6 @@
 
 cmake_minimum_required (VERSION 2.6) 
-project (DSGRN) 
+project (DSGRN_Signatures) 
 
 #########
 # rpath #
@@ -14,9 +14,9 @@ set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 #########
 
 if( CMAKE_COMPILER_IS_GNUCXX )
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -O3 -DNDEBUG")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -O3 -DNDEBUG -ftemplate-depth=2048")
 else()
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -stdlib=libc++ -O3 -DNDEBUG")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -stdlib=libc++ -O3 -DNDEBUG -ftemplate-depth=2048")
 endif()
 
 ###############
@@ -31,6 +31,7 @@ message( STATUS "Chose the following prefix: " ${MYPREFIX} )
 ############
 
 find_package(Boost 1.58.0 REQUIRED COMPONENTS system thread serialization)
+find_package(MPI REQUIRED)
 
 #######################
 # Include Directories #
@@ -38,9 +39,11 @@ find_package(Boost 1.58.0 REQUIRED COMPONENTS system thread serialization)
 
 include_directories ( 
   ./include 
+  ../../include
   /usr/local/include 
   /opt/local/include 
   ${Boost_INCLUDE_DIRS} 
+  ${MPI_INCLUDE_PATH}
   ${USER_INCLUDE_PATH} )
 
 #######################
@@ -65,11 +68,3 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 ###########
 
 add_subdirectory (source)
-
-#########
-# Tests #
-#########
-
-enable_testing()
-add_test( all ../tests/test.sh )
-

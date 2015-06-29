@@ -5,10 +5,9 @@
 using namespace sqlite;
 
 int main ( int argc, char * argv [] ) {
-  if ( argc < 4 ) {
+  if ( argc < 3 ) {
     std::cout << "Please supply the following arguments:\n" 
                   " --> network specification file \n"
-                  " --> logic data folder \n"
                   " --> output file \n";
     return 1;
   }
@@ -21,11 +20,10 @@ int main ( int argc, char * argv [] ) {
 void Signatures::
 command_line ( int argc, char * argv [] ) {
   network_spec_filename_ = argv[1];
-  logic_folder_ = argv[2];
-  database_filename_ = argv[3];
+  database_filename_ = argv[2];
   // Load the network file and initialize the parameter graph
   network_ . load ( network_spec_filename_ );
-  pg_ . assign ( network_, logic_folder_ );
+  pg_ . assign ( network_ );
   std::cout << "Parameter Graph size = " << pg_ . size () << "\n";
 }
 
