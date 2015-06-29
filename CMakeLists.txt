@@ -13,11 +13,7 @@ set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 # C++11 #
 #########
 
-if( CMAKE_COMPILER_IS_GNUCXX )
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -O3 -DNDEBUG")
-else()
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -stdlib=libc++ -O3 -DNDEBUG")
-endif()
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -O3 -DNDEBUG")
 
 ###############
 # Definitions #
