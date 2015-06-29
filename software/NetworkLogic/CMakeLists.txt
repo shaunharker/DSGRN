@@ -19,13 +19,6 @@ else()
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -stdlib=libc++ -O3 -DNDEBUG")
 endif()
 
-###############
-# Definitions #
-###############
-
-add_definitions( -DINSTALLPREFIX="${MYPREFIX}" )
-message( STATUS "Chose the following prefix: " ${MYPREFIX} )
-
 ############
 # Packages #
 ############
