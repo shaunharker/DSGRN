@@ -5,6 +5,9 @@ set ( LIBS      ${LIBS}
                 libdsgrn
                 sqlite3 )
 
+add_executable ( TestDomain.x TestDomain.cpp )
+target_link_libraries ( TestDomain.x ${LIBS} )
+
 add_executable ( TestDomainGraph.x TestDomainGraph.cpp )
 target_link_libraries ( TestDomainGraph.x ${LIBS} )
 

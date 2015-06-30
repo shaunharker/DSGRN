@@ -1,6 +1,7 @@
 #!/bin/bash
 DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 cd $DIR
+./TestDomain.x > /dev/null
 ./TestDomainGraph.x > /dev/null
 ./TestMorseGraph.x > /dev/null
 ./TestOrderParameter.x > /dev/null

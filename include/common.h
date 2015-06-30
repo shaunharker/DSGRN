@@ -28,6 +28,8 @@
 #include "boost/serialization/string.hpp"
 #include "boost/serialization/shared_ptr.hpp"
 #include "boost/serialization/unordered_map.hpp"
+#include "boost/archive/text_iarchive.hpp"
+#include "boost/archive/text_oarchive.hpp"
 
 #include "boost/functional/hash.hpp"
 
