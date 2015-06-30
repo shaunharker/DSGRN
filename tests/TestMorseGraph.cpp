@@ -34,6 +34,18 @@ int main ( int argc, char * argv [] ) {
   std::cout << "Construct domain graph.\n";
   DomainGraph dg ( param );
 
+  // Construct the wall graph
+  std::cout << "Construct wall graph.\n";
+  WallGraph wg ( param );
+
+  // Compute the Morse Decomposition
+  std::cout << "Construct Morse Decomposition.\n";
+  MorseDecomposition wmd ( wg . digraph () );
+
+  // Construct Morse Graph
+  std::cout << "Construct Morse Graph\n";
+  MorseGraph wmg ( wg, wmd );
+
   // Compute the Morse Decomposition
   std::cout << "Construct Morse Decomposition.\n";
   MorseDecomposition md ( dg . digraph () );
@@ -50,6 +62,7 @@ int main ( int argc, char * argv [] ) {
 
   // Print the SHA-256 code
   std::cout << "The SHA-256 code for the Morse Graph is \n  " << mg . SHA256() << "\n";
+  std::cout << "The SHA-256 code for the (wall) Morse Graph is \n  " << wmg . SHA256() << "\n";
 
   // Print the Morse Graph JSON
   std::cout << "JSON:\n";
