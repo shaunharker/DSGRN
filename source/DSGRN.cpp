@@ -7,7 +7,7 @@
 
 Network network;
 
-void helpmessage ( void ) {
+int helpmessage ( void ) {
   std::cout << " DSGRN (Dynamic Signatures for Gene Regulatory Networks)\n"
                "     [experimental interface, subject to change]\n"
                " Usage: \n"
@@ -45,6 +45,7 @@ void helpmessage ( void ) {
                "         single quotes to avoid the shell misinterpreting the string.\n"
                " Hint: To save results to a file, use the redirection command >, i.e. \n"
                "       # dsgrn morsegraph 932 > morsegraph.gv \n";
+  return 0;
 }
 
 
@@ -62,12 +63,12 @@ parse_parameter ( std::string const& s ) {
   return p;
 }
 
-void parameter ( int argc, char * argv [] ) {
+int parameter ( int argc, char * argv [] ) {
   if ( argc == 2 ) {
     ParameterGraph pg ( network );
     uint64_t N = pg . size ();
     std::cout << "There are " << N << " parameters.\n";
-    return;
+    return 0;
   }
   std::string command = argv[2];
   if ( command == "list" ) {
@@ -77,67 +78,85 @@ void parameter ( int argc, char * argv [] ) {
       Parameter p = pg . parameter ( i );
       std::cout << p << "\n";
     }
-    return;
+    return 0;
   }
   if ( argc == 3 ) {
     std::cout << "No parameter supplied.\n";
-    return;
+    return 1;
   }
   std::string s = argv[3];
   Parameter p = parse_parameter ( s );
   if ( command == "inequalities" ) {
     std::cout << p . inequalities ();
+    return 0;
   }
   if ( command == "json" ) {
     std::cout << p . stringify ();
+    return 0;
   }
   if ( command == "index" ) {
     ParameterGraph pg ( network );
-    std::cout << pg . index ( p );
+    try { 
+      std::cout << pg . index ( p );
+    } catch ( std::exception & e ) {
+      std::cout << "Feature not yet implemented.\n";
+      return 1;
+    }
+    return 0;
   }
+  std::cout << "Unrecognized command: " + command + "\n";
+  return 1;
 }
 
-void domaingraph ( int argc, char * argv [] ) {
-  std::string command = argv[2];
-  if ( argc == 3 ) {
-    std::cout << "No parameter supplied.\n";
-    return;
+int domaingraph ( int argc, char * argv [] ) {
+  if ( argc <= 3 ) {
+    std::cout << "Not enough arguments.\n";
+    return 1;
   }
+  std::string command = argv[2];
   std::string s = argv[3];
   Parameter p = parse_parameter ( s );
   DomainGraph dg ( p );
   if ( command == "json" ) {
     std::cout << dg . digraph() . stringify ();
+    return 0;
   } 
   if ( command == "graphviz" ) {
     std::cout << dg;
+    return 0;
   } 
+  std::cout << "Unrecognized command: " + command + "\n";
+  return 1;
 }
 
-void wallgraph ( int argc, char * argv [] ) {
-  std::string command = argv[2];
-  if ( argc == 3 ) {
-    std::cout << "No parameter supplied.\n";
-    return;
+int wallgraph ( int argc, char * argv [] ) {
+  if ( argc <= 3 ) {
+    std::cout << "Not enough arguments.\n";
+    return 1;
   }
+  std::string command = argv[2];
   std::string s = argv[3];
   Parameter p = parse_parameter ( s );
   WallGraph wg ( p );
   if ( command == "json" ) {
     std::cout << wg . digraph() . stringify ();
+    return 0;
   } 
   if ( command == "graphviz" ) {
     std::cout << wg;
+    return 0;
   } 
+  std::cout << "Unrecognized command: " + command + "\n";
+  return 1;
 }
 
 
-void morsedecomposition ( int argc, char * argv [] ) {
-  std::string command = argv[2];
-  if ( argc == 3 ) {
-    std::cout << "No parameter supplied.\n";
-    return;
+int morsedecomposition ( int argc, char * argv [] ) {
+  if ( argc <= 3 ) {
+    std::cout << "Not enough arguments.\n";
+    return 1;
   }
+  std::string command = argv[2];
   std::string s = argv[3];
   Parameter p = parse_parameter ( s );
   DomainGraph dg ( p );
@@ -145,18 +164,22 @@ void morsedecomposition ( int argc, char * argv [] ) {
   md . assign ( dg . digraph () );
   if ( command == "json" ) {
     std::cout << md . poset() . stringify ();
+    return 0;
   } 
   if ( command == "graphviz" ) {
     std::cout << md;
+    return 0;
   } 
+  std::cout << "Unrecognized command: " + command + "\n";
+  return 1;
 }
 
-void morsegraph ( int argc, char * argv [] ) {
-  std::string command = argv[2];
-  if ( argc == 3 ) {
-    std::cout << "No parameter supplied.\n";
-    return;
+int morsegraph ( int argc, char * argv [] ) {
+  if ( argc <= 3 ) {
+    std::cout << "Not enough arguments.\n";
+    return 1;
   }
+  std::string command = argv[2];
   std::string s = argv[3];
   Parameter p = parse_parameter ( s );
   DomainGraph dg ( p );
@@ -164,13 +187,21 @@ void morsegraph ( int argc, char * argv [] ) {
   MorseGraph mg ( dg, md );
   if ( command == "json" ) {
     std::cout << mg . stringify ();
+    return 0;
   } 
   if ( command == "graphviz" ) {
     std::cout << mg;
+    return 0;
   } 
+  std::cout << "Unrecognized command: " + command + "\n";
+  return 1;  
 }
 
-void analyze ( int argc, char * argv [] ) {
+int analyze ( int argc, char * argv [] ) {
+  if ( argc <= 4 ) {
+    std::cout << "Not enough arguments.\n";
+    return 1;
+  }
   std::string command = argv[2];
   if ( command == "morseset" ) {
     std::string ms_index_str = argv[3];
@@ -182,7 +213,7 @@ void analyze ( int argc, char * argv [] ) {
     MorseGraph mg ( dg, md );  
     if ( md . recurrent () . size () < ms_index ) {
       std::cout << "Invalid Morse set: There are only " << md . recurrent () . size () << " morse sets.\n";
-      return;
+      return 1;
     }
     std::stringstream ss;
     ss << "{\"network\":" << network << ",\"parameter\":" << p . stringify () << ",";
@@ -220,9 +251,10 @@ void analyze ( int argc, char * argv [] ) {
     }
     ss << "]}";
     std::cout << ss . str () << "\n";
-  } else {
-    std::cout << "Unrecognized command: analyze " << command << "\n";
+    return 0;
   }
+  std::cout << "Unrecognized command: analyze " << command << "\n";
+  return 1;
 }
 
 int load_network_from_session ( void ) {
@@ -241,20 +273,17 @@ int load_network_from_session ( void ) {
 int main ( int argc, char * argv [] ) {
 
   if ( argc == 1 ) {
-    helpmessage ();
-    return 0;
+    return helpmessage ();
   }
 
   std::string command ( argv[1] );
   if ( command == "help" ) {
-    helpmessage ();
-    return 0;
+    return helpmessage ();
   }
 
   if ( command == "network" ) {
     if ( argc == 2 ) {
-      helpmessage ();
-      return 0;
+      return helpmessage ();
     }
     std::string filename = argv[2];
     if ( filename == "graphviz" || filename == "draw" ) {
@@ -280,49 +309,41 @@ int main ( int argc, char * argv [] ) {
     }
   } else {
     int rc = load_network_from_session ();
-    if ( rc == 1 ) return rc;
+    if ( rc == 1 ) { 
+      return rc;
+    }
   }
-
-
   if ( (command == "p" ) ||
        (command == "parameter") ) {
-    parameter ( argc, argv );
-    return 0;
+    return parameter ( argc, argv );
   }
   if ((command == "DG") ||
       (command == "dg") ||
       (command == "DomainGraph") ||
       (command == "domaingraph") ) {
-    domaingraph ( argc, argv );
-    return 0;
+    return domaingraph ( argc, argv );
   }
   if ((command == "WG") ||
       (command == "wg") ||
       (command == "WallGraph") ||
       (command == "wallgraph") ) {
-    wallgraph ( argc, argv );
-    return 0;
+    return wallgraph ( argc, argv );
   }
   if ((command == "MD") ||
       (command == "md") ||
       (command == "MorseDecomposition") ||
       (command == "morsedecomposition") ) {
-    morsedecomposition ( argc, argv );
-    return 0;
+    return morsedecomposition ( argc, argv );
   }
   if ((command == "MG") ||
       (command == "mg") ||
       (command == "MorseGraph") ||
       (command == "morsegraph") ) {
-    morsegraph ( argc, argv );
-    return 0;
+    return morsegraph ( argc, argv );
   }
-
   if ( command == "analyze" ) {
-    analyze ( argc, argv );
-    return 0;
+    return analyze ( argc, argv );
   }
-
   std::cout << "Unrecognized command \"" << command << "\"\n";
   return 1;
 }
