@@ -21,19 +21,19 @@ notifications:
     on_failure: always
 before_install:
 # boost
-  - ./.install/boost.sh thread,system,serialization `pwd`
+  - ./.install/boost.sh thread,system,serialization ~
 # sqlite3
-  - ./.install/sqlite3.sh ./ 
+  - ./.install/sqlite3.sh ~ 
 # cpp-coveralls
   - export PATH=$HOME/.local/bin:$PATH
   - pip install cpp-coveralls --user `whoami`
 script: 
-  - ./software/NetworkLogic/install.sh `pwd`
+  - ./software/NetworkLogic/install.sh ~
   - mkdir -p share/DSGRN/logic
   - ./software/NetworkLogic/bin/NetworkLogic 4
   - mv *.dat share/DSGRN/logic/
   - export PATH=$PATH:`pwd`/bin
-  - ./install.sh ./ Debug
+  - ./install.sh ~ Debug
   - cat build/Testing/Temporary/LastTest.log
 after_success: 
   - coveralls -e "include/Tools/SHA256.h" -e "include/Tools/sqlambda.h" -e "include/Tools/json.hpp" -e tests -E ".*lib.*" -E ".*usr.*" -E ".*boost.*" --gcov-options '\-lp' --gcov /usr/bin/gcov-4.8

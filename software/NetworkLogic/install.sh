@@ -13,17 +13,13 @@ if [ $# -ge 1 ]; then
     else
         PREFIX=`pwd -P`
     fi
-    ARGUMENT="-DMYPREFIX=${PREFIX} -DCMAKE_INSTALL_PREFIX=${PREFIX} -DUSER_INCLUDE_PATH=${PREFIX}/include -DUSER_LIBRARY_PATH=${PREFIX}/lib"
-else
-    ARGUMENT="-DMYPREFIX=/usr/local"
+    ARGUMENT="-DCMAKE_INSTALL_PREFIX=${PREFIX} -DUSER_INCLUDE_PATH=${PREFIX}/include -DUSER_LIBRARY_PATH=${PREFIX}/lib"
 fi
 
 cd ${CUR_DIR}
 rm -rf build
 mkdir build
 cd build
-# Note: we pass `which g++` because apparently
-#  CMake doesn't necessarily pick the compiler on the path
 cmake $ARGUMENT ..
 make || exit 1
 make install || exit 1
