@@ -84,14 +84,16 @@ public:
 private: 
   std::shared_ptr<Components_> data_;
 
-  /// serialize
+  /// serialize: save and load
   ///   For use with BOOST Serialization library,
   ///   which is used by the cluster-delegator MPI package
   friend class boost::serialization::access;
   template<class Archive>
-  void serialize(Archive & ar, const unsigned int version) {
-    ar & data_;
-  }
+  void save(Archive & ar, const unsigned int version) const;
+  template<class Archive>
+  void load(Archive & ar, const unsigned int version);
+
+  BOOST_SERIALIZATION_SPLIT_MEMBER()
 };
 
 struct Components_ {
@@ -115,21 +117,35 @@ struct Components_ {
   Component 
   _recurrentComponent ( int64_t rank );
 
-  /// serialize
+  /// serialize: save and load
   ///   For use with BOOST Serialization library,
   ///   which is used by the cluster-delegator MPI package
   friend class boost::serialization::access;
   template<class Archive>
-  void serialize(Archive & ar, const unsigned int version) {
-    ar & vertices_;
-    ar & components_;
-    ar & recurrent_;
-    ar & which_component_;
-    ar & component_select_;
-    ar & recurrent_select_;
-    ar & component_container_;
-    ar & recurrent_container_;
+  void save(Archive & ar, const unsigned int version) const {
+    ar << vertices_;
+    ar << components_;
+    ar << recurrent_;
   }
+
+  template<class Archive>
+  void load(Archive & ar, const unsigned int version) {
+    ar >> vertices_;
+    ar >> components_;
+    ar >> recurrent_;
+  }
+  BOOST_SERIALIZATION_SPLIT_MEMBER()
 };
+
+template<class Archive> void Components::
+save(Archive & ar, const unsigned int version) const {
+  ar << data_;
+}
+
+template<class Archive> void Components::
+load(Archive & ar, const unsigned int version) {
+  ar >> data_;
+  assign ( data_ -> vertices_, data_ -> components_, data_ -> recurrent_ );
+}
 
 #endif

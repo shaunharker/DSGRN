@@ -1,5 +1,6 @@
 #!/bin/bash  
 ./TestAnnotation.x 
+./TestComponents.x
 ./TestWall.x 
 ./TestDomain.x 
 ./TestDomainGraph.x 

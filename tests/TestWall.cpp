@@ -13,6 +13,7 @@ int main ( int argc, char * argv [] ) {
     Wall w2 ( limits, 0, 1 );
     w1 . assign ( limits, 0, 1 );
     if ( w1 . index () != 9 ) return 1;
+    std::cout << w1 << "\n";
     boost::archive::text_oarchive oa(std::cout);
     oa << w1;
   } catch ( ... ) {

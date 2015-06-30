@@ -28,19 +28,10 @@ assign ( std::vector<uint64_t> const& vertices,
          std::vector<bool> const& components,
          std::vector<bool> const& recurrent ) {
   data_ . reset ( new Components_ );
-
-  // for ( uint64_t v : vertices ) {
-  //   std::cout << v << " ";
-  //   if ( v > vertices . size () ) {
-  //     std::cout << "\n";
-  //     abort ();
-  //   }
-  // }
-  // std::cout << "\n";
-
-  data_ -> vertices_ = vertices;
-  data_ -> components_ = components;
-  data_ -> recurrent_ = recurrent;
+  // Beware of self-assignment ( due to serialization )
+  if ( & vertices != & data_ -> vertices_ ) data_ -> vertices_ = vertices;
+  if ( & components != & data_ -> components_ ) data_ -> components_ = components;
+  if ( & recurrent != & data_ -> recurrent_ ) data_ -> recurrent_ = recurrent;
   data_ -> components_ . resize ( components.size() + 1, true );
   data_ -> which_component_ . resize ( vertices . size () );
 
@@ -68,14 +59,6 @@ assign ( std::vector<uint64_t> const& vertices,
   data_ -> component_container_ = boost::make_iterator_range ( componentBegin, componentEnd );
   data_ -> recurrent_container_ = boost::make_iterator_range ( recurrentBegin, recurrentEnd ); 
 
-  // for ( uint64_t i = 0; i < C; ++ i ) {
-  //   auto const& comp = operator [] ( i );
-  //   std::cout << "| ";
-  //   for ( uint64_t v : comp ) {
-  //     std::cout << v << " ";
-  //   }
-  // }
-  // std::cout << "\n";
   for ( uint64_t i = 0; i < C; ++ i ) {
     auto const& comp = operator [] ( i );
     for ( uint64_t v : comp ) {
