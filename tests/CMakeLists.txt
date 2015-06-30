@@ -5,6 +5,12 @@ set ( LIBS      ${LIBS}
                 libdsgrn
                 sqlite3 )
 
+add_executable ( TestAnnotation.x TestAnnotation.cpp )
+target_link_libraries ( TestAnnotation.x ${LIBS} )
+
+add_executable ( TestWall.x TestWall.cpp )
+target_link_libraries ( TestWall.x ${LIBS} )
+
 add_executable ( TestDomain.x TestDomain.cpp )
 target_link_libraries ( TestDomain.x ${LIBS} )
 
@@ -27,6 +33,8 @@ add_executable ( TestOrderParameter.x TestOrderParameter.cpp )
 target_link_libraries ( TestOrderParameter.x ${LIBS} )
 
 install(TARGETS 
+        TestAnnotation.x
+        TestWall.x
         TestDomain.x
         TestDomainGraph.x
         TestMorseGraph.x
