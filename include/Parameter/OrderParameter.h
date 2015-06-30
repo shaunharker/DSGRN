@@ -22,7 +22,7 @@ public:
   OrderParameter ( void );
 
   /// OrderParameter (by index)
-  ///   Initialize to the kth permutation of n items
+  ///   Initialize to the kth permutation of m items
   ///   The permutations are ordered lexicographically
   OrderParameter ( uint64_t m, uint64_t k );
 

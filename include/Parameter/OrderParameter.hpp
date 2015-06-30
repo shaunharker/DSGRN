@@ -157,7 +157,7 @@ _perm_to_tail_rep ( std::vector<uint64_t> const& perm ) {
 
 INLINE_IF_HEADER_ONLY uint64_t OrderParameter:: 
 _tail_rep_to_index ( std::vector<uint64_t> const& tail_rep ) {
-  uint64_t result;
+  uint64_t result = 0;
   uint64_t factorial = 1;
   uint64_t m = tail_rep . size ();
   for ( uint64_t i = 1; i < m; ++ i ) {
