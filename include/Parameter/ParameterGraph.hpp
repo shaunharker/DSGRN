@@ -101,16 +101,12 @@ parameter ( uint64_t index ) const {
 
 INLINE_IF_HEADER_ONLY uint64_t ParameterGraph::
 index ( Parameter const& p ) const {
-  // TODO
-  throw std::runtime_error ( "Feature not implemented" );
-  return 0;
+  throw std::runtime_error ( "Feature not implemented" );  // TODO
 }
 
 INLINE_IF_HEADER_ONLY std::vector<uint64_t> ParameterGraph::
 adjacencies ( uint64_t index ) const {
-  //TODO
-  throw std::runtime_error ( "Feature not implemented" );
-  return std::vector<uint64_t> ();
+  throw std::runtime_error ( "Feature not implemented" );   //TODO
 }
 
 INLINE_IF_HEADER_ONLY Network const ParameterGraph::
@@ -138,8 +134,7 @@ INLINE_IF_HEADER_ONLY uint64_t ParameterGraph::
 _factorial ( uint64_t m ) const {
   static const std::vector<uint64_t> table = 
     { 1, 1, 2, 6, 24, 120, 600, 3600, 25200, 201600};
-  if ( m < 10 ) return table [ m ];
-  return m * _factorial ( m - 1 );
+  if ( m < 10 ) return table [ m ]; else return m * _factorial ( m - 1 );
 }
 
 

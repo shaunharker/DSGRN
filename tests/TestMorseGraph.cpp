@@ -15,7 +15,7 @@ int main ( int argc, char * argv [] ) {
   // Load a network file
   std::cout << "Load network file.\n";
   std::string filename;
-  if ( argc < 2 ) filename = "networks/network2.txt";
+  if ( argc < 2 ) filename = "../networks/5D_Cycle.txt";
   else filename = argv[1];
   Network network ( filename );
 
@@ -26,7 +26,7 @@ int main ( int argc, char * argv [] ) {
   // Fetch a random parameter from the parameter graph
   std::cout << "Fetch random parameter.\n";
   uint64_t N = pg . size ();
-  uint64_t param_index = 43;
+  uint64_t param_index = 150015529;
   Parameter param = pg. parameter ( param_index );
   std::cout << "Chose " << param << "\n";
 
