@@ -17,5 +17,9 @@
 #include "Dynamics/Annotation.h"
 #include "Dynamics/MorseDecomposition.h"
 #include "Dynamics/MorseGraph.h"
+#include "Graph/Digraph.h"
+#include "Graph/Poset.h"
+#include "Graph/Components.h"
+#include "Graph/StrongComponents.h"
 
 #endif

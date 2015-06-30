@@ -1,5 +1,6 @@
 ./TestAnnotation.x 
 ./TestComponents.x
+./TestStrongComponents.x
 ./TestDigraph.x
 ./TestWall.x 
 ./TestDomain.x 
