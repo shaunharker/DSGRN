@@ -41,6 +41,8 @@ dsgrn parameter inequalities 234
 dsgrn analyze morseset 0 0 
 ! dsgrn fail
 ! dsgrn parameter fail
+! dsgrn parameter fail fail
+! dsgrn parameter fail 0
 ! dsgrn parameter inequalities
 ! dsgrn parameter index 0
 ! dsgrn domaingraph

@@ -52,15 +52,20 @@ int helpmessage ( void ) {
 
 Parameter
 parse_parameter ( std::string const& s ) {
-  Parameter p;
-  if ( s[0] >= '0' && s[0] <= '9' ) {
-    ParameterGraph pg ( network );
-    p = pg . parameter ( std::stoll(s) );   
-  } else {
-    p = Parameter ( network );
-    p . parse ( s );
+  try { 
+    Parameter p;
+    if ( s[0] >= '0' && s[0] <= '9' ) {
+      ParameterGraph pg ( network );
+      p = pg . parameter ( std::stoll(s) );   
+    } else {
+      p = Parameter ( network );
+      p . parse ( s );
+    }
+    return p;
+  } catch ( std::exception & e ) {
+    std::cout << "Could not parse \"" + s + "\" as a parameter.\n";
+    throw e;
   }
-  return p;
 }
 
 int parameter ( int argc, char * argv [] ) {
@@ -81,7 +86,7 @@ int parameter ( int argc, char * argv [] ) {
     return 0;
   }
   if ( argc == 3 ) {
-    std::cout << "No parameter supplied.\n";
+    std::cout << "Not enough arguments.\n";
     return 1;
   }
   std::string s = argv[3];
@@ -271,79 +276,82 @@ int load_network_from_session ( void ) {
 }
 
 int main ( int argc, char * argv [] ) {
-
-  if ( argc == 1 ) {
-    return helpmessage ();
-  }
-
-  std::string command ( argv[1] );
-  if ( command == "help" ) {
-    return helpmessage ();
-  }
-
-  if ( command == "network" ) {
-    if ( argc == 2 ) {
+  try { 
+    if ( argc == 1 ) {
       return helpmessage ();
     }
-    std::string filename = argv[2];
-    if ( filename == "graphviz" || filename == "draw" ) {
+
+    std::string command ( argv[1] );
+    if ( command == "help" ) {
+      return helpmessage ();
+    }
+
+    if ( command == "network" ) {
+      if ( argc == 2 ) {
+        return helpmessage ();
+      }
+      std::string filename = argv[2];
+      if ( filename == "graphviz" || filename == "draw" ) {
+        int rc = load_network_from_session ();
+        if ( rc == 1 ) return rc;
+        std::cout << network . graphviz ();
+        return 0;
+      }
+      //std::cout << "loading network " << filename << "\n";
+      network . load ( filename );
+      //std::cout << "setting environment variable...\n";
+      argc -= 2; argv += 2;
+      if ( argc == 1 ) {
+        std::ofstream outfile ( "dsgrn.session" );
+        outfile << filename << "\n";
+        outfile . close ();
+        return 0;
+      }
+      command = argv[1];
+      if ( command == "graphviz" ) {
+        std::cout << network . graphviz ();
+        return 0;
+      }
+    } else {
       int rc = load_network_from_session ();
-      if ( rc == 1 ) return rc;
-      std::cout << network . graphviz ();
-      return 0;
+      if ( rc == 1 ) { 
+        return rc;
+      }
     }
-    //std::cout << "loading network " << filename << "\n";
-    network . load ( filename );
-    //std::cout << "setting environment variable...\n";
-    argc -= 2; argv += 2;
-    if ( argc == 1 ) {
-      std::ofstream outfile ( "dsgrn.session" );
-      outfile << filename << "\n";
-      outfile . close ();
-      return 0;
+    if ( (command == "p" ) ||
+         (command == "parameter") ) {
+      return parameter ( argc, argv );
     }
-    command = argv[1];
-    if ( command == "graphviz" ) {
-      std::cout << network . graphviz ();
-      return 0;
+    if ((command == "DG") ||
+        (command == "dg") ||
+        (command == "DomainGraph") ||
+        (command == "domaingraph") ) {
+      return domaingraph ( argc, argv );
     }
-  } else {
-    int rc = load_network_from_session ();
-    if ( rc == 1 ) { 
-      return rc;
+    if ((command == "WG") ||
+        (command == "wg") ||
+        (command == "WallGraph") ||
+        (command == "wallgraph") ) {
+      return wallgraph ( argc, argv );
     }
+    if ((command == "MD") ||
+        (command == "md") ||
+        (command == "MorseDecomposition") ||
+        (command == "morsedecomposition") ) {
+      return morsedecomposition ( argc, argv );
+    }
+    if ((command == "MG") ||
+        (command == "mg") ||
+        (command == "MorseGraph") ||
+        (command == "morsegraph") ) {
+      return morsegraph ( argc, argv );
+    }
+    if ( command == "analyze" ) {
+      return analyze ( argc, argv );
+    }
+    std::cout << "Unrecognized command \"" << command << "\"\n";
+    return 1;
+  } catch ( ... ) {
+    return 1;
   }
-  if ( (command == "p" ) ||
-       (command == "parameter") ) {
-    return parameter ( argc, argv );
-  }
-  if ((command == "DG") ||
-      (command == "dg") ||
-      (command == "DomainGraph") ||
-      (command == "domaingraph") ) {
-    return domaingraph ( argc, argv );
-  }
-  if ((command == "WG") ||
-      (command == "wg") ||
-      (command == "WallGraph") ||
-      (command == "wallgraph") ) {
-    return wallgraph ( argc, argv );
-  }
-  if ((command == "MD") ||
-      (command == "md") ||
-      (command == "MorseDecomposition") ||
-      (command == "morsedecomposition") ) {
-    return morsedecomposition ( argc, argv );
-  }
-  if ((command == "MG") ||
-      (command == "mg") ||
-      (command == "MorseGraph") ||
-      (command == "morsegraph") ) {
-    return morsegraph ( argc, argv );
-  }
-  if ( command == "analyze" ) {
-    return analyze ( argc, argv );
-  }
-  std::cout << "Unrecognized command \"" << command << "\"\n";
-  return 1;
 }
