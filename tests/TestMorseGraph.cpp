@@ -68,6 +68,8 @@ int main ( int argc, char * argv [] ) {
   // Print the Morse Graph JSON
   std::cout << "JSON:\n";
   std::cout << mg . stringify () << "\n";
+  std::cout << wmg . stringify () << "\n";
+
   MorseGraph mg2;
   mg2 . parse ( mg . stringify () );
   std::cout << "Reinputting the output:\n";

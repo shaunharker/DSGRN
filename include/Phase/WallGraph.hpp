@@ -25,21 +25,21 @@ INLINE_IF_HEADER_ONLY void WallGraph::
 assign ( Parameter const parameter ) {
   data_ . reset ( new WallGraph_ );
 
-  data_ ->wall_index_to_vertex_ . clear ();
-  data_ ->vertex_to_dimension_ . clear ();
-  data_ ->parameter_ = parameter;
+  data_ -> wall_index_to_vertex_ . clear ();
+  data_ -> vertex_to_dimension_ . clear ();
+  data_ -> parameter_ = parameter;
   int D = parameter . network() . size ();
   std::vector<uint64_t> limits = parameter . network() . domains ();
-  data_ ->digraph_ = Digraph ();
+  data_ -> digraph_ = Digraph ();
   // Make wall indices
   for ( Domain dom (limits); dom.isValid(); ++ dom ) {
     for ( int d = 0; d < D; ++ d ) {
       if ( not dom . isMin(d) ) {
         Wall wall ( dom, d, -1 );
-        uint64_t v = data_ ->digraph_ . add_vertex ();
-        data_ ->wall_index_to_vertex_ [ wall.index() ] = v;
+        uint64_t v = data_ -> digraph_ . add_vertex ();
+        data_ -> wall_index_to_vertex_ [ wall.index() ] = v;
         //std::cout << "Created wall with index " << wall.index() << " = vertex " << v << "\n";
-        data_ ->vertex_to_dimension_ . push_back ( d );
+        data_ -> vertex_to_dimension_ . push_back ( d );
       }
     }
   }
@@ -71,24 +71,25 @@ assign ( Parameter const parameter ) {
     }
     for ( Wall const& x : entrance ) {
       for ( Wall const& y : absorbing ) {
-        uint64_t i = data_ ->wall_index_to_vertex_ [ x.index() ];
-        uint64_t j = data_ ->wall_index_to_vertex_ [ y.index() ]; 
+        uint64_t i = data_ -> wall_index_to_vertex_ [ x.index() ];
+        uint64_t j = data_ -> wall_index_to_vertex_ [ y.index() ]; 
         //std::cout << "Adding wall-wall edge " << i << " -> " << j << "\n";       
-        data_ ->digraph_ . add_edge ( i, j );
+        data_ -> digraph_ . add_edge ( i, j );
       }
     }
     if ( absorbing . empty () ) {
-      uint64_t attract = data_ ->digraph_ . add_vertex ();
-      data_ ->vertex_to_dimension_ . push_back ( D );
+      uint64_t attract = data_ -> digraph_ . add_vertex ();
+      data_ -> digraph_ . add_edge ( attract, attract );
+      data_ -> vertex_to_dimension_ . push_back ( D );
       // (annotations wants to know how many variables pass 1st threshold
       // for domains)
       for ( int d = 0; d < D; ++ d ) {
-        if ( dom [ d ] > 0 ) ++ data_ ->vertex_to_dimension_ [ attract ];
+        if ( dom [ d ] > 0 ) ++ data_ -> vertex_to_dimension_ [ attract ];
       }
       for ( Wall const& x : entrance ) {
-        uint64_t i = data_ ->wall_index_to_vertex_ [ x.index() ];
+        uint64_t i = data_ -> wall_index_to_vertex_ [ x.index() ];
         //std::cout << "Adding wall-domain edge " << i << " -> " << attract << "\n";       
-        data_ ->digraph_ . add_edge ( i, attract );
+        data_ -> digraph_ . add_edge ( i, attract );
       }
     }
   }
