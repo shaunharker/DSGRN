@@ -2,13 +2,7 @@
 /// Shaun Harker
 /// 2015-06-30
 
-#include <iostream>
-#include <vector>
-#include <cstdint>
-#include <memory>
-#include <string>
-#include <fstream>
-
+#include "common.h"
 #include "DSGRN.h"
 
 int main ( int argc, char * argv [] ) {
@@ -41,7 +35,7 @@ int main ( int argc, char * argv [] ) {
 
     // Note:
     //   WallGraph::digraph, WallGraph::annotate tested in TestMorseGraph.cpp
-  } catch ( std::exception& e ) {
+  } catch ( std::exception & e ) {
     std::cout << e . what () << "\n";
     return 1;
   }

@@ -35,12 +35,12 @@ int main ( int argc, char * argv [] ) {
     try { 
       auto adj = pg . adjacencies ( 0 );
     } catch ( ... ) {}
-
-    // Cover not found logic:
     try {
       Network net ( "networks/network4.txt" );
       ParameterGraph pg1 ( net );
     } catch ( ... ) {}
+    boost::archive::text_oarchive oa(std::cout);
+    oa << pg;
   } catch ( std::exception & e ) {
     std::cout << e . what () << "\n";
     return 1;

@@ -2,32 +2,22 @@
 /// Shaun Harker
 /// 2015-05-24
 
-#include <iostream>
-#include <vector>
-#include <cstdint>
-#include <memory>
-#include <string>
-#include <fstream>
-
+#include "common.h"
 #include "DSGRN.h"
 
 int main ( int argc, char * argv [] ) {
   try { 
     // Load a network file
-    std::cout << "Load network file.\n";
-    std::string filename;
-    if ( argc < 2 ) filename = "networks/network2.txt";
-    else filename = argv[1];
-    Network network ( filename );
+    Network network ( "networks/network2.txt" );
 
     // Construct a parameter graph
     std::cout << "Construct parameter graph.\n";
     ParameterGraph pg ( network );
 
     // Fetch a random parameter from the parameter graph
-    std::cout << "Fetch random parameter.\n";
+    std::cout << "Choosing parameter.\n";
     uint64_t N = pg . size ();
-    uint64_t param_index = rand () % N;
+    uint64_t param_index = 43;
     Parameter param = pg . parameter ( param_index );
     std::cout << "Chose " << param << "\n";
 

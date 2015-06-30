@@ -16,7 +16,8 @@ int main ( int argc, char * argv [] ) {
     std::cout << w1 << "\n";
     boost::archive::text_oarchive oa(std::cout);
     oa << w1;
-  } catch ( ... ) {
+  } catch ( std::exception & e ) {
+    std::cout << e . what () << "\n";
     return 1;
   }
   return 0;
