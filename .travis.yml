@@ -28,7 +28,6 @@ before_install:
   - export PATH=$HOME/.local/bin:$PATH
   - pip install cpp-coveralls --user `whoami`
 script: 
-  - which gcov-4.8
   - ./software/NetworkLogic/install.sh `pwd`
   - mkdir -p share/DSGRN/logic
   - ./software/NetworkLogic/bin/NetworkLogic 4
@@ -37,4 +36,4 @@ script:
   - ./install.sh ./ Debug
   - cat build/Testing/Temporary/LastTest.log
 after_success:
-  - coveralls --exclude lib --exclude tests --gcov-options '\-lp' --gcov /usr/bin/gcov-4.8
+  - coveralls --exclude lib --exclude /usr --exclude include/boost --exclude tests --gcov-options '\-lp' --gcov /usr/bin/gcov-4.8
