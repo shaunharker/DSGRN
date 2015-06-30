@@ -35,11 +35,9 @@ int main ( int argc, char * argv [] ) {
 
   // Compute the Morse Decomposition
   std::cout << "Construct Morse Decomposition.\n";
+  MorseDecomposition md0;
   MorseDecomposition md ( dg . digraph () );
-
-  // Test other assign
-  MorseDecomposition md2;
-  md2 . assign ( dg . digraph (), md . components () );
+  MorseDecomposition md2 ( dg . digraph (), md . components () );
   
   // Save a graphviz file for the poset
   std::cout << "Save graphviz.\n";

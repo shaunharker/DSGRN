@@ -102,13 +102,13 @@ digraph ( void ) const {
 
 INLINE_IF_HEADER_ONLY Annotation const WallGraph::
 annotate ( Component const& vertices ) const {
-  uint64_t D = data_ ->parameter_ . network() . size ();
-  std::vector<uint64_t> signature;
+  uint64_t D = data_ -> parameter_ . network() . size ();
+  std::set<uint64_t> signature;
   bool all_on = true;
   bool all_off = true;
   for ( uint64_t v : vertices ) {
-    uint64_t d = data_ ->vertex_to_dimension_ [ v ];
-    if ( d < D ) signature . push_back ( d );
+    uint64_t d = data_ -> vertex_to_dimension_ [ v ];
+    if ( d < D ) signature . insert ( d );
     if ( d > D ) all_off = false;
     if ( d < 2*D ) all_on = false; 
   }
