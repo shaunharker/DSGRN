@@ -13,7 +13,7 @@
 
 struct MorseGraph_;
 
-/// class MorseGraph_
+/// class MorseGraph
 class MorseGraph  {
 public:
   /// constructor

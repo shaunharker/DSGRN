@@ -26,7 +26,7 @@ int main ( int argc, char * argv [] ) {
   // Fetch a random parameter from the parameter graph
   std::cout << "Fetch random parameter.\n";
   uint64_t N = pg . size ();
-  uint64_t param_index = rand () % N;
+  uint64_t param_index = 43;
   Parameter param = pg. parameter ( param_index );
   std::cout << "Chose " << param << "\n";
 
@@ -36,6 +36,7 @@ int main ( int argc, char * argv [] ) {
 
   // Construct the wall graph
   std::cout << "Construct wall graph.\n";
+  WallGraph defaultwg; // coverage
   WallGraph wg ( param );
 
   // Compute the Morse Decomposition
