@@ -275,7 +275,6 @@ _parse ( std::vector<std::string> const& lines ) {
       uint64_t max_rhs = * std::max_element ( rhs.begin(), rhs.end() );
       if ( max_lhs < max_rhs ) return true;
       if ( max_lhs > max_rhs ) return false;
-      throw std::logic_error ( "Thrown from Network.h\n");
       return false;
     };
     // Put the logic struct into a canonical ordering.

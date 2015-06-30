@@ -42,6 +42,21 @@ int main ( int argc, char * argv [] ) {
     std::cout << network << "\n";
     boost::archive::text_oarchive oa(std::cout);
     oa << network;
+
+    Network dbnet ( "networks/network5.db" );
+    try { 
+      Network net ( "networks/network6" ); // doesn't exist
+      return 1;
+    } catch ( ... ) {}
+    try {
+      Network net ( "networks/network6.txt" ); // invalid network
+      return 1;
+    } catch ( ... ) {}
+    try {
+      Network net ( "networks/network7.txt" ); // invalid network
+      return 1;
+    } catch ( ... ) {}    
+    // Test 
   } catch ( std::exception & e ) {
     std::cout << e . what () << "\n";
     return 1;
