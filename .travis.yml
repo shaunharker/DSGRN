@@ -28,9 +28,9 @@ install:
   - pip install cpp-coveralls --user `whoami`
 script: 
   - ./software/NetworkLogic/install.sh ~
-  - mkdir -p share/DSGRN/logic
+  - mkdir -p ~/share/DSGRN/logic
   - ./software/NetworkLogic/bin/NetworkLogic 4
-  - mv *.dat share/DSGRN/logic/
+  - mv *.dat ~/share/DSGRN/logic/
   - export PATH=$PATH:~/bin
   - ./install.sh ~ Debug
   - cat build/Testing/Temporary/LastTest.log
