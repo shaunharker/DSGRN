@@ -13,18 +13,14 @@
 
 int main ( int argc, char * argv [] ) {
   // Load a network file
-  std::cout << "Load network file.\n";
-  std::string filename;
-  if ( argc < 2 ) filename = "../networks/5D_Cycle.txt";
-  else filename = argv[1];
-  Network network ( filename );
+  Network network ( "../networks/5D_Cycle.txt" );
 
   // Construct a parameter graph
   std::cout << "Construct parameter graph.\n";
   ParameterGraph pg ( network );
 
   // Fetch a random parameter from the parameter graph
-  std::cout << "Fetch random parameter.\n";
+  std::cout << "Choosing parameter.\n";
   uint64_t N = pg . size ();
   uint64_t param_index = 150015529;
   Parameter param = pg. parameter ( param_index );
@@ -55,11 +51,8 @@ int main ( int argc, char * argv [] ) {
   std::cout << "Construct Morse Graph\n";
   MorseGraph mg ( dg, md );
 
-  // Save a graphviz file for the poset
-  std::cout << "Save graphviz.\n";
-  std::ofstream outfile ( "testmorsegraph.gv" );
-  outfile << mg;
-  outfile . close ();
+  // << a graphviz file for the poset
+  std::cout << mg;
 
   // Print the SHA-256 code
   std::cout << "The SHA-256 code for the Morse Graph is \n  " << mg . SHA256() << "\n";

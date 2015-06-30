@@ -12,20 +12,16 @@
 
 int main ( int argc, char * argv [] ) {
   // Load a network file
-  std::cout << "Load network file.\n";
-  std::string filename;
-  if ( argc < 2 ) filename = "networks/network2.txt";
-  else filename = argv[1];
-  Network network ( filename );
+  Network network ( "networks/network2.txt" );
 
   // Construct a parameter graph
   std::cout << "Construct parameter graph.\n";
   ParameterGraph pg ( network );
 
   // Fetch a random parameter from the parameter graph
-  std::cout << "Fetch random parameter.\n";
+  std::cout << "Choosing parameter.\n";
   uint64_t N = pg . size ();
-  uint64_t param_index = rand () % N;
+  uint64_t param_index = 43;
   Parameter param = pg. parameter ( param_index );
   std::cout << "Chose " << param << "\n";
 
@@ -38,12 +34,7 @@ int main ( int argc, char * argv [] ) {
   MorseDecomposition md0;
   MorseDecomposition md ( dg . digraph () );
   MorseDecomposition md2 ( dg . digraph (), md . components () );
-  
-  // Save a graphviz file for the poset
-  std::cout << "Save graphviz.\n";
-  std::ofstream outfile ( "testmorsedecomposition.gv" );
-  outfile << md;
-  outfile . close ();
+  std::cout << md;
 
   return 0;
 }
