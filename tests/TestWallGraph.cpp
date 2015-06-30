@@ -1,6 +1,6 @@
 /// TestDomainGraph.cpp
 /// Shaun Harker
-/// 2015-05-24
+/// 2015-06-30
 
 #include <iostream>
 #include <vector>
@@ -32,19 +32,19 @@ int main ( int argc, char * argv [] ) {
     std::cout << "Chose " << param << "\n";
 
     // Construct the domain graph
-    std::cout << "Construct domain graph.\n";
-    DomainGraph dg ( param );
+    std::cout << "Construct wall graph.\n";
+    WallGraph wg ( param );
 
     // Default constructor
-    DomainGraph dg0;
+    WallGraph wg0;
 
     // Test <<
-    std::cout << dg;
+    std::cout << wg;
     boost::archive::text_oarchive oa(std::cout);
-    oa << dg;
+    oa << wg;
 
     // Note:
-    //   DomainGraph::digraph, DomainGraph::annotate tested in TestMorseGraph.cpp
+    //   WallGraph::digraph, WallGraph::annotate tested in TestMorseGraph.cpp
   } catch ( std::exception& e ) {
     std::cout << e . what () << "\n";
     return 1;

@@ -19,12 +19,16 @@ else
     ARGUMENT="-DMYPREFIX=/usr/local"
 fi
 
+if [ $# -ge 2 ]; then
+    ARGUMENT="$ARGUMENT -DCMAKE_BUILD_TYPE=${2}"
+else
+    ARGUMENT="$ARGUMENT -DCMAKE_BUILD_TYPE=Release"
+fi
+
 cd ${CUR_DIR}
 rm -rf build
 mkdir build
 cd build
-# Note: we pass `which g++` because apparently
-#  CMake doesn't necessarily pick the compiler on the path
-cmake -DCMAKE_CXX_COMPILER=`which g++` $ARGUMENT ..
+cmake $ARGUMENT ..
 make || exit 1
 make install || exit 1

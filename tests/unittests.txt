@@ -3,10 +3,11 @@
 ./TestWall.x 
 ./TestDomain.x 
 ./TestDomainGraph.x 
+./TestWallGraph.x 
 ./TestMorseGraph.x 
-./TestOrderParameter.x 
 ./TestMorseDecomposition.x 
 ./TestNetwork.x 
+./TestOrderParameter.x 
 ./TestParameterGraph.x 
 echo Class Tests Complete.
 dsgrn 
