@@ -27,6 +27,7 @@ add_executable ( TestOrderParameter.x TestOrderParameter.cpp )
 target_link_libraries ( TestOrderParameter.x ${LIBS} )
 
 install(TARGETS 
+        TestDomain.x
         TestDomainGraph.x
         TestMorseGraph.x
         TestParameterGraph.x
