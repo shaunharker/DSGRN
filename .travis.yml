@@ -36,4 +36,4 @@ script:
   - ./install.sh ./ Debug
   - cat build/Testing/Temporary/LastTest.log
 after_success: 
-  - coveralls -e "include/Tools/sqlambda.h" -e "include/Tools/json.hpp" -E ".*lib.*" -E ".*usr.*" -E ".*boost.*" --gcov-options '\-lp' --gcov /usr/bin/gcov-4.8
+  - coveralls -e "include/Tools/sqlambda.h" -e "include/Tools/json.hpp" -e tests -E ".*lib.*" -E ".*usr.*" -E ".*boost.*" --gcov-options '\-lp' --gcov /usr/bin/gcov-4.8
