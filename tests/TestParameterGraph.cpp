@@ -41,7 +41,8 @@ int main ( int argc, char * argv [] ) {
 
     // Cover not found logic:
     try {
-      ParameterGraph pg1 ( "networks/network4.txt" );
+      Network net ( "networks/network4.txt" );
+      ParameterGraph pg1 ( net );
     } catch ( ... ) {}
   } catch ( std::exception & e ) {
     std::cout << e . what () << "\n";
