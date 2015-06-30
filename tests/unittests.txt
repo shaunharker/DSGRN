@@ -11,8 +11,10 @@
 ./TestParameter.x
 ./TestParameterGraph.x 
 dsgrn 
+dsgrn help
 dsgrn network ../networks/3D_Cycle_H.txt 
 dsgrn network draw 
+dsgrn network ../networks/3D_Cycle_H.txt graphviz
 dsgrn network ../networks/3D_Cycle_H.txt domaingraph graphviz '[["X1",[3,3,"FF9E00"],[0,1,2]],["X2",[1,2,"4"],[0,1]],["X3",[2,1,"8"],[0]]]' 
 dsgrn network ../networks/3D_Cycle_H.txt wallgraph graphviz '[["X1",[3,3,"FF9E00"],[0,1,2]],["X2",[1,2,"4"],[0,1]],["X3",[2,1,"8"],[0]]]' 
 dsgrn network ../networks/3D_Cycle_H.txt morsedecomposition graphviz '[["X1",[3,3,"FF9E00"],[0,1,2]],["X2",[1,2,"4"],[0,1]],["X3",[2,1,"8"],[0]]]' 
@@ -43,3 +45,13 @@ dsgrn analyze morseset 0 0
 ! dsgrn wallgraph 
 ! dsgrn morsedecomposition
 ! dsgrn morsegraph
+! dsgrn domaingraph fail
+! dsgrn wallgraph fail
+! dsgrn morsedecomposition fail
+! dsgrn morsegraph fail
+! dsgrn analyze
+! dsgrn analyze morseset 1000 0
+! dsgrn analyze fail
+rm dsgrn.session
+! dsgrn parameter
+
