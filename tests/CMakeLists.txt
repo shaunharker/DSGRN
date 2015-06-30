@@ -35,6 +35,9 @@ target_link_libraries ( TestNetwork.x ${LIBS} )
 add_executable ( TestOrderParameter.x TestOrderParameter.cpp )
 target_link_libraries ( TestOrderParameter.x ${LIBS} )
 
+add_executable ( TestParameter.x TestParameter.cpp )
+target_link_libraries ( TestParameter.x ${LIBS} )
+
 add_executable ( TestParameterGraph.x TestParameterGraph.cpp )
 target_link_libraries ( TestParameterGraph.x ${LIBS} )
 
@@ -50,5 +53,6 @@ install(TARGETS
         TestMorseGraph.x
         TestNetwork.x
         TestOrderParameter.x
+        TestParameter.x
         TestParameterGraph.x
         RUNTIME DESTINATION ${CMAKE_SOURCE_DIR}/tests )

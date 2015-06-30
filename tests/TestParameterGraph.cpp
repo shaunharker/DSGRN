@@ -2,10 +2,7 @@
 /// Shaun Harker
 /// 2015-05-24
 
-#include <iostream>
-#include <vector>
-#include <cstdint>
-
+#include "common.h"
 #include "DSGRN.h"
 
 int main ( int argc, char * argv [] ) {

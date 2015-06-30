@@ -31,7 +31,7 @@ public:
   ///   Create a Morse Decomposition given
   ///   a digraph and its strong components
   ///   (This method is provided in case 
-  ///    strong components already computed.)
+  ///    strong components are already computed.)
   MorseDecomposition ( Digraph const& digraph, 
                        Components const& components );
 
@@ -87,7 +87,6 @@ private:
 };
 
 struct MorseDecomposition_ {
-  Digraph digraph_;
   Components components_;
   Poset poset_;
   /// serialize
@@ -96,7 +95,6 @@ struct MorseDecomposition_ {
   friend class boost::serialization::access;
   template<class Archive>
   void serialize(Archive & ar, const unsigned int version) {
-    ar & digraph_;
     ar & components_;
     ar & poset_;
   }

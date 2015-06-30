@@ -87,15 +87,12 @@ parameter ( uint64_t index ) const {
     uint64_t n = data_ -> network_ . inputs ( d ) . size ();
     uint64_t m = data_ -> network_ . outputs ( d ) . size ();
     std::string hex_code = data_ -> factors_ [ d ] [ logic_indices[d] ];
-    LogicParameter logic_param;
-    logic_param . assign ( n, m, hex_code );
-    OrderParameter order_param;
-    order_param . assign ( m, order_indices[d] );
+    LogicParameter logic_param ( n, m, hex_code );
+    OrderParameter order_param ( m, order_indices[d] );
     logic . push_back ( logic_param );
     order . push_back ( order_param );
   }
-  Parameter result;
-  result . assign ( logic, order, data_ -> network_ );
+  Parameter result ( logic, order, data_ -> network_ );
   return result;
 }
 

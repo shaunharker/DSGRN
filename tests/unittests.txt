@@ -9,6 +9,7 @@
 ./TestMorseDecomposition.x 
 ./TestNetwork.x 
 ./TestOrderParameter.x 
+./TestParameter.x
 ./TestParameterGraph.x 
 echo Class Tests Complete.
 dsgrn 
