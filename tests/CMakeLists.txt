@@ -11,6 +11,9 @@ target_link_libraries ( TestAnnotation.x ${LIBS} )
 add_executable ( TestComponents.x TestComponents.cpp )
 target_link_libraries ( TestComponents.x ${LIBS} )
 
+add_executable ( TestDigraph.x TestDigraph.cpp )
+target_link_libraries ( TestDigraph.x ${LIBS} )
+
 add_executable ( TestDomain.x TestDomain.cpp )
 target_link_libraries ( TestDomain.x ${LIBS} )
 
@@ -45,6 +48,7 @@ target_link_libraries ( TestParameterGraph.x ${LIBS} )
 install(TARGETS 
         TestAnnotation.x
         TestComponents.x
+        TestDigraph.x
         TestDomain.x
         TestWall.x        
         TestDomainGraph.x

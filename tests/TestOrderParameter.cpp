@@ -1,4 +1,4 @@
-/// OrderParameter.cpp
+/// TestOrderParameter.cpp
 /// Shaun Harker
 /// 2015-05-24
 

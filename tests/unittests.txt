@@ -1,5 +1,6 @@
 ./TestAnnotation.x 
 ./TestComponents.x
+./TestDigraph.x
 ./TestWall.x 
 ./TestDomain.x 
 ./TestDomainGraph.x 
@@ -39,19 +40,20 @@ dsgrn parameter inequalities '[["X1",[3,3,"FF9E00"],[0,1,2]],["X2",[1,2,"4"],[0,
 dsgrn parameter inequalities 234 
 dsgrn analyze morseset 0 0 
 ! dsgrn fail
+! dsgrn parameter fail
 ! dsgrn parameter inequalities
 ! dsgrn parameter index 0
 ! dsgrn domaingraph
 ! dsgrn wallgraph 
 ! dsgrn morsedecomposition
 ! dsgrn morsegraph
-! dsgrn domaingraph fail
-! dsgrn wallgraph fail
-! dsgrn morsedecomposition fail
-! dsgrn morsegraph fail
+! dsgrn domaingraph fail fail
+! dsgrn wallgraph fail fail
+! dsgrn morsedecomposition fail fail
+! dsgrn morsegraph fail fail
 ! dsgrn analyze
 ! dsgrn analyze morseset 1000 0
-! dsgrn analyze fail
+! dsgrn analyze fail fail fail
 rm dsgrn.session
 ! dsgrn parameter
 

@@ -1,4 +1,4 @@
-/// TestDomainGraph.cpp
+/// TestWallGraph.cpp
 /// Shaun Harker
 /// 2015-06-30
 
