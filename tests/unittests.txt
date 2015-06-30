@@ -49,10 +49,10 @@ dsgrn analyze morseset 0 0
 ! dsgrn wallgraph 
 ! dsgrn morsedecomposition
 ! dsgrn morsegraph
-! dsgrn domaingraph fail fail
-! dsgrn wallgraph fail fail
-! dsgrn morsedecomposition fail fail
-! dsgrn morsegraph fail fail
+! dsgrn domaingraph fail 0
+! dsgrn wallgraph fail 0
+! dsgrn morsedecomposition fail 0
+! dsgrn morsegraph fail 0
 ! dsgrn analyze
 ! dsgrn analyze morseset 1000 0
 ! dsgrn analyze fail fail fail

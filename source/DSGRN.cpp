@@ -102,12 +102,11 @@ int parameter ( int argc, char * argv [] ) {
   if ( command == "index" ) {
     ParameterGraph pg ( network );
     try { 
-      std::cout << pg . index ( p );
+      std::cout << pg . index ( p ); return 0;
     } catch ( std::exception & e ) {
       std::cout << "Feature not yet implemented.\n";
       return 1;
     }
-    return 0;
   }
   std::cout << "Unrecognized command: " + command + "\n";
   return 1;

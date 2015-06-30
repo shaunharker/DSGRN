@@ -274,8 +274,7 @@ _parse ( std::vector<std::string> const& lines ) {
       uint64_t max_lhs = * std::max_element ( lhs.begin(), lhs.end() );
       uint64_t max_rhs = * std::max_element ( rhs.begin(), rhs.end() );
       if ( max_lhs < max_rhs ) return true;
-      if ( max_lhs > max_rhs ) return false;
-      return false;
+      if ( max_lhs > max_rhs ) return false;  /* unreachable -> */ return false;
     };
     // Put the logic struct into a canonical ordering.
     std::sort ( logic_struct.begin(), logic_struct.end(), compare_partition );
