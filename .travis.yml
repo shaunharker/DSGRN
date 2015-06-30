@@ -35,8 +35,5 @@ script:
   - export PATH=$PATH:`pwd`/bin
   - ./install.sh ./ Debug
   - cat build/Testing/Temporary/LastTest.log
-after_success:
-  - find . | grep "gcov"
-  - find . | grep "gcno"
-  - find . | grep "gcda"  
+after_success: 
   - coveralls -E ".*lib.*" -E ".*usr.*" -E ".*boost.*" -E ".*tests.*" --gcov-options '\-lp' --gcov /usr/bin/gcov-4.8

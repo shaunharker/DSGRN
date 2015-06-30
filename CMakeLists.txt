@@ -70,6 +70,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 ###########
 
 add_subdirectory (source)
+add_subdirectory (tests)
 
 #########
 # Tests #
@@ -80,3 +81,13 @@ add_test( test1 ../tests/test.sh test1 )
 add_test( test2 ../tests/test.sh test2 )
 add_test( test3 ../tests/test.sh test3 )
 add_test( test4 ../tests/test.sh test4 )
+add_test( unittests ../tests/unittests.sh )
+
+#add_test( TestDomainGraph ../tests/TestDomainGraph.x )
+#add_test( TestMorseGraph ../tests/TestMorseGraph.x )
+#add_test( TestParameterGraph ../tests/TestParameterGraph.x )
+#add_test( TestNetwork ../tests/TestNetwork.x )
+#add_test( TestMorseDecomposition ../tests/TestMorseDecomposition.x )
+#add_test( TestOrderParameter ../tests/TestOrderParameter.x )
+
+
