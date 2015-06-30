@@ -36,4 +36,4 @@ script:
   - ./install.sh ./ Debug
   - cat build/Testing/Temporary/LastTest.log
 after_success:
-  - coveralls --exclude lib --exclude /usr --exclude include/boost --exclude tests --gcov-options '\-lp' --gcov /usr/bin/gcov-4.8
+  - coveralls -E lib -E usr -E boost -E tests --gcov-options '\-lp' --gcov /usr/bin/gcov-4.8
