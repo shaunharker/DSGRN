@@ -3,8 +3,6 @@ language: cpp
 compiler:
   - gcc
 #  - clang
-install:
-- if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
 addons:
   apt:
     sources:
@@ -19,7 +17,8 @@ notifications:
       - sharker81@gmail.com
     on_success: change
     on_failure: always
-before_install:
+install:
+  - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
 # boost
   - ./.install/boost.sh thread,system,serialization ~
 # sqlite3

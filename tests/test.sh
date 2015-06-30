@@ -7,3 +7,11 @@ txtfile=${prefix}.txt
 outfile=${prefix}.out
 /bin/bash $infile > $txtfile
 diff -q $outfile $txtfile > /dev/null
+if [ ! $? -eq 0 ]; then
+  echo FAIL: $1
+  echo   EXPECTED: `cat $outfile`
+  echo   GOT: `cat $txtfile`
+  exit 1
+else
+  exit 0
+fi
