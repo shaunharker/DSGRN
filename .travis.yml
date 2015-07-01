@@ -17,22 +17,15 @@ notifications:
       - sharker81@gmail.com
     on_success: change
     on_failure: always
-install:
+before_install:
   - if [ "$CXX" = "g++" ]; then export CXX="g++-4.8" CC="gcc-4.8"; fi
-# boost
-  - ./.install/boost.sh thread,system,serialization ~
-# sqlite3
-  - ./.install/sqlite3.sh ~ 
-# cpp-coveralls
-  - export PATH=$HOME/.local/bin:$PATH
+  - PREFIX=$HOME/.local
+  - export PATH=$PREFIX/bin:$PATH
+install:
+  - ./.install/boost.sh thread,system,serialization $PREFIX
+  - ./.install/sqlite3.sh $PREFIX
   - pip install cpp-coveralls --user `whoami`
 script: 
-  - ./software/NetworkLogic/install.sh ~
-  - mkdir -p ~/share/DSGRN/logic
-  - ./software/NetworkLogic/bin/NetworkLogic 4
-  - mv *.dat ~/share/DSGRN/logic/
-  - export PATH=$PATH:~/bin
-  - ./install.sh ~ Debug
-  - cat build/Testing/Temporary/LastTest.log
+  - ./install.sh $PREFIX Debug
 after_success: 
   - coveralls -e "include/Tools/SHA256.h" -e "include/Tools/sqlambda.h" -e "include/Tools/json.hpp" -e tests -E ".*lib.*" -E ".*usr.*" -E ".*boost.*" --gcov-options '\-lp' --gcov /usr/bin/gcov-4.8
