@@ -1,17 +1,17 @@
-./TestAnnotation.x 
-./TestComponents.x
-./TestStrongComponents.x
-./TestDigraph.x
-./TestWall.x 
-./TestDomain.x 
-./TestDomainGraph.x 
-./TestWallGraph.x 
-./TestMorseGraph.x 
-./TestMorseDecomposition.x 
-./TestNetwork.x 
-./TestOrderParameter.x 
-./TestParameter.x
-./TestParameterGraph.x 
+./TestAnnotation 
+./TestComponents
+./TestStrongComponents
+./TestDigraph
+./TestWall 
+./TestDomain 
+./TestDomainGraph 
+./TestWallGraph 
+./TestMorseGraph 
+./TestMorseDecomposition 
+./TestNetwork 
+./TestOrderParameter 
+./TestParameter
+./TestParameterGraph 
 dsgrn 
 dsgrn help
 dsgrn network ../networks/3D_Cycle_H.txt 
