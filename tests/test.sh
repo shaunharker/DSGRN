@@ -5,7 +5,7 @@ prefix=./suite/$1
 infile=${prefix}.in
 txtfile=${prefix}.txt
 outfile=${prefix}.out
-/bin/bash $infile > $txtfile
+source $infile ../build/bin/dsgrn > $txtfile
 diff -q $outfile $txtfile > /dev/null
 if [ ! $? -eq 0 ]; then
   echo FAIL: $1

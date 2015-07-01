@@ -32,13 +32,16 @@ CMAKE_ARGS+=$MASS
 
 ## Build 
 rm -rf build && mkdir build && cd build || exit 1
-cmake $CMAKE_ARGS ..                    || exit 1
-make && make install                    || exit 1
+cmake $CMAKE_ARGS .. && make            || exit 1
 
 ## Test
-if [ -z $TEST ]; then exit 0; fi
-make test
-if [ ! $? -eq 0 ]; then
-  cat Testing/Temporary/LastTest.log
-  exit 1
+if [[ "$TEST" == "YES" ]]; then
+  make test
+  if [ ! $? -eq 0 ]; then
+    cat Testing/Temporary/LastTest.log
+    exit 1
+  fi
 fi
+
+## Install
+make install || exit 1

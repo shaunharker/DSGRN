@@ -1,62 +1,62 @@
-./TestAnnotation 
-./TestComponents
-./TestStrongComponents
-./TestDigraph
-./TestWall 
-./TestDomain 
-./TestDomainGraph 
-./TestWallGraph 
-./TestMorseGraph 
-./TestMorseDecomposition 
-./TestNetwork 
-./TestOrderParameter 
-./TestParameter
-./TestParameterGraph 
-dsgrn 
-dsgrn help
-dsgrn network ../networks/3D_Cycle_H.txt 
-dsgrn network draw 
-dsgrn network ../networks/3D_Cycle_H.txt graphviz
-dsgrn network ../networks/3D_Cycle_H.txt domaingraph graphviz '[["X1",[3,3,"FF9E00"],[0,1,2]],["X2",[1,2,"4"],[0,1]],["X3",[2,1,"8"],[0]]]' 
-dsgrn network ../networks/3D_Cycle_H.txt wallgraph graphviz '[["X1",[3,3,"FF9E00"],[0,1,2]],["X2",[1,2,"4"],[0,1]],["X3",[2,1,"8"],[0]]]' 
-dsgrn network ../networks/3D_Cycle_H.txt morsedecomposition graphviz '[["X1",[3,3,"FF9E00"],[0,1,2]],["X2",[1,2,"4"],[0,1]],["X3",[2,1,"8"],[0]]]' 
-dsgrn network ../networks/3D_Cycle_H.txt morsegraph graphviz '[["X1",[3,3,"FF9E00"],[0,1,2]],["X2",[1,2,"4"],[0,1]],["X3",[2,1,"8"],[0]]]' 
-dsgrn network ../networks/3D_Cycle_H.txt domaingraph json '[["X1",[3,3,"FF9E00"],[0,1,2]],["X2",[1,2,"4"],[0,1]],["X3",[2,1,"8"],[0]]]' 
-dsgrn network ../networks/3D_Cycle_H.txt wallgraph json '[["X1",[3,3,"FF9E00"],[0,1,2]],["X2",[1,2,"4"],[0,1]],["X3",[2,1,"8"],[0]]]' 
-dsgrn network ../networks/3D_Cycle_H.txt morsedecomposition json '[["X1",[3,3,"FF9E00"],[0,1,2]],["X2",[1,2,"4"],[0,1]],["X3",[2,1,"8"],[0]]]' 
-dsgrn network ../networks/3D_Cycle_H.txt morsegraph json '[["X1",[3,3,"FF9E00"],[0,1,2]],["X2",[1,2,"4"],[0,1]],["X3",[2,1,"8"],[0]]]' 
-dsgrn network ../networks/3D_Cycle_H.txt domaingraph graphviz 234 
-dsgrn network ../networks/3D_Cycle_H.txt wallgraph graphviz 234 
-dsgrn network ../networks/3D_Cycle_H.txt morsedecomposition graphviz 234 
-dsgrn network ../networks/3D_Cycle_H.txt morsegraph graphviz 234 
-dsgrn network ../networks/3D_Cycle_H.txt domaingraph json 234 
-dsgrn network ../networks/3D_Cycle_H.txt wallgraph json 234 
-dsgrn network ../networks/3D_Cycle_H.txt morsedecomposition json 234 
-dsgrn network ../networks/3D_Cycle_H.txt morsegraph json 234 
-dsgrn parameter 
-dsgrn parameter list 
-dsgrn parameter json '[["X1",[3,3,"FF9E00"],[0,1,2]],["X2",[1,2,"4"],[0,1]],["X3",[2,1,"8"],[0]]]' 
-dsgrn parameter json 234 
-dsgrn parameter inequalities '[["X1",[3,3,"FF9E00"],[0,1,2]],["X2",[1,2,"4"],[0,1]],["X3",[2,1,"8"],[0]]]' 
-dsgrn parameter inequalities 234 
-dsgrn analyze morseset 0 0 
-! dsgrn fail
-! dsgrn parameter fail
-! dsgrn parameter fail fail
-! dsgrn parameter fail 0
-! dsgrn parameter inequalities
-! dsgrn parameter index 0
-! dsgrn domaingraph
-! dsgrn wallgraph 
-! dsgrn morsedecomposition
-! dsgrn morsegraph
-! dsgrn domaingraph fail 0
-! dsgrn wallgraph fail 0
-! dsgrn morsedecomposition fail 0
-! dsgrn morsegraph fail 0
-! dsgrn analyze
-! dsgrn analyze morseset 1000 0
-! dsgrn analyze fail fail fail
+../build/bin/TestAnnotation 
+../build/bin/TestComponents
+../build/bin/TestStrongComponents
+../build/bin/TestDigraph
+../build/bin/TestWall 
+../build/bin/TestDomain 
+../build/bin/TestDomainGraph 
+../build/bin/TestWallGraph 
+../build/bin/TestMorseGraph 
+../build/bin/TestMorseDecomposition 
+../build/bin/TestNetwork 
+../build/bin/TestOrderParameter 
+../build/bin/TestParameter
+../build/bin/TestParameterGraph 
+../build/bin/dsgrn 
+../build/bin/dsgrn help
+../build/bin/dsgrn network ../networks/3D_Cycle_H.txt 
+../build/bin/dsgrn network draw 
+../build/bin/dsgrn network ../networks/3D_Cycle_H.txt graphviz
+../build/bin/dsgrn network ../networks/3D_Cycle_H.txt domaingraph graphviz '[["X1",[3,3,"FF9E00"],[0,1,2]],["X2",[1,2,"4"],[0,1]],["X3",[2,1,"8"],[0]]]' 
+../build/bin/dsgrn network ../networks/3D_Cycle_H.txt wallgraph graphviz '[["X1",[3,3,"FF9E00"],[0,1,2]],["X2",[1,2,"4"],[0,1]],["X3",[2,1,"8"],[0]]]' 
+../build/bin/dsgrn network ../networks/3D_Cycle_H.txt morsedecomposition graphviz '[["X1",[3,3,"FF9E00"],[0,1,2]],["X2",[1,2,"4"],[0,1]],["X3",[2,1,"8"],[0]]]' 
+../build/bin/dsgrn network ../networks/3D_Cycle_H.txt morsegraph graphviz '[["X1",[3,3,"FF9E00"],[0,1,2]],["X2",[1,2,"4"],[0,1]],["X3",[2,1,"8"],[0]]]' 
+../build/bin/dsgrn network ../networks/3D_Cycle_H.txt domaingraph json '[["X1",[3,3,"FF9E00"],[0,1,2]],["X2",[1,2,"4"],[0,1]],["X3",[2,1,"8"],[0]]]' 
+../build/bin/dsgrn network ../networks/3D_Cycle_H.txt wallgraph json '[["X1",[3,3,"FF9E00"],[0,1,2]],["X2",[1,2,"4"],[0,1]],["X3",[2,1,"8"],[0]]]' 
+../build/bin/dsgrn network ../networks/3D_Cycle_H.txt morsedecomposition json '[["X1",[3,3,"FF9E00"],[0,1,2]],["X2",[1,2,"4"],[0,1]],["X3",[2,1,"8"],[0]]]' 
+../build/bin/dsgrn network ../networks/3D_Cycle_H.txt morsegraph json '[["X1",[3,3,"FF9E00"],[0,1,2]],["X2",[1,2,"4"],[0,1]],["X3",[2,1,"8"],[0]]]' 
+../build/bin/dsgrn network ../networks/3D_Cycle_H.txt domaingraph graphviz 234 
+../build/bin/dsgrn network ../networks/3D_Cycle_H.txt wallgraph graphviz 234 
+../build/bin/dsgrn network ../networks/3D_Cycle_H.txt morsedecomposition graphviz 234 
+../build/bin/dsgrn network ../networks/3D_Cycle_H.txt morsegraph graphviz 234 
+../build/bin/dsgrn network ../networks/3D_Cycle_H.txt domaingraph json 234 
+../build/bin/dsgrn network ../networks/3D_Cycle_H.txt wallgraph json 234 
+../build/bin/dsgrn network ../networks/3D_Cycle_H.txt morsedecomposition json 234 
+../build/bin/dsgrn network ../networks/3D_Cycle_H.txt morsegraph json 234 
+../build/bin/dsgrn parameter 
+../build/bin/dsgrn parameter list 
+../build/bin/dsgrn parameter json '[["X1",[3,3,"FF9E00"],[0,1,2]],["X2",[1,2,"4"],[0,1]],["X3",[2,1,"8"],[0]]]' 
+../build/bin/dsgrn parameter json 234 
+../build/bin/dsgrn parameter inequalities '[["X1",[3,3,"FF9E00"],[0,1,2]],["X2",[1,2,"4"],[0,1]],["X3",[2,1,"8"],[0]]]' 
+../build/bin/dsgrn parameter inequalities 234 
+../build/bin/dsgrn analyze morseset 0 0 
+! ../build/bin/dsgrn fail
+! ../build/bin/dsgrn parameter fail
+! ../build/bin/dsgrn parameter fail fail
+! ../build/bin/dsgrn parameter fail 0
+! ../build/bin/dsgrn parameter inequalities
+! ../build/bin/dsgrn parameter index 0
+! ../build/bin/dsgrn domaingraph
+! ../build/bin/dsgrn wallgraph 
+! ../build/bin/dsgrn morsedecomposition
+! ../build/bin/dsgrn morsegraph
+! ../build/bin/dsgrn domaingraph fail 0
+! ../build/bin/dsgrn wallgraph fail 0
+! ../build/bin/dsgrn morsedecomposition fail 0
+! ../build/bin/dsgrn morsegraph fail 0
+! ../build/bin/dsgrn analyze
+! ../build/bin/dsgrn analyze morseset 1000 0
+! ../build/bin/dsgrn analyze fail fail fail
 rm dsgrn.session
-! dsgrn parameter
+! ../build/bin/dsgrn parameter
 

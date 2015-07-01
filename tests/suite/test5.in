@@ -1,2 +1,3 @@
-dsgrn network networks/network2.txt wallgraph json 43
+#!/bin/bash
+$1 network networks/network2.txt wallgraph json 43
 
