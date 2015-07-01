@@ -7,10 +7,17 @@ project (DSGRN_Signatures)
 #########
 
 set(CMAKE_MACOSX_RPATH 1)
+set(CMAKE_SKIP_BUILD_RPATH  FALSE)
+set(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE) 
+set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+list(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/lib" isSystemDir)
+if("${isSystemDir}" STREQUAL "-1")
+   set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+endif("${isSystemDir}" STREQUAL "-1")
 
 #########
-# C++11 #
+# Flags #
 #########
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -ftemplate-depth=2048")
@@ -21,8 +28,8 @@ set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -DNDEBUG" )
 # Definitions #
 ###############
 
-add_definitions( -DINSTALLPREFIX="${MYPREFIX}" )
-message( STATUS "Chose the following prefix: " ${MYPREFIX} )
+add_definitions( -DINSTALLPREFIX="${CMAKE_INSTALL_PREFIX}" )
+message( STATUS "Chose the following prefix: " ${CMAKE_INSTALL_PREFIX} )
 
 ############
 # Packages #
@@ -66,3 +73,10 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 ###########
 
 add_subdirectory (source)
+
+#########
+# Tests #
+#########
+
+enable_testing()
+add_test( test1 ${CMAKE_SOURCE_DIR}/tests/test1.sh )

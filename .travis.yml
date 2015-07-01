@@ -10,6 +10,8 @@ addons:
     packages:
     - gcc-4.8
     - g++-4.8
+    - openmpi-bin 
+    - openmpi-dev
 #    - clang
 notifications:
   email:
@@ -22,10 +24,11 @@ before_install:
   - PREFIX=$HOME/.local
   - export PATH=$PREFIX/bin:$PATH
 install:
-  - ./.install/boost.sh thread,system,serialization $PREFIX
-  - ./.install/sqlite3.sh $PREFIX
   - pip install cpp-coveralls --user `whoami`
+  - ./.install/boost.sh thread,system,serialization
+  - ./.install/sqlite3.sh
+  - ./.install/delegator.sh
 script: 
-  - ./install.sh $PREFIX Debug
+  - ./install.sh --build=Debug
 after_success: 
   - coveralls -e "include/Tools/SHA256.h" -e "include/Tools/sqlambda.h" -e "include/Tools/json.hpp" -e tests -E ".*lib.*" -E ".*usr.*" -E ".*boost.*" --gcov-options '\-lp' --gcov /usr/bin/gcov-4.8

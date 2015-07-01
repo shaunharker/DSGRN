@@ -1,16 +1,22 @@
 #!/bin/bash
-absolute() { echo "$(cd "$(dirname "$1")" && pwd)/$(basename "$1")"; }
-if [ $# -ge 1 ]; then
-  PREFIX=$(absolute $1)
-else
-  PREFIX=/usr/local
-fi
-mkdir sqlite3Build && cd sqlite3Build
+
+## Parse command line arguments to get install PREFIX
+SHELL_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+source $SHELL_DIR/parse.sh
+
+## Download
+mytmpdir=`mktemp -d 2>/dev/null || mktemp -d -t 'mytmpdir'` && cd $mytmpdir
 wget https://www.sqlite.org/snapshot/sqlite-amalgamation-201506261847.zip
 unzip sqlite-amalgamation-201506261847
+
+## Compile
 gcc shell.c sqlite3.c -lpthread -ldl -o sqlite3
 gcc -shared -fPIC -o libsqlite3.so sqlite3.c -lpthread -ldl
+
+## Install
 mkdir -p $PREFIX/include && mv *.h $PREFIX/include
 mkdir -p $PREFIX/bin && mv sqlite3 $PREFIX/bin
 mkdir -p $PREFIX/lib && mv *.so $PREFIX/lib
-cd .. && rm -rf sqlite3Build
+
+## Clean up
+rm -rf $mytmpdir

@@ -28,8 +28,8 @@ set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -DNDEBUG" )
 # Definitions #
 ###############
 
-add_definitions( -DINSTALLPREFIX="${MYPREFIX}" )
-message( STATUS "Chose the following prefix: " ${MYPREFIX} )
+add_definitions( -DINSTALLPREFIX="${CMAKE_INSTALL_PREFIX}" )
+message( STATUS "Chose the following prefix: " ${CMAKE_INSTALL_PREFIX} )
 
 ############
 # Packages #
@@ -42,7 +42,7 @@ find_package(Boost 1.58.0 REQUIRED COMPONENTS system thread serialization)
 #######################
 
 include_directories ( 
-  ./include 
+  ${CMAKE_SOURCE_DIR}/include
   /usr/local/include 
   /opt/local/include 
   ${Boost_INCLUDE_DIRS} 
@@ -77,12 +77,12 @@ add_subdirectory (tests)
 #########
 
 enable_testing()
-add_test( test1 ../tests/test.sh test1 )
-add_test( test2 ../tests/test.sh test2 )
-add_test( test3 ../tests/test.sh test3 )
-add_test( test4 ../tests/test.sh test4 )
-add_test( test5 ../tests/test.sh test5 )
-add_test( unittests ../tests/unittests.sh )
+add_test( test1 ${CMAKE_SOURCE_DIR}/tests/test.sh test1 )
+add_test( test2 ${CMAKE_SOURCE_DIR}/tests/test.sh test2 )
+add_test( test3 ${CMAKE_SOURCE_DIR}/tests/test.sh test3 )
+add_test( test4 ${CMAKE_SOURCE_DIR}/tests/test.sh test4 )
+add_test( test5 ${CMAKE_SOURCE_DIR}/tests/test.sh test5 )
+add_test( unittests ${CMAKE_SOURCE_DIR}/tests/unittests.sh )
 
 
 

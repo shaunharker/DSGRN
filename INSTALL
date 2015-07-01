@@ -1,68 +1,80 @@
+# DSGRN Installation Instructions
 
-The installation proceeds in three stages.
+The installation proceeds in two stages.
 First, install the prerequisites.
 Second, build and install the DSGRN software.
-Third, compute/acquire "logic" resources and put them
 
-Step 1. Install Prerequisites
+== Step 1. Install Prerequisites ==
 
 The prerequisites are:
 
-C++11 compiler
-Boost 1.58
-Open MPI
+* C++11 compiler
+* Boost 1.58
+* Open MPI
+* https://github.com/shaunharker/cluster-delegator.git[cluster-delegator]
+* sqlite3
 
-For Mac OS X: 
-  C++11 comes along with the standard command line tools.
-  For Boost and OpenMPI I recommend using the "homebrew" installer.
+=== Mac OS X: 
 
+C++11 and sqlite3 come along with the standard command line tools. For Boost and OpenMPI I recommend using the "homebrew" installer. Cluster-delegator can be retrieved from the git repository.
 
-Step 2. Build DSGRN
+Example:
 
-After the prerequisites are installed, cd to the main DSGRN directory and type the following:
-
+```
+brew install boost
+brew install openmpi
+git clone https://github.com/shaunharker/cluster-delegator.git
+cd cluster-delegator
 ./install.sh
+```
 
-This will attempt to install the program "dsgrn" into 
+=== Linux:
 
-  /usr/local/bin
+Logs of successful Ubuntu Linux installations are available from Travis CI:
 
-and libraries into 
-  
-  /usr/local/lib.
+https://travis-ci.org/shaunharker/DSGRN
 
-If this is not suitable, you can do the following instead:
+== Step 2. Build DSGRN ==
 
-./install.sh /some/other/path
+After the prerequisites are installed, DSGRN is installed by invoking the `install.sh` script in the source root. Without arguments, this will attempt to install the program "dsgrn" into 
+
+```
+  /usr/local/bin  
+  /usr/local/lib
+  /usr/local/share
+```
+
+If you do not have write privileges to /usr/local, then ./install.sh
+will check to see if you have a directory named 
+
+```
+  ~/.local
+```
+
+If so, it will try to install to
+
+```
+  ~/.local/bin
+  ~/.local/lib
+  ~/.local/share
+```
+
+If this is not available then the script will end in failure.
+
+You can remedy the situation by either creating the directory ~/.local, or else supplying an alternative installation path, e.g. /opt/local
+
+```
+./install.sh --prefix=/opt/local
+```
 
 which will put things in
-/some/other/path/bin
-/some/other/path/lib
 
+```
+  /opt/local/bin
+  /opt/local/lib
+  /opt/local/share
+```
 
-Step 3. Build/Acquire logic resources and put them in place
+Be sure to put the installation path bin folder on your path!
 
-In order for the software to work, certain resource files must also be
-put into place into either the default location
-
-  /usr/local/share/DSGRN/logic
-
-or else if you used an alternative installation prefix, e.g. /some/other/path 
-then you must put these resource files in 
-
-  /some/other/path/DSGRN/logic
-
-To obtain these resource files there are two options:
-
-A. Build them yourself.
-
-cd software/NetworkLogic
-make
-./NetworkLogic
-## wait
-mkdir -p /usr/local/share/DSGRN/logic
-cp *.dat /usr/local/share/DSGRN/logic
-
-B. Download them from somewhere and put them in place.
-(Currently they are not publicly hosted.)
 
