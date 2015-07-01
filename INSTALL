@@ -4,7 +4,7 @@ The installation proceeds in two stages.
 First, install the prerequisites.
 Second, build and install the DSGRN software.
 
-== Step 1. Install Prerequisites ==
+== Prerequisites
 
 The prerequisites are:
 
@@ -14,67 +14,55 @@ The prerequisites are:
 * https://github.com/shaunharker/cluster-delegator.git[cluster-delegator]
 * sqlite3
 
-=== Mac OS X: 
+== About the installation
 
-C++11 and sqlite3 come along with the standard command line tools. For Boost and OpenMPI I recommend using the "homebrew" installer. Cluster-delegator can be retrieved from the git repository.
-
-Example:
-
-```
-brew install boost
-brew install openmpi
-git clone https://github.com/shaunharker/cluster-delegator.git
-cd cluster-delegator
-./install.sh
-```
-
-=== Linux:
-
-Logs of successful Ubuntu Linux installations are available from Travis CI:
-
-https://travis-ci.org/shaunharker/DSGRN
-
-== Step 2. Build DSGRN ==
-
-After the prerequisites are installed, DSGRN is installed by invoking the `install.sh` script in the source root. Without arguments, this will attempt to install the program "dsgrn" into 
-
-```
-  /usr/local/bin  
-  /usr/local/lib
-  /usr/local/share
-```
-
-If you do not have write privileges to /usr/local, then ./install.sh
-will check to see if you have a directory named 
-
-```
-  ~/.local
-```
-
-If so, it will try to install to
-
-```
-  ~/.local/bin
-  ~/.local/lib
-  ~/.local/share
-```
-
-If this is not available then the script will end in failure.
-
-You can remedy the situation by either creating the directory ~/.local, or else supplying an alternative installation path, e.g. /opt/local
+DSGRN is installed by invoking the `install.sh` script in the source root. 
+The location it installed is determined by the so-called installation prefix.
+This can be specified as in the following example:
 
 ```
 ./install.sh --prefix=/opt/local
 ```
 
-which will put things in
+If the installation prefix is not specified than a default value is used.
+This value is `/usr/local`. If, however, you do not have write privileges to `/usr/local`,
+then the installer will check to see if you have a directory named `~/.local`. 
+If you do, then that will be the installation prefix. Otherwise the installer fails.
+
+Assuming an installation prefix of `/usr/local` the files installed are as follows:
 
 ```
-  /opt/local/bin
-  /opt/local/lib
-  /opt/local/share
+  /usr/local/bin        (dsgrn)
+  /usr/local/lib        (libdsgrn.a, libdsgrn.so, libdsgrn.dylib)
+  /usr/local/share      (DSGRN/logic/*.dat)
 ```
 
-Be sure to put the installation path bin folder on your path!
+=== Mac OS X: 
 
+On Mac OS X, C++11 and sqlite3 come along with the standard command line tools. For Boost and OpenMPI I recommend using the "homebrew" installer. Cluster-delegator can be retrieved from the git repository.
 
+Example installation using homebrew:
+
+```
+brew install boost
+brew install openmpi
+git clone https://github.com/shaunharker/cluster-delegator.git
+./cluster-delegator/install.sh
+git clone https://github.com/shaunharker/DSGRN.git
+./DSGRN/install.sh
+```
+
+=== Linux:
+
+Logs of successful Linux installations are available from Travis CI:
+
+https://travis-ci.org/shaunharker/DSGRN
+
+You may find the included scripts
+```
+  ./.travis.yml
+  ./.install/boost.sh
+  ./.install/openmpi.sh
+  ./.install/sqlite3.sh
+```
+useful.

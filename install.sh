@@ -20,7 +20,6 @@
 SRC_ROOT=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 build="$SRC_ROOT/.install/build.sh"
 
-
 # Parse command line arguments
 source $SRC_ROOT/.install/parse.sh
 
