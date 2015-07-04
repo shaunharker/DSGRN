@@ -63,6 +63,9 @@ size ( void ) const {
 INLINE_IF_HEADER_ONLY Parameter ParameterGraph::
 parameter ( uint64_t index ) const {
   //std::cout << data_ -> "ParameterGraph::parameter( " << index << " )\n";
+  if ( index >= size () ) { 
+    throw std::runtime_error ( "ParameterGraph::parameter Index out of bounds");
+  }
   uint64_t logic_index = index % data_ -> fixedordersize_;
   uint64_t order_index = index / data_ -> fixedordersize_;
   //std::cout << "Logic index = " << logic_index << "\n";

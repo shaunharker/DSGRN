@@ -215,7 +215,7 @@ int analyze ( int argc, char * argv [] ) {
     DomainGraph dg ( p );
     MorseDecomposition md ( dg . digraph () );
     MorseGraph mg ( dg, md );  
-    if ( md . recurrent () . size () < ms_index ) {
+    if ( md . recurrent () . size () <= ms_index ) {
       std::cout << "Invalid Morse set: There are only " << md . recurrent () . size () << " morse sets.\n";
       return 1;
     }

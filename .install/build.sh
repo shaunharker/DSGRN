@@ -1,6 +1,6 @@
 #!/bin/bash
 # build.sh [--prefix=PREFIX] [--build=BUILDTYPE]    \
-#            [--search=SEARCHPATH] [--tests] [CMake arguments]
+#            [--search=SEARCHPATH] [--test] [CMake arguments]
 #  
 #  Build the project with the supplied configurations,
 #    or else default values.
@@ -10,7 +10,7 @@
 #     (or some other CMake recognizable build type)
 #   SEARCHPATH is an optional location to search for headers 
 #     and libraries (i.e. SEARCHPATH/include and SEARCHPATH/lib)
-#   If --tests is supplied then tests will be built.
+#   If --test is supplied then tests will be built.
 #   The default setting for PREFIX is /usr/local unless it is not writable
 #     in which case it is ~/.local.
 #   The default setting for BUILDTYPE is Release

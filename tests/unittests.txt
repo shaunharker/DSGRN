@@ -40,6 +40,7 @@
 ../build/bin/dsgrn parameter inequalities '[["X1",[3,3,"FF9E00"],[0,1,2]],["X2",[1,2,"4"],[0,1]],["X3",[2,1,"8"],[0]]]' 
 ../build/bin/dsgrn parameter inequalities 234 
 ../build/bin/dsgrn analyze morseset 0 0 
+
 ! ../build/bin/dsgrn fail
 ! ../build/bin/dsgrn parameter fail
 ! ../build/bin/dsgrn parameter fail fail
@@ -56,7 +57,7 @@
 ! ../build/bin/dsgrn morsegraph fail 0
 ! ../build/bin/dsgrn analyze
 ! ../build/bin/dsgrn analyze morseset 1000 0
+! ../build/bin/dsgrn analyze morseset 1 0
 ! ../build/bin/dsgrn analyze fail fail fail
 rm dsgrn.session
 ! ../build/bin/dsgrn parameter
-
