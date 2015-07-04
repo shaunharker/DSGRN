@@ -6,7 +6,7 @@
 #define DSGRB_PARAMETERSIGNATUREPROCESS_H
 
 #include "common.h"
-#include "delegator/delegator.h"
+#include "cluster-delegator.hpp"
 #include "Tools/sqlambda.h"
 #include "DSGRN.h"
 
