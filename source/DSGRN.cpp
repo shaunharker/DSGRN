@@ -92,17 +92,17 @@ int parameter ( int argc, char * argv [] ) {
   std::string s = argv[3];
   Parameter p = parse_parameter ( s );
   if ( command == "inequalities" ) {
-    std::cout << p . inequalities ();
+    std::cout << p . inequalities () << "\n";
     return 0;
   }
   if ( command == "json" ) {
-    std::cout << p . stringify ();
+    std::cout << p . stringify () << "\n";
     return 0;
   }
   if ( command == "index" ) {
     ParameterGraph pg ( network );
     try { 
-      std::cout << pg . index ( p ); return 0;
+      std::cout << pg . index ( p ) << "\n"; return 0;
     } catch ( std::exception & e ) {
       std::cout << "Feature not yet implemented.\n";
       return 1;
@@ -122,11 +122,11 @@ int domaingraph ( int argc, char * argv [] ) {
   Parameter p = parse_parameter ( s );
   DomainGraph dg ( p );
   if ( command == "json" ) {
-    std::cout << dg . digraph() . stringify ();
+    std::cout << dg . digraph() . stringify () << "\n";
     return 0;
   } 
   if ( command == "graphviz" ) {
-    std::cout << dg;
+    std::cout << dg << "\n";
     return 0;
   } 
   std::cout << "Unrecognized command: " + command + "\n";
@@ -143,11 +143,11 @@ int wallgraph ( int argc, char * argv [] ) {
   Parameter p = parse_parameter ( s );
   WallGraph wg ( p );
   if ( command == "json" ) {
-    std::cout << wg . digraph() . stringify ();
+    std::cout << wg . digraph() . stringify () << "\n";
     return 0;
   } 
   if ( command == "graphviz" ) {
-    std::cout << wg;
+    std::cout << wg << "\n";
     return 0;
   } 
   std::cout << "Unrecognized command: " + command + "\n";
@@ -167,11 +167,11 @@ int morsedecomposition ( int argc, char * argv [] ) {
   MorseDecomposition md;
   md . assign ( dg . digraph () );
   if ( command == "json" ) {
-    std::cout << md . poset() . stringify ();
+    std::cout << md . poset() . stringify () << "\n";
     return 0;
   } 
   if ( command == "graphviz" ) {
-    std::cout << md;
+    std::cout << md << "\n";
     return 0;
   } 
   std::cout << "Unrecognized command: " + command + "\n";
@@ -190,11 +190,11 @@ int morsegraph ( int argc, char * argv [] ) {
   MorseDecomposition md ( dg . digraph () );
   MorseGraph mg ( dg, md );
   if ( command == "json" ) {
-    std::cout << mg . stringify ();
+    std::cout << mg . stringify () << "\n";
     return 0;
   } 
   if ( command == "graphviz" ) {
-    std::cout << mg;
+    std::cout << mg << "\n";
     return 0;
   } 
   std::cout << "Unrecognized command: " + command + "\n";
@@ -293,12 +293,10 @@ int main ( int argc, char * argv [] ) {
       if ( filename == "graphviz" || filename == "draw" ) {
         int rc = load_network_from_session ();
         if ( rc == 1 ) return rc;
-        std::cout << network . graphviz ();
+        std::cout << network . graphviz () << "\n";
         return 0;
       }
-      //std::cout << "loading network " << filename << "\n";
       network . load ( filename );
-      //std::cout << "setting environment variable...\n";
       argc -= 2; argv += 2;
       if ( argc == 1 ) {
         std::ofstream outfile ( "dsgrn.session" );
@@ -308,7 +306,7 @@ int main ( int argc, char * argv [] ) {
       }
       command = argv[1];
       if ( command == "graphviz" ) {
-        std::cout << network . graphviz ();
+        std::cout << network . graphviz () << "\n";
         return 0;
       }
     } else {
