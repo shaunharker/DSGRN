@@ -21,7 +21,7 @@ set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -DNDEBUG" )
 # Packages #
 ############
 
-find_package(Boost 1.58.0 REQUIRED COMPONENTS system thread serialization)
+find_package(Boost 1.58.0 REQUIRED COMPONENTS serialization)
 
 #######################
 # Include Directories #
