@@ -25,7 +25,7 @@ before_install:
   - export PATH=$PREFIX/bin:$PATH
 install:
   - pip install cpp-coveralls --user `whoami`
-  - ./.install/boost.sh thread,system,serialization
+  - ./.install/boost.sh serialization
   - ./.install/sqlite3.sh
   - ./.install/delegator.sh
 script: 

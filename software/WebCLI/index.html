@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title> DSGRN Command Line Interface </title>
+  </head>
+  
+  <body>
+  
+  <header> 
+    <h1> DSGRN Command Line Interface </h1>
+  </header>
+
+ <body>
+
+<style>
+
+*, *:before, *:after {
+  box-sizing: border-box;
+}
+
+body {
+  background: slategrey;
+  font-family: "Arial";
+}
+
+header {
+  background: #333333;
+  color: #dddddd;
+  padding: 1em;
+  margin: 10px;
+}
+
+textarea {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    background: #111111;
+    color: #008800;
+    font-size: 16pt;
+    font-family: Andale Mono;
+}
+
+div.justified {
+    display: flex;
+    justify-content: center;
+    -webkit-justify-content: center;
+}
+
+textarea {
+  resize: none;
+}
+
+</style>
+
+
+<div class="justified">
+<textarea id="output" rows="22" cols="80" spellcheck="false" autocorrect="off" autocapitalize="off" readonly>
+DSGRN Web Command Line Interface
+Available networks are:
+2D_Example.txt                    3D_Repress_Prod.txt
+2D_Example_A.txt                  3D_Repress_Sum.txt
+2D_Example_B.txt                  4D_Cycle.txt
+2D_Example_C.txt                  4D_Cycle_2.txt
+3D_Clock.txt                      4D_Example.txt
+3D_Cycle.txt                      5D_Cycle.txt
+3D_Cycle_H.txt                    5D_Model_A.txt
+3D_Example.txt                    5D_Model_B.txt
+3D_Haase_I.txt                    5D_OverlappingRepressilators.txt
+3D_Haase_II.txt                   6D_TwoWayForcing.txt
+3D_Haase_III.txt   
+
+Examples:
+dsgrn network 5D_Cycle.txt graphviz
+dsgrn network 5D_Cycle.txt parameter json 150015529
+dsgrn network 5D_Cycle.txt domaingraph json 150015529
+dsgrn network 5D_Cycle.txt morsegraph graphviz 150015529
+dsgrn network 5D_Cycle.txt analyze morseset 1 150015529
+
+(For help type "dsgrn". All commands must supply network.)
+</textarea>
+</div>
+<div class="justified">
+<textarea id="input" rows="4" cols="80" spellcheck="false" autocorrect="off" autocapitalize="off">
+</textarea>
+</div>
+<script async type="text/javascript" src="dsgrn.js"></script>
+<script type="text/javascript">
+window.onload = function() {
+  var input = document.getElementById("input");
+  input.onkeyup = function(evt) {
+    evt = evt || window.event;
+    if (evt.keyCode == 13) {
+      var output = document.getElementById("output");
+      output.value += "\n > " + input.value + "\n";
+      output.scrollTop = output.scrollHeight; // scroll down
+      var args = input.value.trim().split ( " " );
+      args.shift();
+      if ( args.length != 0 ) args[1] = "asset_dir/networks/" + args[1];
+      var Module = {};
+      Module["arguments"] = args;
+      Module["print"] = function (text) {
+        var element = document.getElementById('output');
+        element.value += text + "\n";
+        element.scrollTop = element.scrollHeight; // focus on bottom
+      };
+      DSGRNPROGRAM(Module);
+      input.value = "";//formatTextArea(this);
+    }
+  };
+};
+</script>
+</body>
+</html>
