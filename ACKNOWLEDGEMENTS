@@ -10,3 +10,12 @@ https://github.com/nlohmann/json
 
 SHA-256 C++ code from http://www.zedwood.com/article/cpp-sha256-function. See applicable files for their license details.
 
+SQLite3 https://www.sqlite.org
+
+Boost Serialization (Robert Ramey) http://www.boost.org/doc/libs/1_58_0/libs/serialization/doc/index.html
+
+This code makes use of Graphviz (http://www.graphviz.org)
+and also the emscripten port at https://github.com/mdaines/viz.js/
+
+The Web-based command line interface uses emscripten:
+http://emscripten.org

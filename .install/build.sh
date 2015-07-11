@@ -1,6 +1,6 @@
 #!/bin/bash
 # build.sh [--prefix=PREFIX] [--build=BUILDTYPE]    \
-#            [--search=SEARCHPATH] [--test] [CMake arguments]
+#            [--searchpath=SEARCHPATH] [--test] [CMake arguments]
 #  
 #  Build the project with the supplied configurations,
 #    or else default values.
