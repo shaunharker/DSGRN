@@ -6,6 +6,20 @@
   box-sizing: border-box;
 }
 
+
+body {
+  background: slategrey;
+  font-family: "Arial";
+}
+
+header {
+  background: #333333;
+  color: #dddddd;
+  padding: 1em;
+  margin: 10px;
+}
+
+/*
 body {
   background: silver;
   font-family: "Arial";
@@ -16,7 +30,7 @@ header {
   padding: 1em;
   margin: 1em;
 }
-
+*/
 .flat {
   height: 0px;
   overflow: visible;
@@ -24,8 +38,8 @@ header {
 
 .panel {
   padding: 10px;
-  border: #777777 1px solid;
-  background: white;
+  border: black 1px solid;
+  background: #f0f0f0;
 }
 
 
