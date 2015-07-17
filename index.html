@@ -639,7 +639,7 @@ git clone https://github.com/shaunharker/DSGRN.git
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">3_2_1_2.txt</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">3_2_1_2.txt</code></pre>
 </div>
 </div>
 </div>
@@ -696,7 +696,7 @@ This is not as space efficient as possible. A more careful implementation would 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">&gt; cat 3_2_1_2.txt | tr '\n' ' '
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">&gt; cat 3_2_1_2.txt | tr '\n' ' '
 0000 4000 4040 4400 4440 4444 5000 5040 5050 5400 5440 5444 5450 5454 5500 5540 5544 5550 5554 5555 C000 C040 C0C0 C400 C440 C444 C4C0 C4C4 CC00 CC40 CC44 CCC0 CCC4 CCCC D000 D040 D050 D0C0 D0D0 D400 D440 D444 D450 D454 D4C0 D4C4 D4D0 D4D4 D500 D540 D544 D550 D554 D555 D5D0 D5D4 D5D5 DC00 DC40 DC44 DCC0 DCC4 DCCC DCD0 DCD4 DCDC DD00 DD40 DD44 DD50 DD54 DD55 DDC0 DDC4 DDCC DDD0 DDD4 DDD5 DDDC DDDD F000 F040 F050 F0C0 F0D0 F0F0 F400 F440 F450 F4C0 F4D0 F4D4 F4F0 F4F4 F500 F540 F550 F554 F555 F5D0 F5D4 F5D5 F5F0 F5F4 F5F5 FC00 FC40 FCC0 FCC4 FCCC FCD0 FCD4 FCDC FCF0 FCF4 FCFC FD00 FD40 FD44 FD50 FD54 FD55 FDC0 FDC4 FDCC FDD0 FDD4 FDD5 FDDC FDDD FDF0 FDF4 FDF5 FDFC FDFD FF00 FF40 FF44 FF50 FF54 FF55 FFC0 FFC4 FFCC FFD0 FFD4 FFD5 FFDC FFDD FFF0 FFF4 FFF5 FFFC FFFD FFFF</code></pre>
 </div>
 </div>
@@ -858,7 +858,7 @@ The syntax for network specification files will be extended to accommodate impos
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">X : (X)(~Y)
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">X : (X)(~Y)
 Y : (~X)(Y)</code></pre>
 </div>
 </div>
@@ -867,7 +867,7 @@ Y : (~X)(Y)</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">&gt; dsgrn network ./networks/2D_Example_C.txt</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">&gt; dsgrn network ./networks/2D_Example_C.txt</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -878,7 +878,7 @@ Y : (~X)(Y)</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">&gt; dsgrn network draw &gt; network.gv</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">&gt; dsgrn network draw &gt; network.gv</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -934,12 +934,12 @@ Y : (~X)(Y)</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">&gt; dsgrn parameter</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">&gt; dsgrn parameter</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">There are 1600 parameters.</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">There are 1600 parameters.</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -950,12 +950,12 @@ Y : (~X)(Y)</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">&gt; dsgrn parameter json 126</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">&gt; dsgrn parameter json 126</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">[["X",[2,2,"C0"],[0,1]],["Y",[2,2,"C0"],[0,1]]]</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">[["X",[2,2,"C0"],[0,1]],["Y",[2,2,"C0"],[0,1]]]</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -966,12 +966,12 @@ Y : (~X)(Y)</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">&gt; dsgrn parameter inequalities 126</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">&gt; dsgrn parameter inequalities 126</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">["{
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">["{
 L(X,X) L(Y,X) &lt; THETA(X,X),
 U(X,X) L(Y,X) &lt; THETA(X,X),
 L(X,X) U(Y,X) &lt; THETA(X,X),
@@ -994,12 +994,12 @@ THETA(Y,X) &lt; THETA(Y,Y)
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">&gt; dsgrn parameter index '[["X",[2,2,"C0"],[0,1]],["Y",[2,2,"C0"],[0,1]]]'</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">&gt; dsgrn parameter index '[["X",[2,2,"C0"],[0,1]],["Y",[2,2,"C0"],[0,1]]]'</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">libc++abi.dylib: terminating with uncaught exception of type std::runtime_error: Feature not implemented</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">libc++abi.dylib: terminating with uncaught exception of type std::runtime_error: Feature not implemented</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1007,12 +1007,12 @@ THETA(Y,X) &lt; THETA(Y,Y)
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">&gt; dsgrn parameter inequalities '[["X",[2,2,"C0"],[0,1]],["Y",[2,2,"C0"],[0,1]]]'</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">&gt; dsgrn parameter inequalities '[["X",[2,2,"C0"],[0,1]],["Y",[2,2,"C0"],[0,1]]]'</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">["{
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">["{
 L(X,X) L(Y,X) &lt; THETA(X,X),
 U(X,X) L(Y,X) &lt; THETA(X,X),
 L(X,X) U(Y,X) &lt; THETA(X,X),
@@ -1038,12 +1038,12 @@ THETA(Y,X) &lt; THETA(Y,Y)
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">&gt; dsgrn domaingraph json '[["X",[2,2,"C0"],[0,1]],["Y",[2,2,"C0"],[0,1]]]'</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">&gt; dsgrn domaingraph json '[["X",[2,2,"C0"],[0,1]],["Y",[2,2,"C0"],[0,1]]]'</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">[[0],[2],[2],[0],[1,3],[2,4],[6],[6],[5,7]]</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">[[0],[2],[2],[0],[1,3],[2,4],[6],[6],[5,7]]</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1051,7 +1051,7 @@ THETA(Y,X) &lt; THETA(Y,Y)
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">&gt; dsgrn domaingraph graphviz '[["X",[2,2,"C0"],[0,1]],["Y",[2,2,"C0"],[0,1]]]’ &gt; dg.gv</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">&gt; dsgrn domaingraph graphviz '[["X",[2,2,"C0"],[0,1]],["Y",[2,2,"C0"],[0,1]]]’ &gt; dg.gv</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1183,17 +1183,17 @@ THETA(Y,X) &lt; THETA(Y,Y)
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">&gt; dsgrn domaingraph json 126</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">&gt; dsgrn domaingraph json 126</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">[[0],[2],[2],[0],[1,3],[2,4],[6],[6],[5,7]]</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">[[0],[2],[2],[0],[1,3],[2,4],[6],[6],[5,7]]</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">&gt; dsgrn domaingraph graphviz 126</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">&gt; dsgrn domaingraph graphviz 126</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1201,17 +1201,17 @@ THETA(Y,X) &lt; THETA(Y,Y)
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">&gt; dsgrn wallgraph json 126</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">&gt; dsgrn wallgraph json 126</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">[[12,1],[13],[12],[2],[1],[3,4],[13],[2,14],[14],[3,4,8],[8],[5,6],[],[],[]]</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">[[12,1],[13],[12],[2],[1],[3,4],[13],[2,14],[14],[3,4,8],[8],[5,6],[],[],[]]</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">&gt; dsgrn wallgraph graphviz 126 &gt; wg.gv</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">&gt; dsgrn wallgraph graphviz 126 &gt; wg.gv</code></pre>
 </div>
 </div>
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
@@ -1400,12 +1400,12 @@ THETA(Y,X) &lt; THETA(Y,Y)
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">&gt; dsgrn morsedecomposition json 126</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">&gt; dsgrn morsedecomposition json 126</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">[[],[],[]]</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">[[],[],[]]</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1413,7 +1413,7 @@ THETA(Y,X) &lt; THETA(Y,Y)
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">&gt; dsgrn morsedecomposition graphviz 126 &gt; md.gv</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">&gt; dsgrn morsedecomposition graphviz 126 &gt; md.gv</code></pre>
 </div>
 </div>
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
@@ -1452,27 +1452,27 @@ THETA(Y,X) &lt; THETA(Y,Y)
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">&gt; dsgrn morsegraph json 126</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">&gt; dsgrn morsegraph json 126</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">{"poset":[[],[],[]],"annotations":[["FP"],["FP"],["FP OFF"]]}</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">{"poset":[[],[],[]],"annotations":[["FP"],["FP"],["FP OFF"]]}</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">&gt; dsgrn morsegraph json '[["X",[2,2,"C0"],[0,1]],["Y",[2,2,"C0"],[0,1]]]'</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">&gt; dsgrn morsegraph json '[["X",[2,2,"C0"],[0,1]],["Y",[2,2,"C0"],[0,1]]]'</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">{"poset":[[],[],[]],"annotations":[["FP"],["FP"],["FP OFF"]]}</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">{"poset":[[],[],[]],"annotations":[["FP"],["FP"],["FP OFF"]]}</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">&gt; dsgrn morsegraph graphviz 126</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">&gt; dsgrn morsegraph graphviz 126</code></pre>
 </div>
 </div>
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
@@ -1774,7 +1774,7 @@ THETA(Y,X) &lt; THETA(Y,Y)
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">mpiexec -np 5 ./software/Signatures/bin/Signatures networks/2D_Example_C.txt ./2D_Example_C.db</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">&gt; mpiexec -np 5 ./software/Signatures/bin/Signatures networks/2D_Example_C.txt ./2D_Example_C.db</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1793,7 +1793,7 @@ THETA(Y,X) &lt; THETA(Y,Y)
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">sqlite3 2D_Example_C.db</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">sqlite3 2D_Example_C.db</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1801,7 +1801,7 @@ THETA(Y,X) &lt; THETA(Y,Y)
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">sqlite&gt;</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">sqlite&gt;</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1815,7 +1815,7 @@ THETA(Y,X) &lt; THETA(Y,Y)
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">sqlite&gt; .tables</code></pre>
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">sqlite&gt; .tables</code></pre>
 </div>
 </div>
 <div class="listingblock">
@@ -1829,12 +1829,12 @@ MorseGraphEdges        MorseGraphViz</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">sqlite&gt; .schema</code></pre>
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">sqlite&gt; .schema</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">CREATE TABLE Signatures (ParameterIndex INTEGER PRIMARY KEY, MorseGraphIndex INTEGER);
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">CREATE TABLE Signatures (ParameterIndex INTEGER PRIMARY KEY, MorseGraphIndex INTEGER);
 CREATE TABLE MorseGraphViz (MorseGraphIndex INTEGER PRIMARY KEY, Graphviz TEXT);
 CREATE TABLE MorseGraphVertices (MorseGraphIndex INTEGER, Vertex INTEGER);
 CREATE TABLE MorseGraphEdges (MorseGraphIndex INTEGER, Source INTEGER, Target INTEGER);
@@ -1862,7 +1862,7 @@ CREATE INDEX MorseGraphAnnotations1 on MorseGraphAnnotations (MorseGraphIndex);<
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">sqlite&gt; select * from MorseGraphViz;</code></pre>
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">sqlite&gt; select * from MorseGraphViz;</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1870,7 +1870,7 @@ CREATE INDEX MorseGraphAnnotations1 on MorseGraphAnnotations (MorseGraphIndex);<
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">0|digraph {
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">0|digraph {
 0[label="FP"];
 1[label="FP ON"];
 }
@@ -1890,7 +1890,7 @@ CREATE INDEX MorseGraphAnnotations1 on MorseGraphAnnotations (MorseGraphIndex);<
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">18|digraph {
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">18|digraph {
 0[label="FP ON"];
 1[label="FP"];
 2[label="FP ON"];
@@ -1912,7 +1912,7 @@ CREATE INDEX MorseGraphAnnotations1 on MorseGraphAnnotations (MorseGraphIndex);<
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code>27|digraph {
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">27|digraph {
 0[label="FP ON"];
 1[label="FP ON"];
 2[label="FP"];
@@ -1926,12 +1926,12 @@ CREATE INDEX MorseGraphAnnotations1 on MorseGraphAnnotations (MorseGraphIndex);<
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">sqlite&gt; select * from Signatures where MorseGraphIndex=18 or MorseGraphIndex=19;</code></pre>
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">sqlite&gt; select * from Signatures where MorseGraphIndex=18 or MorseGraphIndex=19;</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">147|18
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">147|18
 207|18
 307|18
 1389|18
@@ -1959,7 +1959,7 @@ CREATE INDEX MorseGraphAnnotations1 on MorseGraphAnnotations (MorseGraphIndex);<
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">CREATE INDEX Signatures2 on Signatures (MorseGraphIndex, ParameterIndex);</code></pre>
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">CREATE INDEX Signatures2 on Signatures (MorseGraphIndex, ParameterIndex);</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1967,12 +1967,12 @@ CREATE INDEX MorseGraphAnnotations1 on MorseGraphAnnotations (MorseGraphIndex);<
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">sqlite&gt; explain query plan select * from Signatures where MorseGraphIndex=18 or MorseGraphIndex=19;</code></pre>
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">sqlite&gt; explain query plan select * from Signatures where MorseGraphIndex=18 or MorseGraphIndex=19;</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">0|0|0|SEARCH TABLE Signatures USING COVERING INDEX Signatures2 (MorseGraphIndex=?)
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">0|0|0|SEARCH TABLE Signatures USING COVERING INDEX Signatures2 (MorseGraphIndex=?)
 0|0|0|EXECUTE LIST SUBQUERY 1</code></pre>
 </div>
 </div>
@@ -1981,13 +1981,13 @@ CREATE INDEX MorseGraphAnnotations1 on MorseGraphAnnotations (MorseGraphIndex);<
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code>sqlite&gt; drop index Signatures2;
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">sqlite&gt; drop index Signatures2;
 sqlite&gt; explain query plan select * from Signatures where MorseGraphIndex=18 or MorseGraphIndex=19;</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">0|0|0|SCAN TABLE Signatures</code></pre>
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">0|0|0|SCAN TABLE Signatures</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1995,7 +1995,7 @@ sqlite&gt; explain query plan select * from Signatures where MorseGraphIndex=18 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">sqlite&gt; CREATE INDEX Signatures2 on Signatures (MorseGraphIndex, ParameterIndex);</code></pre>
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">sqlite&gt; CREATE INDEX Signatures2 on Signatures (MorseGraphIndex, ParameterIndex);</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2003,12 +2003,12 @@ sqlite&gt; explain query plan select * from Signatures where MorseGraphIndex=18 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">sqlite&gt; select * from Signatures where (MorseGraphIndex=18 or MorseGraphIndex=19) and ParameterIndex &lt; 400;</code></pre>
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">sqlite&gt; select * from Signatures where (MorseGraphIndex=18 or MorseGraphIndex=19) and ParameterIndex &lt; 400;</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">147|18
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">147|18
 207|18
 307|18
 150|19
@@ -2030,12 +2030,12 @@ sqlite&gt; explain query plan select * from Signatures where MorseGraphIndex=18 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">sqlite&gt; select ParameterIndex from Signatures where (MorseGraphIndex=18 or MorseGraphIndex=19) and ParameterIndex &lt; 400;</code></pre>
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">sqlite&gt; select ParameterIndex from Signatures where (MorseGraphIndex=18 or MorseGraphIndex=19) and ParameterIndex &lt; 400;</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">147
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">147
 207
 307
 150
@@ -2051,12 +2051,12 @@ sqlite&gt; explain query plan select * from Signatures where MorseGraphIndex=18 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">sqlite&gt; select ParameterIndex,ParameterIndex,MorseGraphIndex,ParameterIndex from Signatures where (MorseGraphIndex=18 or MorseGraphIndex=19) and ParameterIndex &lt; 400;</code></pre>
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">sqlite&gt; select ParameterIndex,ParameterIndex,MorseGraphIndex,ParameterIndex from Signatures where (MorseGraphIndex=18 or MorseGraphIndex=19) and ParameterIndex &lt; 400;</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">147|147|18|147
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">147|147|18|147
 207|207|18|207
 307|307|18|307
 150|150|19|150
@@ -2075,12 +2075,12 @@ sqlite&gt; explain query plan select * from Signatures where MorseGraphIndex=18 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">sqlite&gt; select GROUP_CONCAT(ParameterIndex) from Signatures where MorseGraphIndex=18 or MorseGraphIndex=19 and ParameterIndex &lt; 400;</code></pre>
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">sqlite&gt; select GROUP_CONCAT(ParameterIndex) from Signatures where MorseGraphIndex=18 or MorseGraphIndex=19 and ParameterIndex &lt; 400;</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">147,207,307,1389,1390,1392,150,155,210,215,310,315</code></pre>
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">147,207,307,1389,1390,1392,150,155,210,215,310,315</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2094,7 +2094,7 @@ sqlite&gt; explain query plan select * from Signatures where MorseGraphIndex=18 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">CREATE INDEX MorseGraphVertices2 on MorseGraphVertices (Vertex, MorseGraphIndex);</code></pre>
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">CREATE INDEX MorseGraphVertices2 on MorseGraphVertices (Vertex, MorseGraphIndex);</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2102,12 +2102,12 @@ sqlite&gt; explain query plan select * from Signatures where MorseGraphIndex=18 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">sqlite&gt; select GROUP_CONCAT(MorseGraphIndex) from MorseGraphVertices where Vertex=3;</code></pre>
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">sqlite&gt; select GROUP_CONCAT(MorseGraphIndex) from MorseGraphVertices where Vertex=3;</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">8,10,13,16,18,19,21,22,24,25,26,27</code></pre>
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">8,10,13,16,18,19,21,22,24,25,26,27</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2115,7 +2115,7 @@ sqlite&gt; explain query plan select * from Signatures where MorseGraphIndex=18 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">sqlite&gt; select ParameterIndex from Signatures where MorseGraphIndex=8 or MorseGraphIndex=10 or ...</code></pre>
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">sqlite&gt; select ParameterIndex from Signatures where MorseGraphIndex=8 or MorseGraphIndex=10 or ...</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2123,7 +2123,7 @@ sqlite&gt; explain query plan select * from Signatures where MorseGraphIndex=18 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">sqlite&gt; create temp table GotAtLeastFour as select MorseGraphIndex from MorseGraphVertices where Vertex=3;</code></pre>
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">sqlite&gt; create temp table GotAtLeastFour as select MorseGraphIndex from MorseGraphVertices where Vertex=3;</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2131,12 +2131,12 @@ sqlite&gt; explain query plan select * from Signatures where MorseGraphIndex=18 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">sqlite&gt; select GROUP_CONCAT(ParameterIndex) from Signatures natural join GotAtLeastFour;</code></pre>
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">sqlite&gt; select GROUP_CONCAT(ParameterIndex) from Signatures natural join GotAtLeastFour;</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">693,713,1007,1047,1269,1270,1271,1272,1273,1391,1393,1493,990,995,1010,1015,1050,1055,122,127,182,187,282,287,288,688,821,822,861,862,866,867,868,922,927,982,986,988,1082,1087,1088,1266,1267,1268,1386,1387,1388,1488,142,202,222,227,302,322,327,328,728,732,753,1289,1290,1291,1292,1293,1411,1413,1451,1453,1513,1553,147,207,307,1389,1390,1392,150,155,210,215,310,315,1409,1410,1412,1449,1450,1452,308,312,317,692,708,717,752,1492,1512,1552,144,204,224,230,235,304,324,330,332,335,337,737,549,550,552,609,610,612,709,710,712,733,738,773,778,987</code></pre>
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">693,713,1007,1047,1269,1270,1271,1272,1273,1391,1393,1493,990,995,1010,1015,1050,1055,122,127,182,187,282,287,288,688,821,822,861,862,866,867,868,922,927,982,986,988,1082,1087,1088,1266,1267,1268,1386,1387,1388,1488,142,202,222,227,302,322,327,328,728,732,753,1289,1290,1291,1292,1293,1411,1413,1451,1453,1513,1553,147,207,307,1389,1390,1392,150,155,210,215,310,315,1409,1410,1412,1449,1450,1452,308,312,317,692,708,717,752,1492,1512,1552,144,204,224,230,235,304,324,330,332,335,337,737,549,550,552,609,610,612,709,710,712,733,738,773,778,987</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2147,7 +2147,7 @@ sqlite&gt; explain query plan select * from Signatures where MorseGraphIndex=18 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">sqlite&gt; drop table GotAtLeastFour;</code></pre>
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">sqlite&gt; drop table GotAtLeastFour;</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2155,12 +2155,12 @@ sqlite&gt; explain query plan select * from Signatures where MorseGraphIndex=18 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">sqlite&gt; select GROUP_CONCAT(ParameterIndex) from Signatures natural join (select MorseGraphIndex from MorseGraphVertices where Vertex=3);</code></pre>
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">sqlite&gt; select GROUP_CONCAT(ParameterIndex) from Signatures natural join (select MorseGraphIndex from MorseGraphVertices where Vertex=3);</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">693,713,1007,1047,1269,1270,1271,1272,1273,1391,1393,1493,990,995,1010,1015,1050,1055,122,127,182,187,282,287,288,688,821,822,861,862,866,867,868,922,927,982,986,988,1082,1087,1088,1266,1267,1268,1386,1387,1388,1488,142,202,222,227,302,322,327,328,728,732,753,1289,1290,1291,1292,1293,1411,1413,1451,1453,1513,1553,147,207,307,1389,1390,1392,150,155,210,215,310,315,1409,1410,1412,1449,1450,1452,308,312,317,692,708,717,752,1492,1512,1552,144,204,224,230,235,304,324,330,332,335,337,737,549,550,552,609,610,612,709,710,712,733,738,773,778,987</code></pre>
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">693,713,1007,1047,1269,1270,1271,1272,1273,1391,1393,1493,990,995,1010,1015,1050,1055,122,127,182,187,282,287,288,688,821,822,861,862,866,867,868,922,927,982,986,988,1082,1087,1088,1266,1267,1268,1386,1387,1388,1488,142,202,222,227,302,322,327,328,728,732,753,1289,1290,1291,1292,1293,1411,1413,1451,1453,1513,1553,147,207,307,1389,1390,1392,150,155,210,215,310,315,1409,1410,1412,1449,1450,1452,308,312,317,692,708,717,752,1492,1512,1552,144,204,224,230,235,304,324,330,332,335,337,737,549,550,552,609,610,612,709,710,712,733,738,773,778,987</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2168,12 +2168,12 @@ sqlite&gt; explain query plan select * from Signatures where MorseGraphIndex=18 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">sqlite&gt; explain query plan select GROUP_CONCAT(ParameterIndex) from Signatures natural join (select MorseGraphIndex from MorseGraphVertices where Vertex=3);</code></pre>
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">sqlite&gt; explain query plan select GROUP_CONCAT(ParameterIndex) from Signatures natural join (select MorseGraphIndex from MorseGraphVertices where Vertex=3);</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">0|0|1|SEARCH TABLE MorseGraphVertices USING COVERING INDEX MorseGraphVertices2 (Vertex=?)
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">0|0|1|SEARCH TABLE MorseGraphVertices USING COVERING INDEX MorseGraphVertices2 (Vertex=?)
 0|1|0|SEARCH TABLE Signatures USING COVERING INDEX Signatures2 (MorseGraphIndex=?)</code></pre>
 </div>
 </div>
@@ -2191,12 +2191,12 @@ sqlite&gt; explain query plan select * from Signatures where MorseGraphIndex=18 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">sqlite&gt; select COUNT(*) from Signatures;</code></pre>
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">sqlite&gt; select COUNT(*) from Signatures;</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">1600</code></pre>
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">1600</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2204,12 +2204,12 @@ sqlite&gt; explain query plan select * from Signatures where MorseGraphIndex=18 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">sqlite&gt; select COUNT(distinct MorseGraphIndex) from Signatures;</code></pre>
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">sqlite&gt; select COUNT(distinct MorseGraphIndex) from Signatures;</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">28</code></pre>
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">28</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2217,7 +2217,7 @@ sqlite&gt; explain query plan select * from Signatures where MorseGraphIndex=18 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">sqlite&gt; select COUNT(*) from (select distinct MorseGraphIndex from Signatures);</code></pre>
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">sqlite&gt; select COUNT(*) from (select distinct MorseGraphIndex from Signatures);</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2225,7 +2225,7 @@ sqlite&gt; explain query plan select * from Signatures where MorseGraphIndex=18 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">sqlite&gt; explain query plan select distinct MorseGraphIndex from Signatures;</code></pre>
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">sqlite&gt; explain query plan select distinct MorseGraphIndex from Signatures;</code></pre>
 </div>
 </div>
 <div class="listingblock">
@@ -2247,7 +2247,7 @@ sqlite&gt; explain query plan select * from Signatures where MorseGraphIndex=18 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">sqlite&gt; select MorseGraphIndex,COUNT(Vertex) from MorseGraphVertices;</code></pre>
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">sqlite&gt; select MorseGraphIndex,COUNT(Vertex) from MorseGraphVertices;</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2255,7 +2255,7 @@ sqlite&gt; explain query plan select * from Signatures where MorseGraphIndex=18 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">27|89</code></pre>
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">27|89</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2266,12 +2266,12 @@ sqlite&gt; explain query plan select * from Signatures where MorseGraphIndex=18 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">sqlite&gt; select GROUP_CONCAT(MorseGraphIndex),GROUP_CONCAT(Vertex) from MorseGraphVertices;</code></pre>
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">sqlite&gt; select GROUP_CONCAT(MorseGraphIndex),GROUP_CONCAT(Vertex) from MorseGraphVertices;</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">0,0,1,2,2,3,3,3,4,4,4,5,5,6,7,7,7,8,8,8,8,9,9,9,10,10,10,10,11,11,12,12,12,13,13,13,13,14,14,15,16,16,16,16,17,17,17,18,18,18,18,18,19,19,19,19,19,20,20,20,21,21,21,21,22,22,22,22,23,23,23,24,24,24,24,25,25,25,25,25,26,26,26,26,27,27,27,27,27|0,1,0,0,1,0,1,2,0,1,2,0,1,0,0,1,2,0,1,2,3,0,1,2,0,1,2,3,0,1,0,1,2,0,1,2,3,0,1,0,0,1,2,3,0,1,2,0,1,2,3,4,0,1,2,3,4,0,1,2,0,1,2,3,0,1,2,3,0,1,2,0,1,2,3,0,1,2,3,4,0,1,2,3,0,1,2,3,4</code></pre>
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">0,0,1,2,2,3,3,3,4,4,4,5,5,6,7,7,7,8,8,8,8,9,9,9,10,10,10,10,11,11,12,12,12,13,13,13,13,14,14,15,16,16,16,16,17,17,17,18,18,18,18,18,19,19,19,19,19,20,20,20,21,21,21,21,22,22,22,22,23,23,23,24,24,24,24,25,25,25,25,25,26,26,26,26,27,27,27,27,27|0,1,0,0,1,0,1,2,0,1,2,0,1,0,0,1,2,0,1,2,3,0,1,2,0,1,2,3,0,1,0,1,2,0,1,2,3,0,1,0,0,1,2,3,0,1,2,0,1,2,3,4,0,1,2,3,4,0,1,2,0,1,2,3,0,1,2,3,0,1,2,0,1,2,3,0,1,2,3,4,0,1,2,3,0,1,2,3,4</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2291,12 +2291,12 @@ sqlite&gt; explain query plan select * from Signatures where MorseGraphIndex=18 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">sqlite&gt; select MorseGraphIndex,COUNT(*) as Frequency from Signatures group by MorseGraphIndex order by Frequency desc;</code></pre>
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">sqlite&gt; select MorseGraphIndex,COUNT(*) as Frequency from Signatures group by MorseGraphIndex order by Frequency desc;</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">6|418
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">6|418
 14|266
 2|204
 1|126
@@ -2334,12 +2334,12 @@ sqlite&gt; explain query plan select * from Signatures where MorseGraphIndex=18 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">sqlite&gt; select AVG(Frequency) from MorseGraphClasses;</code></pre>
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">sqlite&gt; select AVG(Frequency) from MorseGraphClasses;</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">57.1428571428571</code></pre>
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">57.1428571428571</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2347,7 +2347,7 @@ sqlite&gt; explain query plan select * from Signatures where MorseGraphIndex=18 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">sqlite&gt; select GROUP_CONCAT(MorseGraphIndex) from (select MorseGraphIndex,count(*) as Frequency from Signatures group by MorseGraphIndex order by Frequency desc) where Frequency &gt; 50;
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">sqlite&gt; select GROUP_CONCAT(MorseGraphIndex) from (select MorseGraphIndex,count(*) as Frequency from Signatures group by MorseGraphIndex order by Frequency desc) where Frequency &gt; 50;
 6,14,2,1,17,0,9,11</code></pre>
 </div>
 </div>
@@ -2359,7 +2359,7 @@ sqlite&gt; explain query plan select * from Signatures where MorseGraphIndex=18 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">sqlite&gt; create temp table MorseGraphClasses as select MorseGraphIndex,COUNT(*) as Frequency,GROUP_CONCAT(ParameterIndex) from Signatures group by MorseGraphIndex order by Frequency desc;</code></pre>
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">sqlite&gt; create temp table MorseGraphClasses as select MorseGraphIndex,COUNT(*) as Frequency,GROUP_CONCAT(ParameterIndex) from Signatures group by MorseGraphIndex order by Frequency desc;</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2367,12 +2367,12 @@ sqlite&gt; explain query plan select * from Signatures where MorseGraphIndex=18 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">sqlite&gt; select * from MorseGraphClasses where Frequency &lt; 10</code></pre>
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">sqlite&gt; select * from MorseGraphClasses where Frequency &lt; 10</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">24|8|549,550,552,609,610,612,709,710
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">24|8|549,550,552,609,610,612,709,710
 20|7|777,1429,1430,1432,1469,1470,1472
 4|6|372,377,1030,1035,1070,1075
 10|6|990,995,1010,1015,1050,1055
@@ -2388,12 +2388,12 @@ sqlite&gt; explain query plan select * from Signatures where MorseGraphIndex=18 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">sqlite&gt; explain query plan select * from MorseGraphClasses where Frequency &lt; 10;</code></pre>
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">sqlite&gt; explain query plan select * from MorseGraphClasses where Frequency &lt; 10;</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">0|0|0|SCAN TABLE MorseGraphClasses</code></pre>
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">0|0|0|SCAN TABLE MorseGraphClasses</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2401,7 +2401,7 @@ sqlite&gt; explain query plan select * from Signatures where MorseGraphIndex=18 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">sqlite&gt; create index MorseGraphClasses2 on MorseGraphClasses (Frequency);</code></pre>
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">sqlite&gt; create index MorseGraphClasses2 on MorseGraphClasses (Frequency);</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2409,12 +2409,12 @@ sqlite&gt; explain query plan select * from Signatures where MorseGraphIndex=18 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">sqlite&gt; explain query plan select * from MorseGraphClasses where Frequency &lt; 10;</code></pre>
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">sqlite&gt; explain query plan select * from MorseGraphClasses where Frequency &lt; 10;</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">0|0|0|SEARCH TABLE MorseGraphClasses USING INDEX MorseGraphClasses2 (Frequency&lt;?)</code></pre>
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">0|0|0|SEARCH TABLE MorseGraphClasses USING INDEX MorseGraphClasses2 (Frequency&lt;?)</code></pre>
 </div>
 </div>
 </div>
@@ -2428,7 +2428,7 @@ sqlite&gt; explain query plan select * from Signatures where MorseGraphIndex=18 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">sqlite&gt; create temp table MorseGraphVertexCount as select MorseGraphIndex,COUNT(*) as VertexCount from MorseGraphVertices group by MorseGraphIndex order by VertexCount desc;</code></pre>
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">sqlite&gt; create temp table MorseGraphVertexCount as select MorseGraphIndex,COUNT(*) as VertexCount from MorseGraphVertices group by MorseGraphIndex order by VertexCount desc;</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2441,7 +2441,7 @@ sqlite&gt; explain query plan select * from Signatures where MorseGraphIndex=18 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">18,19,25,27,8,10,13,16,21,22,24,26</code></pre>
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">18,19,25,27,8,10,13,16,21,22,24,26</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2458,7 +2458,7 @@ sqlite&gt; explain query plan select * from Signatures where MorseGraphIndex=18 
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">sqlite&gt; create temp table HasFPOFF as select MorseGraphIndex from MorseGraphAnnotations where Label="FP OFF";
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">sqlite&gt; create temp table HasFPOFF as select MorseGraphIndex from MorseGraphAnnotations where Label="FP OFF";
 sqlite&gt; create temp table HasFC as select MorseGraphIndex from MorseGraphAnnotations where Label="FC";
 sqlite&gt; create temp table HasFPON as select MorseGraphIndex from MorseGraphAnnotations where Label="FP ON";
 sqlite&gt; select GROUP_CONCAT(ParameterIndex) from Signatures natural join (select * from HasFPOFF union select * from HasFC except select * from HasFPON);</code></pre>
@@ -2466,7 +2466,7 @@ sqlite&gt; select GROUP_CONCAT(ParameterIndex) from Signatures natural join (sel
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">1,2,6,7,8,21,22,26,27,28,61,62,66,67,68,120,180,280,406,407,408,426,427,428,466,467,468,520,521,522,580,581,582,680,681,682,801,802,806,807,808,820,860,920,980,1080,1206,1207,1208,1220,1221,1222,1260,1261,1262,1320,1321,1322,1380,1381,1382,1480,1481,1482,121,126,128,181,186,188,281,286,526,527,528,586,587,588,686,687,826,827,828,921,926,928,981,1081,1086,1226,1227,1228,1326,1327,1328,1486,1487,0,20,60,400,401,402,420,421,422,460,461,462,800,1200,1201,1202</code></pre>
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">1,2,6,7,8,21,22,26,27,28,61,62,66,67,68,120,180,280,406,407,408,426,427,428,466,467,468,520,521,522,580,581,582,680,681,682,801,802,806,807,808,820,860,920,980,1080,1206,1207,1208,1220,1221,1222,1260,1261,1262,1320,1321,1322,1380,1381,1382,1480,1481,1482,121,126,128,181,186,188,281,286,526,527,528,586,587,588,686,687,826,827,828,921,926,928,981,1081,1086,1226,1227,1228,1326,1327,1328,1486,1487,0,20,60,400,401,402,420,421,422,460,461,462,800,1200,1201,1202</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2474,22 +2474,22 @@ sqlite&gt; select GROUP_CONCAT(ParameterIndex) from Signatures natural join (sel
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">sqlite&gt; explain query plan select MorseGraphIndex from MorseGraphAnnotations where Label="FP ON";</code></pre>
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">sqlite&gt; explain query plan select MorseGraphIndex from MorseGraphAnnotations where Label="FP ON";</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">0|0|0|SEARCH TABLE MorseGraphAnnotations USING COVERING INDEX MorseGraphAnnotations3 (Label=?)</code></pre>
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">0|0|0|SEARCH TABLE MorseGraphAnnotations USING COVERING INDEX MorseGraphAnnotations3 (Label=?)</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">sqlite&gt; explain query plan select GROUP_CONCAT(ParameterIndex) from Signatures natural join (select * from HasFPOFF union select * from HasFC except select * from HasFPON);</code></pre>
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">sqlite&gt; explain query plan select GROUP_CONCAT(ParameterIndex) from Signatures natural join (select * from HasFPOFF union select * from HasFC except select * from HasFPON);</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">3|0|0|SCAN TABLE HasFPOFF
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">3|0|0|SCAN TABLE HasFPOFF
 4|0|0|SCAN TABLE HasFC
 2|0|0|COMPOUND SUBQUERIES 3 AND 4 USING TEMP B-TREE (UNION)
 5|0|0|SCAN TABLE HasFPON
@@ -2509,12 +2509,12 @@ sqlite&gt; select GROUP_CONCAT(ParameterIndex) from Signatures natural join (sel
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">sqlite&gt; select GROUP_CONCAT(distinct MorseGraphIndex) from Signatures;</code></pre>
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">sqlite&gt; select GROUP_CONCAT(distinct MorseGraphIndex) from Signatures;</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">15,11,6,2,0,1,14,7,9,12,13,16,22,5,17,18,19,3,23,21,4,24,8,25,26,20,27,10</code></pre>
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">15,11,6,2,0,1,14,7,9,12,13,16,22,5,17,18,19,3,23,21,4,24,8,25,26,20,27,10</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2522,12 +2522,12 @@ sqlite&gt; select GROUP_CONCAT(ParameterIndex) from Signatures natural join (sel
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">sqlite&gt; explain query plan select GROUP_CONCAT(distinct MorseGraphIndex) from Signatures;</code></pre>
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">sqlite&gt; explain query plan select GROUP_CONCAT(distinct MorseGraphIndex) from Signatures;</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">0|0|0|SCAN TABLE Signatures</code></pre>
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">0|0|0|SCAN TABLE Signatures</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2535,7 +2535,7 @@ sqlite&gt; select GROUP_CONCAT(ParameterIndex) from Signatures natural join (sel
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">sqlite&gt; select distinct MorseGraphIndex from Signatures;</code></pre>
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">sqlite&gt; select distinct MorseGraphIndex from Signatures;</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2554,12 +2554,12 @@ sqlite&gt; select GROUP_CONCAT(ParameterIndex) from Signatures natural join (sel
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">sqlite&gt; explain query plan select distinct MorseGraphIndex from Signatures;</code></pre>
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">sqlite&gt; explain query plan select distinct MorseGraphIndex from Signatures;</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">0|0|0|SCAN TABLE Signatures USING COVERING INDEX Signatures2</code></pre>
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">0|0|0|SCAN TABLE Signatures USING COVERING INDEX Signatures2</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2570,22 +2570,22 @@ sqlite&gt; select GROUP_CONCAT(ParameterIndex) from Signatures natural join (sel
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">sqlite&gt; select GROUP_CONCAT(MorseGraphIndex) from (select distinct MorseGraphIndex from Signatures);</code></pre>
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">sqlite&gt; select GROUP_CONCAT(MorseGraphIndex) from (select distinct MorseGraphIndex from Signatures);</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27</code></pre>
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">sqlite&gt; explain query plan select GROUP_CONCAT(MorseGraphIndex) from (select distinct MorseGraphIndex from Signatures);</code></pre>
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">sqlite&gt; explain query plan select GROUP_CONCAT(MorseGraphIndex) from (select distinct MorseGraphIndex from Signatures);</code></pre>
 </div>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">1|0|0|SCAN TABLE Signatures USING COVERING INDEX Signatures2
+<pre class="highlightjs highlight"><code class="language-sql" data-lang="sql">1|0|0|SCAN TABLE Signatures USING COVERING INDEX Signatures2
 0|0|0|SCAN SUBQUERY 1</code></pre>
 </div>
 </div>
@@ -2685,7 +2685,7 @@ public:
 <div id="footer">
 <div id="footer-text">
 Version 1.0<br>
-Last updated 2015-07-17 14:03:08 EDT
+Last updated 2015-07-17 14:09:05 EDT
 </div>
 </div>
 </body>
