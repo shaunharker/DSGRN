@@ -1108,10 +1108,10 @@ To wrap up, here is a summary of DSGRN's current syntax. Any path from the green
 
 `Signatures` is a program which computes databses of Morse graphs for an entire Parameter graph. Here is a demonstration.
 
-First, we use the `Signatures` program to create an SQLite database:
+First, we use the `Signatures` program to create an SQLite database. From the DSGRN folder, type:
 
 ``` shell
-mpiexec -np 5 ./Signatures ../../networks/2D_Example_C.txt ../../data/logic/ ./2D_Example_C.db
+mpiexec -np 5 ./software/Signatures/bin/Signatures networks/2D_Example_C.txt ./2D_Example_C.db
 ```
 
 Tada! Now we have an SQLite database. This is a small example that computes in seconds even on a laptop. So... looks like we're done here, everybody go home.

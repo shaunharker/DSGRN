@@ -1770,11 +1770,11 @@ THETA(Y,X) &lt; THETA(Y,Y)
 <p><code>Signatures</code> is a program which computes databses of Morse graphs for an entire Parameter graph. Here is a demonstration.</p>
 </div>
 <div class="paragraph">
-<p>First, we use the <code>Signatures</code> program to create an SQLite database:</p>
+<p>First, we use the <code>Signatures</code> program to create an SQLite database. From the DSGRN folder, type:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">mpiexec -np 5 ./Signatures ../../networks/2D_Example_C.txt ../../data/logic/ ./2D_Example_C.db</code></pre>
+<pre class="highlightjs highlight"><code class="language-shell" data-lang="shell">mpiexec -np 5 ./software/Signatures/bin/Signatures networks/2D_Example_C.txt ./2D_Example_C.db</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2685,7 +2685,7 @@ public:
 <div id="footer">
 <div id="footer-text">
 Version 1.0<br>
-Last updated 2015-07-16 21:09:29 EDT
+Last updated 2015-07-17 14:03:08 EDT
 </div>
 </div>
 </body>
