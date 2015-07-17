@@ -441,11 +441,12 @@ MathJax.Hub.Config({
 <div id="toctitle">Table of Contents</div>
 <ul class="sectlevel1">
 <li><a href="#_purpose">Purpose</a></li>
-<li><a href="#_installation">Installation</a>
+<li><a href="#_installation">Installation</a></li>
+<li><a href="#_dependencies">Dependencies</a></li>
+<li><a href="#_about_the_installation">About the installation</a>
 <ul class="sectlevel2">
-<li><a href="#_step_1_install_prerequisites">Step 1. Install Prerequisites</a></li>
-<li><a href="#_step_2_build_dsgrn">Step 2. Build DSGRN</a></li>
-<li><a href="#_step_3_logic_resources">Step 3. Logic Resources</a></li>
+<li><a href="#_mac_os_x">Mac OS X:</a></li>
+<li><a href="#_linux">Linux:</a></li>
 </ul>
 </li>
 <li><a href="#_network_components">Network Components</a>
@@ -495,33 +496,17 @@ MathJax.Hub.Config({
 <h2 id="_installation">Installation</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>To obtain the software from the repository, change directory to where every you want the <code>DSGRN</code> folder to be on your system, and type (assuming you have <code>git</code>)</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">git clone https://github.com/shaunharker/DSGRN</code></pre>
+<p>The installation proceeds in two stages.
+First, install the prerequisites.
+Second, build and install the DSGRN software.</p>
 </div>
 </div>
+</div>
+<div class="sect1">
+<h2 id="_dependencies">Dependencies</h2>
+<div class="sectionbody">
 <div class="paragraph">
-<p>From here, the installation proceeds in three stages.</p>
-</div>
-<div class="olist arabic">
-<ol class="arabic">
-<li>
-<p>Install the prerequisites.</p>
-</li>
-<li>
-<p>Build and install the DSGRN software.</p>
-</li>
-<li>
-<p>Compute/acquire "logic" resources and put them in place.</p>
-</li>
-</ol>
-</div>
-<div class="sect2">
-<h3 id="_step_1_install_prerequisites">Step 1. Install Prerequisites</h3>
-<div class="paragraph">
-<p>The prerequisites are:</p>
+<p>The dependencies are:</p>
 </div>
 <div class="ulist">
 <ul>
@@ -529,115 +514,90 @@ MathJax.Hub.Config({
 <p>C++11 compiler</p>
 </li>
 <li>
-<p>Boost 1.58 (or higher)</p>
+<p>Boost 1.58</p>
+</li>
+<li>
+<p>Open MPI</p>
+</li>
+<li>
+<p><a href="https://github.com/shaunharker/cluster-delegator.git">cluster-delegator</a></p>
 </li>
 <li>
 <p>sqlite3</p>
 </li>
-<li>
-<p>cmake</p>
-</li>
 </ul>
 </div>
-<div class="paragraph">
-<p>For distributed computations, OpenMPI is also required.</p>
 </div>
-<div class="admonitionblock tip">
-<table>
-<tr>
-<td class="icon">
-<div class="title">Tip</div>
-</td>
-<td class="content">
-For Mac OS X: C++11 comes along with the standard command line tools. Sqlite3 is also packaged along with Mac OS X. For Boost, cmake, and OpenMPI I recommend using the "homebrew" installer.
-</td>
-</tr>
-</table>
+</div>
+<div class="sect1">
+<h2 id="_about_the_installation">About the installation</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>DSGRN is installed by invoking the <code>install.sh</code> script in the source root.
+The location it installed is determined by the so-called installation prefix.
+This can be specified as in the following example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code>./install.sh --prefix=/opt/local</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If the installation prefix is not specified than a default value is used.
+This value is <code>/usr/local</code>. If, however, you do not have write privileges to <code>/usr/local</code>,
+then the installer will check to see if you have a directory named <code>~/.local</code>.
+If you do, then that will be the installation prefix. Otherwise the installer fails.</p>
+</div>
+<div class="paragraph">
+<p>Assuming an installation prefix of <code>/usr/local</code> the files installed are as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code>  /usr/local/bin        (dsgrn)
+  /usr/local/lib        (libdsgrn.a, libdsgrn.so, libdsgrn.dylib)
+  /usr/local/share      (DSGRN/logic/*.dat)</code></pre>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_step_2_build_dsgrn">Step 2. Build DSGRN</h3>
+<h3 id="_mac_os_x">Mac OS X:</h3>
 <div class="paragraph">
-<p>After the prerequisites are installed, cd to the main DSGRN directory and type the following:</p>
+<p>On Mac OS X, C++11 and sqlite3 come along with the standard command line tools. For Boost and OpenMPI I recommend using the "homebrew" installer. Cluster-delegator can be retrieved from the git repository.</p>
+</div>
+<div class="paragraph">
+<p>Example installation using homebrew:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">./install.sh</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>This will attempt to install the program "dsgrn" into</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">  /usr/local/bin</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>and libraries into</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">  /usr/local/lib.</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>If this is not suitable, you can do the following instead:</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">./install.sh /some/other/path</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>which will put things in</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">/some/other/path/bin
-/some/other/path/lib</code></pre>
+<pre class="highlightjs highlight"><code>brew install boost
+brew install openmpi
+git clone https://github.com/shaunharker/cluster-delegator.git
+./cluster-delegator/install.sh
+git clone https://github.com/shaunharker/DSGRN.git
+./DSGRN/install.sh</code></pre>
 </div>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_step_3_logic_resources">Step 3. Logic Resources</h3>
+<h3 id="_linux">Linux:</h3>
 <div class="paragraph">
-<p>In order for the software to work, certain resource files must be created or otherwise obtained and put into place into either the default location</p>
+<p>Logs of successful Linux installations are available from Travis CI:</p>
+</div>
+<div class="paragraph">
+<p><a href="https://travis-ci.org/shaunharker/DSGRN" class="bare">https://travis-ci.org/shaunharker/DSGRN</a></p>
+</div>
+<div class="paragraph">
+<p>You may find the included scripts</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">  /usr/local/share/DSGRN/logic</code></pre>
+<pre class="highlightjs highlight"><code>  ./.travis.yml
+  ./.install/boost.sh
+  ./.install/openmpi.sh
+  ./.install/sqlite3.sh</code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>or else if you used an alternative installation prefix, e.g. <code>/some/other/path</code>, then you must put these resource files in</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">  /some/other/path/share/DSGRN/logic</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>To obtain these resource files there are two options:</p>
-</div>
-<div class="paragraph">
-<p>A) Build them yourself.</p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash" data-lang="bash">cd software/NetworkLogic
-make
-./NetworkLogic
-## wait
-mkdir -p /usr/local/share/DSGRN/logic
-cp *.dat /usr/local/share/DSGRN/logic</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>Once again <code>/usr/local</code> will be <code>/some/other/path</code> for non-standard installs.</p>
-</div>
-<div class="paragraph">
-<p>B) Download them from somewhere else where they have already been built and put them in place. (Currently they are not publicly hosted, however.)</p>
+<p>useful.</p>
 </div>
 </div>
 </div>
@@ -2725,7 +2685,7 @@ public:
 <div id="footer">
 <div id="footer-text">
 Version 1.0<br>
-Last updated 2015-06-19 01:55:26 EDT
+Last updated 2015-07-16 21:09:29 EDT
 </div>
 </div>
 </body>
