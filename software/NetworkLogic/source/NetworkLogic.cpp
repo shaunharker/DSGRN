@@ -52,6 +52,7 @@ list_components ( int N ) {
         c . m = m;
         c . logic = logic;
         result . push_back ( c );
+        //std::cout << n << " " << m << " " << logic << "\n";
       }
     }
   }
@@ -83,7 +84,9 @@ void compute_code ( int n, int m, Partition const& logic ) {
       outfile << codes[i] << "\n";
     }
     outfile . close ();
-  } catch ( ... ) {}
+  } catch ( ... ) {
+    //std::cout << "unable to compute for " << n << " " << m << " " << logic << "\n";
+  }
 }
 
 void compute_code ( Component const& c ) {
@@ -99,6 +102,13 @@ void compute_all_codes ( int N ) {
 
 int main ( int argc, char * argv [] ) {
   uint64_t N = 5;
+  if ( argc == 3 ) {
+    Component c;
+    c . n = 5;
+    c . m = std::stoll(argv[2]);
+    c . logic = std::vector<int64_t> ( c.n, 1 );
+    compute_code ( c );
+  }
   if ( argc == 2 ) N = std::stoll(argv[1]);
   compute_all_codes ( N );
   return 0;

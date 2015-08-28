@@ -37,5 +37,5 @@ cd ${SRC_ROOT}
 $build --prefix=$PREFIX --searchpath=$SEARCHPATH --build=$BUILDTYPE --test $MASS || exit 1
 
 # Build and Test "Signatures"
-cd $SRC_ROOT/software/Signatures
+cd $SRC_ROOT/software/DSGRN-Database
 $build --prefix=$PREFIX --searchpath=$SEARCHPATH --build=$BUILDTYPE --test $MASS || exit 1
