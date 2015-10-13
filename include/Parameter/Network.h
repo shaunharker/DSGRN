@@ -58,8 +58,8 @@ public:
   std::vector<std::vector<uint64_t>> const&
   logic ( uint64_t index ) const;
 
-  /// uint64_teraction
-  ///   Return the uint64_teraction type of an edge:
+  /// interaction
+  ///   Return the interaction type of an edge:
   ///   False for repression, true for activation
   bool
   interaction ( uint64_t source, uint64_t target ) const;
