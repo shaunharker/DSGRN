@@ -114,8 +114,24 @@ int parameter ( int argc, char * argv [] ) {
 
 int domaingraph ( int argc, char * argv [] ) {
   if ( argc <= 3 ) {
-    std::cout << "Not enough arguments.\n";
-    return 1;
+    if ( argc <= 2 ) {
+      std::stringstream ss;
+      ss << "{\"cells\":";
+      ss << "[";
+      Domain dom ( network . domains () );
+      bool outerfirst = true;
+      while ( dom . isValid () ) {
+        if ( outerfirst ) outerfirst = false; else ss << ",";
+        ss << dom;
+        ++ dom;
+      }
+      ss << "]}";
+      std::cout << ss . str () << "\n";
+      return 0;
+    } else {
+      std::cout << "Not enough arguments.\n";
+      return 1;
+    }
   }
   std::string command = argv[2];
   std::string s = argv[3];
@@ -252,6 +268,14 @@ int analyze ( int argc, char * argv [] ) {
       if ( outerfirst ) outerfirst = false; else ss << ",";
       dom . setIndex ( vertices [ i ] );
       ss << dom;
+    }
+    ss << "],";
+    ss << "\"vertices\":";
+    ss << "[";
+    outerfirst = true;
+    for ( uint64_t i = 0; i < N; ++ i ) {
+      if ( outerfirst ) outerfirst = false; else ss << ",";
+      ss << vertices [ i ];
     }
     ss << "]}";
     std::cout << ss . str () << "\n";
