@@ -16,8 +16,8 @@ import pp
 #
 # So far the Morse set number is entered by hand, but I should write a parser eventually.
 
-def patternSearch(morseset=0,specfile="networks/5D_Model_B.txt",paramfile="5D_Model_B_FCParams.txt",resultsfile='results_5D_B.txt',printtoscreen=0,printparam=0,findallmatches=1,unique_identifier=0):
-    subprocess.call(["dsgrn network {} domaingraph > dsgrn_domaincells_{:04d}.json".format(specfile,unique_identifier)],shell=True)
+def patternSearch(morseset=0,networkfile="networks/5D_Model_B.txt",paramfile="5D_Model_B_FCParams.txt",resultsfile='results_5D_B.txt',printtoscreen=0,printparam=0,findallmatches=1,unique_identifier=0):
+    subprocess.call(["dsgrn network {} domaingraph > dsgrn_domaincells_{:04d}.json".format(networkfile,unique_identifier)],shell=True)
     R=open(resultsfile,'w',0)
     P=open(paramfile,'r')
     paramcount=1
@@ -27,8 +27,8 @@ def patternSearch(morseset=0,specfile="networks/5D_Model_B.txt",paramfile="5D_Mo
             print str(paramcount)+' parameters checked'
         paramcount+=1
         # shell call to dsgrn to produce dsgrn_output.json, which is the input for the pattern matcher
-        subprocess.call(["dsgrn network {} domaingraph json {} > dsgrn_domaingraph_{:04d}.json".format(specfile,int(param),unique_identifier)],shell=True)
-        subprocess.call(["dsgrn network {} analyze morseset {} {} >dsgrn_output_{:04d}.json".format(specfile,morseset,int(param),unique_identifier)],shell=True)
+        subprocess.call(["dsgrn network {} domaingraph json {} > dsgrn_domaingraph_{:04d}.json".format(networkfile,int(param),unique_identifier)],shell=True)
+        subprocess.call(["dsgrn network {} analyze morseset {} {} >dsgrn_output_{:04d}.json".format(networkfile,morseset,int(param),unique_identifier)],shell=True)
         try:
             patterns,matches=patternmatch.callPatternMatch(fname_morseset='dsgrn_output_{:04d}.json'.format(unique_identifier),fname_domgraph='dsgrn_domaingraph_{:04d}.json'.format(unique_identifier),fname_domcells='dsgrn_domaincells_{:04d}.json'.format(unique_identifier),fname_patterns='patterns.txt',fname_results=resultsfile,writetofile=0,returnmatches=1,printtoscreen=printtoscreen,findallmatches=findallmatches)
         except ValueError:
@@ -84,7 +84,7 @@ def setPattern_Malaria_20hr_2015_09_11():
             f.write(patternstr2)
     f.close()
 
-def parallelrun(patternfunction=setPattern_Malaria_20hr_2015_09_11,morseset=0,specfile="networks/5D_Malaria_20hr.txt",paramfile="5D_Malaria_2015_FCParams_MorseGraph565.txt",printtoscreen=0,printparam=0,findallmatches=0):
+def parallelrun_on_conley3(patternfunction=setPattern_Malaria_20hr_2015_09_11,morseset=0,networkfile="/home/bcummins/DSGRN/networks/5D_2015_09_11.txt",paramfile="/share/data/bcummins/5D_2015_09_11_FCParams_MorseGraph565.txt",printtoscreen=0,printparam=0,findallmatches=0):
     # construct patterns
     patternfunction()
     # tuple of all parallel python servers to connect with
@@ -98,10 +98,10 @@ def parallelrun(patternfunction=setPattern_Malaria_20hr_2015_09_11,morseset=0,sp
     # start the jobs
     jobs=[]
     for i in range(N):
-        subparamfile='parameterfiles/'+paramfile[:-4]+'_{:04d}'.format(i)+'.txt'
-        subresultsfile='parameterresults/results_'+paramfile[:-4]+'_{:04d}'.format(i)+'.txt'
+        subparamfile='/share/data/bcummins/parameterfiles/'+paramfile[:-4]+'_{:04d}'.format(i)+'.txt'
+        subresultsfile='/share/data/bcummins/parameterresults/results_'+paramfile[:-4]+'_{:04d}'.format(i)+'.txt'
         # patternSearch(morseset,specfile,subparamfile,subresultsfile,printtoscreen,printparam,findallmatches,i)
-        jobs.append(job_server.submit( patternSearch,(morseset,specfile,subparamfile,subresultsfile,printtoscreen,printparam,findallmatches,i), modules = ("subprocess","patternmatch", "pp", "preprocess","fileparsers","walllabels","itertools","numpy","json"),globals=globals()))
+        jobs.append(job_server.submit( patternSearch,(morseset,networkfile,subparamfile,subresultsfile,printtoscreen,printparam,findallmatches,i), modules = ("subprocess","patternmatch", "pp", "preprocess","fileparsers","walllabels","itertools","numpy","json"),globals=globals()))
     print "All jobs starting."
     for job in jobs:
         job()
