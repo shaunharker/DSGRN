@@ -70,7 +70,7 @@ def splitParams(paramfile="5D_Malaria_2015_FCParams_MorseGraph565.txt",pieces=1)
     if pieces*paramsperfile < paramlist:
         paramsperfile+=1
     for n in range(pieces):
-        f=open('parameterfiles/'+paramfile[:-4]+'_{:04d}'.format(n)+'.txt','w')
+        f=open(paramfile[:-4]+'_{:04d}'.format(n)+'.txt','w')
         for param in paramlist[n*paramsperfile:min([(n+1)*paramsperfile,len(paramlist)])]:
             f.write(param)
         f.close()
@@ -84,13 +84,17 @@ def setPattern_Malaria_20hr_2015_09_11():
             f.write(patternstr2)
     f.close()
 
-def parallelrun_on_conley3(patternfunction=setPattern_Malaria_20hr_2015_09_11,morseset=0,networkfile="/home/bcummins/DSGRN/networks/5D_2015_09_11.txt",paramfile="/share/data/bcummins/5D_2015_09_11_FCParams_MorseGraph565.txt",printtoscreen=0,printparam=0,findallmatches=0):
+def parallelrun_on_conley3(morseset=0,networkfile="/home/bcummins/DSGRN/networks/5D_2015_09_11.txt",paramfile="/share/data/bcummins/parameterfiles/5D_2015_09_11_FCParams_MorseGraph565.txt",printtoscreen=0,printparam=0,findallmatches=0,numservers=0):
     # construct patterns
-    patternfunction()
-    # tuple of all parallel python servers to connect with
-    ppservers = ()
-    # Creates jobserver with automatically detected # of workers
-    job_server = pp.Server(ppservers=ppservers)
+    setPattern_Malaria_21hr_2015_09_11()
+    # patternfunction()
+    if numservers:
+        job_server=pp.Server(ppservers=numservers)
+    else:
+        # tuple of all parallel python servers to connect with
+        ppservers = ()
+        # Creates jobserver with automatically detected # of workers
+        job_server = pp.Server(ppservers=ppservers)
     N = job_server.get_ncpus()
     print("Starting pp with " + str(N) + " workers.")
     # split the parameter file into N chunks
@@ -98,10 +102,10 @@ def parallelrun_on_conley3(patternfunction=setPattern_Malaria_20hr_2015_09_11,mo
     # start the jobs
     jobs=[]
     for i in range(N):
-        subparamfile='/share/data/bcummins/parameterfiles/'+paramfile[:-4]+'_{:04d}'.format(i)+'.txt'
-        subresultsfile='/share/data/bcummins/parameterresults/results_'+paramfile[:-4]+'_{:04d}'.format(i)+'.txt'
+        subparamfile=paramfile[:-4]+'_{:04d}'.format(i)+'.txt'
+        subresultsfile=paramfile[:21]+'parameterresults/'+paramfile[36:-4]+'_{:04d}'.format(i)+'.txt'
         # patternSearch(morseset,specfile,subparamfile,subresultsfile,printtoscreen,printparam,findallmatches,i)
-        jobs.append(job_server.submit( patternSearch,(morseset,networkfile,subparamfile,subresultsfile,printtoscreen,printparam,findallmatches,i), modules = ("subprocess","patternmatch", "pp", "preprocess","fileparsers","walllabels","itertools","numpy","json"),globals=globals()))
+        jobs.append(job_server.submit( patternSearch,(morseset,networkfile,subparamfile,subresultsfile,printtoscreen,printparam,findallmatches,i), (),modules = ("subprocess","patternmatch", "pp", "preprocess","fileparsers","walllabels","itertools","numpy","json"),globals=globals()))
     print "All jobs starting."
     for job in jobs:
         job()
@@ -109,5 +113,5 @@ def parallelrun_on_conley3(patternfunction=setPattern_Malaria_20hr_2015_09_11,mo
 
 if __name__=='__main__':
     # splitParams("fakeparams.txt",2)    
-    parallelrun()
+    parallelrun_on_conley3()
 
