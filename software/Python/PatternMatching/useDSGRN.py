@@ -84,9 +84,9 @@ def setPattern_Malaria_20hr_2015_09_11():
             f.write(patternstr2)
     f.close()
 
-def parallelrun_on_conley3(morseset=0,networkfile="/home/bcummins/DSGRN/networks/5D_2015_09_11.txt",paramfile="/share/data/bcummins/parameterfiles/5D_2015_09_11_FCParams_MorseGraph565.txt",printtoscreen=0,printparam=0,findallmatches=0,numservers=0):
+def parallelrun_on_conley3(patternsetter=setPattern_Malaria_20hr_2015_09_11,morseset=0,networkfile="/home/bcummins/DSGRN/networks/5D_2015_09_11.txt",paramfile="/share/data/bcummins/parameterfiles/5D_2015_09_11_FCParams_MorseGraph565.txt",printtoscreen=0,printparam=0,findallmatches=0,numservers=0):
     # construct patterns
-    setPattern_Malaria_21hr_2015_09_11()
+    patternsetter()
     # patternfunction()
     if numservers:
         job_server=pp.Server(ppservers=numservers)
