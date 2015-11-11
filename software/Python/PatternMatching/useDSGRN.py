@@ -84,6 +84,11 @@ def setPattern_Malaria_20hr_2015_09_11():
             f.write(patternstr2)
     f.close()
 
+def setPattern_5D_Cycle():
+    f=open('patterns.txt','w')
+    f.write('X3 max, X4 max, X3 min, X4 min\n X3 max, X4 min, X3 min, X4 max')
+    f.close()
+
 def parallelrun_on_conley3(patternsetter=setPattern_Malaria_20hr_2015_09_11,morseset=0,networkfile="/home/bcummins/DSGRN/networks/5D_2015_09_11.txt",paramfile="/share/data/bcummins/parameterfiles/5D_2015_09_11_FCParams_MorseGraph565.txt",printtoscreen=0,printparam=0,findallmatches=0,numservers=0):
     # construct patterns
     patternsetter()
@@ -112,6 +117,10 @@ def parallelrun_on_conley3(patternsetter=setPattern_Malaria_20hr_2015_09_11,mors
     job_server.print_stats()
 
 if __name__=='__main__':
-    # splitParams("fakeparams.txt",2)    
-    parallelrun_on_conley3()
+    # splitParams("fakeparams.txt",2) 
+    paramfile='/share/data/bcummins/parameterfiles/5D_Cycle_FCParams_MorseGraph38479.txt'
+    patternsetter=setPattern_5D_Cycle
+    networkfile="/home/bcummins/DSGRN/networks/5D_Cycle.txt"
+    morseset=2
+    parallelrun_on_conley3(patternsetter,morseset,networkfile,paramfile)
 

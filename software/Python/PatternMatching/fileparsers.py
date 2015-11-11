@@ -34,6 +34,7 @@ def parsePatterns(fname="patterns.txt"):
         L=l.replace(',',' ').split()
         varnames.append(L[::2])
         maxmin.append(L[1::2])
+    f.close()
     return varnames, maxmin, originalpatterns
 
 def parseMorseSet(fname='dsgrn_output.json'):
