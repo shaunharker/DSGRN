@@ -75,6 +75,16 @@ def splitParams(paramfile="5D_Malaria_2015_FCParams_MorseGraph565.txt",pieces=1)
             f.write(param)
         f.close()
 
+def mergeFiles(mergefile,splitfiles):
+    m = open(mergefile,'w')
+    for sfile in splitfiles:
+        f=open(sfile,'r')
+        for l in f.readlines():
+            m.write(l)
+        m.write("\n")
+        f.close()
+    m.close()
+
 def setPattern_Malaria_20hr_2015_09_11():
     f=open('patterns.txt','w')
     for s1 in permutations(['x3 max','x5 max','x1 max', 'x4 max']):
@@ -89,7 +99,7 @@ def setPattern_5D_Cycle():
     f.write('X3 max, X4 max, X3 min, X4 min\n X3 max, X4 min, X3 min, X4 max')
     f.close()
 
-def parallelrun_on_conley3(patternsetter=setPattern_Malaria_20hr_2015_09_11,morseset=0,networkfile="/home/bcummins/DSGRN/networks/5D_2015_09_11.txt",paramfile="/share/data/bcummins/parameterfiles/5D_2015_09_11_FCParams_MorseGraph565.txt",printtoscreen=0,printparam=0,findallmatches=0,numservers=0):
+def parallelrun_on_conley3(patternsetter=setPattern_Malaria_20hr_2015_09_11,morseset=0,networkfile="/home/bcummins/DSGRN/networks/5D_2015_09_11.txt",parambasedir="/share/data/bcummins/parameterfiles/",paramfile="5D_2015_09_11_FCParams_MorseGraph565.txt",resultsbasedir="/share/data/bcummins/parameterresults/",printtoscreen=0,printparam=0,findallmatches=0,numservers=0):
     # construct patterns
     patternsetter()
     # patternfunction()
@@ -97,7 +107,8 @@ def parallelrun_on_conley3(patternsetter=setPattern_Malaria_20hr_2015_09_11,mors
         job_server=pp.Server(ppservers=numservers)
     else:
         # tuple of all parallel python servers to connect with
-        ppservers = ()
+        # ppservers = () 
+        ppservers = ("*",) #CHANGED
         # Creates jobserver with automatically detected # of workers
         job_server = pp.Server(ppservers=ppservers)
     N = job_server.get_ncpus()
@@ -106,21 +117,27 @@ def parallelrun_on_conley3(patternsetter=setPattern_Malaria_20hr_2015_09_11,mors
     splitParams(paramfile,N)
     # start the jobs
     jobs=[]
+    allsubresultsfiles=[]
+    paramname=paramfile.split('.')[0]
+    parampath=parambasedir+paramname
+    resultpath=resultsbasedir+paramname
     for i in range(N):
-        subparamfile=paramfile[:-4]+'_{:04d}'.format(i)+'.txt'
-        subresultsfile=paramfile[:21]+'parameterresults/'+paramfile[36:-4]+'_{:04d}'.format(i)+'.txt'
-        # patternSearch(morseset,specfile,subparamfile,subresultsfile,printtoscreen,printparam,findallmatches,i)
+        subparamfile=parampath+'_{:04d}'.format(i)+'.txt'
+        subresultsfile=resultpath+'_{:04d}'.format(i)+'.txt'
+        allsubresultsfiles.append(subresultsfile)
         jobs.append(job_server.submit( patternSearch,(morseset,networkfile,subparamfile,subresultsfile,printtoscreen,printparam,findallmatches,i), (),modules = ("subprocess","patternmatch", "pp", "preprocess","fileparsers","walllabels","itertools","numpy","json"),globals=globals()))
     print "All jobs starting."
     for job in jobs:
         job()
     job_server.print_stats()
+    mergeFiles(resultpath+'_merged_results.txt',allsubresultsfiles)
 
 if __name__=='__main__':
-    # splitParams("fakeparams.txt",2) 
-    paramfile='/share/data/bcummins/parameterfiles/5D_Cycle_FCParams_MorseGraph38479.txt'
+    parambasedir="/share/data/bcummins/parameterfiles/"
+    paramfile='5D_Cycle_FCParams_MorseGraph38479.txt'
+    resultsbasedir='/share/data/bcummins/parameterresults/'
     patternsetter=setPattern_5D_Cycle
     networkfile="/home/bcummins/DSGRN/networks/5D_Cycle.txt"
     morseset=2
-    parallelrun_on_conley3(patternsetter,morseset,networkfile,paramfile)
+    parallelrun_on_conley3(patternsetter,morseset,networkfile,parambasedir,paramfile,resultsbasedir)
 
