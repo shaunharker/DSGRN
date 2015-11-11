@@ -36,12 +36,9 @@ def patternSearch(morseset=0,networkfile="networks/5D_Model_B.txt",paramfile="5D
             raise
         for pat,match in zip(patterns,matches):
             if findallmatches:
-                R.write("Parameter: {}, Morseset: {}".format(param,morseset)+'\n')
-                R.write("Pattern: {}".format(pat)+'\n')
-                R.write("Results: {}".format(match)+'\n')
+                R.write("Parameter: {}, Morseset: {}, Pattern: {}, Results: {}".format(param,morseset,pat,match)+'\n')
             else:
-                R.write("Parameter: {}, Morseset: {}".format(param,morseset)+'\n')
-                R.write("Pattern: {}".format(pat)+'\n')
+                R.write("Parameter: {}, Morseset: {}, Pattern: {}".format(param,morseset,pat)+'\n')
     R.close()
     P.close()
 
