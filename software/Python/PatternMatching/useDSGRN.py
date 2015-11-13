@@ -2,21 +2,23 @@ from itertools import permutations
 import subprocess
 import patternmatch
 import pp
+import fileparsers
+from math import ceil
 
 # Given a Morse graph number MGN for a database DATABASEFILE (.db), do the following database searches:
 # 
 # The following gives the list of parameters in the file PARAMFILE (.txt)
-# sqlite3 /share/data/CHomP/Projects/DSGRN/DB/data/DATABASEFILE 'select ParameterIndex from Signatures where MorseGraphIndex=MGN' > ./PARAMFILE
+# sqlite3 /share/data/CHomP/Projects/DSGRN/DB/data/DATABASEFILE.db 'select ParameterIndex from Signatures where MorseGraphIndex=MGN' > ./PARAMFILE
 #
 # The following finds the Morse set number:
-# sqlite3 /share/data/CHomP/Projects/DSGRN/DB/data/DATABASEFILE 'select * from MorseGraphAnnotations where MorseGraphIndex=MGN'
+# sqlite3 /share/data/CHomP/Projects/DSGRN/DB/data/DATABASEFILE.db 'select * from MorseGraphAnnotations where MorseGraphIndex=MGN'
 #
 # The following is a search for stable FCs:
-# sqlite3 /share/data/CHomP/Projects/DSGRN/DB/data/DATABASEFILE 'select MorseGraphIndex,Vertex from MorseGraphAnnotations where Label="FC" except select MorseGraphIndex,Source from MorseGraphEdges'
+# sqlite3 /share/data/CHomP/Projects/DSGRN/DB/data/DATABASEFILE.db 'select MorseGraphIndex,Vertex from MorseGraphAnnotations where Label="FC" except select MorseGraphIndex,Source from MorseGraphEdges'
 #
 # So far the Morse set number is entered by hand, but I should write a parser eventually.
 
-def patternSearch(morseset=0,networkfile="networks/5D_Model_B.txt",paramfile="5D_Model_B_FCParams.txt",resultsfile='results_5D_B.txt',printtoscreen=0,printparam=0,findallmatches=1,unique_identifier=0):
+def patternSearch(morsegraph,morseset,networkfile="networks/5D_Model_B.txt",paramfile="5D_Model_B_FCParams.txt",resultsfile='results_5D_B.txt',printtoscreen=0,printparam=0,findallmatches=1,unique_identifier=0):
     subprocess.call(["dsgrn network {} domaingraph > dsgrn_domaincells_{:04d}.json".format(networkfile,unique_identifier)],shell=True)
     R=open(resultsfile,'w',0)
     P=open(paramfile,'r')
@@ -42,31 +44,16 @@ def patternSearch(morseset=0,networkfile="networks/5D_Model_B.txt",paramfile="5D
     R.close()
     P.close()
 
-def patternSearchSingle(parameter,morseset=0,specfile="networks/5D_Model_B.txt",resultsfile='results.txt',printtoscreen=0):
-    R=open(resultsfile,'w',0)
-    # shell call to dsgrn to produce dsgrn_output.json, which is the input for the pattern matcher
-    subprocess.call(["dsgrn network {} domaingraph > dsgrn_domaincells.json".format(specfile)],shell=True)
-    subprocess.call(["dsgrn network {} domaingraph json {} > dsgrn_domaingraph.json".format(specfile,int(parameter))],shell=True)
-    subprocess.call(["dsgrn network {} analyze morseset {} {} >dsgrn_output.json".format(specfile,morseset,parameter)],shell=True)
-    try:
-        patterns,matches=patternmatch.callPatternMatch(writetofile=0,returnmatches=1,printtoscreen=printtoscreen)
-    except ValueError:
-        print 'Problem parameter is {}'.format(parameter)
-        raise
-    for pat,match in zip(patterns,matches):
-        R.write("Parameter: {}, Morseset: {}".format(parameter,morseset)+'\n')
-        R.write("Pattern: {}".format(pat)+'\n')
-        R.write("Results: {}".format(match)+'\n')
-    R.close()
-
-def splitParams(paramfile="5D_Malaria_2015_FCParams_MorseGraph565.txt",pieces=1):
+def splitParams(paramfile="5D_Malaria_2015_FCParams_MorseGraph565.txt",ncpus=1):
     pfile=open(paramfile,'r')
     paramlist=list(pfile.readlines())
     pfile.close()
-    paramsperfile=len(paramlist)/pieces
-    if pieces*paramsperfile < paramlist:
-        paramsperfile+=1
-    for n in range(pieces):
+    paramsperfile=int(ceil(float(len(paramlist))/ncpus))
+    if paramsperfile==1:
+        # don't split the file if there are fewer parameters than cpus
+        subprocess.call(["cp "+paramfile+" "+paramfile[:-4]+"_0000.txt"])
+        return None
+    for n in range(ncpus):
         f=open(paramfile[:-4]+'_{:04d}'.format(n)+'.txt','w')
         for param in paramlist[n*paramsperfile:min([(n+1)*paramsperfile,len(paramlist)])]:
             f.write(param)
@@ -78,8 +65,8 @@ def mergeFiles(mergefile,splitfiles):
         f=open(sfile,'r')
         for l in f.readlines():
             m.write(l)
-        m.write("\n")
         f.close()
+        subprocess.call(['rm '+sfile],shell=True)
     m.close()
 
 def setPattern_Malaria_20hr_2015_09_11():
@@ -96,7 +83,7 @@ def setPattern_5D_Cycle():
     f.write('X3 max, X4 max, X3 min, X4 min\n X3 max, X4 min, X3 min, X4 max')
     f.close()
 
-def parallelrun_on_conley3(patternsetter=setPattern_Malaria_20hr_2015_09_11,morseset=0,networkfile="/home/bcummins/DSGRN/networks/5D_2015_09_11.txt",parambasedir="/share/data/bcummins/parameterfiles/",paramfile="5D_2015_09_11_FCParams_MorseGraph565.txt",resultsbasedir="/share/data/bcummins/parameterresults/",printtoscreen=0,printparam=0,findallmatches=0,numservers=0):
+def parallelrun_on_conley3(morsegraph,morseset,patternsetter=setPattern_Malaria_20hr_2015_09_11,networkfile="/home/bcummins/DSGRN/networks/5D_2015_09_11.txt",parambasedir="/share/data/bcummins/parameterfiles/",paramfile="5D_2015_09_11_FCParams_MorseGraph565.txt",resultsbasedir="/share/data/bcummins/parameterresults/",printtoscreen=0,printparam=0,findallmatches=0,numservers=0):
     # construct patterns
     patternsetter()
     # patternfunction()
@@ -111,7 +98,7 @@ def parallelrun_on_conley3(patternsetter=setPattern_Malaria_20hr_2015_09_11,mors
     N = job_server.get_ncpus()
     print("Starting pp with " + str(N) + " workers.")
     # split the parameter file into N chunks
-    splitParams(paramfile,N)
+    splitParams(parambasedir+paramfile,N)
     # start the jobs
     jobs=[]
     allsubresultsfiles=[]
@@ -127,14 +114,33 @@ def parallelrun_on_conley3(patternsetter=setPattern_Malaria_20hr_2015_09_11,mors
     for job in jobs:
         job()
     job_server.print_stats()
-    mergeFiles(resultpath+'_merged_results.txt',allsubresultsfiles)
+    return allsubresultsfiles
+
+def loopOverMorseGraphs(morsegraphfile,patternsetter,networkfilebasedir="/home/bcummins/DSGRN/networks/",networkfilename="5D_Cycle.txt",resultsbasedir="/share/data/bcummins/parameterresults/",savefilename="5D_Cycle_StableFC_all_morse_graphs.txt",parambasedir="/share/data/bcummins/parameterfiles/",printtoscreen=0,printparam=0,findallmatches=0,numservers=0):
+    morse_graphs_and_sets=fileparsers.parseMorseGraphs(morsegraphfile)
+    allresultsfile=resultsbasedir+savefilename
+    for (mgraph,mset) in morse_graphs_and_sets:
+        paramname=networkfilename[:-4]+'_{:05d}.txt'.format(int(mgraph))
+        paramfile=parambasedir+paramname.format(mgraph)
+        print paramfile
+        subprocess.call(["sqlite3 /share/data/CHomP/Projects/DSGRN/DB/data/{}.db 'select ParameterIndex from Signatures where MorseGraphIndex={}' > {}".format(networkfilename[:-4],mgraph,paramfile)],shell=True)
+        for s in mset:
+            allsubresultsfiles=parallelrun_on_conley3(mgraph,s,patternsetter,networkfilebasedir+networkfilename,parambasedir,paramname,resultsbasedir,printtoscreen,printparam,findallmatches,numservers)
+            mergeFiles(allresultsfile,allsubresultsfiles)
+
+def selectStableFC(networkfile,morsegraphfile):
+    subprocess.call(['''sqlite3 /share/data/CHomP/Projects/DSGRN/DB/data/{}.db 'select MorseGraphIndex,Vertex from MorseGraphAnnotations where Label="FC" except select MorseGraphIndex,Source from MorseGraphEdges' > {}'''.format(networkfile[:-4],morsegraphfile)],shell=True)
+
 
 if __name__=='__main__':
+    networkfilename="5D_Cycle"
+    networkfile="/home/bcummins/DSGRN/networks/"+networkfilename+'.txt'
+    morsegraphfile="/share/data/bcummins/"+networkfilename+'_stableFCs_listofmorsegraphs.txt'
+    selectStableFC(networkfilename,morsegraphfile)
+
     parambasedir="/share/data/bcummins/parameterfiles/"
-    paramfile='5D_Cycle_FCParams_MorseGraph38479.txt'
     resultsbasedir='/share/data/bcummins/parameterresults/'
+    savefilename=networkfilename+'_stableFCs_allresults.txt'
     patternsetter=setPattern_5D_Cycle
-    networkfile="/home/bcummins/DSGRN/networks/5D_Cycle.txt"
-    morseset=2
-    parallelrun_on_conley3(patternsetter,morseset,networkfile,parambasedir,paramfile,resultsbasedir)
+    loopOverMorseGraphs(morsegraphfile,patternsetter,networkfile,savefilename,parambasedir,resultsbasedir,printtoscreen=0,printparam=0,findallmatches=0,numservers=0)
 

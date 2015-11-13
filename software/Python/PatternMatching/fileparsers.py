@@ -22,6 +22,15 @@
 
 import json
 
+def parseMorseGraphs(fname="morsegraphs.txt"):
+    f=open(fname,'r')
+    morse_graphs_and_sets=[]
+    for l in f.readlines():
+        l.replace('|',' ').split()
+        morse_graphs_and_sets.append((l[0],l[1:]))
+    f.close()
+    return morse_graphs_and_sets
+
 def parsePatterns(fname="patterns.txt"):
     f=open(fname,'r')
     maxmin=[]
