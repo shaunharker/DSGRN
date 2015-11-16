@@ -97,6 +97,7 @@ def parallelrun_on_conley3(morsegraph,morseset,patternfile,networkfile="/home/bc
         job_server = pp.Server(ppservers=ppservers)
     N = job_server.get_ncpus()
     print("Starting pp with " + str(N) + " workers.")
+    sys.stdout.flush()
     # split the parameter file into N chunks
     N=splitParams(parambasedir+paramfile,N)
     # start the jobs
@@ -111,6 +112,7 @@ def parallelrun_on_conley3(morsegraph,morseset,patternfile,networkfile="/home/bc
         allsubresultsfiles.append(subresultsfile)
         jobs.append(job_server.submit( patternSearch,(morsegraph,morseset,patternfile,networkfile,subparamfile,subresultsfile,printtoscreen,printparam,findallmatches,i), (),modules = ("subprocess","patternmatch", "pp", "preprocess","fileparsers","walllabels","itertools","numpy","json"),globals=globals()))
     print "All jobs starting."
+    sys.stdout.flush()
     for job in jobs:
         job()
     job_server.print_stats()
