@@ -61,7 +61,7 @@ def splitParams(paramfile="5D_Malaria_2015_FCParams_MorseGraph565.txt",ncpus=1):
     return ncpus
 
 def mergeFiles(mergefile,splitfiles):
-    m = open(mergefile,'w')
+    m = open(mergefile,'a')
     for sfile in splitfiles:
         f=open(sfile,'r')
         for l in f.readlines():
