@@ -138,16 +138,16 @@ def selectStableFC(networkfile,morsegraphfile):
 
 
 if __name__=='__main__':
-    networkfilename="5D_Cycle"
+    networkfilename="5D_2015_09_11"
+    patternsetter=setPattern_Malaria_20hr_2015_09_11
     networkfilebasedir="/home/bcummins/DSGRN/networks/"
     morsegraphfile="/share/data/bcummins/"+networkfilename+'_stableFCs_listofmorsegraphs.txt'
-    #selectStableFC(networkfilename,morsegraphfile)
+    selectStableFC(networkfilename,morsegraphfile)
 
     #morse_graphs_and_sets=fileparsers.parseMorseGraphs(morsegraphfile)
     #print morse_graphs_and_sets
     parambasedir="/share/data/bcummins/parameterfiles/"
     resultsbasedir='/share/data/bcummins/parameterresults/'
     savefilename=networkfilename+'_stableFCs_allresults.txt'
-    patternsetter=setPattern_5D_Cycle
     loopOverMorseGraphs(morsegraphfile,patternsetter,networkfilebasedir,networkfilename+'.txt',resultsbasedir,savefilename,parambasedir,printtoscreen=0,printparam=0,findallmatches=0,numservers=0)
 
