@@ -140,7 +140,7 @@ def selectStableFC(networkfile,morsegraphfile):
 if __name__=='__main__':
     networkfilename="5D_2015_09_11"
     patternsetter=setPattern_Malaria_20hr_2015_09_11
-    networkfilebasedir="/home/bcummins/DSGRN/networks/"
+    networkfilebasedir="/share/data/bcummins/DSGRN/networks/"
     morsegraphfile="/share/data/bcummins/"+networkfilename+'_stableFCs_listofmorsegraphs.txt'
     selectStableFC(networkfilename,morsegraphfile)
 
