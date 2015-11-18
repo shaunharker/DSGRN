@@ -115,7 +115,8 @@ def parallelrun_on_conley3(morsegraph,morseset,patternfile,networkfile="/home/bc
     sys.stdout.flush()
     for job in jobs:
         job()
-    job_server.print_stats()
+    # job_server.print_stats()
+    job_server.destroy()
     return allsubresultsfiles
 
 def loopOverMorseGraphs(morsegraphfile,patternsetter,networkfilebasedir="/home/bcummins/DSGRN/networks/",networkfilename="5D_Cycle.txt",resultsbasedir="/share/data/bcummins/parameterresults/",savefilename="5D_Cycle_StableFC_all_morse_graphs.txt",parambasedir="/share/data/bcummins/parameterfiles/",printtoscreen=0,printparam=0,findallmatches=0,numservers=0):
