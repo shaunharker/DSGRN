@@ -1,4 +1,5 @@
 from patternsnatcher import dataStruct43Genes
+from math import sqrt
 
 def parseFile(bound=0,fname='/Users/bcummins/ProjectData/malaria/wrair2015_pfalcip_462TF_forLEM/wrair2015_pfalc_462tf_lem.allscores.tsv'):
     f=open(fname,'r')
@@ -20,6 +21,12 @@ def parseFile(bound=0,fname='/Users/bcummins/ProjectData/malaria/wrair2015_pfalc
     f.close()
     return source,target,regulation,lem_score
 
+def max_scores(in_score,out_score):
+    return max([in_score,out_score])
+
+def min_scores(in_score,out_score):
+    return min([in_score,out_score])
+
 def add_scores(in_score,out_score):
     return in_score+out_score
 
@@ -27,7 +34,10 @@ def average_scores(in_score,out_score):
     return (in_score+out_score)/2.0
 
 def geometric_average_scores(in_score,out_score):
-    return 1.0/sqrt
+    return sqrt(in_score*out_score)
+
+def harmonic_average_scores(in_score,out_score):
+    return 2.0 / ( (in_score)**(-1) + (out_score)**(-1) )
 
 def findNewNodeAndConnections(network_names,network_outedges,network_regulation,ranking_function=add_scores):
     # get all gene names
@@ -51,15 +61,15 @@ def findNewNodeAndConnections(network_names,network_outedges,network_regulation,
         out_score=0
         for n,s,t,r in enumerate(zip(source,target,regulation)):
             if s == g and t in network_names:
-                out_score=n
+                out_score=43-n
                 outedge=(s,t,r)
             elif t == g and s in network_names:  
-                in_score=n
+                in_score=43-n
                 inedge=(s,t,r)
-        best_score=out_score+in_score
-        out_reg.append(max_out_reg)
-        best_in.append(max_in)
-        in_reg.append(max_in_reg)
+        best_score.append(ranking_function(in_score,out_score))
+        best_edges.append((outedge,inedge))
+    add_node=best_edges[best_score.index(max(best_score))]
+    return add_node
 
 
 
