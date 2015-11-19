@@ -146,6 +146,7 @@ def loopOverMorseGraphs(morsegraphfile,patternsetter,networkfilebasedir="/home/b
         N=splitParams(paramfile,numnodes)
         for s in mset:
             allsubresultsfiles=parallelrun_on_conley3(mgraph,s,patternfile,networkfilebasedir+networkfilename,parambasedir,paramname,resultsbasedir,jsonbasedir,printtoscreen,printparam,findallmatches,numnodes)
+            print allsubresultsfiles
             mergeFiles(allresultsfile,allsubresultsfiles)
             cleanFiles(jsonbasedir)
         cleanFiles(parambasedir)
