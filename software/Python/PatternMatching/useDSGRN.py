@@ -119,7 +119,7 @@ def parallelrun_on_conley3(morsegraph,morseset,patternfile,networkfile="/home/bc
     parampath=parambasedir+paramname
     resultpath=resultsbasedir+paramname
     for i in range(numnodes):
-        unique_identifier='{:05d}_{:02d}_{:04d}'.format(int(morsegraph),int(morseset),i))
+        unique_identifier='{:05d}_{:02d}_{:04d}'.format(int(morsegraph),int(morseset),i)
         subparamfile=parampath+'_params_{}'.format(unique_identifier)+'.txt'
         subresultsfile=resultpath+'_results_{}'.format(unique_identifier)+'.txt'
         allsubresultsfiles.append(subresultsfile)
