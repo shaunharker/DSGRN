@@ -139,7 +139,7 @@ def loopOverMorseGraphs(morsegraphfile,patternsetter,networkfilebasedir="/home/b
     allresultsfile=resultsbasedir+savefilename
     # loop over morse graphs
     for (mgraph,mset) in morse_graphs_and_sets:
-        paramname=networkfilename[:-4]+'_{:05d}_{:02d}.txt'.format(int(mgraph),int(mset))
+        paramname=networkfilename[:-4]+'_{:05d}.txt'.format(int(mgraph))
         paramfile=parambasedir+paramname
         subprocess.call(["sqlite3 /share/data/CHomP/Projects/DSGRN/DB/data/{}.db 'select ParameterIndex from Signatures where MorseGraphIndex={}' > {}".format(networkfilename[:-4],mgraph,paramfile)],shell=True)
         N=splitParams(paramfile,numnodes)
