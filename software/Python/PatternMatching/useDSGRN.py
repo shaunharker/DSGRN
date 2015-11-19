@@ -100,7 +100,7 @@ def parallelrun_on_conley3(morsegraph,morseset,patternfile,networkfile="/home/bc
         # ppservers = ()
         # Creates jobserver with automatically detected # of workers
         # job_server = pp.Server(ppservers=ppservers)
-    N = job_server.get_active_nodes()
+    N = len(job_server.get_active_nodes())
     print("Starting pp with " + str(N) + " workers.")
     sys.stdout.flush()
     # split the parameter file into N chunks
@@ -124,7 +124,7 @@ def parallelrun_on_conley3(morsegraph,morseset,patternfile,networkfile="/home/bc
     job_server.destroy()
     return allsubresultsfiles
 
-def loopOverMorseGraphs(morsegraphfile,patternsetter,networkfilebasedir="/home/bcummins/DSGRN/networks/",networkfilename="5D_Cycle.txt",resultsbasedir="/share/data/bcummins/parameterresults/",savefilename="5D_Cycle_StableFC_all_morse_graphs.txt",parambasedir="/share/data/bcummins/parameterfiles/",jsonbasedir='/share/data/bcummins/DSGRN/software/Python/PatternMatching/',printtoscreen=0,printparam=0,findallmatches=0):
+def loopOverMorseGraphs(morsegraphfile,patternsetter,networkfilebasedir="/home/bcummins/DSGRN/networks/",networkfilename="5D_Cycle.txt",resultsbasedir="/share/data/bcummins/parameterresults/",savefilename="5D_Cycle_StableFC_all_morse_graphs.txt",parambasedir="/share/data/bcummins/parameterfiles/",jsonbasedir='/share/data/bcummins/DSGRN/software/Python/PatternMatching/',printtoscreen=0,printparam=0,findallmatches=0,numnodes=1):
     # construct patterns
     patternfile=patternsetter()
     # parse morse graphs
@@ -134,7 +134,7 @@ def loopOverMorseGraphs(morsegraphfile,patternsetter,networkfilebasedir="/home/b
     for (mgraph,mset) in morse_graphs_and_sets:
         paramname=networkfilename[:-4]+'_{:05d}.txt'.format(int(mgraph))
         paramfile=parambasedir+paramname
-        N=splitParams(paramfile,800)
+        N=splitParams(paramfile,numnodes)
         subprocess.call(["sqlite3 /share/data/CHomP/Projects/DSGRN/DB/data/{}.db 'select ParameterIndex from Signatures where MorseGraphIndex={}' > {}".format(networkfilename[:-4],mgraph,paramfile)],shell=True)
         for s in mset:
             allsubresultsfiles=parallelrun_on_conley3(mgraph,s,patternfile,networkfilebasedir+networkfilename,parambasedir,paramname,resultsbasedir,jsonbasedir,printtoscreen,printparam,findallmatches)
@@ -157,5 +157,5 @@ if __name__=='__main__':
     resultsbasedir='/share/data/bcummins/parameterresults/'
     savefilename=networkfilename+'_stableFCs_allresults.txt'
     jsonbasedir='/share/data/bcummins/DSGRN/software/Python/PatternMatching/'
-    loopOverMorseGraphs(morsegraphfile,patternsetter,networkfilebasedir,networkfilename+'.txt',resultsbasedir,savefilename,parambasedir,jsonbasedir,printtoscreen=0,printparam=0,findallmatches=0)
+    loopOverMorseGraphs(morsegraphfile,patternsetter,networkfilebasedir,networkfilename+'.txt',resultsbasedir,savefilename,parambasedir,jsonbasedir,printtoscreen=0,printparam=0,findallmatches=0,numnodes=sys.argv[1])
 

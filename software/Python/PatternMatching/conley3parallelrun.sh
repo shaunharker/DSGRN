@@ -10,7 +10,7 @@
 #$ -cwd
 #$ -j y
 #$ -S /bin/bash
-#$ -pe orte 800 
+#$ -pe orte $2 
 
 
 # STEP 1. Launch Parallel Python on the nodes
@@ -28,7 +28,7 @@ sleep 30s
 echo Waking up and running script.
 
 # STEP 2. Run the script
-python $1
+python $1 $2
 
 # STEP 3. Kill Parallel Python
 echo Ending servers
