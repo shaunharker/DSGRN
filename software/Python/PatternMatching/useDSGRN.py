@@ -19,7 +19,7 @@ from math import ceil
 # So far the Morse set number is entered by hand, but I should write a parser eventually.
 
 def patternSearch(morsegraph,morseset,patternfile='patterns.txt',networkfile="networks/5D_Model_B.txt",paramfile="5D_Model_B_FCParams.txt",resultsfile='results_5D_B.txt',jsonbasedir='/share/data/bcummins/DSGRN/software/Python/PatternMatching/',printtoscreen=0,printparam=0,findallmatches=1,unique_identifier=0):
-    fname_domgraph="{}dsgrn_domaincells_{:04d}.json".format(jsonbasedir,unique_identifier)
+    fname_domgraph="{}dsgrn_domaingraph_{:04d}.json".format(jsonbasedir,unique_identifier)
     subprocess.call(["dsgrn network {} domaingraph > {}".format(networkfile,fname_domgraph)],shell=True)
     R=open(resultsfile,'w',0)
     P=open(paramfile,'r')
@@ -148,8 +148,10 @@ def selectStableFC(networkfile,morsegraphfile):
 
 
 if __name__=='__main__':
-    networkfilename="5D_2015_09_11"
-    patternsetter=setPattern_Malaria_20hr_2015_09_11
+    #networkfilename="5D_2015_09_11"
+    #patternsetter=setPattern_Malaria_20hr_2015_09_11
+    networkfilename="5D_Cycle"
+    patternsetter=setPattern_5D_Cycle
     networkfilebasedir="/share/data/bcummins/DSGRN/networks/"
     morsegraphfile="/share/data/bcummins/"+networkfilename+'_stableFCs_listofmorsegraphs.txt'
     selectStableFC(networkfilename,morsegraphfile)
