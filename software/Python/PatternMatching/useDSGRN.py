@@ -32,7 +32,7 @@ def patternSearch(morsegraph,morseset,patternfile='patterns.txt',networkfile="ne
         subprocess.call(["dsgrn network {} domaingraph json {} > {}dsgrn_domaingraph_{:04d}.json".format(networkfile,jsonbasedir,int(param),unique_identifier)],shell=True)
         subprocess.call(["dsgrn network {} analyze morseset {} {} > {}dsgrn_output_{:04d}.json".format(networkfile,jsonbasedir,morseset,int(param),unique_identifier)],shell=True)
         try:
-            patterns,matches=patternmatch.callPatternMatch(fname_morseset='dsgrn_output_{:04d}.json'.format(unique_identifier),fname_domgraph='dsgrn_domaingraph_{:04d}.json'.format(unique_identifier),fname_domcells='dsgrn_domaincells_{:04d}.json'.format(unique_identifier),fname_patterns=patternfile,fname_results=resultsfile,writetofile=0,returnmatches=1,printtoscreen=printtoscreen,findallmatches=findallmatches)
+            patterns,matches=patternmatch.callPatternMatch(fname_morseset='{}dsgrn_output_{:04d}.json'.format(jsonbasedir,unique_identifier),fname_domgraph='{}dsgrn_domaingraph_{:04d}.json'.format(jsonbasedir,unique_identifier),fname_domcells='{}dsgrn_domaincells_{:04d}.json'.format(jsonbasedir,unique_identifier),fname_patterns=patternfile,fname_results=resultsfile,writetofile=0,returnmatches=1,printtoscreen=printtoscreen,findallmatches=findallmatches)
             for pat,match in zip(patterns,matches):
                 if findallmatches:
                     R.write("Parameter: {}, Morseset: {}, Pattern: {}, Results: {}".format(param,morseset,pat,match)+'\n')
@@ -134,7 +134,7 @@ def loopOverMorseGraphs(morsegraphfile,patternsetter,networkfilebasedir="/home/b
         paramfile=parambasedir+paramname
         subprocess.call(["sqlite3 /share/data/CHomP/Projects/DSGRN/DB/data/{}.db 'select ParameterIndex from Signatures where MorseGraphIndex={}' > {}".format(networkfilename[:-4],mgraph,paramfile)],shell=True)
         for s in mset:
-            allsubresultsfiles=parallelrun_on_conley3(mgraph,s,patternfile,networkfilebasedir+networkfilename,parambasedir,paramname,resultsbasedir,jsonbasedir,printtoscreen,printparam,findallmatches,numservers)
+            allsubresultsfiles=parallelrun_on_conley3(mgraph,s,patternfile,networkfilebasedir+networkfilename,parambasedir,paramname,resultsbasedir,jsonbasedir,printtoscreen,printparam,findallmatches)
             mergeFiles(allresultsfile,allsubresultsfiles)
 
 def selectStableFC(networkfile,morsegraphfile):
