@@ -1,7 +1,7 @@
 from itertools import permutations
 import subprocess
 import patternmatch
-import pp,sys
+import pp,sys,time
 import fileparsers
 from math import ceil
 
@@ -122,7 +122,7 @@ def parallelrun_on_conley3(morsegraph,morseset,patternfile,networkfile="/home/bc
     job_server.destroy()
     return allsubresultsfiles
 
-def loopOverMorseGraphs(morsegraphfile,patternsetter,networkfilebasedir="/home/bcummins/DSGRN/networks/",networkfilename="5D_Cycle.txt",resultsbasedir="/share/data/bcummins/parameterresults/",savefilename="5D_Cycle_StableFC_all_morse_graphs.txt",parambasedir="/share/data/bcummins/parameterfiles/",jsonbasedir='/share/data/bcummins/DSGRN/software/Python/PatternMatching/',printtoscreen=0,printparam=0,findallmatches=0,numservers=0):
+def loopOverMorseGraphs(morsegraphfile,patternsetter,networkfilebasedir="/home/bcummins/DSGRN/networks/",networkfilename="5D_Cycle.txt",resultsbasedir="/share/data/bcummins/parameterresults/",savefilename="5D_Cycle_StableFC_all_morse_graphs.txt",parambasedir="/share/data/bcummins/parameterfiles/",jsonbasedir='/share/data/bcummins/DSGRN/software/Python/PatternMatching/',printtoscreen=0,printparam=0,findallmatches=0):
     # construct patterns
     patternfile=patternsetter()
     # parse morse graphs
@@ -154,5 +154,5 @@ if __name__=='__main__':
     resultsbasedir='/share/data/bcummins/parameterresults/'
     savefilename=networkfilename+'_stableFCs_allresults.txt'
     jsonbasedir='/share/data/bcummins/DSGRN/software/Python/PatternMatching/'
-    loopOverMorseGraphs(morsegraphfile,patternsetter,networkfilebasedir,networkfilename+'.txt',resultsbasedir,savefilename,parambasedir,jsonbasedir,printtoscreen=0,printparam=0,findallmatches=0,numservers=0)
+    loopOverMorseGraphs(morsegraphfile,patternsetter,networkfilebasedir,networkfilename+'.txt',resultsbasedir,savefilename,parambasedir,jsonbasedir,printtoscreen=0,printparam=0,findallmatches=0)
 
