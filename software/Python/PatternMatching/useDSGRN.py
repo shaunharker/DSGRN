@@ -1,6 +1,6 @@
 from itertools import permutations
 import subprocess
-from patternmatch import callPatternMatch
+import patternmatch
 import pp,sys,time,os,glob
 import fileparsers
 from math import ceil
@@ -35,7 +35,7 @@ def patternSearch(morsegraph,morseset,patternfile='patterns.txt',networkfile="ne
         fname_morseset='{}dsgrn_output_{}.json'.format(jsonbasedir,unique_identifier)
         subprocess.call(["dsgrn network {} analyze morseset {} {} > {}".format(networkfile,morseset,int(param),fname_morseset)],shell=True)
         try:
-            patterns,matches=callPatternMatch(fname_morseset=fname_morseset,fname_domgraph=fname_domgraph,fname_domcells=fname_domcells,fname_patterns=patternfile,fname_results=resultsfile,writetofile=0,returnmatches=1,printtoscreen=printtoscreen,findallmatches=findallmatches)
+            patterns,matches=patternmatch.callPatternMatch(fname_morseset=fname_morseset,fname_domgraph=fname_domgraph,fname_domcells=fname_domcells,fname_patterns=patternfile,fname_results=resultsfile,writetofile=0,returnmatches=1,printtoscreen=printtoscreen,findallmatches=findallmatches)
             for pat,match in zip(patterns,matches):
                 if findallmatches:
                     R.write("Parameter: {}, Morseset: {}, Pattern: {}, Results: {}".format(param,morseset,pat,match)+'\n')
@@ -123,7 +123,7 @@ def parallelrun_on_conley3(morsegraph,morseset,patternfile,networkfile="/home/bc
         subparamfile=parampath+'_params_{:04d}'.format(i)+'.txt'
         subresultsfile=resultpath+'_results_{:04d}'.format(i)+'.txt'
         allsubresultsfiles.append(subresultsfile)
-        jobs.append(job_server.submit( patternSearch,(morsegraph,morseset,patternfile,networkfile,subparamfile,subresultsfile,jsonbasedir,printtoscreen,printparam,findallmatches,unique_identifier), depfuncs=(callPatternMatch,),modules = ("subprocess",),globals=globals()))
+        jobs.append(job_server.submit( patternSearch,(morsegraph,morseset,patternfile,networkfile,subparamfile,subresultsfile,jsonbasedir,printtoscreen,printparam,findallmatches,unique_identifier), depfuncs=(),modules = ("subprocess","patternmatch", "pp", "preprocess","fileparsers","walllabels","itertools","numpy","json"),globals=globals()))
     print "All jobs starting."
     sys.stdout.flush()
     for job in jobs:
