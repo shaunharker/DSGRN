@@ -51,8 +51,9 @@ def splitParams(paramfile="5D_Malaria_2015_FCParams_MorseGraph565.txt",ncpus=1):
     paramsperfile=int(ceil(float(len(paramlist))/ncpus))
     if paramsperfile==1:
         # don't split the file if there are fewer parameters than cpus
-        subprocess.call(["cp "+paramfile+" "+paramfile[:-4]+"_params_0000.txt"])
-        return 1 
+        # subprocess.call(["cp "+paramfile+" "+paramfile[:-4]+"_params_0000.txt"])
+        # if there are fewer parameters than cpus, alter number of files to create
+        ncpus=len(paramlist)
     for n in range(ncpus):
         f=open(paramfile[:-4]+'_params_{:04d}'.format(n)+'.txt','w')
         for param in paramlist[n*paramsperfile:min([(n+1)*paramsperfile,len(paramlist)])]:
@@ -86,15 +87,17 @@ def setPattern_5D_Cycle(patternfile='patterns_5D_Cycle.txt'):
     f.close()
     return patternfile
 
-def parallelrun_on_conley3(morsegraph,morseset,patternfile,networkfile="/home/bcummins/DSGRN/networks/5D_2015_09_11.txt",parambasedir="/share/data/bcummins/parameterfiles/",paramfile="5D_2015_09_11_FCParams_MorseGraph565.txt",resultsbasedir="/share/data/bcummins/parameterresults/",printtoscreen=0,printparam=0,findallmatches=0,numservers=0):
-    if numservers:
-        job_server=pp.Server(ppservers=numservers)
-    else:
+def parallelrun_on_conley3(morsegraph,morseset,patternfile,networkfile="/home/bcummins/DSGRN/networks/5D_2015_09_11.txt",parambasedir="/share/data/bcummins/parameterfiles/",paramfile="5D_2015_09_11_FCParams_MorseGraph565.txt",resultsbasedir="/share/data/bcummins/parameterresults/",printtoscreen=0,printparam=0,findallmatches=0):
+    ppservers = ("*",)
+    job_server = pp.Server(ncpus=0,ppservers=ppservers)
+    time.sleep(30)
+    #if numservers:
+     #   job_server=pp.Server(ppservers=numservers)
+    #else:
         # tuple of all parallel python servers to connect with
-        # ppservers = () 
-        ppservers = ("*",) #CHANGED
+        # ppservers = ()
         # Creates jobserver with automatically detected # of workers
-        job_server = pp.Server(ppservers=ppservers)
+        # job_server = pp.Server(ppservers=ppservers)
     N = job_server.get_ncpus()
     print("Starting pp with " + str(N) + " workers.")
     sys.stdout.flush()
@@ -115,7 +118,8 @@ def parallelrun_on_conley3(morsegraph,morseset,patternfile,networkfile="/home/bc
     sys.stdout.flush()
     for job in jobs:
         job()
-    job_server.print_stats()
+    # job_server.print_stats()
+    job_server.destroy()
     return allsubresultsfiles
 
 def loopOverMorseGraphs(morsegraphfile,patternsetter,networkfilebasedir="/home/bcummins/DSGRN/networks/",networkfilename="5D_Cycle.txt",resultsbasedir="/share/data/bcummins/parameterresults/",savefilename="5D_Cycle_StableFC_all_morse_graphs.txt",parambasedir="/share/data/bcummins/parameterfiles/",printtoscreen=0,printparam=0,findallmatches=0,numservers=0):
