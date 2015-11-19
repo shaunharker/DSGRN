@@ -120,8 +120,8 @@ def parallelrun_on_conley3(morsegraph,morseset,patternfile,networkfile="/home/bc
     resultpath=resultsbasedir+paramname
     for i in range(numnodes):
         unique_identifier='{:05d}_{:02d}_{:04d}'.format(int(morsegraph),int(morseset),i)
-        subparamfile=parampath+'_params_{}'.format(unique_identifier)+'.txt'
-        subresultsfile=resultpath+'_results_{}'.format(unique_identifier)+'.txt'
+        subparamfile=parampath+'_params_{:04d}'.format(i)+'.txt'
+        subresultsfile=resultpath+'_results_{:04d}'.format(i)+'.txt'
         allsubresultsfiles.append(subresultsfile)
         jobs.append(job_server.submit( patternSearch,(morsegraph,morseset,patternfile,networkfile,subparamfile,subresultsfile,jsonbasedir,printtoscreen,printparam,findallmatches,unique_identifier), (),modules = ("subprocess","patternmatch", "pp", "preprocess","fileparsers","walllabels","itertools","numpy","json"),globals=globals()))
     print "All jobs starting."
