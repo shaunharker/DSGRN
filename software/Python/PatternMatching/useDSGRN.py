@@ -48,6 +48,7 @@ def splitParams(paramfile="5D_Malaria_2015_FCParams_MorseGraph565.txt",ncpus=1):
     pfile=open(paramfile,'r')
     paramlist=list(pfile.readlines())
     pfile.close()
+    del pfile
     paramsperfile=int(ceil(float(len(paramlist))/ncpus))
     if paramsperfile==1:
         # don't split the file if there are fewer parameters than cpus
