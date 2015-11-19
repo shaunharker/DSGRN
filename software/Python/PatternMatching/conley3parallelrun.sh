@@ -11,7 +11,7 @@
 #$ -cwd
 #$ -j y
 #$ -S /bin/bash
-# #$ -pe orte N 
+# #$ -pe orte 800 
 
 
 # STEP 1. Launch Parallel Python on the nodes
