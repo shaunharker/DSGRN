@@ -104,7 +104,7 @@ def parallelrun_on_conley3(morsegraph,morseset,patternfile,networkfile="/home/bc
     print("Starting pp with " + str(N) + " workers.")
     sys.stdout.flush()
     # split the parameter file into N chunks
-    N=splitParams(parambasedir+paramfile,N)
+    # N=splitParams(parambasedir+paramfile,N)
     # start the jobs
     jobs=[]
     allsubresultsfiles=[]
@@ -134,6 +134,7 @@ def loopOverMorseGraphs(morsegraphfile,patternsetter,networkfilebasedir="/home/b
     for (mgraph,mset) in morse_graphs_and_sets:
         paramname=networkfilename[:-4]+'_{:05d}.txt'.format(int(mgraph))
         paramfile=parambasedir+paramname
+        N=splitParams(paramfile,800)
         subprocess.call(["sqlite3 /share/data/CHomP/Projects/DSGRN/DB/data/{}.db 'select ParameterIndex from Signatures where MorseGraphIndex={}' > {}".format(networkfilename[:-4],mgraph,paramfile)],shell=True)
         for s in mset:
             allsubresultsfiles=parallelrun_on_conley3(mgraph,s,patternfile,networkfilebasedir+networkfilename,parambasedir,paramname,resultsbasedir,jsonbasedir,printtoscreen,printparam,findallmatches)
