@@ -157,5 +157,5 @@ if __name__=='__main__':
     resultsbasedir='/share/data/bcummins/parameterresults/'
     savefilename=networkfilename+'_stableFCs_allresults.txt'
     jsonbasedir='/share/data/bcummins/DSGRN/software/Python/PatternMatching/'
-    loopOverMorseGraphs(morsegraphfile,patternsetter,networkfilebasedir,networkfilename+'.txt',resultsbasedir,savefilename,parambasedir,jsonbasedir,printtoscreen=0,printparam=0,findallmatches=0,numnodes=sys.argv[1])
+    loopOverMorseGraphs(morsegraphfile,patternsetter,networkfilebasedir,networkfilename+'.txt',resultsbasedir,savefilename,parambasedir,jsonbasedir,printtoscreen=0,printparam=0,findallmatches=0,numnodes=int(sys.argv[1]))
 

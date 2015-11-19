@@ -4,13 +4,14 @@
 #  * Change the number after -pe orte to require more cores
 #  * Change the name of the script in STEP 2 to change the
 #    python program.
-#  * Call as qsub ThisScript.sh ./ExampleProgram.py
+#  * Call as qsub -pe orte NumberNodes ThisScript.sh "ExampleProgram.py NumberNodes"
+
 
 #$ -V
 #$ -cwd
 #$ -j y
 #$ -S /bin/bash
-#$ -pe orte $2 
+# #$ -pe orte N 
 
 
 # STEP 1. Launch Parallel Python on the nodes
@@ -28,7 +29,7 @@ sleep 30s
 echo Waking up and running script.
 
 # STEP 2. Run the script
-python $1 $2
+python $1 
 
 # STEP 3. Kill Parallel Python
 echo Ending servers
