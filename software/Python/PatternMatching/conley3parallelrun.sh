@@ -18,7 +18,8 @@ echo Launching servers
 exec 5< $PE_HOSTFILE
 while read nodename corecount queue undef <&5 ; do
     echo "ssh -f $nodename ppserver.py -w $corecount -a"
-    ssh -f $nodename "ppserver.py -w $corecount -a" & 
+    ssh -f $nodename "export PYTHONPATH=$PWD:$PYTHONPATH; ppserver.py -w $corecount -a" &
+    # ssh -f $nodename "ppserver.py -w $corecount -a" & 
 done
 exec 5<&-
 
