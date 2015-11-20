@@ -166,7 +166,9 @@ def main_conley3_filesystem(networkfilename="5D_2015_09_11",patternsetter=setPat
 
 
 if __name__=='__main__':
-    networkfilename="5D_Cycle"
-    patternsetter=setPattern_5D_Cycle
+    # networkfilename="5D_Cycle"
+    # patternsetter=setPattern_5D_Cycle
+    networkfilename="5D_2015_09_11"
+    patternsetter=setPattern_Malaria_20hr_2015_09_11
     main_conley3_filesystem(networkfilename,patternsetter,int(sys.argv[1]))
 
