@@ -56,7 +56,7 @@ def parseDomainCells(fname='dsgrn_domaincells.json'):
     parsed = json.load(open(fname),strict=False)
     return parsed["cells"]
 
-def parseDomainGraph(fname="dsgrn_domaingraph.txt"):
+def parseDomainGraph(fname="dsgrn_domaingraph.json"):
     return json.load(open(fname),strict=False)
 
 
