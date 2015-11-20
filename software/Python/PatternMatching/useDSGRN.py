@@ -51,7 +51,6 @@ def splitParams(paramfile="5D_Malaria_2015_FCParams_MorseGraph565.txt",ncpus=1):
     pfile=open(paramfile,'r')
     paramlist=list(pfile.readlines())
     pfile.close()
-    del pfile
     paramsperfile=int(ceil(float(len(paramlist))/ncpus))
     if paramsperfile==1:
         # don't split the file if there are fewer parameters than cpus
@@ -63,7 +62,6 @@ def splitParams(paramfile="5D_Malaria_2015_FCParams_MorseGraph565.txt",ncpus=1):
         for param in paramlist[n*paramsperfile:min([(n+1)*paramsperfile,len(paramlist)])]:
             f.write(param)
         f.close()
-        del f
     return ncpus
 
 def mergeFiles(mergefile,splitfiles):
@@ -146,29 +144,29 @@ def loopOverMorseGraphs(morsegraphfile,patternsetter,networkfilebasedir="/home/b
         N=splitParams(paramfile,numnodes)
         for s in mset:
             allsubresultsfiles=parallelrun_on_conley3(mgraph,s,patternfile,networkfilebasedir+networkfilename,parambasedir,paramname,resultsbasedir,jsonbasedir,printtoscreen,printparam,findallmatches,numnodes)
-            print allsubresultsfiles
             mergeFiles(allresultsfile,allsubresultsfiles)
             cleanFiles(jsonbasedir)
         cleanFiles(parambasedir)
 
-def selectStableFC(networkfile,morsegraphfile):
+def selectStableFC(networkfile,morsegraphfile,numnodes):
     subprocess.call(['''sqlite3 /share/data/CHomP/Projects/DSGRN/DB/data/{}.db 'select MorseGraphIndex,Vertex from MorseGraphAnnotations where Label="FC" except select MorseGraphIndex,Source from MorseGraphEdges' > {}'''.format(networkfile,morsegraphfile)],shell=True)
 
-
-if __name__=='__main__':
-    #networkfilename="5D_2015_09_11"
-    #patternsetter=setPattern_Malaria_20hr_2015_09_11
-    networkfilename="5D_Cycle"
-    patternsetter=setPattern_5D_Cycle
+def main_conley3_filesystem(networkfilename="5D_2015_09_11",patternsetter=setPattern_Malaria_20hr_2015_09_11,numnodes=1,getMorseGraphs=selectStableFC):
+    # find all morse graphs with desired characteristic
     networkfilebasedir="/share/data/bcummins/DSGRN/networks/"
     morsegraphfile="/share/data/bcummins/"+networkfilename+'_stableFCs_listofmorsegraphs.txt'
-    selectStableFC(networkfilename,morsegraphfile)
-
-    #morse_graphs_and_sets=fileparsers.parseMorseGraphs(morsegraphfile)
-    #print morse_graphs_and_sets
+    getMorseGraphs(networkfilename,morsegraphfile)
+    # set other file names and paths
     parambasedir="/share/data/bcummins/parameterfiles/"
     resultsbasedir='/share/data/bcummins/parameterresults/'
     savefilename=networkfilename+'_stableFCs_allresults.txt'
     jsonbasedir='/share/data/bcummins/JSONfiles/'
-    loopOverMorseGraphs(morsegraphfile,patternsetter,networkfilebasedir,networkfilename+'.txt',resultsbasedir,savefilename,parambasedir,jsonbasedir,printtoscreen=0,printparam=0,findallmatches=0,numnodes=int(sys.argv[1]))
+    # call parallel runs for each Morse graph
+    loopOverMorseGraphs(morsegraphfile,patternsetter,networkfilebasedir,networkfilename+'.txt',resultsbasedir,savefilename,parambasedir,jsonbasedir,printtoscreen=0,printparam=0,findallmatches=0,numnodes=numnodes)
+
+
+if __name__=='__main__':
+    networkfilename="5D_Cycle"
+    patternsetter=setPattern_5D_Cycle
+    main_conley3_filesystem(networkfilename,patternsetter,int(sys.argv[1]))
 
