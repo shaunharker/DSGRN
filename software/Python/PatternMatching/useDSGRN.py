@@ -18,9 +18,9 @@ from math import ceil
 #
 # So far the Morse set number is entered by hand, but I should write a parser eventually.
 
-def patternSearch(morsegraph,morseset,patternfile='patterns.txt',networkfile="networks/5D_Model_B.txt",paramfile="5D_Model_B_FCParams.txt",resultsfile='results_5D_B.txt',jsonbasedir='/share/data/bcummins/DSGRN/software/Python/PatternMatching/',printtoscreen=0,printparam=0,findallmatches=1,unique_identifier='0'):
-    fname_domgraph="{}dsgrn_domaincells_{}.json".format(jsonbasedir,unique_identifier)
-    subprocess.call(["dsgrn network {} domaingraph > {}".format(networkfile,fname_domgraph)],shell=True)
+def patternSearch(morsegraph,morseset,patternfile='patterns.txt',networkfile="networks/5D_Model_B.txt",paramfile="5D_Model_B_FCParams.txt",resultsfile='results_5D_B.txt',jsonbasedir='/share/data/bcummins/JSONfiles/',printtoscreen=0,printparam=0,findallmatches=1,unique_identifier='0'):
+    fname_domcells="{}dsgrn_domaincells_{}.json".format(jsonbasedir,unique_identifier)
+    subprocess.call(["dsgrn network {} domaingraph > {}".format(networkfile,fname_domcells)],shell=True)
     R=open(resultsfile,'w',0)
     P=open(paramfile,'r')
     paramcount=1
@@ -30,8 +30,8 @@ def patternSearch(morsegraph,morseset,patternfile='patterns.txt',networkfile="ne
             print str(paramcount)+' parameters checked'
         paramcount+=1
         # shell call to dsgrn to produce dsgrn_output.json, which is the input for the pattern matcher
-        fname_domcells='{}dsgrn_domaingraph_{}.json'.format(jsonbasedir,unique_identifier)
-        subprocess.call(["dsgrn network {} domaingraph json {} > {}".format(networkfile,int(param),fname_domcells)],shell=True)
+        fname_domgraph='{}dsgrn_domaingraph_{}.json'.format(jsonbasedir,unique_identifier)
+        subprocess.call(["dsgrn network {} domaingraph json {} > {}".format(networkfile,int(param),fname_domgraph)],shell=True)
         fname_morseset='{}dsgrn_output_{}.json'.format(jsonbasedir,unique_identifier)
         subprocess.call(["dsgrn network {} analyze morseset {} {} > {}".format(networkfile,morseset,int(param),fname_morseset)],shell=True)
         try:
@@ -96,7 +96,7 @@ def setPattern_5D_Cycle(patternfile='/share/data/bcummins/patterns_5D_Cycle.txt'
     f.close()
     return patternfile
 
-def parallelrun_on_conley3(morsegraph,morseset,patternfile,networkfile="/home/bcummins/DSGRN/networks/5D_2015_09_11.txt",parambasedir="/share/data/bcummins/parameterfiles/",paramfile="5D_2015_09_11_FCParams_MorseGraph565.txt",resultsbasedir="/share/data/bcummins/parameterresults/",jsonbasedir='/share/data/bcummins/DSGRN/software/Python/PatternMatching/',printtoscreen=0,printparam=0,findallmatches=0,numnodes=1):
+def parallelrun_on_conley3(morsegraph,morseset,patternfile,networkfile="/home/bcummins/DSGRN/networks/5D_2015_09_11.txt",parambasedir="/share/data/bcummins/parameterfiles/",paramfile="5D_2015_09_11_FCParams_MorseGraph565.txt",resultsbasedir="/share/data/bcummins/parameterresults/",jsonbasedir='/share/data/bcummins/JSONfiles/',printtoscreen=0,printparam=0,findallmatches=0,numnodes=1):
     ppservers = ("*",)
     job_server = pp.Server(ncpus=0,ppservers=ppservers)
     time.sleep(30)
