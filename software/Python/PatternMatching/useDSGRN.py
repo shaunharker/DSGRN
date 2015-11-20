@@ -148,7 +148,7 @@ def loopOverMorseGraphs(morsegraphfile,patternsetter,networkfilebasedir="/home/b
             cleanFiles(jsonbasedir)
         cleanFiles(parambasedir)
 
-def selectStableFC(networkfile,morsegraphfile,numnodes):
+def selectStableFC(networkfile,morsegraphfile):
     subprocess.call(['''sqlite3 /share/data/CHomP/Projects/DSGRN/DB/data/{}.db 'select MorseGraphIndex,Vertex from MorseGraphAnnotations where Label="FC" except select MorseGraphIndex,Source from MorseGraphEdges' > {}'''.format(networkfile,morsegraphfile)],shell=True)
 
 def main_conley3_filesystem(networkfilename="5D_2015_09_11",patternsetter=setPattern_Malaria_20hr_2015_09_11,numnodes=1,getMorseGraphs=selectStableFC):
