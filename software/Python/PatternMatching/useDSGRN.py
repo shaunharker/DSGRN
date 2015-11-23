@@ -130,9 +130,7 @@ def parallelrun_on_conley3(morsegraph,morseset,patternfile,networkfile="/home/bc
     job_server.destroy()
     return allsubresultsfiles
 
-def loopOverMorseGraphs(morsegraphfile,patternsetter,networkfilebasedir="/home/bcummins/DSGRN/networks/",networkfilename="5D_Cycle.txt",resultsbasedir="/share/data/bcummins/parameterresults/",savefilename="5D_Cycle_StableFC_all_morse_graphs.txt",parambasedir="/share/data/bcummins/parameterfiles/",jsonbasedir='/share/data/bcummins/JSONfiles/',printtoscreen=0,printparam=0,findallmatches=0,numnodes=1):
-    # construct patterns
-    patternfile=patternsetter()
+def loopOverMorseGraphs(morsegraphfile,patternfile,networkfilebasedir="/home/bcummins/DSGRN/networks/",networkfilename="5D_Cycle.txt",resultsbasedir="/share/data/bcummins/parameterresults/",savefilename="5D_Cycle_StableFC_all_morse_graphs.txt",parambasedir="/share/data/bcummins/parameterfiles/",jsonbasedir='/share/data/bcummins/JSONfiles/',printtoscreen=0,printparam=0,findallmatches=0,numnodes=1):
     # parse morse graphs
     morse_graphs_and_sets=fileparsers.parseMorseGraphs(morsegraphfile)
     allresultsfile=resultsbasedir+savefilename
@@ -156,13 +154,15 @@ def main_conley3_filesystem(networkfilename="5D_2015_09_11",patternsetter=setPat
     networkfilebasedir="/share/data/bcummins/DSGRN/networks/"
     morsegraphfile="/share/data/bcummins/"+networkfilename+'_stableFCs_listofmorsegraphs.txt'
     getMorseGraphs(networkfilename,morsegraphfile)
+    # set patterns
+    patternfile=patternsetter()
     # set other file names and paths
     parambasedir="/share/data/bcummins/parameterfiles/"
     resultsbasedir='/share/data/bcummins/parameterresults/'
     savefilename=networkfilename+'_stableFCs_allresults.txt'
     jsonbasedir='/share/data/bcummins/JSONfiles/'
     # call parallel runs for each Morse graph
-    loopOverMorseGraphs(morsegraphfile,patternsetter,networkfilebasedir,networkfilename+'.txt',resultsbasedir,savefilename,parambasedir,jsonbasedir,printtoscreen=0,printparam=0,findallmatches=0,numnodes=numnodes)
+    loopOverMorseGraphs(morsegraphfile,patternfile,networkfilebasedir,networkfilename+'.txt',resultsbasedir,savefilename,parambasedir,jsonbasedir,printtoscreen=0,printparam=0,findallmatches=0,numnodes=numnodes)
 
 
 if __name__=='__main__':
