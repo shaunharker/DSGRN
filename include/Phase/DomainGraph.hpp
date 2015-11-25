@@ -12,14 +12,14 @@
 #include "DomainGraph.h"
 
 INLINE_IF_HEADER_ONLY DomainGraph::
-DomainGraph ( void ) { 
+DomainGraph ( void ) {
   data_ . reset ( new DomainGraph_ );
 }
 
 INLINE_IF_HEADER_ONLY DomainGraph::
 DomainGraph ( Parameter const parameter ) {
   assign ( parameter );
-} 
+}
 
 INLINE_IF_HEADER_ONLY void DomainGraph::
 assign ( Parameter const parameter ) {
@@ -46,16 +46,16 @@ assign ( Parameter const parameter ) {
       if ( labelling [ i ] & rightbit ) {
         uint64_t j = i + jump[d];
         if ( not (labelling [ j ] & leftbit) ) {
-          data_ -> digraph_ . add_edge ( i, j );  
+          data_ -> digraph_ . add_edge ( i, j );
         }
-      } 
+      }
       if ( labelling [ i ] & leftbit ) {
         uint64_t j = i - jump[d];
         if ( not (labelling [ j ] & rightbit) ) {
-          data_ -> digraph_ . add_edge ( i, j );  
-        } 
+          data_ -> digraph_ . add_edge ( i, j );
+        }
       }
-    } 
+    }
   }
 }
 
@@ -84,7 +84,7 @@ annotate ( Component const& vertices ) const {
     }
   }
   std::vector<uint64_t> signature;
-  for ( int d = 0; d < D; ++ d ) { 
+  for ( int d = 0; d < D; ++ d ) {
     if ( min_pos[d] != max_pos[d] ) {
       signature . push_back ( d );
     }
@@ -108,7 +108,7 @@ annotate ( Component const& vertices ) const {
     bool first_term = true;
     for ( uint64_t d : signature ) {
       if ( first_term ) first_term = false; else ss << ", ";
-      ss << d;
+      ss << data_ ->parameter_ . network() . name ( d );
     }
     ss << "}";
   }

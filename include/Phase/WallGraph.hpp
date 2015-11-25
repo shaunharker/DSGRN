@@ -12,7 +12,7 @@
 #include "WallGraph.h"
 
 INLINE_IF_HEADER_ONLY WallGraph::
-WallGraph ( void ) { 
+WallGraph ( void ) {
   data_ . reset ( new WallGraph_ );
 }
 
@@ -50,7 +50,7 @@ assign ( Parameter const parameter ) {
     for ( int d = 0; d < D; ++ d ) {
       if ( not dom . isMin(d) ) {
         Wall wall ( dom, d, -1 );
-        //std::cout << "Wallcheck. Left wall (dim " << d << ") of domain " 
+        //std::cout << "Wallcheck. Left wall (dim " << d << ") of domain "
         //          << dom.index() << " is wall " << wall.index() << "\n";
         if ( parameter . absorbing ( dom, d, -1 ) ) {
           absorbing . push_back ( wall );
@@ -60,7 +60,7 @@ assign ( Parameter const parameter ) {
       }
       if ( not dom . isMax(d) ) {
         Wall wall ( dom, d, 1 );
-        //std::cout << "Wallcheck. Right wall (dim " << d << ") of domain " 
+        //std::cout << "Wallcheck. Right wall (dim " << d << ") of domain "
         //          << dom.index() << " is wall " << wall.index() << "\n";
         if ( parameter . absorbing ( dom, d, 1 ) ) {
           absorbing . push_back ( wall );
@@ -72,8 +72,8 @@ assign ( Parameter const parameter ) {
     for ( Wall const& x : entrance ) {
       for ( Wall const& y : absorbing ) {
         uint64_t i = data_ -> wall_index_to_vertex_ [ x.index() ];
-        uint64_t j = data_ -> wall_index_to_vertex_ [ y.index() ]; 
-        //std::cout << "Adding wall-wall edge " << i << " -> " << j << "\n";       
+        uint64_t j = data_ -> wall_index_to_vertex_ [ y.index() ];
+        //std::cout << "Adding wall-wall edge " << i << " -> " << j << "\n";
         data_ -> digraph_ . add_edge ( i, j );
       }
     }
@@ -88,7 +88,7 @@ assign ( Parameter const parameter ) {
       }
       for ( Wall const& x : entrance ) {
         uint64_t i = data_ -> wall_index_to_vertex_ [ x.index() ];
-        //std::cout << "Adding wall-domain edge " << i << " -> " << attract << "\n";       
+        //std::cout << "Adding wall-domain edge " << i << " -> " << attract << "\n";
         data_ -> digraph_ . add_edge ( i, attract );
       }
     }
@@ -110,7 +110,7 @@ annotate ( Component const& vertices ) const {
     uint64_t d = data_ -> vertex_to_dimension_ [ v ];
     if ( d < D ) signature . insert ( d );
     if ( d > D ) all_off = false;
-    if ( d < 2*D ) all_on = false; 
+    if ( d < 2*D ) all_on = false;
   }
   Annotation a;
   std::stringstream ss;
@@ -125,7 +125,7 @@ annotate ( Component const& vertices ) const {
     bool first_term = true;
     for ( uint64_t d : signature ) {
       if ( first_term ) first_term = false; else ss << ", ";
-      ss << d;
+      ss << data_ ->parameter_ . network() . name ( d );
     }
     ss << "}";
   }
