@@ -40,9 +40,9 @@ def patternSearch(morseset,patternfile='patterns.txt',networkfile="networks/5D_M
                     R.write("Parameter: {}, Morseset: {}, Pattern: {}, Results: {}".format(param,morseset,pat,match)+'\n')
                 else:
                     R.write("Parameter: {}, Morseset: {}, Pattern: {}".format(param,morseset,pat)+'\n')
-        except ValueError:
+        except ValueError as v:
             print 'Problem parameter is {}'.format(param)
-            print ValueError
+            print 'ValueError: {}'.format(v)
     R.close()
     P.close()
 
