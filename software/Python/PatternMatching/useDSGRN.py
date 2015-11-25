@@ -16,9 +16,8 @@ from math import ceil
 # The following is a search for stable FCs:
 # sqlite3 /share/data/CHomP/Projects/DSGRN/DB/data/DATABASEFILE.db 'select MorseGraphIndex,Vertex from MorseGraphAnnotations where Label="FC" except select MorseGraphIndex,Source from MorseGraphEdges'
 #
-# So far the Morse set number is entered by hand, but I should write a parser eventually.
 
-def patternSearch(morsegraph,morseset,patternfile='patterns.txt',networkfile="networks/5D_Model_B.txt",paramfile="5D_Model_B_FCParams.txt",resultsfile='results_5D_B.txt',jsonbasedir='/share/data/bcummins/JSONfiles/',printtoscreen=0,printparam=0,findallmatches=1,unique_identifier='0'):
+def patternSearch(morseset,patternfile='patterns.txt',networkfile="networks/5D_Model_B.txt",paramfile="5D_Model_B_FCParams.txt",resultsfile='results_5D_B.txt',jsonbasedir='/share/data/bcummins/JSONfiles/',printtoscreen=0,printparam=0,findallmatches=1,unique_identifier='0'):
     fname_domcells="{}dsgrn_domaincells_{}.json".format(jsonbasedir,unique_identifier)
     subprocess.call(["dsgrn network {} domaingraph > {}".format(networkfile,fname_domcells)],shell=True)
     R=open(resultsfile,'w',0)
@@ -43,7 +42,7 @@ def patternSearch(morsegraph,morseset,patternfile='patterns.txt',networkfile="ne
                     R.write("Parameter: {}, Morseset: {}, Pattern: {}".format(param,morseset,pat)+'\n')
         except ValueError:
             print 'Problem parameter is {}'.format(param)
-            raise
+            print ValueError
     R.close()
     P.close()
 
@@ -121,7 +120,7 @@ def parallelrun_on_conley3(morsegraph,morseset,patternfile,networkfile="/home/bc
         subparamfile=parampath+'_params_{:04d}'.format(i)+'.txt'
         subresultsfile=resultpath+'_results_{:04d}'.format(i)+'.txt'
         allsubresultsfiles.append(subresultsfile)
-        jobs.append(job_server.submit( patternSearch,(morsegraph,morseset,patternfile,networkfile,subparamfile,subresultsfile,jsonbasedir,printtoscreen,printparam,findallmatches,unique_identifier), depfuncs=(),modules = ("subprocess","patternmatch", "pp", "preprocess","fileparsers","walllabels","itertools","numpy","json"),globals=globals()))
+        jobs.append(job_server.submit( patternSearch,(morseset,patternfile,networkfile,subparamfile,subresultsfile,jsonbasedir,printtoscreen,printparam,findallmatches,unique_identifier), depfuncs=(),modules = ("subprocess","patternmatch", "pp", "preprocess","fileparsers","walllabels","itertools","numpy","json"),globals=globals()))
     print "All jobs starting."
     sys.stdout.flush()
     for job in jobs:
