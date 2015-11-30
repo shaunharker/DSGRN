@@ -1,11 +1,11 @@
 digraph {
-0[label="XC {0, 3}"];
-1[label="XC {0, 3}"];
-2[label="XC {0, 3}"];
-3[label="XC {0, 1, 2}"];
+0[label="XC {X, Z}"];
+1[label="XC {X, Z}"];
+2[label="XC {X, Z}"];
+3[label="XC {X, Y1, Y2}"];
 4[label="FP ON"];
 5[label="FP"];
-6[label="XC {0, 3}"];
+6[label="XC {X, Z}"];
 0 -> 1;
 1 -> 2;
 2 -> 3;

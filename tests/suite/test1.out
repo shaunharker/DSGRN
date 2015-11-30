@@ -1,5 +1,5 @@
 digraph {
-0[label="XC {0, 2}"];
+0[label="XC {X1, X3}"];
 1[label="FP ON"];
 0 -> 1;
 }
