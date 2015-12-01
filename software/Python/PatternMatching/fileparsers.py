@@ -31,6 +31,15 @@ def parseMorseGraphs(fname="morsegraphs.txt"):
     f.close()
     return morse_graphs_and_sets
 
+def parseParameters(fname="concatenatedparams.txt"):
+    f=open(fname,'r')
+    morsegraph_morseset_param=[]
+    for l in f.readlines():
+        morsegraph_morseset_param.append(tuple(l.split('|')))
+    f.close()
+    return morsegraph_morseset_param
+
+
 def parsePatterns(fname="patterns.txt"):
     f=open(fname,'r')
     maxmin=[]
