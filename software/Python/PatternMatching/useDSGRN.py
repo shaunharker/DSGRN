@@ -43,6 +43,7 @@ def patternSearch(morseset,patternfile='patterns.txt',networkfile="networks/5D_M
         except ValueError as v:
             print 'Problem parameter is {}'.format(param)
             print 'ValueError: {}'.format(v)
+            sys.stdout.flush()
     R.close()
     P.close()
 
