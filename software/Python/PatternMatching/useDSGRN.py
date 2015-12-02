@@ -178,7 +178,8 @@ def main_conley3_filesystem(networkfilename="5D_2015_09_11",patternsetter=setPat
 def patternSearch2(patternfile='patterns.txt',networkfile="networks/5D_Model_B.txt",paramfile="5D_Model_B_FCParams.txt",resultsfile='results_5D_B.txt',jsonbasedir='/share/data/bcummins/JSONfiles/',printtoscreen=0,printparam=0,findallmatches=1,unique_identifier='0'):
     # get domain cells for the network via shell call to dsgrn
     fname_domcells="{}dsgrn_domaincells_{}.json".format(jsonbasedir,unique_identifier)
-    subprocess.call(["dsgrn network {} domaingraph > {}".format(networkfile,fname_domcells)],shell=True)
+    with open(fname_domcells, 'w',0) as f:
+        subprocess.call(["dsgrn network {} domaingraph".format(networkfile)],shell=True,stdout=f)
     # call the pattern matcher for each parameter and record the results
     with open(resultsfile,'w',0) as R, open(paramfile,'r') as P:
         paramcount=1
@@ -190,9 +191,11 @@ def patternSearch2(patternfile='patterns.txt',networkfile="networks/5D_Model_B.t
             paramcount+=1
             # shell call to dsgrn to produce json files as input for the pattern matcher
             fname_domgraph='{}dsgrn_domaingraph_{}.json'.format(jsonbasedir,unique_identifier)
-            subprocess.call(["dsgrn network {} domaingraph json {} > {}".format(networkfile,param,fname_domgraph)],shell=True)
+            with open(fname_domgraph, 'w',0) as f:
+                subprocess.call(["dsgrn network {} domaingraph json {}".format(networkfile,param)],shell=True,stdout=f)
             fname_morseset='{}dsgrn_output_{}.json'.format(jsonbasedir,unique_identifier)
-            subprocess.call(["dsgrn network {} analyze morseset {} {} > {}".format(networkfile,morseset,param,fname_morseset)],shell=True)
+            with open(fname_morseset, 'w',0) as f:
+                subprocess.call(["dsgrn network {} analyze morseset {} {}".format(networkfile,morseset,param)],shell=True,stdout=f)
             try:
                 patterns,matches=patternmatch.callPatternMatch(fname_morseset=fname_morseset,fname_domgraph=fname_domgraph,fname_domcells=fname_domcells,fname_patterns=patternfile,fname_results=resultsfile,writetofile=0,returnmatches=1,printtoscreen=printtoscreen,findallmatches=findallmatches)
                 for pat,match in zip(patterns,matches):
@@ -333,4 +336,4 @@ if __name__=='__main__':
     allparamsfile="/Users/bcummins/patternmatch_helper_files/3D_Cycle_concatenatedparams.txt"
     main_local_filesystem_allparameters(networkfilename,morsegraphselection,allparamsfile,patternsetter,ncpus=4,printtoscreen=1)
 
-    # patternSearch2(patternfile='patterns.txt',networkfile="networks/5D_Model_B.txt",paramfile="5D_Model_B_FCParams.txt",resultsfile='results_5D_B.txt',jsonbasedir='/share/data/bcummins/JSONfiles/',printtoscreen=0,printparam=0,findallmatches=1,unique_identifier='0')
+    # patternSearch2(patternfile='/Users/bcummins/patternmatch_helper_files/patterns_3D_Cycle.txt',networkfile="/Users/bcummins/GIT/DSGRN/networks/3D_Cycle.txt",paramfile="/Users/bcummins/patternmatch_helper_files/3D_Cycle_concatenatedparams.txt",resultsfile="/Users/bcummins/patternmatch_helper_files/3D_Cycle_stableFC_results.txt",jsonbasedir='/Users/bcummins/patternmatch_helper_files/JSONfiles/',printtoscreen=1,printparam=0,findallmatches=1,unique_identifier='0')
