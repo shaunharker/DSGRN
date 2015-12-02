@@ -1,7 +1,7 @@
 from itertools import permutations, islice
 import subprocess
 import patternmatch
-import pp,sys,time,os,glob
+import pp,sys,time,os,glob,traceback
 import fileparsers
 from math import ceil
 
@@ -27,6 +27,7 @@ def patternSearch(morseset,patternfile='patterns.txt',networkfile="networks/5D_M
         param=param.split()[0]
         if printparam and paramcount%1000==0:
             print str(paramcount)+' parameters checked'
+            sys.stdout.flush()
         paramcount+=1
         # shell call to dsgrn to produce dsgrn_output.json, which is the input for the pattern matcher
         fname_domgraph='{}dsgrn_domaingraph_{}.json'.format(jsonbasedir,unique_identifier)
@@ -40,9 +41,9 @@ def patternSearch(morseset,patternfile='patterns.txt',networkfile="networks/5D_M
                     R.write("Parameter: {}, Morseset: {}, Pattern: {}, Results: {}".format(param,morseset,pat,match)+'\n')
                 else:
                     R.write("Parameter: {}, Morseset: {}, Pattern: {}".format(param,morseset,pat)+'\n')
-        except ValueError as v:
+        except Exception as e:
             print 'Problem parameter is {}'.format(param)
-            print 'ValueError: {}'.format(v)
+            print traceback.format_exception_only(type(e), e) 
             sys.stdout.flush()
     R.close()
     P.close()
@@ -131,7 +132,7 @@ def parallelrun_on_conley3(morsegraph,morseset,patternfile,networkfile="/home/bc
         subparamfile=parampath+'_params_{:04d}'.format(i)+'.txt'
         subresultsfile=resultpath+'_results_{:04d}'.format(i)+'.txt'
         allsubresultsfiles.append(subresultsfile)
-        jobs.append(job_server.submit( patternSearch,(morseset,patternfile,networkfile,subparamfile,subresultsfile,jsonbasedir,printtoscreen,printparam,findallmatches,unique_identifier), depfuncs=(),modules = ("subprocess","patternmatch", "pp", "preprocess","fileparsers","walllabels","itertools","numpy","json"),globals=globals()))
+        jobs.append(job_server.submit( patternSearch,(morseset,patternfile,networkfile,subparamfile,subresultsfile,jsonbasedir,printtoscreen,printparam,findallmatches,unique_identifier), depfuncs=(),modules = ("subprocess","patternmatch", "pp", "preprocess","fileparsers","walllabels","itertools","numpy","json","sys","traceback"),globals=globals()))
     print "All jobs starting."
     sys.stdout.flush()
     for job in jobs:
@@ -199,9 +200,9 @@ def patternSearch2(patternfile='patterns.txt',networkfile="networks/5D_Model_B.t
                         R.write("Parameter: {}, Morse Graph: {}, Morse Set: {}, Pattern: {}, Results: {}".format(param,morsegraph,morseset,pat,match)+'\n')
                     else:
                         R.write("Parameter: {}, Morse Graph: {}, Morseset: {}, Pattern: {}".format(param,morsegraph,morseset,pat)+'\n')
-            except ValueError as v:
+            except Exception as e:
                 print 'Problem parameter is {}'.format(param)
-                print 'ValueError: {}'.format(v)
+                print traceback.format_exception_only(type(e), e) 
                 sys.stdout.flush()
 
 def concatenateParams(allparamsfile,morse_graphs_and_sets):
@@ -239,7 +240,7 @@ def parallelrun(paramfile,resultsfile,ncpus,patternfile,networkfile,jsonbasedir,
         subparamfile=paramfile+unique_identifier+'.txt'
         subresultsfile=resultsfile+unique_identifier+'.txt'
         allsubresultsfiles.append(subresultsfile)
-        jobs.append(job_server.submit( patternSearch2,(patternfile,networkfile,subparamfile,subresultsfile,jsonbasedir,printtoscreen,printparam,findallmatches,unique_identifier), depfuncs=(),modules = ("subprocess","patternmatch", "pp", "preprocess","fileparsers","walllabels","itertools","numpy","json"),globals=globals()))
+        jobs.append(job_server.submit( patternSearch2,(patternfile,networkfile,subparamfile,subresultsfile,jsonbasedir,printtoscreen,printparam,findallmatches,unique_identifier), depfuncs=(),modules = ("subprocess","patternmatch", "preprocess","fileparsers","walllabels","itertools","numpy","json","traceback","sys"),globals=globals()))
     print "All jobs starting."
     sys.stdout.flush()
     for job in jobs:
