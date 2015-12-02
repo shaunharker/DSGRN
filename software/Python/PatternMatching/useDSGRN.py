@@ -202,8 +202,9 @@ def patternSearch2(patternfile='patterns.txt',networkfile="networks/5D_Model_B.t
                         R.write("Parameter: {}, Morse Graph: {}, Morseset: {}, Pattern: {}".format(param,morsegraph,morseset,pat)+'\n')
             except Exception as e:
                 print 'Problem parameter is {}'.format(param)
-                print traceback.format_exception_only(type(e), e) 
-                sys.stdout.flush()
+                raise
+                # print traceback.format_exception_only(type(e), e) 
+                # sys.stdout.flush()
 
 def concatenateParams(allparamsfile,morse_graphs_and_sets):
     numparams=0
@@ -219,15 +220,16 @@ def concatenateParams(allparamsfile,morse_graphs_and_sets):
 
 def splitParams2(paramfile,numparams,ncpus,allparamsfile):
     paramsperfile=int(ceil(float(numparams)/ncpus))
-    if paramsperfile==1:
-        ncpus=numparams
+    new_ncpus=0
     with open(allparamsfile,'r') as apf2:
         for n in range(ncpus):
-            head = islice(apf2,paramsperfile)
-            with open(paramfile+'{:04d}'.format(n)+'.txt','w') as f:
-                for h in head:
-                    f.write(h)
-    return ncpus
+            if n*paramsperfile < numparams:
+                new_ncpus+=1
+                head = islice(apf2,paramsperfile)
+                with open(paramfile+'{:04d}'.format(n)+'.txt','w') as f:
+                    for h in head:
+                        f.write(h)
+    return new_ncpus
 
 def parallelrun(paramfile,resultsfile,ncpus,patternfile,networkfile,jsonbasedir,printtoscreen=0,printparam=0,findallmatches=0):
     ppservers = ("*",)
