@@ -231,10 +231,20 @@ def splitParams2(paramfile,numparams,ncpus,allparamsfile):
                         f.write(h)
     return new_ncpus
 
-def parallelrun(paramfile,resultsfile,ncpus,patternfile,networkfile,jsonbasedir,printtoscreen=0,printparam=0,findallmatches=0):
-    ppservers = ("*",)
-    job_server = pp.Server(ncpus=0,ppservers=ppservers)
+def startServers_conley3():
+    job_server = pp.Server(ncpus=0,ppservers=("*",))
+    print "Starting pp with", job_server.get_ncpus(), "workers"
+    sys.stdout.flush()
     time.sleep(30)
+    return job_server
+
+def startServers_local():
+    job_server = pp.Server(ppservers=("*",))
+    print "Starting pp with", job_server.get_ncpus(), "workers"
+    return job_server
+
+def parallelrun(paramfile,resultsfile,ncpus,patternfile,networkfile,jsonbasedir,printtoscreen=0,printparam=0,findallmatches=0,startservers=startServers_conley3):
+    job_server = startservers()
     jobs=[]
     allsubresultsfiles=[]
     for n in range(ncpus):
@@ -247,7 +257,8 @@ def parallelrun(paramfile,resultsfile,ncpus,patternfile,networkfile,jsonbasedir,
     sys.stdout.flush()
     for job in jobs:
         job()
-    # job_server.print_stats()
+        job_server.print_stats()
+        sys.stdout.flush()
     job_server.destroy()
     print "All jobs ended."
     sys.stdout.flush()
@@ -276,14 +287,37 @@ def main_conley3_filesystem_allparameters(networkfilename="5D_2015_09_11",morseg
     # split parameter file into one for each cpu
     ncpus=splitParams2(paramfile+'_params_',numparams,ncpus,allparamsfile)
     # run parallel process
-    allsubresultsfiles=parallelrun(paramfile+'_params_',resultsfile+'_results_',ncpus,patternfile,"/share/data/bcummins/DSGRN/networks/"+networkfilename+".txt",jsonbasedir,printtoscreen,printparam,findallmatches)
+    allsubresultsfiles=parallelrun(paramfile+'_params_',resultsfile+'_results_',ncpus,patternfile,networkfilebasedir+networkfilename+".txt",jsonbasedir,printtoscreen,printparam,findallmatches)
     # concatenate results
     mergeFiles(allresultsfile,allsubresultsfiles)
     print "Results files merged."
     sys.stdout.flush()
 
 
-
+def main_local_filesystem_allparameters(networkfilename="5D_2015_09_11",morsegraphselection="stableFCs",allparamsfile="5D_2015_09_11_stableFCs_listofmorsegraphs.txt",patternsetter=setPattern_Malaria_20hr_2015_09_11,ncpus=1,printtoscreen=0,printparam=0,findallmatches=0):
+    # set patterns
+    patternfile=patternsetter('/Users/bcummins/patternmatch_helper_files/patterns_'+networkfilename+'.txt')
+    # set file names and paths
+    networkfilebasedir="/Users/bcummins/GIT/DSGRN/networks/"
+    parambasedir="/Users/bcummins/patternmatch_helper_files/parameterfiles/"
+    paramfile=parambasedir+networkfilename
+    resultsbasedir='/Users/bcummins/patternmatch_helper_files/parameterresults/'
+    resultsfile=resultsbasedir+networkfilename
+    allresultsfile=resultsfile+'_'+morsegraphselection+'_allresults.txt'
+    jsonbasedir='/Users/bcummins/patternmatch_helper_files/JSONfiles/'
+    # count number of parameters
+    numparams=0
+    with open(allparamsfile,'r') as apf:
+        for _ in apf.readlines():
+            numparams+=1
+    # split parameter file into one for each cpu
+    ncpus=splitParams2(paramfile+'_params_',numparams,ncpus,allparamsfile)
+    # run parallel process
+    allsubresultsfiles=parallelrun(paramfile+'_params_',resultsfile+'_results_',ncpus,patternfile,networkfilebasedir+networkfilename+".txt",jsonbasedir,printtoscreen,printparam,findallmatches,startservers=startServers_local)
+    # concatenate results
+    mergeFiles(allresultsfile,allsubresultsfiles)
+    print "Results files merged."
+    sys.stdout.flush()
 
 
 if __name__=='__main__':
@@ -296,4 +330,7 @@ if __name__=='__main__':
     # main_conley3_filesystem(networkfilename,morsegraphselection,patternsetter,int(sys.argv[1]),getMorseGraphs)
     networkfilename="3D_Cycle"
     patternsetter=setPattern_3D_Cycle
-    main_conley3_filesystem_allparameters(networkfilename,morsegraphselection,patternsetter,int(sys.argv[1]),getMorseGraphs)
+    allparamsfile="/Users/bcummins/patternmatch_helper_files/3D_Cycle_concatenatedparams.txt"
+    main_local_filesystem_allparameters(networkfilename,morsegraphselection,allparamsfile,patternsetter,ncpus=4,printtoscreen=1)
+
+    # patternSearch2(patternfile='patterns.txt',networkfile="networks/5D_Model_B.txt",paramfile="5D_Model_B_FCParams.txt",resultsfile='results_5D_B.txt',jsonbasedir='/share/data/bcummins/JSONfiles/',printtoscreen=0,printparam=0,findallmatches=1,unique_identifier='0')
