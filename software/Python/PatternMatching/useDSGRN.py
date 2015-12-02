@@ -210,9 +210,10 @@ def concatenateParams(allparamsfile,morse_graphs_and_sets):
         for (mgraph,mset) in morse_graphs_and_sets:
             subprocess.call(["sqlite3 /share/data/CHomP/Projects/DSGRN/DB/data/{}.db 'select ParameterIndex from Signatures where MorseGraphIndex={}' > param_temp.txt".format(networkfilename,mgraph)],shell=True)
             with open('param_temp.txt','r') as p:
-                for param in p.readlines():
-                    numparams+=1
-                    apf.write('{}|{}|{}\n'.format(mgraph,mset,param))
+                for ms in mset:
+                    for param in p.readlines():
+                        numparams+=1
+                        apf.write('{}|{}|{}'.format(mgraph,ms,param))
     return numparams
 
 def splitParams2(paramfile,numparams,ncpus,allparamsfile):
