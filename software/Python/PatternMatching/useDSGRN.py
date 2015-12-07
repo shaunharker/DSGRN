@@ -335,7 +335,7 @@ if __name__=='__main__':
     allparamsfile="/Users/bcummins/patternmatch_helper_files/3D_Cycle_concatenatedparams.txt"
     # main_local_filesystem_allparameters(networkfilename,morsegraphselection,allparamsfile,patternsetter,ncpus=4,printtoscreen=1)
 
-    listofargs=main_conley3_filesystem_allparameters(patternsetter,selectStableFC,networkfilename,morsegraphselection,int(sys.argv[1]),printtoscreen=0,printparam=0,findallmatches=0)
+    listofargs=main_conley3_filesystem_allparameters(patternsetter,getMorseGraphs,networkfilename,morsegraphselection,int(sys.argv[1]),printtoscreen=0,printparam=0,findallmatches=0)
         # run parallel process
     job_server = pp.Server(ncpus=0,ppservers=("*",))
     time.sleep(30)
