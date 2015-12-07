@@ -244,7 +244,7 @@ def startServers_local():
     # print "Starting pp with", job_server.get_ncpus(), "workers"
     return job_server
 
-def parallelrun(paramfile,resultsfile,ncpus,patternfile,networkfile,jsonbasedir,printtoscreen=0,printparam=0,findallmatches=0,jobserver):
+def parallelrun(jobserver,paramfile,resultsfile,ncpus,patternfile,networkfile,jsonbasedir,printtoscreen=0,printparam=0,findallmatches=0):
     jobs=[]
     allsubresultsfiles=[]
     for n in range(ncpus):
@@ -339,6 +339,6 @@ if __name__=='__main__':
         # run parallel process
     job_server = pp.Server(ncpus=0,ppservers=("*",))
     time.sleep(30)
-    parallelrun(*listofargs,jobserver)
+    parallelrun(jobserver,*listofargs)
 
     # patternSearch2(patternfile='/Users/bcummins/patternmatch_helper_files/patterns_3D_Cycle.txt',networkfile="/Users/bcummins/GIT/DSGRN/networks/3D_Cycle.txt",paramfile="/Users/bcummins/patternmatch_helper_files/3D_Cycle_concatenatedparams.txt",resultsfile="/Users/bcummins/patternmatch_helper_files/3D_Cycle_stableFC_results.txt",jsonbasedir='/Users/bcummins/patternmatch_helper_files/JSONfiles/',printtoscreen=1,printparam=0,findallmatches=1,unique_identifier='0')
