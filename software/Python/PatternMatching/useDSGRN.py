@@ -241,7 +241,7 @@ def startServers_conley3():
 
 def startServers_local():
     job_server = pp.Server(ppservers=("*",))
-    print "Starting pp with", job_server.get_ncpus(), "workers"
+    # print "Starting pp with", job_server.get_ncpus(), "workers"
     return job_server
 
 def parallelrun(paramfile,resultsfile,ncpus,patternfile,networkfile,jsonbasedir,printtoscreen=0,printparam=0,findallmatches=0,startservers=startServers_conley3):
