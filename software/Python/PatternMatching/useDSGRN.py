@@ -234,8 +234,8 @@ def splitParams2(paramfile,numparams,ncpus,allparamsfile):
 
 def startServers_conley3():
     job_server = pp.Server(ncpus=0,ppservers=("*",))
-    print "Starting pp with", job_server.get_ncpus(), "workers"
-    sys.stdout.flush()
+    # print "Starting pp with", job_server.get_ncpus(), "workers"
+    # sys.stdout.flush()
     time.sleep(30)
     return job_server
 
