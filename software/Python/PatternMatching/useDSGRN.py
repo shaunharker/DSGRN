@@ -289,7 +289,10 @@ def main_conley3_filesystem_allparameters(networkfilename="5D_2015_09_11",morseg
     # split parameter file into one for each cpu
     ncpus=splitParams2(paramfile+'_params_',numparams,ncpus,allparamsfile)
     # run parallel process
-    allsubresultsfiles=parallelrun(paramfile+'_params_',resultsfile+'_results_',ncpus,patternfile,networkfilebasedir+networkfilename+".txt",jsonbasedir,printtoscreen,printparam,findallmatches)
+    parallelMaster(paramfile+'_params_',resultsfile+'_results_',ncpus,patternfile,networkfilebasedir+networkfilename+".txt",jsonbasedir,printtoscreen,printparam,findallmatches)
+
+def parallelMaster(paramfile,resultsfile,ncpus,patternfile,networkfile,jsonbasedir,printtoscreen,printparam,findallmatches):
+    allsubresultsfiles=parallelrun(paramfile,resultsfile,ncpus,patternfile,networkfile,jsonbasedir,printtoscreen,printparam,findallmatches)
     # concatenate results
     mergeFiles(allresultsfile,allsubresultsfiles)
     print "Results files merged."
