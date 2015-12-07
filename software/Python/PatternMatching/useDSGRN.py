@@ -244,7 +244,7 @@ def startServers_local():
     # print "Starting pp with", job_server.get_ncpus(), "workers"
     return job_server
 
-def parallelrun(job_server,paramfile,resultsfile,ncpus,patternfile,networkfile,jsonbasedir,printtoscreen=0,printparam=0,findallmatches=0):
+def parallelrun(job_server,paramfile,resultsfile,allresultsfile,ncpus,patternfile,networkfile,jsonbasedir,printtoscreen=0,printparam=0,findallmatches=0):
     jobs=[]
     allsubresultsfiles=[]
     for n in range(ncpus):
