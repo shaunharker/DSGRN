@@ -1,4 +1,4 @@
-from itertools import permutations, islice
+import itertools
 import subprocess
 import patternmatch
 import pp,sys,time,os,glob,traceback
@@ -78,8 +78,7 @@ def parallelrun(job_server,numparams,allparamsfile,resultsfile,allresultsfile,nc
     allsubresultsfiles=[]
     with open(allparamsfile,'r') as apf:
         for n in range(numjobs):
-            print apf, paramsperslice
-            head = islice(apf,paramsperslice)
+            head = itertools.islice(apf,paramsperslice)
             unique_identifier='{:04d}'.format(n)
             subresultsfile=resultsfile+unique_identifier+'.txt'
             allsubresultsfiles.append(subresultsfile)
@@ -133,9 +132,9 @@ def main_conley3_filesystem_allparameters(patternsetter,getMorseGraphs,networkfi
 
 def setPattern_Malaria_20hr_2015_09_11(patternfile):
     with open(patternfile,'w') as f:
-        for s1 in permutations(['x3 max','x5 max','x1 max', 'x4 max']):
+        for s1 in itertools.permutations(['x3 max','x5 max','x1 max', 'x4 max']):
             patternstr1=', '.join(s1) + ', x2 max, '
-            for s2 in permutations(['x1 min', 'x3 min','x5  min', 'x2 min','x4 min']):
+            for s2 in itertools.permutations(['x1 min', 'x3 min','x5  min', 'x2 min','x4 min']):
                 patternstr2=patternstr1 + ', '.join(s2) + ', ' + s1[0] + '\n'
                 f.write(patternstr2)
 
