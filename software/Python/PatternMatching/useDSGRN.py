@@ -80,28 +80,26 @@ def cleanFiles(directory):
         os.remove(f)
 
 def setPattern_Malaria_20hr_2015_09_11(patternfile='/share/data/bcummins/patterns_5D_2015_09_11.txt'):
-    f=open(patternfile,'w')
-    for s1 in permutations(['x3 max','x5 max','x1 max', 'x4 max']):
-        patternstr1=', '.join(s1) + ', x2 max, '
-        for s2 in permutations(['x1 min', 'x3 min','x5  min', 'x2 min','x4 min']):
-            patternstr2=patternstr1 + ', '.join(s2) + ', ' + s1[0] + '\n'
-            f.write(patternstr2)
-    f.close()
+    with open(patternfile,'w') as f:
+        for s1 in permutations(['x3 max','x5 max','x1 max', 'x4 max']):
+            patternstr1=', '.join(s1) + ', x2 max, '
+            for s2 in permutations(['x1 min', 'x3 min','x5  min', 'x2 min','x4 min']):
+                patternstr2=patternstr1 + ', '.join(s2) + ', ' + s1[0] + '\n'
+                f.write(patternstr2)
     return patternfile
 
 def setPattern_5D_Cycle(patternfile='/share/data/bcummins/patterns_5D_Cycle.txt'):
-    f=open(patternfile,'w')
-    f.write('X3 max, X4 max, X3 min, X4 min\n X3 max, X4 min, X3 min, X4 max')
-    f.close()
+    with open(patternfile,'w',0) as f:
+        f.write('X3 max, X4 max, X3 min, X4 min\n X3 max, X4 min, X3 min, X4 max')
     return patternfile
 
 def setPattern_3D_Example(patternfile='patterns.txt'):
-    with open(patternfile,'w') as f:
+    with open(patternfile,'w',0) as f:
         f.write('Z min, X min, Y min, Z max, X max, Y max\n X max, Y max, Z max, X min, Y min, Z min\n X min, Y max, Z min, X max, Y min, Z max\n X max, Y min, Z max, X min, Y max, Z min')
     return patternfile
 
 def setPattern_3D_Cycle(patternfile='patterns.txt'):
-    with open(patternfile,'w') as f:
+    with open(patternfile,'w',0) as f:
         f.write('X3 min, X1 min, X2 min, X3 max, X1 max, X2 max\n X1 max, X2 max, X3 max, X1 min, X2 min, X3 min\n X1 min, X2 max, X3 min, X1 max, X2 min, X3 max\n X1 max, X2 min, X3 max, X1 min, X2 max, X3 min')
     return patternfile
 
@@ -274,7 +272,8 @@ def main_conley3_filesystem_allparameters(networkfilename="5D_2015_09_11",morseg
     morsegraphfile="/share/data/bcummins/"+networkfilename+'_'+morsegraphselection+'_listofmorsegraphs.txt'
     getMorseGraphs(networkfilename,morsegraphfile)
     # set patterns
-    patternfile=patternsetter('/share/data/bcummins/patterns_'+networkfilename+'.txt')
+    patternfile='/share/data/bcummins/patterns_'+networkfilename+'.txt'
+    _ = patternsetter(patternfile)
     # set other file names and paths
     parambasedir="/share/data/bcummins/parameterfiles/"
     paramfile=parambasedir+networkfilename
