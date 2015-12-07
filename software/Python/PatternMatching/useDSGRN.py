@@ -296,30 +296,30 @@ def main_conley3_filesystem_allparameters(patternsetter,getMorseGraphs,networkfi
 #     # concatenate results
 
 
-def main_local_filesystem_allparameters(networkfilename="5D_2015_09_11",morsegraphselection="stableFCs",allparamsfile="5D_2015_09_11_stableFCs_listofmorsegraphs.txt",patternsetter=setPattern_Malaria_20hr_2015_09_11,ncpus=1,printtoscreen=0,printparam=0,findallmatches=0):
-    # set patterns
-    patternfile=patternsetter('/Users/bcummins/patternmatch_helper_files/patterns_'+networkfilename+'.txt')
-    # set file names and paths
-    networkfilebasedir="/Users/bcummins/GIT/DSGRN/networks/"
-    parambasedir="/Users/bcummins/patternmatch_helper_files/parameterfiles/"
-    paramfile=parambasedir+networkfilename
-    resultsbasedir='/Users/bcummins/patternmatch_helper_files/parameterresults/'
-    resultsfile=resultsbasedir+networkfilename
-    allresultsfile=resultsfile+'_'+morsegraphselection+'_allresults.txt'
-    jsonbasedir='/Users/bcummins/patternmatch_helper_files/JSONfiles/'
-    # count number of parameters
-    numparams=0
-    with open(allparamsfile,'r') as apf:
-        for _ in apf.readlines():
-            numparams+=1
-    # split parameter file into one for each cpu
-    ncpus=splitParams2(paramfile+'_params_',numparams,ncpus,allparamsfile)
-    # run parallel process
-    allsubresultsfiles=parallelrun(paramfile+'_params_',resultsfile+'_results_',ncpus,patternfile,networkfilebasedir+networkfilename+".txt",jsonbasedir,printtoscreen,printparam,findallmatches,startservers=startServers_local)
-    # concatenate results
-    mergeFiles(allresultsfile,allsubresultsfiles)
-    print "Results files merged."
-    sys.stdout.flush()
+# def main_local_filesystem_allparameters(networkfilename="5D_2015_09_11",morsegraphselection="stableFCs",allparamsfile="5D_2015_09_11_stableFCs_listofmorsegraphs.txt",patternsetter=setPattern_Malaria_20hr_2015_09_11,ncpus=1,printtoscreen=0,printparam=0,findallmatches=0):
+#     # set patterns
+#     patternfile=patternsetter('/Users/bcummins/patternmatch_helper_files/patterns_'+networkfilename+'.txt')
+#     # set file names and paths
+#     networkfilebasedir="/Users/bcummins/GIT/DSGRN/networks/"
+#     parambasedir="/Users/bcummins/patternmatch_helper_files/parameterfiles/"
+#     paramfile=parambasedir+networkfilename
+#     resultsbasedir='/Users/bcummins/patternmatch_helper_files/parameterresults/'
+#     resultsfile=resultsbasedir+networkfilename
+#     allresultsfile=resultsfile+'_'+morsegraphselection+'_allresults.txt'
+#     jsonbasedir='/Users/bcummins/patternmatch_helper_files/JSONfiles/'
+#     # count number of parameters
+#     numparams=0
+#     with open(allparamsfile,'r') as apf:
+#         for _ in apf.readlines():
+#             numparams+=1
+#     # split parameter file into one for each cpu
+#     ncpus=splitParams2(paramfile+'_params_',numparams,ncpus,allparamsfile)
+#     # run parallel process
+#     allsubresultsfiles=parallelrun(paramfile+'_params_',resultsfile+'_results_',ncpus,patternfile,networkfilebasedir+networkfilename+".txt",jsonbasedir,printtoscreen,printparam,findallmatches,startservers=startServers_local)
+#     # concatenate results
+#     mergeFiles(allresultsfile,allsubresultsfiles)
+#     print "Results files merged."
+#     sys.stdout.flush()
 
 
 if __name__=='__main__':
