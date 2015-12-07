@@ -78,6 +78,7 @@ def parallelrun(job_server,numparams,allparamsfile,resultsfile,allresultsfile,nc
     allsubresultsfiles=[]
     with open(allparamsfile,'r') as apf:
         for n in range(numjobs):
+            print apf, paramsperslice
             head = islice(apf,paramsperslice)
             unique_identifier='{:04d}'.format(n)
             subresultsfile=resultsfile+unique_identifier+'.txt'
