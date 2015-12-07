@@ -244,8 +244,7 @@ def startServers_local():
     # print "Starting pp with", job_server.get_ncpus(), "workers"
     return job_server
 
-def parallelrun(paramfile,resultsfile,ncpus,patternfile,networkfile,jsonbasedir,printtoscreen=0,printparam=0,findallmatches=0,startservers=startServers_conley3):
-    job_server = startservers()
+def parallelrun(paramfile,resultsfile,ncpus,patternfile,networkfile,jsonbasedir,printtoscreen=0,printparam=0,findallmatches=0,jobserver):
     jobs=[]
     allsubresultsfiles=[]
     for n in range(ncpus):
@@ -263,7 +262,9 @@ def parallelrun(paramfile,resultsfile,ncpus,patternfile,networkfile,jsonbasedir,
     job_server.destroy()
     print "All jobs ended."
     sys.stdout.flush()
-    return allsubresultsfiles
+    mergeFiles(allresultsfile,allsubresultsfiles)
+    print "Results files merged."
+    sys.stdout.flush()
 
 
 def main_conley3_filesystem_allparameters(patternsetter,getMorseGraphs,networkfilename="5D_2015_09_11",morsegraphselection="stableFCs",ncpus=1,printtoscreen=0,printparam=0,findallmatches=0):
@@ -293,9 +294,6 @@ def main_conley3_filesystem_allparameters(patternsetter,getMorseGraphs,networkfi
 def parallelMaster(paramfile,resultsfile,allresultsfile,ncpus,patternfile,networkfile,jsonbasedir,printtoscreen,printparam,findallmatches):
     allsubresultsfiles=parallelrun(paramfile,resultsfile,ncpus,patternfile,networkfile,jsonbasedir,printtoscreen,printparam,findallmatches)
     # concatenate results
-    mergeFiles(allresultsfile,allsubresultsfiles)
-    print "Results files merged."
-    sys.stdout.flush()
 
 
 def main_local_filesystem_allparameters(networkfilename="5D_2015_09_11",morsegraphselection="stableFCs",allparamsfile="5D_2015_09_11_stableFCs_listofmorsegraphs.txt",patternsetter=setPattern_Malaria_20hr_2015_09_11,ncpus=1,printtoscreen=0,printparam=0,findallmatches=0):
@@ -339,6 +337,8 @@ if __name__=='__main__':
 
     listofargs=main_conley3_filesystem_allparameters(patternsetter,selectStableFC,networkfilename,morsegraphselection,int(sys.argv[1]),printtoscreen=0,printparam=0,findallmatches=0)
         # run parallel process
-    parallelMaster(*listofargs)
+    job_server = pp.Server(ncpus=0,ppservers=("*",))
+    time.sleep(30)
+    parallelrun(*listofargs,jobserver)
 
     # patternSearch2(patternfile='/Users/bcummins/patternmatch_helper_files/patterns_3D_Cycle.txt',networkfile="/Users/bcummins/GIT/DSGRN/networks/3D_Cycle.txt",paramfile="/Users/bcummins/patternmatch_helper_files/3D_Cycle_concatenatedparams.txt",resultsfile="/Users/bcummins/patternmatch_helper_files/3D_Cycle_stableFC_results.txt",jsonbasedir='/Users/bcummins/patternmatch_helper_files/JSONfiles/',printtoscreen=1,printparam=0,findallmatches=1,unique_identifier='0')
