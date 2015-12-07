@@ -266,7 +266,7 @@ def parallelrun(paramfile,resultsfile,ncpus,patternfile,networkfile,jsonbasedir,
     return allsubresultsfiles
 
 
-def main_conley3_filesystem_allparameters(networkfilename="5D_2015_09_11",morsegraphselection="stableFCs",patternsetter=setPattern_Malaria_20hr_2015_09_11,ncpus=1,getMorseGraphs=selectStableFC,printtoscreen=0,printparam=0,findallmatches=0):
+def main_conley3_filesystem_allparameters(patternsetter,getMorseGraphs,networkfilename="5D_2015_09_11",morsegraphselection="stableFCs",ncpus=1,,printtoscreen=0,printparam=0,findallmatches=0):
     # find all morse graphs with desired characteristic
     networkfilebasedir="/share/data/bcummins/DSGRN/networks/"
     morsegraphfile="/share/data/bcummins/"+networkfilename+'_'+morsegraphselection+'_listofmorsegraphs.txt'
@@ -338,5 +338,5 @@ if __name__=='__main__':
     allparamsfile="/Users/bcummins/patternmatch_helper_files/3D_Cycle_concatenatedparams.txt"
     # main_local_filesystem_allparameters(networkfilename,morsegraphselection,allparamsfile,patternsetter,ncpus=4,printtoscreen=1)
 
-    main_conley3_filesystem_allparameters(networkfilename,morsegraphselection,patternsetter,int(sys.argv[1]),getMorseGraphs=selectStableFC,printtoscreen=0,printparam=0,findallmatches=0)
+    main_conley3_filesystem_allparameters(patternsetter,selectStableFC,networkfilename,morsegraphselection,int(sys.argv[1]),printtoscreen=0,printparam=0,findallmatches=0)
     # patternSearch2(patternfile='/Users/bcummins/patternmatch_helper_files/patterns_3D_Cycle.txt',networkfile="/Users/bcummins/GIT/DSGRN/networks/3D_Cycle.txt",paramfile="/Users/bcummins/patternmatch_helper_files/3D_Cycle_concatenatedparams.txt",resultsfile="/Users/bcummins/patternmatch_helper_files/3D_Cycle_stableFC_results.txt",jsonbasedir='/Users/bcummins/patternmatch_helper_files/JSONfiles/',printtoscreen=1,printparam=0,findallmatches=1,unique_identifier='0')
