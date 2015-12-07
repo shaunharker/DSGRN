@@ -19,7 +19,7 @@ from math import ceil
 # sqlite3 /share/data/CHomP/Projects/DSGRN/DB/data/DATABASEFILE.db 'select MorseGraphIndex,Vertex from MorseGraphAnnotations where Label="FC" except select MorseGraphIndex,Source from MorseGraphEdges'
 #
 
-def patternSearch(paramgenerator,patternfile='patterns.txt',networkfile="networks/5D_Model_B.txt",resultsfile='results_5D_B.txt',jsonbasedir='/share/data/bcummins/JSONfiles/',printtoscreen=0,printparam=0,findallmatches=1,unique_identifier='0'):
+def patternSearch(paramlist,patternfile='patterns.txt',networkfile="networks/5D_Model_B.txt",resultsfile='results_5D_B.txt',jsonbasedir='/share/data/bcummins/JSONfiles/',printtoscreen=0,printparam=0,findallmatches=1,unique_identifier='0'):
     # get domain cells for the network via shell call to dsgrn
     fname_domcells="{}dsgrn_domaincells_{}.json".format(jsonbasedir,unique_identifier)
     with open(fname_domcells, 'w',0) as f:
@@ -27,7 +27,7 @@ def patternSearch(paramgenerator,patternfile='patterns.txt',networkfile="network
     # call the pattern matcher for each parameter and record the results
     with open(resultsfile,'w',0) as R:
         paramcount=1
-        for info in paramgenerator:
+        for info in paramlist:
             morsegraph,morseset,param = info.split('|')
             if printparam and paramcount%1000==0:
                 print str(paramcount)+' parameters checked'
@@ -78,7 +78,7 @@ def parallelrun(job_server,numparams,allparamsfile,resultsfile,allresultsfile,nc
     allsubresultsfiles=[]
     with open(allparamsfile,'r') as apf:
         for n in range(numjobs):
-            head = itertools.islice(apf,paramsperslice)
+            head = [line for line in [f.readline() for _ in range(paramsperslice)] if len(line) ]
             unique_identifier='{:04d}'.format(n)
             subresultsfile=resultsfile+unique_identifier+'.txt'
             allsubresultsfiles.append(subresultsfile)
