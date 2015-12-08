@@ -134,7 +134,9 @@ def main_conley3_filesystem(patternsetter,getMorseGraphs,networkfilename="5D_201
     morse_graphs_and_sets=fileparsers.parseMorseGraphs(morsegraphfile)
     # get all parameters from all morse graphs
     numparams=concatenateParams(allparamsfile,morse_graphs_and_sets)
-    return [numparams,allparamsfile,resultsfile+'_results_',allresultsfile,ncpus,patternfile,networkfilebasedir+networkfilename+".txt",jsonbasedir,printtoscreen,findallmatches]
+    subparamfilestart=allparamsfile[:-4]
+    numjobs,paramsperslice = splitParamFile(allparamsfile,subparamfilestart,numparams,ncpus)
+    return [numjobs,paramsperslice,subparamfilestart,allparamsfile,resultsfile+'_results_',allresultsfile,ncpus,patternfile,networkfilebasedir+networkfilename+".txt",jsonbasedir,printtoscreen,findallmatches]
 
 def main_local_filesystem(patternsetter,allparamsfile,networkfilename="5D_2015_09_11",morsegraphselection="stableFCs",ncpus=1,printtoscreen=0,findallmatches=0):
     # set patterns
