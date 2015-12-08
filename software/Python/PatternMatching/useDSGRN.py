@@ -90,9 +90,9 @@ def parallelrun(job_server,numparams,allparamsfile,resultsfile,allresultsfile,nc
     job_server.destroy()
     print "All jobs ended."
     sys.stdout.flush()
-    mergeFiles(allresultsfile,allsubresultsfiles)
-    print "Results files merged."
-    sys.stdout.flush()
+    # mergeFiles(allresultsfile,allsubresultsfiles)
+    # print "Results files merged."
+    # sys.stdout.flush()
 
 def concatenateParams(allparamsfile,morse_graphs_and_sets):
     numparams=0
