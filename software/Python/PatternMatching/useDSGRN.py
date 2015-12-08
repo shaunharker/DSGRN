@@ -1,7 +1,7 @@
 import itertools
 import subprocess
 import patternmatch
-import pp,sys,time,os,glob,traceback
+import pp,sys,time,traceback
 import fileparsers
 from math import ceil
 
@@ -45,8 +45,8 @@ def patternSearch(networkfile,jsonbasedir,unique_identifier,paramfile,resultsfil
                 print 'Problem parameter is {}'.format(param)
                 print traceback.format_exception_only(type(e),e)
                 sys.stdout.flush()
-    #         removeFiles([fname_domgraph,fname_morseset])
-    # removeFiles([fname_domcells,paramfile])
+            removeFiles([fname_domgraph,fname_morseset])
+    removeFiles([fname_domcells,paramfile])
 
 def fileWrite(networkfile,savefile,command):
     with open(savefile,'w',0) as f:
@@ -202,7 +202,7 @@ if __name__=='__main__':
     # patternSearch(listofargs[8],listofargs[9],'0',listofargs[3],listofargs[4],listofargs[7],listofargs[-2],listofargs[-1])
 
     listofargs=main_conley3_filesystem(patternsetter,getMorseGraphs,networkfilename,morsegraphselection,int(sys.argv[1]),printtoscreen=0,findallmatches=0)
-    job_server = pp.Server(ncpus=0,ppservers=("*",))
-    time.sleep(30)
-    # job_server = pp.Server(ncpus=ncpus)
+    # job_server = pp.Server(ncpus=0,ppservers=("*",))
+    # time.sleep(30)
+    job_server = pp.Server(ncpus=ncpus)
     parallelrun(job_server,*listofargs)
