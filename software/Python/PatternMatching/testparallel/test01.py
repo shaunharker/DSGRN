@@ -13,7 +13,7 @@ def parallelrun(job_server,numjobs):
     job_server.destroy()
 
 if __name__ == '__main__':
-    job_server = pp.Server(ncpus=0,ppservers=("*",))
+    job_server = pp.Server(ppservers=("*",))
     # job_server = pp.Server(ncpus=4)
     parallelrun(job_server,20)
 
