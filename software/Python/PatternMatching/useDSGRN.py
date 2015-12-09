@@ -203,6 +203,6 @@ if __name__=='__main__':
 
     listofargs=main_conley3_filesystem(patternsetter,getMorseGraphs,networkfilename,morsegraphselection,int(sys.argv[1]),printtoscreen=0,findallmatches=0)
     # job_server = pp.Server(ncpus=0,ppservers=("*",))
-    # time.sleep(30)
     job_server = pp.Server(ncpus=ncpus)
+    # time.sleep(30)
     parallelrun(job_server,*listofargs)
