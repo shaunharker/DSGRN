@@ -15,7 +15,7 @@ def parallelrun(job_server,numjobs):
 if __name__ == '__main__':
     job_server = pp.Server(ppservers=("*",))
     # job_server = pp.Server(ncpus=4)
-    parallelrun(job_server,20)
+    parallelrun(job_server,100)
 
 
 
