@@ -185,16 +185,16 @@ def selectAnyFC(networkfile,morsegraphfile):
 
 
 if __name__=='__main__':
-    morsegraphselection="stableFCs"
-    getMorseGraphs=selectStableFC
+    # morsegraphselection="stableFCs"
+    # getMorseGraphs=selectStableFC
     # networkfilename="5D_Cycle"
     # patternsetter=setPattern_5D_Cycle
-    networkfilename="5D_2015_09_11"
-    patternsetter=setPattern_Malaria_20hr_2015_09_11
-    # morsegraphselection="anyFCs"
-    # getMorseGraphs=selectAnyFC
-    # networkfilename="3D_Cycle"
-    # patternsetter=setPattern_3D_Cycle
+    # networkfilename="5D_2015_09_11"
+    # patternsetter=setPattern_Malaria_20hr_2015_09_11
+    morsegraphselection="anyFCs"
+    getMorseGraphs=selectAnyFC
+    networkfilename="3D_Cycle"
+    patternsetter=setPattern_3D_Cycle
     # allparamsfile='/Users/bcummins/patternmatch_helper_files/parameterfiles/3D_Cycle_'+morsegraphselection+'_concatenatedparams.txt'
     ncpus=int(sys.argv[1])
 
@@ -202,7 +202,7 @@ if __name__=='__main__':
     # patternSearch(listofargs[8],listofargs[9],'0',listofargs[3],listofargs[4],listofargs[7],listofargs[-2],listofargs[-1])
 
     listofargs=main_conley3_filesystem(patternsetter,getMorseGraphs,networkfilename,morsegraphselection,int(sys.argv[1]),printtoscreen=0,findallmatches=0)
-    # job_server = pp.Server(ncpus=0,ppservers=("*",))
-    job_server = pp.Server(ncpus=ncpus)
+    job_server = pp.Server(ppservers=("*",))
+    # job_server = pp.Server(ncpus=ncpus)
     time.sleep(30)
     parallelrun(job_server,*listofargs)
