@@ -92,15 +92,13 @@ annotate ( Component const& vertices ) const {
   Annotation a;
   std::stringstream ss;
   if ( signature . size () == 0 ) {
-    ss << "FP";
-    bool all_on = true;
-    bool all_off = true;
+    ss << "FP { ";
+    bool first_term = true;
     for ( int d = 0; d < D; ++ d ) {
-      if ( min_pos[d] == 0 ) all_on = false;
-      else all_off = false;
+      if ( first_term ) first_term = false; else ss << ", ";
+      ss << min_pos[d];
     }
-    if ( all_on ) ss << " ON";
-    if ( all_off) ss << " OFF";
+    ss << " }";
   } else if ( signature . size () == D ) {
     ss << "FC";
   } else {
