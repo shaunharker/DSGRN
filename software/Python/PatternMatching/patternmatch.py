@@ -23,11 +23,11 @@
 import preprocess as pp
 import sys
 
-def callPatternMatch(fname_morseset='dsgrn_output.json',fname_domgraph='dsgrn_domaingraph.json',fname_domcells='dsgrn_domaincells.json',fname_patterns='patterns.txt',fname_results='results.txt',cyclic=1,findallmatches=1, printtoscreen=0,writetofile=1,returnmatches=0,numberofmatchesonly=1): # pragma: no cover
+def callPatternMatch(morseset_jsonstr,domgraph_jsonstr,domcells_jsonstr,fname_patterns='patterns.txt',fname_results='results.txt',cyclic=1,findallmatches=1, printtoscreen=0,writetofile=1,returnmatches=0,numberofmatchesonly=1): # pragma: no cover
     if printtoscreen:
         print "Preprocessing..."
         sys.stdout.flush()
-    patternlist,originalpatterns,wallinfo=pp.preprocess(fname_morseset,fname_domgraph,fname_domcells,fname_patterns,cyclic) 
+    patternlist,originalpatterns,wallinfo=pp.preprocess(morseset_jsonstr,domgraph_jsonstr,domcells_jsonstr,fname_patterns,cyclic) 
     if printtoscreen:
         print "Searching..."
         sys.stdout.flush()

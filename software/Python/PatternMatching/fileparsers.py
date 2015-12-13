@@ -68,4 +68,3 @@ def parseDomainGraph(fname="dsgrn_domaingraph.json"):
     return json.load(open(fname),strict=False)
 
 
-

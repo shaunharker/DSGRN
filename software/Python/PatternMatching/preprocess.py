@@ -23,12 +23,18 @@
 import walllabels as wl
 import fileparsers as fp
 import itertools
+import json
 
-def preprocess(fname1='dsgrn_output.json',fname2='dsgrn_domaingraph.json',fname3='dsgrn_domaincells.json',pname='patterns.txt',cyclic=1):
-    # read input files
-    varnames,threshnames,morsedomgraph,morsecells,vertexmap=fp.parseMorseSet(fname1)
-    domaingraph=fp.parseDomainGraph(fname2)
-    domaincells=fp.parseDomainCells(fname3)
+def preprocess(morseset_jsonstr,domgraph_jsonstr,domaincells_jsonstr,pname='patterns.txt',cyclic=1):
+    # read json strings and files
+    parsed=json.loads(morseset_jsonstr)
+    varnames = [ x[0] for x in parsed["network"] ]
+    threshnames = [ [parsed["network"][i][2][j] for j in parsed["parameter"][i][2]] for i in range(len(parsed["network"])) ]
+    morsedomgraph=parsed["graph"]
+    morsecells=parsed["cells"]
+    vertexmap=parsed["vertices"]
+    domaingraph=json.loads(domgraph_jsonstr)
+    domaincells=json.loads(domaincells_jsonstr)
     patternnames,patternmaxmin,originalpatterns=fp.parsePatterns(pname)
     # put max/min patterns in terms of the alphabet u,m,M,d
     patterns=translatePatterns(varnames,patternnames,patternmaxmin,cyclic=cyclic)
