@@ -217,10 +217,10 @@ if __name__=='__main__':
     allparamsfile='/Users/bcummins/patternmatch_helper_files/parameterfiles/3D_Cycle_'+morsegraphselection+'_concatenatedparams.txt'
     ncpus=int(sys.argv[1])
 
-    # listofargs=main_local_filesystem(patternsetter,allparamsfile,networkfilename,morsegraphselection,ncpus,printtoscreen=1,findallmatches=0)
+    listofargs=main_local_filesystem(patternsetter,allparamsfile,networkfilename,morsegraphselection,ncpus,printtoscreen=0,findallmatches=0)
     # patternSearch(listofargs[7],allparamsfile,'results.txt',listofargs[6],listofargs[8],listofargs[9])
 
-    listofargs=main_conley3_filesystem(patternsetter,getMorseGraphs,networkfilename,morsegraphselection,int(sys.argv[1]),printtoscreen=0,findallmatches=0)
+    # listofargs=main_conley3_filesystem(patternsetter,getMorseGraphs,networkfilename,morsegraphselection,int(sys.argv[1]),printtoscreen=0,findallmatches=0)
     # job_server = pp.Server(ppservers=("*",))
     job_server = pp.Server(ncpus=ncpus)
     # time.sleep(30)
