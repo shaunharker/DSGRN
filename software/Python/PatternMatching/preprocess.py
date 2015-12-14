@@ -26,7 +26,25 @@ import itertools
 import json
 
 def preprocess(morseset_jsonstr,domgraph_jsonstr,domaincells_jsonstr,pname='patterns.txt',cyclic=1):
-    # read json strings and files
+    # read json strings
+    varnames,threshnames,morsedomgraph,morsecells,vertexmap,domaingraph,domaincells=extractFromJSON(morseset_jsonstr,domgraph_jsonstr,domaincells_jsonstr)
+    # read pattern file
+    patternnames,patternmaxmin,originalpatterns=fp.parsePatterns(pname)
+    # put max/min patterns in terms of the alphabet u,m,M,d
+    patterns=translatePatterns(varnames,patternnames,patternmaxmin,cyclic=cyclic)
+    # translate domain graph into extended wall graph
+    extendedmorsegraph,extendedmorsecells=makeExtendedMorseSetDomainGraph(vertexmap,morsecells,domaingraph,domaincells)
+    outedges,wallthresh,walldomains,booleanoutedges=makeWallGraphFromDomainGraph(len(vertexmap),extendedmorsegraph, extendedmorsecells)
+    # record which variable is affected at each wall
+    varsaffectedatwall=varsAtWalls(threshnames,walldomains,wallthresh,varnames)
+    # make wall labels with extended wall graph
+    wallinfo = wl.makeWallInfo(outedges,walldomains,varsaffectedatwall)
+    # truncate back to Morse wall graph
+    wallinfo = truncateExtendedWallGraph(booleanoutedges,outedges,wallinfo)
+    return patterns, originalpatterns, wallinfo
+
+def extractFromJSON(morseset_jsonstr,domgraph_jsonstr,domaincells_jsonstr):
+    # read json strings
     parsed=json.loads(morseset_jsonstr)
     varnames = [ x[0] for x in parsed["network"] ]
     threshnames = [ [parsed["network"][i][2][j] for j in parsed["parameter"][i][2]] for i in range(len(parsed["network"])) ]
@@ -34,20 +52,8 @@ def preprocess(morseset_jsonstr,domgraph_jsonstr,domaincells_jsonstr,pname='patt
     morsecells=parsed["cells"]
     vertexmap=parsed["vertices"]
     domaingraph=json.loads(domgraph_jsonstr)
-    domaincells=json.loads(domaincells_jsonstr)
-    patternnames,patternmaxmin,originalpatterns=fp.parsePatterns(pname)
-    # put max/min patterns in terms of the alphabet u,m,M,d
-    patterns=translatePatterns(varnames,patternnames,patternmaxmin,cyclic=cyclic)
-    # translate domain graph into wall graph
-    extendedmorsegraph,extendedmorsecells=makeExtendedMorseSetDomainGraph(vertexmap,morsecells,domaingraph,domaincells)
-    outedges,wallthresh,walldomains,booleanoutedges=makeWallGraphFromDomainGraph(len(vertexmap),extendedmorsegraph, extendedmorsecells)
-    # record which variable is affected at each wall
-    varsaffectedatwall=varsAtWalls(threshnames,walldomains,wallthresh,varnames)
-    # make wall labels
-    wallinfo = wl.makeWallInfo(outedges,walldomains,varsaffectedatwall)
-    # truncate back to Morse wall graph
-    wallinfo = truncateExtendedWallGraph(booleanoutedges,outedges,wallinfo)
-    return patterns, originalpatterns, wallinfo
+    domaincells=json.loads(domaincells_jsonstr)['cells']
+    return varnames,threshnames,morsedomgraph,morsecells,vertexmap,domaingraph,domaincells
 
 def translatePatterns(varnames,patternnames,patternmaxmin,cyclic=0):
     numvars=len(varnames)
