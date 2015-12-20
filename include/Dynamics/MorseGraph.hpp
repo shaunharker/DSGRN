@@ -12,7 +12,7 @@
 #include "MorseGraph.h"
 
 INLINE_IF_HEADER_ONLY MorseGraph::
-MorseGraph ( void ) { 
+MorseGraph ( void ) {
   data_ . reset ( new MorseGraph_ );
 }
 
@@ -51,7 +51,7 @@ parse ( std::string const& str ) {
   uint64_t N = annotation_array . size ();
   for ( uint64_t v = 0; v < N; ++ v ) {
     data_ -> annotations_ [ v ] . parse ( json::stringify ( annotation_array[v] )); //TODO: inefficient
-  } 
+  }
 }
 
 
@@ -83,9 +83,62 @@ SHA256 ( void ) const {
   ss << *this;
   return sha256 ( ss . str () );
 }
-  
+
 INLINE_IF_HEADER_ONLY void MorseGraph::
 _canonicalize ( void ) {
+
+  struct NodeToSort {
+    int id;
+    int level; //maybe
+    int numberOfOuterEdge;
+    Annotation annotations;
+  };
+
+  std::vector<NodeToSort> vn;
+  for ( uint64_t v = 0; v < data_ -> poset_ . size (); ++ v ) {
+    NodeToSort n;
+    n.id = v;
+    n.level = 0; // to be determined
+    n.numberOfOuterEdge = data_ -> poset_ . adjacencies ( v ) . size();
+    n.annotations = data_ -> annotations_ . find ( v ) -> second;
+    vn . push_back ( n );
+  }
+
+  std::cout << "before\n";
+  for ( auto v : vn ) {
+    std::cout << "id:" << v.id << ", level:" << v.level << ", edge" << v.numberOfOuterEdge <<"\n";
+  }
+
+  // Create the sort function
+  auto compare = [](const NodeToSort & i, const NodeToSort & j) {
+
+    // Decide the order of comparison
+
+    if ( i.numberOfOuterEdge < j.numberOfOuterEdge ) {
+      return true;
+    }
+
+
+    // add the comparison with annotations
+    if ( i.annotations.size() < j.annotations.size() ) { return true; }
+    if ( i.annotations.size() == j.annotations.size() ) {
+      for ( uint64_t k = 0; k<i.annotations.size(); ++k ) {
+        if ( i.annotations[k] < j.annotations[k] ) { return true; }
+      }
+    }
+    // if in case we cannot separate them, use the original node number
+    // each node has a unique node number
+    return i.id < j.id ;
+  };
+
+  sort ( vn.begin(), vn.end(), compare );
+
+  std::cout << "after\n";
+  for ( auto v : vn ) {
+    std::cout << "id:" << v.id << ", level:" << v.level << ", edge" << v.numberOfOuterEdge <<"\n";
+  }
+
+
 }
 
 #endif
