@@ -225,7 +225,7 @@ if __name__=='__main__':
     # getMorseGraphs=selectAnyFC
     # networkfilename="3D_Cycle"
     # patternsetter=setPattern_3D_Cycle
-    paramsperslice=500
+    paramsperslice=250
 
     # # Run on local file system 
     # allparamsfile='/Users/bcummins/patternmatch_helper_files/parameterfiles/3D_Cycle_'+morsegraphselection+'_concatenatedparams.txt'
