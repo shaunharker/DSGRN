@@ -231,7 +231,7 @@ if __name__=='__main__':
     # listofargs=main_local_filesystem(patternsetter,allparamsfile,networkfilename,morsegraphselection,ncpus,printtoscreen=0,findallmatches=0)
     # patternSearch(listofargs[7],allparamsfile,'results.txt',listofargs[6],listofargs[8],listofargs[9])
 
-    listofargs=main_conley3_filesystem(patternsetter,getMorseGraphs,networkfilename,morsegraphselection,ncpus),printtoscreen=0,findallmatches=0)
+    listofargs=main_conley3_filesystem(patternsetter,getMorseGraphs,networkfilename,morsegraphselection,ncpus,printtoscreen=0,findallmatches=0)
     # job_server = pp.Server(ppservers=("*",))
     # job_server = pp.Server(ncpus=ncpus)
     # time.sleep(30)
