@@ -28,7 +28,7 @@ import pp,os
 import fileparsers
 from math import ceil
 
-# Call this module as python useDSGRN.py NUMCPUS
+# Call this module as python useDSGRN.py
 
 # Given a Morse graph number MGN for a database DATABASEFILE (.db), do the following database searches:
 # 
