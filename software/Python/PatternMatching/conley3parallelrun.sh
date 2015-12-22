@@ -5,6 +5,8 @@
 #  * Change the name of the script in STEP 2 to change the
 #    python program.
 
+# call as qsub -pe orte conley3parallelrun.sh NUMCPUS "useDSGRN.py NUMCPUS"
+
 #$ -V
 #$ -cwd
 #$ -j y
