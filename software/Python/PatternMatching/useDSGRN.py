@@ -90,7 +90,7 @@ def removeFiles(listoffiles):
         subprocess.call(['rm '+f],shell=True)           
 
 def mergeFiles(mergefile,splitfiles):
-    with open(mergefile,'a') as m:
+    with open(mergefile,'w') as m:
         for sfile in splitfiles:
             with open(sfile,'r') as f:
                 for l in f.readlines():
