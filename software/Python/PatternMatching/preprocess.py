@@ -21,15 +21,15 @@
 # THE SOFTWARE.
 
 import walllabels as wl
-import fileparsers as fp
+# import fileparsers as fp
 import itertools
 import json
 
-def preprocess(morseset_jsonstr,domgraph_jsonstr,domaincells_jsonstr,pname='patterns.txt',cyclic=1):
+def preprocess(morseset_jsonstr,domgraph_jsonstr,domaincells_jsonstr,patternstr,cyclic=1):
     # read json strings
     varnames,threshnames,morsedomgraph,morsecells,vertexmap,domaingraph,domaincells=extractFromJSON(morseset_jsonstr,domgraph_jsonstr,domaincells_jsonstr)
-    # read pattern file
-    patternnames,patternmaxmin,originalpatterns=fp.parsePatterns(pname)
+    # read pattern string
+    patternnames,patternmaxmin,originalpatterns=parsePatternString(patternstr)
     # put max/min patterns in terms of the alphabet u,m,M,d
     patterns=translatePatterns(varnames,patternnames,patternmaxmin,cyclic=cyclic)
     # translate domain graph into extended wall graph
@@ -54,6 +54,18 @@ def extractFromJSON(morseset_jsonstr,domgraph_jsonstr,domaincells_jsonstr):
     domaingraph=json.loads(domgraph_jsonstr)
     domaincells=json.loads(domaincells_jsonstr)['cells']
     return varnames,threshnames,morsedomgraph,morsecells,vertexmap,domaingraph,domaincells
+
+def parsePatternString(patternstr):
+    maxmin=[]
+    patternnames=[]
+    originalpatterns=[]
+    patternlist = patternstr.split('\n ')
+    for pat in patternlist:
+        originalpatterns.append(pat)
+        p=pat.replace(',',' ').split()
+        patternnames.append(p[::2])
+        maxmin.append(p[1::2])
+    return patternnames, maxmin, originalpatterns
 
 def translatePatterns(varnames,patternnames,patternmaxmin,cyclic=0):
     numvars=len(varnames)
@@ -200,8 +212,12 @@ def truncateExtendedWallGraph(booleanoutedges,outedges,wallinfo):
 
 
 if __name__=='__main__':
-    varnames,threshnames,morsedomgraph,morsecells,vertexmap=fp.parseMorseSet()
-    domaingraph=fp.parseDomainGraph()
-    domaincells=fp.parseDomainCells()
-    print makeExtendedMorseSetDomainGraph(vertexmap,morsecells,domaingraph,domaincells)
-
+    # varnames,threshnames,morsedomgraph,morsecells,vertexmap=fp.parseMorseSet()
+    # domaingraph=fp.parseDomainGraph()
+    # domaincells=fp.parseDomainCells()
+    # print makeExtendedMorseSetDomainGraph(vertexmap,morsecells,domaingraph,domaincells)
+    patternstr = 'Z min, X min, Y min, Z max, X max, Y max\n X max, Y max, Z max, X min, Y min, Z min\n X min, Y max, Z min, X max, Y min, Z max\n X max, Y min, Z max, X min, Y max, Z min'
+    patternnames,patternmaxmin,originalpatterns=parsePatternString(patternstr)
+    print originalpatterns
+    print patternnames
+    print patternmaxmin
