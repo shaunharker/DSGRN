@@ -232,9 +232,9 @@ if __name__=='__main__':
     # print listofargs[0]
     # sys.stdout.flush()
     # job_server = pp.Server(ppservers=("*",))
-    job_server = pp.Server(ncpus=ncpus)
+    # job_server = pp.Server(ncpus=ncpus)
     # time.sleep(30)
-    # job_server=initServer()
+    job_server=initServer()
     parallelrun(job_server,*listofargs)
 
 

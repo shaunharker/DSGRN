@@ -141,8 +141,11 @@ def varsAtWalls(threshnames,walldomains,wallthresh,varnames):
     return varsaffectedatwall
 
 def makeWallGraphFromDomainGraph(N,domgraph,cells):
-    morseinds=range(N) # number of domains in morse set
-    domedges=[(k,d) for k,e in enumerate(domgraph) for d in e]
+    # number of domains in morse set
+    morseinds=range(N)
+    # make domain edges except for self-loops
+    domedges=[(k,d) for k,e in enumerate(domgraph) for d in e if k != d]
+    # convert domain edges into walls
     booleanwallgraph=[]
     wallgraph=[]
     for k,edge1 in enumerate(domedges):
@@ -152,7 +155,8 @@ def makeWallGraphFromDomainGraph(N,domgraph,cells):
                 if edge1[0] in morseinds and edge1[1] in morseinds and edge2[1] in morseinds:
                     booleanwallgraph.append(True)
                 else:
-                    booleanwallgraph.append(False)                       
+                    booleanwallgraph.append(False)  
+    # record the wall graph                     
     outedges=[[] for _ in range(len(domedges))]
     booleanoutedges=[[] for _ in range(len(domedges))]
     for e,b in zip(wallgraph,booleanwallgraph):
@@ -160,6 +164,7 @@ def makeWallGraphFromDomainGraph(N,domgraph,cells):
         booleanoutedges[e[0]].append(b)
     outedges=[tuple(o) for o in outedges]
     booleanoutedges=[tuple(o) for o in booleanoutedges]
+    # construct wall domains and record each variable at threshold
     wallthresh=[]
     walldomains=[]
     for de in domedges:
@@ -167,11 +172,10 @@ def makeWallGraphFromDomainGraph(N,domgraph,cells):
         c1=cells[de[1]]
         n=len(c0)
         location=[True if c0[k]!=c1[k] else False for k in range(n)]
-        if sum(location) > 1: # check for errors
+        if sum(location) > 1: 
             raise ValueError("The domain graph has an edge between nonadjacent domains. Aborting.")
-        elif sum(location)==0: # handle self-loops
-            wallthresh.append(None)
-            walldomains.append(tuple([sum(c0[k]+c1[k])/4.0 for k in range(n)])) 
+        elif sum(location)==0: 
+            raise ValueError("Self-loop in domain graph. Aborting.")
         else:
             wallthresh.append(location.index(True))
             walldomains.append(tuple([sum(c0[k]+c1[k])/4.0 for k in range(n)])) 
