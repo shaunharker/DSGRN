@@ -4,8 +4,6 @@
 #  * Change the number after -pe orte to require more cores
 #  * Change the name of the script in STEP 2 to change the
 #    python program.
-#  * Call as qsub -pe orte NumberNodes ThisScript.sh "ExampleProgram.py NumberNodes"
-
 
 #$ -V
 #$ -cwd
@@ -13,13 +11,17 @@
 #$ -S /bin/bash
 
 
+ulimit -n 4096
+
 # STEP 1. Launch Parallel Python on the nodes
 echo Launching servers
+
+export PPSERVERSECRET=`cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1`
+
 exec 5< $PE_HOSTFILE
 while read nodename corecount queue undef <&5 ; do
-    echo "ssh -f $nodename ppserver.py -w $corecount -a"
-    ssh -f $nodename "export PYTHONPATH=$PWD:$PYTHONPATH; ppserver.py -w $corecount -a" &
-    # ssh -f $nodename "ppserver.py -w $corecount -a" & 
+    echo "ssh -f $nodename ppserver.py -w $corecount -a -s \"$PPSERVERSECRET\" -t 600"
+    ssh -f $nodename "export PYTHONPATH=$PWD:$PYTHONPATH; ppserver.py -w $corecount -a -s \"$PPSERVERSECRET\" -t 600" & 
 done
 exec 5<&-
 
@@ -29,7 +31,8 @@ sleep 30s
 echo Waking up and running script.
 
 # STEP 2. Run the script
-python $1 
+export PYTHONPATH=$PWD:$PYTHONPATH;
+python $1
 
 # STEP 3. Kill Parallel Python
 echo Ending servers

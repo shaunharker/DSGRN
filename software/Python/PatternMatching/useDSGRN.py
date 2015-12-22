@@ -24,7 +24,7 @@ import itertools
 import subprocess
 import patternmatch
 import sys,time,traceback
-import pp
+import pp,os
 import fileparsers
 from math import ceil
 
@@ -123,6 +123,17 @@ def parallelrun(job_server,numjobs,paramsperslice,subparamfilestart,resultsfile,
     print "Results files merged."
     sys.stdout.flush()
 
+def initServer():
+    secret = os.environ["PPSERVERSECRET"]
+    ppservers = ("*",)
+    job_server = pp.Server(ncpus=0,ppservers=ppservers,secret=secret)
+    time.sleep(30)
+    N = sum(job_server.get_active_nodes().values())
+    print job_server.get_active_nodes()
+    print "There are", N, " cores in total."
+    return job_server
+
+
 def concatenateParams(allparamsfile,morse_graphs_and_sets):
     numparams=0
     with open(allparamsfile,'w') as apf:
@@ -217,11 +228,12 @@ if __name__=='__main__':
     allparamsfile='/Users/bcummins/patternmatch_helper_files/parameterfiles/3D_Cycle_'+morsegraphselection+'_concatenatedparams.txt'
     ncpus=int(sys.argv[1])
 
-    listofargs=main_local_filesystem(patternsetter,allparamsfile,networkfilename,morsegraphselection,ncpus,printtoscreen=0,findallmatches=0)
+    # listofargs=main_local_filesystem(patternsetter,allparamsfile,networkfilename,morsegraphselection,ncpus,printtoscreen=0,findallmatches=0)
     # patternSearch(listofargs[7],allparamsfile,'results.txt',listofargs[6],listofargs[8],listofargs[9])
 
-    # listofargs=main_conley3_filesystem(patternsetter,getMorseGraphs,networkfilename,morsegraphselection,int(sys.argv[1]),printtoscreen=0,findallmatches=0)
+    listofargs=main_conley3_filesystem(patternsetter,getMorseGraphs,networkfilename,morsegraphselection,ncpus),printtoscreen=0,findallmatches=0)
     # job_server = pp.Server(ppservers=("*",))
-    job_server = pp.Server(ncpus=ncpus)
+    # job_server = pp.Server(ncpus=ncpus)
     # time.sleep(30)
+    job_server=initServer()
     parallelrun(job_server,*listofargs)
