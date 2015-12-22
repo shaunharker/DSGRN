@@ -74,8 +74,8 @@ def patternSearch(networkfile,paramfile,resultsfile,patternstr,printtoscreen,fin
 def getJSONstring(networkfile,command=['analyze', 'morseset', '0', '0']):
     return subprocess.check_output(['dsgrn','network', networkfile]+command,shell=False)
 
-def splitParamFile(paramfile,subparamfilestart,numparams,ncpus):
-    numjobs,paramsperslice=calculateNumberofJobs(numparams,ncpus)
+def splitParamFile(paramfile,subparamfilestart,numparams,paramsperslice):
+    numjobs=int(ceil(float(numparams)/paramsperslice))
     with open(paramfile,'r') as apf:
         for n in range(numjobs):
             subparamfile=subparamfilestart+'_{:04d}.txt'.format(n)
@@ -83,7 +83,7 @@ def splitParamFile(paramfile,subparamfilestart,numparams,ncpus):
                 for line in [apf.readline() for _ in range(paramsperslice)]:
                     if len(line):
                         subapf.write(line)
-    return numjobs,paramsperslice
+    return numjobs
 
 def removeFiles(listoffiles):
     for f in listoffiles:
@@ -97,13 +97,7 @@ def mergeFiles(mergefile,splitfiles):
                     m.write(l)
     removeFiles(splitfiles)
 
-def calculateNumberofJobs(numparams,ncpus,maxslice=500):
-    paramspercpu=int(ceil(float(numparams)/ncpus))
-    paramsperslice=min([paramspercpu,maxslice])
-    numjobs=int(ceil(float(numparams)/paramsperslice))
-    return numjobs, paramsperslice
-
-def parallelrun(job_server,numjobs,paramsperslice,subparamfilestart,resultsfile,allresultsfile,patternstr,networkfile,printtoscreen=0,findallmatches=0):
+def parallelrun(job_server,numjobs,subparamfilestart,resultsfile,allresultsfile,patternstr,networkfile,printtoscreen=0,findallmatches=0):
     jobs=[]
     allsubresultsfiles=[]
     for n in range(numjobs):
@@ -112,7 +106,7 @@ def parallelrun(job_server,numjobs,paramsperslice,subparamfilestart,resultsfile,
         subresultsfile=resultsfile+unique_identifier+'.txt'
         allsubresultsfiles.append(subresultsfile)        
         jobs.append(job_server.submit(patternSearch,(networkfile,subparamfile,subresultsfile,patternstr,printtoscreen,findallmatches), depfuncs=(),modules = ("subprocess","patternmatch", "preprocess","fileparsers","walllabels","itertools","numpy","json","traceback","sys"),globals=globals()))
-    print "All jobs starting."
+    print "{} jobs starting.".format(numjobs)
     sys.stdout.flush()
     for job in jobs:
         job()
@@ -148,11 +142,11 @@ def concatenateParams(allparamsfile,morse_graphs_and_sets):
             removeFiles(['param_temp.txt'])
     return numparams
 
-def main_conley3_filesystem(patternsetter,getMorseGraphs,networkfilename="5D_2015_09_11",morsegraphselection="stableFCs",ncpus=1,printtoscreen=0,findallmatches=0):
+def main_conley3_filesystem(patternsetter,getMorseGraphs,networkfilename="5D_2015_09_11",morsegraphselection="stableFCs",morsegraph=0,morseset=0,paramsperslice=500,printtoscreen=0,findallmatches=0):
     # find all morse graphs with desired characteristic
     networkfilebasedir="/share/data/bcummins/DSGRN/networks/"
     morsegraphfile="/share/data/bcummins/morsegraphs/"+networkfilename+'_'+morsegraphselection+'_listofmorsegraphs.txt'
-    getMorseGraphs(networkfilename,morsegraphfile)
+    getMorseGraphs(networkfilename,morsegraphfile,morsegraph,morseset)
     # set patterns
     patternstr=patternsetter()
     # set other file names and paths
@@ -165,10 +159,10 @@ def main_conley3_filesystem(patternsetter,getMorseGraphs,networkfilename="5D_201
     # get all parameters from all morse graphs
     numparams=concatenateParams(allparamsfile,morse_graphs_and_sets)
     subparamfilestart=allparamsfile[:-4]
-    numjobs,paramsperslice = splitParamFile(allparamsfile,subparamfilestart,numparams,ncpus)
-    return [numjobs,paramsperslice,subparamfilestart,resultsfile+'_results_',allresultsfile,patternstr,networkfilebasedir+networkfilename+".txt",printtoscreen,findallmatches]
+    numjobs = splitParamFile(allparamsfile,subparamfilestart,numparams,paramsperslice)
+    return [numjobs,subparamfilestart,resultsfile+'_results_',allresultsfile,patternstr,networkfilebasedir+networkfilename+".txt",printtoscreen,findallmatches]
 
-def main_local_filesystem(patternsetter,allparamsfile,networkfilename="5D_2015_09_11",morsegraphselection="stableFCs",ncpus=1,printtoscreen=0,findallmatches=0):
+def main_local_filesystem(patternsetter,allparamsfile,networkfilename="5D_2015_09_11",morsegraphselection="stableFCs",paramsperslice=500,printtoscreen=0,findallmatches=0):
     # set patterns
     patternstr=patternsetter()
     # set file names and paths
@@ -180,8 +174,8 @@ def main_local_filesystem(patternsetter,allparamsfile,networkfilename="5D_2015_0
     with open(allparamsfile,'r') as apf:
         numparams=len(list(apf.readlines()))
     subparamfilestart=allparamsfile[:-4]
-    numjobs,paramsperslice = splitParamFile(allparamsfile,subparamfilestart,numparams,ncpus)
-    return [numjobs,paramsperslice,subparamfilestart,resultsfile+'_results_',allresultsfile,patternstr,networkfilebasedir+networkfilename+".txt",printtoscreen,findallmatches]
+    numjobs = splitParamFile(allparamsfile,subparamfilestart,numparams,paramsperslice)
+    return [numjobs,subparamfilestart,resultsfile+'_results_',allresultsfile,patternstr,networkfilebasedir+networkfilename+".txt",printtoscreen,findallmatches]
 
 def setPattern_Malaria_20hr_2015_09_11():
     patternstr=[]
@@ -192,7 +186,6 @@ def setPattern_Malaria_20hr_2015_09_11():
             patternstr.append(patternstr2)
     return ' '.join(patternstr)
             
-
 def setPattern_5D_Cycle():
     return 'X3 max, X4 max, X3 min, X4 min\n X3 max, X4 min, X3 min, X4 max'
 
@@ -202,38 +195,48 @@ def setPattern_3D_Example():
 def setPattern_3D_Cycle():
     return 'X3 min, X1 min, X2 min, X3 max, X1 max, X2 max\n X1 max, X2 max, X3 max, X1 min, X2 min, X3 min\n X1 min, X2 max, X3 min, X1 max, X2 min, X3 max\n X1 max, X2 min, X3 max, X1 min, X2 max, X3 min \n X1 max, X3 max, X1 min, X3 min\n X1 max, X3 max, X2 max, X1 min, X3 min, X2 min'
 
-def selectStableFC(networkfile,morsegraphfile):
+def selectStableFC(networkfile,morsegraphfile,junk1,junk2):
     with open(morsegraphfile,'w',0) as m:
         subprocess.call(['''sqlite3 /share/data/CHomP/Projects/DSGRN/DB/data/{}.db 'select MorseGraphIndex,Vertex from MorseGraphAnnotations where Label="FC" except select MorseGraphIndex,Source from MorseGraphEdges' '''.format(networkfile)],shell=True,stdout=m)
 
-def selectAnyFC(networkfile,morsegraphfile):
+def selectAnyFC(networkfile,morsegraphfile,junk1,junk2):
     with open(morsegraphfile,'w',0) as m:
         subprocess.call(['''sqlite3 /share/data/CHomP/Projects/DSGRN/DB/data/{}.db 'select MorseGraphIndex,Vertex from MorseGraphAnnotations where Label="FC"' '''.format(networkfile)],shell=True,stdout=m)
 
+def selectOneMorseGraph(networkfile,morsegraphfile,morsegraph,morseset):
+    with open(morsegraphfile,'w',0) as m:
+        m.write(str(morsegraph)+'|'+str(morseset))
+
+
 
 if __name__=='__main__':
+    # # Select which network to analyze
     # morsegraphselection="stableFCs"
     # getMorseGraphs=selectStableFC
-    # networkfilename="5D_Cycle"
-    # patternsetter=setPattern_5D_Cycle
+    networkfilename="5D_Cycle"
+    patternsetter=setPattern_5D_Cycle
+    getMorseGraphs=selectOneMorseGraph
+    morsegraph=38564
+    morseset=0
+    morsegraphselection="MG38564FC"
     # networkfilename="5D_2015_09_11"
     # patternsetter=setPattern_Malaria_20hr_2015_09_11
-    morsegraphselection="anyFCs"
-    getMorseGraphs=selectAnyFC
-    networkfilename="3D_Cycle"
-    patternsetter=setPattern_3D_Cycle
-    allparamsfile='/Users/bcummins/patternmatch_helper_files/parameterfiles/3D_Cycle_'+morsegraphselection+'_concatenatedparams.txt'
-    ncpus=int(sys.argv[1])
+    # morsegraphselection="anyFCs"
+    # getMorseGraphs=selectAnyFC
+    # networkfilename="3D_Cycle"
+    # patternsetter=setPattern_3D_Cycle
+    paramsperslice=500
 
-    # listofargs=main_local_filesystem(patternsetter,allparamsfile,networkfilename,morsegraphselection,ncpus,printtoscreen=0,findallmatches=0)
-    # patternSearch(listofargs[6],allparamsfile,'results.txt',listofargs[5],listofargs[7],listofargs[8])
-
-    listofargs=main_conley3_filesystem(patternsetter,getMorseGraphs,networkfilename,morsegraphselection,ncpus,printtoscreen=0,findallmatches=0)
-    print listofargs[0]
-    # sys.stdout.flush()
+    # # Run on local file system 
+    # allparamsfile='/Users/bcummins/patternmatch_helper_files/parameterfiles/3D_Cycle_'+morsegraphselection+'_concatenatedparams.txt'
+    # listofargs=main_local_filesystem(patternsetter,allparamsfile,networkfilename,morsegraphselection,paramsperslice,printtoscreen=0,findallmatches=0)
     # job_server = pp.Server(ppservers=("*",))
-    # job_server = pp.Server(ncpus=ncpus)
-    # time.sleep(30)
+    # N = sum(job_server.get_active_nodes().values())
+    # print "There are", N, " cores in total."
+    # parallelrun(job_server,*listofargs)
+
+    # Run on conley3 
+    listofargs=main_conley3_filesystem(patternsetter,getMorseGraphs,networkfilename,morsegraphselection,morsegraph,morseset,paramsperslice,printtoscreen=0,findallmatches=0)
     job_server=initServer()
     parallelrun(job_server,*listofargs)
 
