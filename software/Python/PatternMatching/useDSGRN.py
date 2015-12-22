@@ -229,7 +229,7 @@ if __name__=='__main__':
     # patternSearch(listofargs[6],allparamsfile,'results.txt',listofargs[5],listofargs[7],listofargs[8])
 
     listofargs=main_conley3_filesystem(patternsetter,getMorseGraphs,networkfilename,morsegraphselection,ncpus,printtoscreen=0,findallmatches=0)
-    # print listofargs[0]
+    print listofargs[0]
     # sys.stdout.flush()
     # job_server = pp.Server(ppservers=("*",))
     # job_server = pp.Server(ncpus=ncpus)
