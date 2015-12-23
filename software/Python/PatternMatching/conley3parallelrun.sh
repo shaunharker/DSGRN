@@ -12,6 +12,7 @@
 #$ -j y
 #$ -S /bin/bash
 
+start=`date +%s`
 
 ulimit -n 4096
 
@@ -43,5 +44,9 @@ while read nodename corecount queue undef <&5 ; do
     ssh $nodename "killall ppserver.py -u $USER"
 done
 exec 5<&-
+
+# STEP 4. Print wall time and exit
+end=`date +%s`
+echo $((end-start))
 
 exit 0
