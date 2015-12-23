@@ -22,7 +22,7 @@
 
 import walllabels as wl
 # import fileparsers as fp
-import itertools
+import itertools, sys
 import json
 
 def preprocess(morseset_jsonstr,domgraph_jsonstr,domaincells_jsonstr,patternstr,cyclic=1):
@@ -159,7 +159,7 @@ def makeWallGraphFromDomainGraph(morsegraphlen,domgraph,cells):
             raise ValueError("Self-loop in domain graph. Aborting.")
         else:
             wallthresh.append(location.index(True))
-            walldomains.append(tuple([sum(c0[k]+c1[k])/4.0 for k in range(n)])) 
+            walldomains.append(tuple([sum(c0[k]+c1[k])/4.0 for k in range(n)])) # the addition operator is list concatenation: sum([0,1]+[1,2])/4.0 = 4/4 = 1
     # convert domain edges into wall edges
     booleanwallgraph=[]
     wallgraph=[]
@@ -194,10 +194,10 @@ def truncateExtendedWallGraph(booleanoutedges,outedges,wallinfo):
     # take the extra walls out of wallinfo
     flatoutedges=[(k,o) for k,oe in enumerate(outedges) for o in oe]
     flatbooledge=[b for be in booleanoutedges for b in be]
-    # wallvertexmap=[]
+    wallvertexmap=[]
     for k,(oe,boe) in enumerate(zip(outedges,booleanoutedges)):
-        # if any(boe):
-        #     wallvertexmap.append(k)
+        if any(boe):
+            wallvertexmap.append(k)
         for o,b in zip(oe,boe):
             if b:
                 labels=wallinfo[(k,o)]
@@ -208,10 +208,10 @@ def truncateExtendedWallGraph(booleanoutedges,outedges,wallinfo):
                 wallinfo[(k,o)] = newlabels
             else:
                 wallinfo.pop((k,o), None)    
-    # # translate to new wall indices
-    # newwallinfo={}
-    # for key,labels in wallinfo.iteritems():
-    #     newwallinfo[(wallvertexmap.index(key[0]), wallvertexmap.index(key[1]))] = [tuple([wallvertexmap.index(next),lab]) for next,lab in labels]
+    # translate to new wall indices
+    newwallinfo={}
+    for key,labels in wallinfo.iteritems():
+        newwallinfo[(wallvertexmap.index(key[0]), wallvertexmap.index(key[1]))] = [tuple([wallvertexmap.index(next),lab]) for next,lab in labels]
     return newwallinfo
 
 

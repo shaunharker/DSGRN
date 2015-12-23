@@ -63,10 +63,9 @@ def patternSearch(networkfile,paramfile,resultsfile,patternstr,printtoscreen,fin
                     else:
                         results_list.append("Parameter: {}, Morse Graph: {}, Morse Set: {}, Pattern: {}".format(param,morsegraph,morseset,pat)+'\n')
             except Exception as e:
-                raise
-                # print 'Problem parameter is {}'.format(param)
-                # print traceback.format_exception_only(type(e),e)
-                # sys.stdout.flush()
+                print 'Problem parameter is {}'.format(param)
+                print traceback.format_exception_only(type(e),e)
+                sys.stdout.flush()
     with open(resultsfile,'w',0) as R:
         for line in results_list:
             R.write(line)
@@ -212,8 +211,8 @@ def selectOneMorseGraph(networkfile,morsegraphfile,morsegraph,morseset):
 
 if __name__=='__main__':
     # # Select which network to analyze
-    morsegraphselection="stableFCs"
-    getMorseGraphs=selectStableFC
+    # morsegraphselection="stableFCs"
+    # getMorseGraphs=selectStableFC
     # networkfilename="5D_Cycle"
     # patternsetter=setPattern_5D_Cycle
     # getMorseGraphs=selectOneMorseGraph
@@ -222,29 +221,31 @@ if __name__=='__main__':
     # morsegraphselection="MG38564FC"
     networkfilename="5D_2015_09_11"
     patternsetter=setPattern_Malaria_20hr_2015_09_11
-    morsegraph=565
-    morseset=0
-    # morsegraphselection="anyFCs"
-    # getMorseGraphs=selectAnyFC
+    # morsegraph=565
+    # morseset=0
+    morsegraph=None
+    morseset=None
+    morsegraphselection="anyFCs"
+    getMorseGraphs=selectAnyFC
     # networkfilename="3D_Cycle"
     # patternsetter=setPattern_3D_Cycle
     paramsperslice=100
 
-    # Run on local file system 
-    allparamsfile='/Users/bcummins/patternmatch_helper_files/parameterfiles/5D_2015_09_11_MG565_param1196132.txt'
-    with open(allparamsfile,'w') as ap:
-        ap.write('565|0|1196132')
-    listofargs=main_local_filesystem(patternsetter,allparamsfile,networkfilename,morsegraphselection,paramsperslice,printtoscreen=0,findallmatches=0)
-    paramfile=listofargs[1]+'_0000.txt'
-    patternSearch(listofargs[5],paramfile,listofargs[2],listofargs[4],1,0)
-    # job_server = pp.Server(ppservers=("*",))
-    # N = sum(job_server.get_active_nodes().values())
-    # print "There are", N, " cores in total."
-    # parallelrun(job_server,*listofargs)
+    # # Run on local file system 
+    # allparamsfile='/Users/bcummins/patternmatch_helper_files/parameterfiles/5D_2015_09_11_MG565_param1196132.txt'
+    # with open(allparamsfile,'w') as ap:
+    #     ap.write('565|0|1196132')
+    # listofargs=main_local_filesystem(patternsetter,allparamsfile,networkfilename,morsegraphselection,paramsperslice,printtoscreen=0,findallmatches=0)
+    # paramfile=listofargs[1]+'_0000.txt'
+    # patternSearch(listofargs[5],paramfile,listofargs[2],listofargs[4],1,0)
+    # # job_server = pp.Server(ppservers=("*",))
+    # # N = sum(job_server.get_active_nodes().values())
+    # # print "There are", N, " cores in total."
+    # # parallelrun(job_server,*listofargs)
 
-    # # Run on conley3 
-    # listofargs=main_conley3_filesystem(patternsetter,getMorseGraphs,networkfilename,morsegraphselection,morsegraph,morseset,paramsperslice,printtoscreen=0,findallmatches=0)
-    # job_server=initServer()
-    # parallelrun(job_server,*listofargs)
+    # Run on conley3 
+    listofargs=main_conley3_filesystem(patternsetter,getMorseGraphs,networkfilename,morsegraphselection,morsegraph,morseset,paramsperslice,printtoscreen=0,findallmatches=0)
+    job_server=initServer()
+    parallelrun(job_server,*listofargs)
 
 
