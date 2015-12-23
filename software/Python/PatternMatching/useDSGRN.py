@@ -211,16 +211,18 @@ def selectOneMorseGraph(networkfile,morsegraphfile,morsegraph,morseset):
 
 if __name__=='__main__':
     # # Select which network to analyze
-    # morsegraphselection="stableFCs"
-    # getMorseGraphs=selectStableFC
-    networkfilename="5D_Cycle"
-    patternsetter=setPattern_5D_Cycle
-    getMorseGraphs=selectOneMorseGraph
-    morsegraph=38564
-    morseset=0
-    morsegraphselection="MG38564FC"
-    # networkfilename="5D_2015_09_11"
-    # patternsetter=setPattern_Malaria_20hr_2015_09_11
+    morsegraphselection="stableFCs"
+    getMorseGraphs=selectStableFC
+    # networkfilename="5D_Cycle"
+    # patternsetter=setPattern_5D_Cycle
+    # getMorseGraphs=selectOneMorseGraph
+    # morsegraph=38564
+    # morseset=0
+    # morsegraphselection="MG38564FC"
+    networkfilename="5D_2015_09_11"
+    patternsetter=setPattern_Malaria_20hr_2015_09_11
+    morsegraph=None
+    morseset=None
     # morsegraphselection="anyFCs"
     # getMorseGraphs=selectAnyFC
     # networkfilename="3D_Cycle"
