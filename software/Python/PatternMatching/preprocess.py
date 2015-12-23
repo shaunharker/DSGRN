@@ -140,12 +140,27 @@ def varsAtWalls(threshnames,walldomains,wallthresh,varnames):
         raise ValueError('Affected variables are undefined at some walls.')
     return varsaffectedatwall
 
-def makeWallGraphFromDomainGraph(N,domgraph,cells):
+def makeWallGraphFromDomainGraph(morsegraphlen,domgraph,cells):
     # number of domains in morse set
-    morseinds=range(N)
-    # make domain edges except for self-loops
+    morseinds=range(morsegraphlen)
+    # make domain edges (walls) except for self-loops
     domedges=[(k,d) for k,e in enumerate(domgraph) for d in e if k != d]
-    # convert domain edges into walls
+    # construct wall domains and record each variable at threshold
+    wallthresh=[]
+    walldomains=[]
+    for de in domedges:
+        c0=cells[de[0]]
+        c1=cells[de[1]]
+        n=len(c0)
+        location=[True if c0[k]!=c1[k] else False for k in range(n)]
+        if sum(location) > 1: 
+            raise ValueError("The domain graph has an edge between nonadjacent domains. Aborting.")
+        elif sum(location)==0: 
+            raise ValueError("Self-loop in domain graph. Aborting.")
+        else:
+            wallthresh.append(location.index(True))
+            walldomains.append(tuple([sum(c0[k]+c1[k])/4.0 for k in range(n)])) 
+    # convert domain edges into wall edges
     booleanwallgraph=[]
     wallgraph=[]
     for k,edge1 in enumerate(domedges):
@@ -164,21 +179,6 @@ def makeWallGraphFromDomainGraph(N,domgraph,cells):
         booleanoutedges[e[0]].append(b)
     outedges=[tuple(o) for o in outedges]
     booleanoutedges=[tuple(o) for o in booleanoutedges]
-    # construct wall domains and record each variable at threshold
-    wallthresh=[]
-    walldomains=[]
-    for de in domedges:
-        c0=cells[de[0]]
-        c1=cells[de[1]]
-        n=len(c0)
-        location=[True if c0[k]!=c1[k] else False for k in range(n)]
-        if sum(location) > 1: 
-            raise ValueError("The domain graph has an edge between nonadjacent domains. Aborting.")
-        elif sum(location)==0: 
-            raise ValueError("Self-loop in domain graph. Aborting.")
-        else:
-            wallthresh.append(location.index(True))
-            walldomains.append(tuple([sum(c0[k]+c1[k])/4.0 for k in range(n)])) 
     return outedges,wallthresh,walldomains,booleanoutedges
 
 def makeExtendedMorseSetDomainGraph(vertexmap,morsecells,domaingraph,domaincells):
@@ -194,10 +194,10 @@ def truncateExtendedWallGraph(booleanoutedges,outedges,wallinfo):
     # take the extra walls out of wallinfo
     flatoutedges=[(k,o) for k,oe in enumerate(outedges) for o in oe]
     flatbooledge=[b for be in booleanoutedges for b in be]
-    wallvertexmap=[]
+    # wallvertexmap=[]
     for k,(oe,boe) in enumerate(zip(outedges,booleanoutedges)):
-        if any(boe):
-            wallvertexmap.append(k)
+        # if any(boe):
+        #     wallvertexmap.append(k)
         for o,b in zip(oe,boe):
             if b:
                 labels=wallinfo[(k,o)]
@@ -208,10 +208,10 @@ def truncateExtendedWallGraph(booleanoutedges,outedges,wallinfo):
                 wallinfo[(k,o)] = newlabels
             else:
                 wallinfo.pop((k,o), None)    
-    # translate to new wall indices
-    newwallinfo={}
-    for key,labels in wallinfo.iteritems():
-        newwallinfo[(wallvertexmap.index(key[0]), wallvertexmap.index(key[1]))] = [tuple([wallvertexmap.index(next),lab]) for next,lab in labels]
+    # # translate to new wall indices
+    # newwallinfo={}
+    # for key,labels in wallinfo.iteritems():
+    #     newwallinfo[(wallvertexmap.index(key[0]), wallvertexmap.index(key[1]))] = [tuple([wallvertexmap.index(next),lab]) for next,lab in labels]
     return newwallinfo
 
 
