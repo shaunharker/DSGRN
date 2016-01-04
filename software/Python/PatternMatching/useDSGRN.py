@@ -38,9 +38,7 @@ from math import ceil
 # The following finds the Morse set number:
 # sqlite3 /share/data/CHomP/Projects/DSGRN/DB/data/DATABASEFILE.db 'select * from MorseGraphAnnotations where MorseGraphIndex=MGN'
 #
-# The following is a search for stable FCs:
-# sqlite3 /share/data/CHomP/Projects/DSGRN/DB/data/DATABASEFILE.db 'select MorseGraphIndex,Vertex from MorseGraphAnnotations where Label="FC" except select MorseGraphIndex,Source from MorseGraphEdges'
-#
+
 
 def patternSearch(networkfile,paramfile,resultsfile,patternstr,printtoscreen,findallmatches):
     # had to completely rewrite this function from scratch (copying it), in order to get 
@@ -199,6 +197,10 @@ def selectStableFC(networkfile,morsegraphfile,junk1,junk2):
     with open(morsegraphfile,'w',0) as m:
         subprocess.call(['''sqlite3 /share/data/CHomP/Projects/DSGRN/DB/data/{}.db 'select MorseGraphIndex,Vertex from MorseGraphAnnotations where Label="FC" except select MorseGraphIndex,Source from MorseGraphEdges' '''.format(networkfile)],shell=True,stdout=m)
 
+def selectUnstableFC(networkfile,morsegraphfile,junk1,junk2):
+    with open(morsegraphfile,'w',0) as m:
+        subprocess.call(['''sqlite3 /share/data/CHomP/Projects/DSGRN/DB/data/{}.db 'select MorseGraphIndex,Vertex from MorseGraphAnnotations where Label="FC" INTERSECT select MorseGraphIndex,Source from MorseGraphEdges' '''.format(networkfile)],shell=True,stdout=m)
+
 def selectAnyFC(networkfile,morsegraphfile,junk1,junk2):
     with open(morsegraphfile,'w',0) as m:
         subprocess.call(['''sqlite3 /share/data/CHomP/Projects/DSGRN/DB/data/{}.db 'select MorseGraphIndex,Vertex from MorseGraphAnnotations where Label="FC"' '''.format(networkfile)],shell=True,stdout=m)
@@ -225,8 +227,8 @@ if __name__=='__main__':
     # morseset=0
     morsegraph=None
     morseset=None
-    morsegraphselection="anyFCs"
-    getMorseGraphs=selectAnyFC
+    morsegraphselection="unstableFCs"
+    getMorseGraphs=selectUnstableFC
     # networkfilename="3D_Cycle"
     # patternsetter=setPattern_3D_Cycle
     paramsperslice=100
