@@ -39,19 +39,25 @@ def makeWallInfo(outedges,walldomains,varsaffectedatwall):
             try:
                 labels=pathDependentLabelConstruction(triple,insigns,outsigns,walldomains,varatwall)
             except ValueError:
-                # print 'triple:'
-                # print walldomains[triple[0]],walldomains[triple[1]],walldomains[triple[2]]
-                # print 'var affected at current wall:'
-                # print varsaffectedatwall[triple[1]]
-                # print 'current in:'
-                # for i in inedges[triple[1]]:
-                #     print walldomains[i]
-                # print 'current out:'
-                # for i in outedges[triple[1]]:
-                #     print walldomains[i]
-                # print 'next in:'
-                # for i in inedges[triple[2]]:
-                #     print walldomains[i]
+                print 'triple, domain, var affected:'
+                for i in triple:
+                    print i,walldomains[i],varsaffectedatwall[i]
+                print 'previous out:'
+                for i in outedges[triple[0]]:
+                    print i,walldomains[i],varsaffectedatwall[i]
+                print 'current in:'
+                for i in inedges[triple[1]]:
+                    print i,walldomains[i],varsaffectedatwall[i]
+                print 'current out:'
+                for i in outedges[triple[1]]:
+                    print i,walldomains[i],varsaffectedatwall[i]
+                print 'next in:'
+                for i in inedges[triple[2]]:
+                    print i,walldomains[i],varsaffectedatwall[i]
+                print 'walls in second domain:'
+                for edges,j in zip([inedges[j] for j in outedges[triple[1]]],outedges[triple[1]]):
+                    for i in edges:
+                        print i,walldomains[i],varsaffectedatwall[i],str(i)+'->'+str(j)
                 raise
             # Put the result in the dictionary.
             key=(previouswall,currentwall)

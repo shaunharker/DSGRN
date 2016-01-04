@@ -145,6 +145,22 @@ def makeWallGraphFromDomainGraph(morsegraphlen,domgraph,cells):
     morseinds=range(morsegraphlen)
     # make domain edges (walls) except for self-loops
     domedges=[(k,d) for k,e in enumerate(domgraph) for d in e if k != d]
+    # mywall=312
+    # print 'Wall {}:'.format(mywall)
+    # print domedges[mywall]
+    # print cells[domedges[mywall][0]], cells[domedges[mywall][1]]
+    print [[0,1],[0,1],[1,2],[3,4],[1,2]] in cells
+    # for k,c in enumerate(cells):
+    #     print c
+    #     if c == [[0,1],[0,1],[1,2],[3,4],[1,2]]:
+    #         print 'inedge ', k
+    #         inedge=k
+    #     if c == [[0,1],[0,1],[1,2],[2,3],[1,2]]:
+    #         print 'outedge ',k
+    #         outedge=k
+    # myedge=(inedge,outedge)
+    # print myedge,myedge in domedges
+    sys.exit()
     # construct wall domains and record each variable at threshold
     wallthresh=[]
     walldomains=[]
