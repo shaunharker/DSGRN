@@ -51,6 +51,7 @@ assign ( Network const& network, std::string const& path ) {
     data_ -> factors_ . push_back ( hex_codes );
     data_ -> logic_place_values_ . push_back ( hex_codes . size () );
     data_ -> fixedordersize_ *= hex_codes . size ();
+    //std::cout << d << ": " << hex_codes . size () << " factorial(" << m << ")=" << _factorial ( m ) << "\n";
   }
   data_ -> size_ = data_ -> fixedordersize_ * data_ -> reorderings_;
 }
@@ -133,7 +134,7 @@ reorderings ( void ) const {
 INLINE_IF_HEADER_ONLY uint64_t ParameterGraph::
 _factorial ( uint64_t m ) const {
   static const std::vector<uint64_t> table = 
-    { 1, 1, 2, 6, 24, 120, 600, 3600, 25200, 201600};
+    { 1, 1, 2, 6, 24, 120, 720, 5040, 40320, 362880};
   if ( m < 10 ) return table [ m ]; else return m * _factorial ( m - 1 );
 }
 

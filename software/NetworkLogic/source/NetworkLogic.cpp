@@ -104,10 +104,11 @@ int main ( int argc, char * argv [] ) {
   uint64_t N = 5;
   if ( argc == 3 ) {
     Component c;
-    c . n = 5;
+    c . n = std::stoll(argv[1]);
     c . m = std::stoll(argv[2]);
     c . logic = std::vector<int64_t> ( c.n, 1 );
     compute_code ( c );
+    return 0;
   }
   if ( argc == 2 ) N = std::stoll(argv[1]);
   compute_all_codes ( N );
