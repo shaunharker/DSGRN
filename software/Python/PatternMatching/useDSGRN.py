@@ -117,6 +117,8 @@ def parallelrun_paramlist(job_server,paramsperslice,allparamsfile,resultsfile,al
     allsubresultsfiles=[]
     with open(allparamsfile,'r') as apf:
         def get_lines():
+            # construct a list containing paramsperslice parameters
+            # the file object is a generator, so large files don't slow the process
             count=0
             paramlist=[]
             for line in apf:
@@ -299,8 +301,9 @@ if __name__=='__main__':
     # morsegraph=38564
     # morseset=0
     # morsegraphselection="MG38564FC"
-    # networkfilename="5D_2015_09_11"
-    # patternsetter=setPattern_Malaria_20hr_2015_09_11
+    networkfilename="5D_2015_09_11"
+    patternsetter=setPattern_Malaria_20hr_2015_09_11
+    # morsegraphselection="MG565"
     # morsegraph=565
     # morseset=0
     # morsegraphselection="stableFCs"
@@ -308,14 +311,14 @@ if __name__=='__main__':
     morseset=None
     morsegraphselection="anyFCs"
     getMorseGraphs=selectAnyFC
-    networkfilename="3D_Cycle"
-    patternsetter=setPattern_3D_Cycle
-    # paramsperslice=100
-    paramsperslice=5
+    # networkfilename="3D_Cycle"
+    # patternsetter=setPattern_3D_Cycle
+    paramsperslice=100
+    # paramsperslice=5
 
     # # Run on local file system 
-    # allparamsfile='/Users/bcummins/patternmatch_helper_files/parameterfiles/3D_Cycle_anyFCs_concatenatedparams.txt'
-    # # with open(allparamsfile,'w') as ap:
+    # allparamsfile='/Users/bcummins/patternmatch_helper_files/parameterfiles/5D_2015_09_11_MG565_concatenatedparams.txt'
+    # # with open(allparamsfile,'w'):
     # #     ap.write('565|0|1196132')
     # # listofargs=main_local_filesystem(patternsetter,allparamsfile,networkfilename,morsegraphselection,paramsperslice,printtoscreen=0,findallmatches=0)
     # listofargs=main_local_filesystem_paramlist(patternsetter,allparamsfile,networkfilename,morsegraphselection,printtoscreen=0,findallmatches=0)
