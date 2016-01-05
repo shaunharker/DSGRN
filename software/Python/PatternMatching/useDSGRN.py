@@ -329,6 +329,6 @@ if __name__=='__main__':
     # Run on conley3 
     listofargs=main_conley3_filesystem_paramlist(patternsetter,getMorseGraphs,networkfilename,morsegraphselection,morsegraph,morseset,printtoscreen=0,findallmatches=0)
     job_server=initServer()
-    parallelrun(job_server,paramsperslice,*listofargs)
+    parallelrun_paramlist(job_server,paramsperslice,*listofargs)
 
 
