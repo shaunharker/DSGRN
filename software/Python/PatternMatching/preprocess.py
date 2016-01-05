@@ -33,7 +33,7 @@ def preprocess(morseset_jsonstr,domgraph_jsonstr,domaincells_jsonstr,patternstr,
     # put max/min patterns in terms of the alphabet u,m,M,d
     patterns=translatePatterns(varnames,patternnames,patternmaxmin,cyclic=cyclic)
     # translate domain graph into extended wall graph
-    extendedmorsegraph,extendedmorsecells=makeExtendedMorseSetDomainGraph(vertexmap,morsecells,domaingraph,domaincells)
+    extendedmorsegraph,extendedmorsecells=reindexDomainGraph(vertexmap,morsecells,domaingraph,domaincells)
     outedges,wallthresh,walldomains,booleanoutedges=makeWallGraphFromDomainGraph(len(vertexmap),extendedmorsegraph, extendedmorsecells)
     # record which variable is affected at each wall
     varsaffectedatwall=varsAtWalls(threshnames,walldomains,wallthresh,varnames)
@@ -145,22 +145,6 @@ def makeWallGraphFromDomainGraph(morsegraphlen,domgraph,cells):
     morseinds=range(morsegraphlen)
     # make domain edges (walls) except for self-loops
     domedges=[(k,d) for k,e in enumerate(domgraph) for d in e if k != d]
-    # mywall=312
-    # print 'Wall {}:'.format(mywall)
-    # print domedges[mywall]
-    # print cells[domedges[mywall][0]], cells[domedges[mywall][1]]
-    print [[0,1],[0,1],[1,2],[3,4],[1,2]] in cells
-    # for k,c in enumerate(cells):
-    #     print c
-    #     if c == [[0,1],[0,1],[1,2],[3,4],[1,2]]:
-    #         print 'inedge ', k
-    #         inedge=k
-    #     if c == [[0,1],[0,1],[1,2],[2,3],[1,2]]:
-    #         print 'outedge ',k
-    #         outedge=k
-    # myedge=(inedge,outedge)
-    # print myedge,myedge in domedges
-    sys.exit()
     # construct wall domains and record each variable at threshold
     wallthresh=[]
     walldomains=[]
@@ -197,13 +181,13 @@ def makeWallGraphFromDomainGraph(morsegraphlen,domgraph,cells):
     booleanoutedges=[tuple(o) for o in booleanoutedges]
     return outedges,wallthresh,walldomains,booleanoutedges
 
-def makeExtendedMorseSetDomainGraph(vertexmap,morsecells,domaingraph,domaincells):
-    # add new domains with edges to or from domains in the Morse domain graph
-    newdomains=sorted(list(set([k for v in vertexmap for k,edges in enumerate(domaingraph) if v in edges and k not in vertexmap]+[e for v in vertexmap for e in domaingraph[v] if e not in vertexmap])))
-    newvertexmap=vertexmap+newdomains # lists must be explicitly added to preserve original indexing in vertexmap
+def reindexDomainGraph(vertexmap,morsecells,domaingraph,domaincells):    
+    # add all remaining domains with new indices
+    newdomains = [k for k in range(len(domaingraph)) if k not in vertexmap]
+    newvertexmap = vertexmap + newdomains
     # extend the morse domain graph and cells
     extendedmorsecells=morsecells+[domaincells[v] for v in newdomains]
-    extendedmorsegraph=[[newvertexmap.index(e) for e in domaingraph[v] if e in newvertexmap] for v in newvertexmap]
+    extendedmorsegraph=[[newvertexmap.index(e) for e in domaingraph[v]] for v in newvertexmap]
     return extendedmorsegraph, extendedmorsecells
 
 def truncateExtendedWallGraph(booleanoutedges,outedges,wallinfo):
