@@ -39,7 +39,8 @@ def preprocess(morseset_jsonstr,domgraph_jsonstr,domaincells_jsonstr,patternstr,
     varsaffectedatwall=varsAtWalls(threshnames,walldomains,wallthresh,varnames)
     # make wall labels with extended wall graph
     wallinfo = wl.makeWallInfo(outedges,walldomains,varsaffectedatwall)
-    # truncate back to Morse wall graph
+    # REQUIRED: truncate back to Morse wall graph so that the pattern search is only over the morse set
+    # However, reindexing may not be necessary
     wallinfo = truncateExtendedWallGraph(booleanoutedges,outedges,wallinfo)
     return patterns, originalpatterns, wallinfo
 
