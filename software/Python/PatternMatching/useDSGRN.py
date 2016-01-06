@@ -56,7 +56,7 @@ def patternSearch(networkfile,paramfile,resultsfile,patternstr,printtoscreen,fin
                     else:
                         results_list.append("Parameter: {}, Morse Graph: {}, Morse Set: {}, Pattern: {}".format(param,morsegraph,morseset,pat)+'\n')
             except Exception as e:
-                print 'Problem parameter is {}'.format(param)
+                print 'Problem: Morse graph {}, Morse set {}, Parameter {}'.format(morsegraph,morseset,param)
                 print traceback.format_exception_only(type(e),e)
                 sys.stdout.flush()
     with open(resultsfile,'w',0) as R:
@@ -303,12 +303,16 @@ if __name__=='__main__':
     # morsegraphselection="MG38564FC"
     networkfilename="5D_2015_09_11"
     patternsetter=setPattern_Malaria_20hr_2015_09_11
-    # morsegraphselection="MG565"
+    # morsegraphselection="MG4618_onebadparameter"
     # morsegraph=565
     # morseset=0
+    # morsegraph=1298
+    # morseset=2
+    # morsegraph=4618
+    # morseset=1
     # morsegraphselection="stableFCs"
-    morsegraph=None
-    morseset=None
+    # morsegraph=None
+    # morseset=None
     morsegraphselection="anyFCs"
     getMorseGraphs=selectAnyFC
     # networkfilename="3D_Cycle"
@@ -317,9 +321,11 @@ if __name__=='__main__':
     # paramsperslice=5
 
     # # Run on local file system 
-    # allparamsfile='/Users/bcummins/patternmatch_helper_files/parameterfiles/5D_2015_09_11_MG565_concatenatedparams.txt'
-    # # with open(allparamsfile,'w'):
-    # #     ap.write('565|0|1196132')
+    # allparamsfile='/Users/bcummins/patternmatch_helper_files/parameterfiles/5D_2015_09_11_MG1298_concatenatedparams.txt'
+    # with open(allparamsfile,'w') as ap:
+    #     # ap.write('565|0|1196132\n565|0|1203690\n565|0|2654015\n565|0|6046050')
+    #     # ap.write('1298|2|3736292')
+    #     ap.write('4618|1|6079889')
     # # listofargs=main_local_filesystem(patternsetter,allparamsfile,networkfilename,morsegraphselection,paramsperslice,printtoscreen=0,findallmatches=0)
     # listofargs=main_local_filesystem_paramlist(patternsetter,allparamsfile,networkfilename,morsegraphselection,printtoscreen=0,findallmatches=0)
     # # paramfile=listofargs[1]+'_0000.txt'
