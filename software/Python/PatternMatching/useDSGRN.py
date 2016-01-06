@@ -311,8 +311,8 @@ if __name__=='__main__':
     # morsegraph=4618
     # morseset=1
     # morsegraphselection="stableFCs"
-    # morsegraph=None
-    # morseset=None
+    morsegraph=None
+    morseset=None
     morsegraphselection="anyFCs"
     getMorseGraphs=selectAnyFC
     # networkfilename="3D_Cycle"
