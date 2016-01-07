@@ -235,6 +235,33 @@ public:
     return false;
   }
 
+bool essential ( void ) const {
+  //std::cout << "essential line " << __LINE__ << "\n";
+  int64_t N = (1 << n);
+  // Check that all 0's give 0
+  if ( bin_[0] > 0 ) return false;
+  // Check that all 1's gives m
+  if ( bin_[N-1] < m ) return false;
+  // Check for each dimension that there is a switch that matters
+  std::vector<bool> checks ( n, false );
+  int64_t mask = N - 1;
+  for ( int d = 0; d < n; ++ d ) {
+    int64_t bit = 1 << d;
+    int64_t maskbit = mask ^ bit;
+    for ( int64_t i = 0; i < N; ++ i ) {
+      if ( bin_[i & maskbit] < bin_[i | bit] ) {
+        //std::cout << "dim " << d << " is essential since \n";
+        //std::cout << "bin_[" << (i & maskbit) << "] = " << bin_[i & maskbit] << "\n";
+        //std::cout << "bin_[" << (i | bit) << "] = " << bin_[i | bit] << "\n";
+        checks[d] = true;
+        break;
+      }
+    }
+    if ( checks[d] == false ) return false;
+  }
+  return true;
+}
+
   // return adjacent monotonic maps
   std::vector<std::shared_ptr<MonotonicMap> > neighbors ( void ) const {
     // DEBUG

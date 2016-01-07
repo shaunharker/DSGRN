@@ -90,6 +90,12 @@ logic ( uint64_t index ) const {
 }
 
 INLINE_IF_HEADER_ONLY bool Network::
+essential ( uint64_t index ) const {
+  return data_ -> essential_ [ index ];
+}
+  
+
+INLINE_IF_HEADER_ONLY bool Network::
 interaction ( uint64_t source, uint64_t target ) const {
   return data_ ->  edge_type_ . find ( std::make_pair ( source, target ) ) -> second;
 }
@@ -184,7 +190,8 @@ INLINE_IF_HEADER_ONLY void Network::
 _parse ( std::vector<std::string> const& lines ) {
   using namespace DSGRN_parse_tools;
   std::vector<std::string> logic_strings;
-  //std::vector<std::string> constrauint64_t_strings;
+  std::map<std::string, bool> essential_nodes;
+  //std::vector<std::string> constraint_strings;
   // Learn the node names
   for ( auto const& line : lines ) {
     auto splitline = split ( line, ':' );
@@ -198,11 +205,23 @@ _parse ( std::vector<std::string> const& lines ) {
       throw std::runtime_error ( "Problem with network file specification: missing logic.\n");
     }
     logic_strings . push_back ( splitline[1] );
+    //std::cout << line << " has " << splitline.size() << " parts.\n";
+    if ( splitline . size () >= 3 ) {
+      // TODO: make it check for keyword "essential"
+      essential_nodes [ splitline[0] ] = true;
+      //std::cout << "Marking " << splitline[0] << " as essential \n";
+    } else {
+      essential_nodes [ splitline[0] ] = false;
+    }
   }
   // Index the node names
   uint64_t loop_index = 0;
-  for ( auto const& name : data_ ->  name_by_index_ ) 
-    data_ ->  index_by_name_ [ name ] = loop_index ++;
+  data_ -> essential_ . resize ( essential_nodes . size () );
+  for ( auto const& name : data_ ->  name_by_index_ ) { 
+    data_ ->  index_by_name_ [ name ] = loop_index; 
+    data_ -> essential_ [ loop_index ] = essential_nodes [ name ];
+    ++ loop_index;
+  }
   // Learn the logics
   // Trick: ignore everything but node names and +'s. 
   // Example: a + ~ b c d + e  corresponds to (a+b)(b)(c)(d+e)
