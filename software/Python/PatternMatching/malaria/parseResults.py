@@ -10,7 +10,7 @@ def countDistinctParamsInMorseGraph(fname,MGN):
         parameters=[]
         for line in f:
             words = line.split()
-            if int(words[3][:-1]) == MGN:
+            if int(words[4][:-1]) == MGN:
                 parameters.append(words[1][:-1])
     return len(set(parameters))
 
