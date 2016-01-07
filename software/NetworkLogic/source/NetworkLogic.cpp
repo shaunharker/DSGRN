@@ -71,7 +71,7 @@ FactorGraph parametergraph ( int n, int m, Partition const& logic ) {
 
 void compute_code ( int n, int m, Partition const& logic ) {
  try {
-    std::cout << n << " " << m << " " << logic << "\n";
+    //std::cout << n << " " << m << " " << logic << "\n";
 
     FactorGraph graph = parametergraph ( n, m, logic );
     uint64_t N = graph . size ();
