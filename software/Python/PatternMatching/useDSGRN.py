@@ -264,6 +264,15 @@ def setPattern_Malaria_20hr_2015_09_11():
             patternstr.append(patternstr2)
     return ' '.join(patternstr)
             
+def setPattern_Malaria_20hr_2016_01_05():
+    patternstr=[]
+    for s1 in itertools.permutations(['199 max','177 max','72 max', '204 max']):
+        patternstr1=', '.join(s1) + ', 77 max, '
+        for s2 in itertools.permutations(['72 min', '199 min','177  min', '77 min','204 min']):
+            patternstr2=patternstr1 + ', '.join(s2) + ', ' + s1[0] + '\n'
+            patternstr.append(patternstr2)
+    return ' '.join(patternstr)
+            
 def setPattern_5D_Cycle():
     return 'X3 max, X4 max, X3 min, X4 min\n X3 max, X4 min, X3 min, X4 max'
 
@@ -293,16 +302,18 @@ def selectOneMorseGraph(networkfile,morsegraphfile,morsegraph,morseset):
 
 if __name__=='__main__':
     # # Select which network to analyze
-    # morsegraphselection="stableFCs"
-    # getMorseGraphs=selectStableFC
+    morsegraphselection="stableFCs"
+    getMorseGraphs=selectStableFC
     # networkfilename="5D_Cycle"
     # patternsetter=setPattern_5D_Cycle
     # getMorseGraphs=selectOneMorseGraph
     # morsegraph=38564
     # morseset=0
     # morsegraphselection="MG38564FC"
-    networkfilename="5D_2015_09_11"
-    patternsetter=setPattern_Malaria_20hr_2015_09_11
+    # networkfilename="5D_2015_09_11"
+    # patternsetter=setPattern_Malaria_20hr_2015_09_11
+    networkfilename="5D_2016_01_05_A"
+    patternsetter=setPattern_Malaria_20hr_2016_01_05
     # morsegraphselection="MG4618_onebadparameter"
     # morsegraph=565
     # morseset=0
@@ -313,8 +324,8 @@ if __name__=='__main__':
     # morsegraphselection="stableFCs"
     morsegraph=None
     morseset=None
-    morsegraphselection="anyFCs"
-    getMorseGraphs=selectAnyFC
+    # morsegraphselection="anyFCs"
+    # getMorseGraphs=selectAnyFC
     # networkfilename="3D_Cycle"
     # patternsetter=setPattern_3D_Cycle
     paramsperslice=100
