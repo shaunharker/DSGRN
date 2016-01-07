@@ -1,0 +1,13 @@
+p53 : p38MAPK + ~mdm2 : essential
+mdm2 : ~CDK2 + AKT + CyclinG + ~ARF + p53 : essential
+ARF : p53 + betacatenin : essential
+p38MAPK : ~WIP1 : essential
+WIP1 : p53 : essential
+AKT : PIP3 : essential
+PIP3 : ~PTEN : essential
+PTEN : p53 : essential
+CDK2 : ~p21 : essential
+p21 : p53 : essential
+betacatenin : ~SIAH1 : essential
+SIAH1 : p53 : essential
+CyclinG : p53 : essential
