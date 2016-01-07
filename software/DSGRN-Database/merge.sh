@@ -31,6 +31,7 @@ echo 'create table xMorseGraphVertices (MorseGraphIndex INTEGER, Vertex INTEGER,
 echo 'create table xMorseGraphEdges (MorseGraphIndex INTEGER, Source INTEGER, Target INTEGER, unique(MorseGraphIndex,Source,Target));' >> commands.sql
 echo 'create table xMorseGraphAnnotations (MorseGraphIndex INTEGER, Vertex INTEGER, Label TEXT, unique(MorseGraphIndex,Vertex,Label));' >> commands.sql
 echo 'create table xSignatures (ParameterIndex INTEGER PRIMARY KEY, MorseGraphIndex INTEGER);' >> commands.sql
+echo 'create table xNetwork ( Name TEXT, Dimension INTEGER, Specification TEXT, Graphviz TEXT);' >> commands.sql
 echo "create index if not exists Signatures2 on xSignatures (MorseGraphIndex, ParameterIndex);" >> commands.sql
 echo "create index if not exists MorseGraphAnnotations3 on xMorseGraphAnnotations (Label, MorseGraphIndex);" >> commands.sql
 echo "create index if not exists MorseGraphViz2 on xMorseGraphViz (Graphviz, MorseGraphIndex);" >> commands.sql
@@ -72,6 +73,18 @@ for db in `ls $folder`; do
 #    echo 'insert or ignore into xSignatures select ParameterIndex, Map.target as MorseGraphIndex from mergeMe.Signatures join Map where MorseGraphIndex=Map.source;' >> commands.sql
     
     echo 'drop table Map;' >> commands.sql
+
+    echo 'insert or ignore into xNetwork select * from mergeMe.Network;'
     cat commands.sql | sqlite3 $target
     rm commands.sql
 done
+
+# Rename tables
+echo 'alter table xMorseGraphViz rename as MorseGraphViz;' > commands.sql
+echo 'alter table xMorseGraphVertices rename as MorseGraphVertices;' >> commands.sql
+echo 'alter table xMorseGraphEdges rename as MorseGraphEdges;' >> commands.sql
+echo 'alter table xMorseGraphAnnotations rename as MorseGraphAnnotations;' >> commands.sql
+echo 'alter table xSignatures rename as Signatures;' >> commands.sql
+echo 'alter table xNetwork rename as Network;' >> commands.sql
+cat commands.sql | sqlite3 $target
+rm commands.sql
