@@ -58,6 +58,11 @@ public:
   std::vector<std::vector<uint64_t>> const&
   logic ( uint64_t index ) const;
 
+  /// essential
+  ///   Return whether or not to use only essential logic parameters
+  bool
+  essential ( uint64_t index ) const;
+
   /// interaction
   ///   Return the interaction type of an edge:
   ///   False for repression, true for activation
@@ -117,6 +122,7 @@ struct Network_ {
   std::unordered_map<std::pair<uint64_t,uint64_t>, bool, boost::hash<std::pair<uint64_t,uint64_t>>> edge_type_;
   std::unordered_map<std::pair<uint64_t,uint64_t>, uint64_t, boost::hash<std::pair<uint64_t,uint64_t>>> order_;
   std::vector<std::vector<std::vector<uint64_t>>> logic_by_index_;
+  std::vector<bool> essential_;
   std::string specification_;
   /// serialize
   ///   For use with BOOST Serialization library,
@@ -131,6 +137,7 @@ struct Network_ {
     ar & edge_type_;
     ar & order_;
     ar & logic_by_index_;
+    ar & essential_;
     ar & specification_;
   }
 };

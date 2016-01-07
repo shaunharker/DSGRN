@@ -29,7 +29,7 @@ $build --prefix=$PREFIX --searchpath=$SEARCHPATH --build=$BUILDTYPE $MASS || exi
 
 # Install Logic files
 mkdir -p $PREFIX/share/DSGRN/logic         || exit 1
-./bin/NetworkLogic 4                       || exit 1
+./bin/NetworkLogic 6                       || exit 1
 mv -f *.dat $PREFIX/share/DSGRN/logic/     || exit 1
 
 # Build "DSGRN"

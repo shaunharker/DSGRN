@@ -38,6 +38,7 @@ assign ( Network const& network, std::string const& path ) {
     std::stringstream ss;
     ss << path << "/" << n <<  "_" << m;
     for ( auto const& p : logic_struct ) ss <<  "_" << p.size();
+    if ( data_ -> network_ . essential ( d ) ) ss << "_E";
     ss << ".dat";
     //std::cout << "Acquiring logic data in " << ss.str() << "\n";
     std::vector<std::string> hex_codes;
