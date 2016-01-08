@@ -312,7 +312,7 @@ if __name__=='__main__':
     # morsegraphselection="MG38564FC"
     # networkfilename="5D_2015_09_11"
     # patternsetter=setPattern_Malaria_20hr_2015_09_11
-    networkfilename="5D_2016_01_05_B"
+    networkfilename="5D_2016_01_05_C"
     patternsetter=setPattern_Malaria_20hr_2016_01_05
     # morsegraphselection="MG4618_onebadparameter"
     # morsegraph=565
