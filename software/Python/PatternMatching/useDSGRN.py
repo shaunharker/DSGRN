@@ -302,8 +302,8 @@ def selectOneMorseGraph(networkfile,morsegraphfile,morsegraph,morseset):
 
 if __name__=='__main__':
     # # Select which network to analyze
-    morsegraphselection="stableFCs"
-    getMorseGraphs=selectStableFC
+    # morsegraphselection="stableFCs"
+    # getMorseGraphs=selectStableFC
     # networkfilename="5D_Cycle"
     # patternsetter=setPattern_5D_Cycle
     # getMorseGraphs=selectOneMorseGraph
@@ -322,8 +322,12 @@ if __name__=='__main__':
     # morsegraph=4618
     # morseset=1
     # morsegraphselection="stableFCs"
-    morsegraph=None
-    morseset=None
+    # morsegraph=None
+    # morseset=None
+    morsegraph=2658
+    morseset=0
+    morsegraphselection="MG2658"
+    getMorseGraphs=selectOneMorseGraph
     # morsegraphselection="anyFCs"
     # getMorseGraphs=selectAnyFC
     # networkfilename="3D_Cycle"
