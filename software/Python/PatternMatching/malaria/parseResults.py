@@ -2,7 +2,11 @@ def countDistinctParams(fname):
     with open(fname) as f:
         parameters=[]
         for line in f:
-            parameters.append(line.split()[1][:-1])
+            try:
+                parameters.append(line.split()[1][:-1])
+            except:
+                print line
+                raise
     return len(set(parameters))
 
 def countDistinctParamsInMorseGraph(fname,MGN):
