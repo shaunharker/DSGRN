@@ -102,15 +102,26 @@ def splitParamFile(paramfile,subparamfilestart,numparams,paramsperslice):
 
 def removeFiles(listoffiles):
     for f in listoffiles:
-        subprocess.call(['rm '+f],shell=True)           
+        try:
+            subprocess.call(['rm '+f],shell=True)  
+        except:
+            pass         
 
 def mergeFiles(mergefile,splitfiles):
+    count=0
     with open(mergefile,'w') as m:
         for sfile in splitfiles:
-            with open(sfile,'r') as f:
-                for l in f.readlines():
-                    m.write(l)
+            count+=1
+            try:
+                with open(sfile,'r') as f:
+                    for l in f.readlines():
+                        m.write(l)
+            except:
+                pass
     removeFiles(splitfiles)
+    print '{} results files merged.'.format{count}
+    sys.stdout.flush()
+
 
 def parallelrun_paramlist(job_server,paramsperslice,allparamsfile,resultsfile,allresultsfile,patternstr,networkfile,printtoscreen=0,findallmatches=0):
     jobs=[]
