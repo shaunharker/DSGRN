@@ -2,20 +2,18 @@ def countDistinctParams(fname):
     with open(fname) as f:
         parameters=[]
         for line in f:
-            try:
+            if line != '\n':
                 parameters.append(line.split()[1][:-1])
-            except:
-                print line
-                raise
     return len(set(parameters))
 
 def countDistinctParamsInMorseGraph(fname,MGN):
     with open(fname) as f:
         parameters=[]
         for line in f:
-            words = line.split()
-            if int(words[4][:-1]) == MGN:
-                parameters.append(words[1][:-1])
+            if line != '\n':
+                words = line.split()
+                if int(words[4][:-1]) == MGN:
+                    parameters.append(words[1][:-1])
     return len(set(parameters))
 
 if __name__=='__main__':
