@@ -21,16 +21,9 @@ reduction ( void ) {
   uint64_t N = size ();
   //
   reachability_ = data_ -> adjacencies_;
-
-  // constructReachabilityMatrix();
-  //
+  // Pre-compute some quantities
   sumRowReachability();
   sumColumnReachability();
-  //
-  // for ( uint64_t i=0; i<N; ++i ) {
-  //   std::cout << "#ancestors for " << i << " is " << numberOfAncestors(i) << "\n";
-  //   std::cout << "#descendants for " << i << " is " << numberOfDescendants(i) << "\n";
-  // }
   //
   for ( uint64_t u = 0; u < N; ++ u ) {
     std::unordered_set<uint64_t> double_hop;
@@ -51,17 +44,12 @@ reduction ( void ) {
     data_ -> adjacencies_[u].erase ( it, data_ ->adjacencies_[u].end() );
   }
 
-  // constructTransitiveReductionMatrix();
+  // make a copy (not necessary)
   transitiveReduction_ = data_ -> adjacencies_;
-  //
+  // Pre-compute some quantities
   sumRowTransitiveReduction();
   sumColumnTransitiveReduction();
   //
-  // for ( uint64_t i=0; i<N; ++i ) {
-  //   std::cout << "#parents for " << i << " is " << numberOfParents(i) << "\n";
-  //   std::cout << "#children for " << i << " is " << numberOfChildren(i) << "\n";
-  // }
-
 }
 
 INLINE_IF_HEADER_ONLY uint64_t Poset::
