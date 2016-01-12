@@ -28,21 +28,30 @@ public:
   uint64_t numberOfChildren ( const uint64_t & i ) const;
 
 private:
-  std::vector<std::vector<uint64_t>> reachabilityMatrix_;
-  std::vector<std::vector<uint64_t>> transitiveReductionMatrix_;
-  void constructReachabilityMatrix ( void );
-  void constructTransitiveReductionMatrix ( void );
+  std::vector<std::vector<uint64_t>> reachability_;
+  std::vector<std::vector<uint64_t>> transitiveReduction_;
 
-  // pre-compute some quantities
   void sumRowReachability  ( void );
   std::vector<uint64_t> sumRowReachability_;
   void sumColumnReachability  ( void );
   std::vector<uint64_t> sumColumnReachability_;
-
   void sumRowTransitiveReduction  ( void );
   std::vector<uint64_t> sumRowTransitiveReduction_;
   void sumColumnTransitiveReduction  ( void );
   std::vector<uint64_t> sumColumnTransitiveReduction_;
+
+
+  // std::vector<std::vector<uint64_t>> reachabilityMatrix_;
+  // std::vector<std::vector<uint64_t>> transitiveReductionMatrix_;
+  // void constructReachabilityMatrix ( void );
+  // void constructTransitiveReductionMatrix ( void );
+
+  // pre-compute some quantities
+  // void sumRowReachability  ( void );
+  // std::vector<uint64_t> sumRowReachability_;
+  // void sumColumnReachability  ( void );
+  // std::vector<uint64_t> sumColumnReachability_;
+
 
 
   /// serialize
