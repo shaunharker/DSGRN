@@ -88,9 +88,11 @@ INLINE_IF_HEADER_ONLY void MorseGraph::
 _canonicalize ( void ) {
 
   struct NodeToSort {
-    int id;
-    int level; //maybe
-    int numberOfOuterEdge;
+    uint64_t id;
+    uint64_t numberOfParents;
+    uint64_t numberOfChildren;
+    uint64_t numberOfAncestors;
+    uint64_t numberOfDescendants;
     Annotation annotations;
   };
 
@@ -98,34 +100,84 @@ _canonicalize ( void ) {
   for ( uint64_t v = 0; v < data_ -> poset_ . size (); ++ v ) {
     NodeToSort n;
     n.id = v;
-    n.level = 0; // to be determined
-    n.numberOfOuterEdge = data_ -> poset_ . adjacencies ( v ) . size();
+    n.numberOfParents = data_ -> poset_ . numberOfParents(v);
+    n.numberOfChildren = data_ -> poset_ . numberOfChildren(v);
+    //
+    // POTENTIAL BUG :
+    // In testing, TestPoset, methods numberOfAncestors(), numberOfDescendants()
+    // work but here seems to be off by 1
+    //
+    n.numberOfAncestors = data_ -> poset_ . numberOfAncestors(v) - 1;
+    n.numberOfDescendants = data_ -> poset_ . numberOfDescendants(v) - 1;
+    //
     n.annotations = data_ -> annotations_ . find ( v ) -> second;
     vn . push_back ( n );
   }
 
   std::cout << "before\n";
   for ( auto v : vn ) {
-    std::cout << "id:" << v.id << ", level:" << v.level << ", edge" << v.numberOfOuterEdge <<"\n";
+    std::cout << "id: " << v.id << " " ;
+    std::cout << "Parents: " << v.numberOfParents << " ";
+    std::cout << "Children: " << v.numberOfChildren << " ";
+    std::cout << "Ancestors: " << v.numberOfAncestors << " ";
+    std::cout << "Descendants: " << v.numberOfDescendants << " ";
+    std::cout << "\n";
   }
+
+
 
   // Create the sort function
   auto compare = [](const NodeToSort & i, const NodeToSort & j) {
 
     // Decide the order of comparison
+    // Need to guaranty topological sorting (CURRENTLY MISSING)
 
-    if ( i.numberOfOuterEdge < j.numberOfOuterEdge ) {
+    // Choice :
+    //
+    // 1) try to sort according to parents
+    //    - enforce root node to come first
+    if ( i.numberOfParents < j.numberOfParents ) {
       return true;
     }
-
-
-    // add the comparison with annotations
-    if ( i.annotations.size() < j.annotations.size() ) { return true; }
+    if ( i.numberOfParents > j.numberOfParents ) {
+      return false;
+    }
+    // 2) try to sort according to ancestors
+    if ( i.numberOfAncestors < j.numberOfAncestors ) {
+      return true;
+    }
+    if ( i.numberOfAncestors > j.numberOfAncestors ) {
+      return false;
+    }
+    // 3) Try to sort according to descendants (promote deeper branches)
+    // Warning if conditions switched
+    if ( i.numberOfAncestors < j.numberOfAncestors ) {
+      return false;
+    }
+    if ( i.numberOfAncestors > j.numberOfAncestors ) {
+      return true;
+    }
+    // 4) Try to sort according to children (do not promote leaves)
+    if ( i.numberOfChildren < j.numberOfChildren ) {
+      return false;
+    }
+    if ( i.numberOfChildren > j.numberOfChildren ) {
+      return true;
+    }
+    // 5) Sort according to annotations
+    if ( i.annotations.size() < j.annotations.size() ) {
+      return true;
+    }
+    if ( i.annotations.size() > j.annotations.size() ) { 
+      return false;
+    }
     if ( i.annotations.size() == j.annotations.size() ) {
       for ( uint64_t k = 0; k<i.annotations.size(); ++k ) {
         if ( i.annotations[k] < j.annotations[k] ) { return true; }
       }
     }
+
+
     // if in case we cannot separate them, use the original node number
     // each node has a unique node number
     return i.id < j.id ;
@@ -135,7 +187,12 @@ _canonicalize ( void ) {
 
   std::cout << "after\n";
   for ( auto v : vn ) {
-    std::cout << "id:" << v.id << ", level:" << v.level << ", edge" << v.numberOfOuterEdge <<"\n";
+    std::cout << "id: " << v.id << " " ;
+    std::cout << "Parents: " << v.numberOfParents << " ";
+    std::cout << "Children: " << v.numberOfChildren << " ";
+    std::cout << "Ancestors: " << v.numberOfAncestors << " ";
+    std::cout << "Descendants: " << v.numberOfDescendants << " ";
+    std::cout << "\n";
   }
 
 
