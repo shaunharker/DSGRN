@@ -146,4 +146,14 @@ warshall ( void ) {
 }
 
 
+INLINE_IF_HEADER_ONLY bool Poset::
+topologicallySorted ( const uint64_t & n, const uint64_t & m ) const {
+  for ( auto u : data_ -> adjacencies_ [ n ] ) {
+    if ( u == m ) {
+      return true;
+    }
+  }
+  return false;
+}
+
 #endif
