@@ -40,6 +40,8 @@ private:
   void sumColumnTransitiveReduction  ( void );
   std::vector<uint64_t> sumColumnTransitiveReduction_;
 
+  void warshall ( void );
+
   /// serialize
   ///   For use with BOOST Serialization library,
   ///   which is used by the cluster-delegator MPI package
