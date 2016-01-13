@@ -114,6 +114,7 @@ _canonicalize ( void ) {
     vn . push_back ( n );
   }
 
+  // DEBUG
   std::cout << "before\n";
   for ( auto v : vn ) {
     std::cout << "id: " << v.id << " " ;
@@ -123,20 +124,17 @@ _canonicalize ( void ) {
     std::cout << "Descendants: " << v.numberOfDescendants << " ";
     std::cout << "\n";
   }
-
+  // END DEBUG
 
 
   // Create the sort function
   auto compare = [this](const NodeToSort & i, const NodeToSort & j) {
 
     // Decide the order of comparison
-    // Need to guaranty topological sorting (CURRENTLY MISSING)
-
     // Choice :
     //
-
-    // 0) if there is an edge i -> j, we ensure i < j  
-    if ( data_ -> poset_ . topologicallySorted(i.id,j.id) ) {
+    // 0) if there is an edge i -> j, we ensure i < j
+    if ( data_ -> poset_ . topologicallySorted( i.id, j.id ) ) {
       return true;
     }
 
@@ -164,6 +162,7 @@ _canonicalize ( void ) {
       return true;
     }
     // 4) Try to sort according to children (do not promote leaves)
+    // Warning if conditions switched
     if ( i.numberOfChildren < j.numberOfChildren ) {
       return false;
     }
@@ -182,15 +181,13 @@ _canonicalize ( void ) {
         if ( i.annotations[k] < j.annotations[k] ) { return true; }
       }
     }
-
-
     // if in case we cannot separate them, use the original node number
-    // each node has a unique node number
     return i.id < j.id ;
   };
 
   sort ( vn.begin(), vn.end(), compare );
 
+  // DEBUG
   std::cout << "after\n";
   for ( auto v : vn ) {
     std::cout << "id: " << v.id << " " ;
@@ -200,7 +197,7 @@ _canonicalize ( void ) {
     std::cout << "Descendants: " << v.numberOfDescendants << " ";
     std::cout << "\n";
   }
-
+  // END DEBUG
 
 }
 
