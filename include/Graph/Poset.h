@@ -27,6 +27,9 @@ public:
   // Return the number of children of node i
   uint64_t numberOfChildren ( const uint64_t & i ) const;
 
+  // Check if we have an edge n -> m with n < m
+  bool topologicallySorted ( const uint64_t & n, const uint64_t & m ) const;
+
 private:
   std::vector<std::vector<uint64_t>> reachability_;
   std::vector<std::vector<uint64_t>> transitiveReduction_;

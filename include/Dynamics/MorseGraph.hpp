@@ -127,13 +127,19 @@ _canonicalize ( void ) {
 
 
   // Create the sort function
-  auto compare = [](const NodeToSort & i, const NodeToSort & j) {
+  auto compare = [this](const NodeToSort & i, const NodeToSort & j) {
 
     // Decide the order of comparison
     // Need to guaranty topological sorting (CURRENTLY MISSING)
 
     // Choice :
     //
+
+    // 0) if there is an edge i -> j, we ensure i < j  
+    if ( data_ -> poset_ . topologicallySorted(i.id,j.id) ) {
+      return true;
+    }
+
     // 1) try to sort according to parents
     //    - enforce root node to come first
     if ( i.numberOfParents < j.numberOfParents ) {
@@ -168,7 +174,7 @@ _canonicalize ( void ) {
     if ( i.annotations.size() < j.annotations.size() ) {
       return true;
     }
-    if ( i.annotations.size() > j.annotations.size() ) { 
+    if ( i.annotations.size() > j.annotations.size() ) {
       return false;
     }
     if ( i.annotations.size() == j.annotations.size() ) {
