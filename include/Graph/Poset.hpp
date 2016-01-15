@@ -20,7 +20,9 @@ reduction ( void ) {
   //
   uint64_t N = size ();
 
+  std::cout << "before\n";
   dataPoset_ -> parentsCount_ . resize ( N );
+  std::cout << "after\n";
   //   dataPoset_ -> childrenCount_ . resize ( N );
   //   dataPoset_ -> ancestorsCount_ . resize ( N );
   //   dataPoset_ -> descendantsCount_ . resize ( N );
@@ -48,8 +50,8 @@ reduction ( void ) {
     data_ -> adjacencies_[u].erase ( it, data_ ->adjacencies_[u].end() );
   }
 
-  computeNumberOfParents();
-  computeNumberOfChildren();
+  // computeNumberOfParents();
+  // computeNumberOfChildren();
 
 }
 
