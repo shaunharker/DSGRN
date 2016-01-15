@@ -134,7 +134,7 @@ _canonicalize ( void ) {
     // Choice :
     //
     // 0) if there is an edge i -> j, we ensure i < j
-    if ( data_ -> poset_ . topologicallySorted( i.id, j.id ) ) {
+    if ( data_ -> poset_ . reachable( i.id, j.id ) ) {
       return true;
     }
 
