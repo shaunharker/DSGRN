@@ -15,6 +15,10 @@ struct Poset_;
 class Poset : public Digraph {
 public:
 
+  Poset ( void );
+
+  Poset ( std::vector<std::vector<uint64_t>> & adjacencies );
+
   /// reduction
   ///   Perform a transitive reduction
   ///   (i.e. use Hasse diagram representation)
@@ -37,6 +41,11 @@ public:
   /// Check if we have the reachability n -> m
   /// Assume we have a topologically sorted digraph ( n < m )
   bool reachable ( const uint64_t & n, const uint64_t & m ) const;
+
+  /// Reorder the poset according to the vector ordering
+  /// ordering[2] = 7 means the node numbered 2 should be numbered now 2
+  Poset
+  reorder ( const std::vector<uint64_t> & ordering ) const;
 
 private:
   std::shared_ptr<Poset_> dataPoset_;

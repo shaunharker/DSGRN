@@ -10,12 +10,15 @@
 struct Digraph_;
 
 /// class Digraph
-///   This class handles storage of edges between 
+///   This class handles storage of edges between
 ///   vertices in the form of adjacency lists.
 class Digraph {
 public:
   /// constructor
   Digraph ( void );
+
+  /// construct a Diagraph from an adjacency list
+  Digraph ( std::vector<std::vector<uint64_t>> & adjacencies ); 
 
   /// adjacencies (getter)
   ///   Return vector of Vertices which are out-edge adjacencies of input v
@@ -29,7 +32,7 @@ public:
 
   /// size
   ///   Return number of vertices
-  uint64_t 
+  uint64_t
   size ( void ) const;
 
   /// resize(n)
@@ -40,7 +43,7 @@ public:
   resize ( uint64_t n );
 
   /// add_vertex
-  ///   Add a vertex, and return the 
+  ///   Add a vertex, and return the
   ///   index of the newly added vertex.
   uint64_t
   add_vertex ( void );
@@ -75,7 +78,7 @@ protected:
   void serialize(Archive & ar, const unsigned int version) {
     ar & data_;
   }
-  
+
 };
 
 struct Digraph_ {
