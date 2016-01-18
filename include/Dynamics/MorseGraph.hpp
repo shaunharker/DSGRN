@@ -184,6 +184,8 @@ _canonicalize ( void ) {
 
   /// std::cout << newPoset;
 
+  data_ -> poset_ = newPoset;
+
 }
 
 #endif
