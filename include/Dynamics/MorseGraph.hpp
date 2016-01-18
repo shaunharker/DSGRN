@@ -87,117 +87,102 @@ SHA256 ( void ) const {
 INLINE_IF_HEADER_ONLY void MorseGraph::
 _canonicalize ( void ) {
 
-  struct NodeToSort {
-    uint64_t id;
-    uint64_t numberOfParents;
-    uint64_t numberOfChildren;
-    uint64_t numberOfAncestors;
-    uint64_t numberOfDescendants;
-    Annotation annotations;
-  };
-
-  std::vector<NodeToSort> vn;
-  for ( uint64_t v = 0; v < data_ -> poset_ . size (); ++ v ) {
-    NodeToSort n;
-    n.id = v;
-    n.numberOfParents = data_ -> poset_ . numberOfParents(v);
-    n.numberOfChildren = data_ -> poset_ . numberOfChildren(v);
-    //
-    // POTENTIAL BUG :
-    // In testing, TestPoset, methods numberOfAncestors(), numberOfDescendants()
-    // work but here seems to be off by 1
-    //
-    n.numberOfAncestors = data_ -> poset_ . numberOfAncestors(v) - 1;
-    n.numberOfDescendants = data_ -> poset_ . numberOfDescendants(v) - 1;
-    //
-    n.annotations = data_ -> annotations_ . find ( v ) -> second;
-    vn . push_back ( n );
+  /// create the original poset numbering : 0 ... N-1
+  std::vector<uint64_t> posetOrder;
+  for ( uint64_t i=0; i<data_ -> poset_ .size(); ++i ) {
+    posetOrder . push_back ( i );
   }
 
-  // DEBUG
-  std::cout << "before\n";
-  for ( auto v : vn ) {
-    std::cout << "id: " << v.id << " " ;
-    std::cout << "Parents: " << v.numberOfParents << " ";
-    std::cout << "Children: " << v.numberOfChildren << " ";
-    std::cout << "Ancestors: " << v.numberOfAncestors << " ";
-    std::cout << "Descendants: " << v.numberOfDescendants << " ";
-    std::cout << "\n";
-  }
-  // END DEBUG
+  ///DEBUG
+  // std::cout << "Before\n";
+  // for ( auto u : posetOrder ) {
+  //   std::cout << u << " ";
+  // }
+  // std::cout << "\n";
+  // std::cout << data_ -> poset_;
+  /// END DEBUG
 
+  /// Create the sort function
+  auto compare = [this](const int & i, const int & j) {
 
-  // Create the sort function
-  auto compare = [this](const NodeToSort & i, const NodeToSort & j) {
-
-    // Decide the order of comparison
-    // Choice :
-    //
-    // 0) if there is an edge i -> j, we ensure i < j
-    if ( data_ -> poset_ . reachable( i.id, j.id ) ) {
+    /// 0) if there is an edge i -> j, we ensure i < j
+    if ( data_ -> poset_ . reachable( i, j ) ) {
       return true;
     }
-
-    // 1) try to sort according to parents
-    //    - enforce root node to come first
-    if ( i.numberOfParents < j.numberOfParents ) {
+    /// 1) try to sort according to parents
+    if ( data_ -> poset_ . numberOfParents(i) < data_ -> poset_ . numberOfParents(j) ) {
       return true;
     }
-    if ( i.numberOfParents > j.numberOfParents ) {
+    if ( data_ -> poset_ . numberOfParents(i) > data_ -> poset_ . numberOfParents(j) ) {
       return false;
     }
-    // 2) try to sort according to ancestors
-    if ( i.numberOfAncestors < j.numberOfAncestors ) {
+    /// 2) try to sort according to ancestors
+    if ( data_ -> poset_ . numberOfAncestors(i) < data_ -> poset_ . numberOfAncestors(j) ) {
       return true;
     }
-    if ( i.numberOfAncestors > j.numberOfAncestors ) {
+    if ( data_ -> poset_ . numberOfAncestors(i) > data_ -> poset_ . numberOfAncestors(j) ) {
       return false;
     }
-    // 3) Try to sort according to descendants (promote deeper branches)
-    // Warning if conditions switched
-    if ( i.numberOfAncestors < j.numberOfAncestors ) {
-      return false;
-    }
-    if ( i.numberOfAncestors > j.numberOfAncestors ) {
+    /// 3) Try to sort according to descendants
+    if ( data_ -> poset_ . numberOfDescendants(i) < data_ -> poset_ . numberOfDescendants(j) ) {
       return true;
     }
-    // 4) Try to sort according to children (do not promote leaves)
-    // Warning if conditions switched
-    if ( i.numberOfChildren < j.numberOfChildren ) {
+    if ( data_ -> poset_ . numberOfDescendants(i) > data_ -> poset_ . numberOfDescendants(j) ) {
       return false;
     }
-    if ( i.numberOfChildren > j.numberOfChildren ) {
+    /// 4) Try to sort according to children
+    if ( data_ -> poset_ . numberOfChildren(i) < data_ -> poset_ . numberOfChildren(j) ) {
       return true;
     }
-    // 5) Sort according to annotations
-    if ( i.annotations.size() < j.annotations.size() ) {
-      return true;
-    }
-    if ( i.annotations.size() > j.annotations.size() ) {
+    if ( data_ -> poset_ . numberOfChildren(i) > data_ -> poset_ . numberOfChildren(j) ) {
       return false;
     }
-    if ( i.annotations.size() == j.annotations.size() ) {
-      for ( uint64_t k = 0; k<i.annotations.size(); ++k ) {
-        if ( i.annotations[k] < j.annotations[k] ) { return true; }
+    /// 5) Sort according to annotations
+    if ( data_ -> annotations_ . find ( i ) -> second . size ( ) <
+         data_ -> annotations_ . find ( j ) -> second . size ( ) ) {
+      return true;
+    }
+    if ( data_ -> annotations_ . find ( i ) -> second . size ( ) >
+         data_ -> annotations_ . find ( j ) -> second . size ( ) ) {
+      return false;
+    }
+    if ( data_ -> annotations_ . find ( i ) -> second . size ( ) ==
+         data_ -> annotations_ . find ( j ) -> second . size ( ) ) {
+      uint64_t annotationSize = data_ -> annotations_ . find ( i ) -> second . size ( );
+      for ( uint64_t k = 0; k<annotationSize; ++k ) {
+        if ( data_ -> annotations_ . find ( i ) -> second[k] <
+        data_ -> annotations_ . find ( j ) -> second[k] ) { return true; }
       }
     }
-    // if in case we cannot separate them, use the original node number
-    return i.id < j.id ;
+    /// if in case we cannot separate them, use the original node number
+    return i < j ;
   };
 
-  sort ( vn.begin(), vn.end(), compare );
+  /// posetOrder[i] represent the original numbering of the node i
+  /// after sort, posetOrder[1] = 7 means the node 1 used to be labelled 7
+  sort ( posetOrder.begin(), posetOrder.end(), compare );
 
-  // DEBUG
-  std::cout << "after\n";
-  for ( auto v : vn ) {
-    std::cout << "id: " << v.id << " " ;
-    std::cout << "Parents: " << v.numberOfParents << " ";
-    std::cout << "Children: " << v.numberOfChildren << " ";
-    std::cout << "Ancestors: " << v.numberOfAncestors << " ";
-    std::cout << "Descendants: " << v.numberOfDescendants << " ";
-    std::cout << "\n";
+  /// DEBUG
+  // std::cout << "After\n";
+  // for ( auto u : posetOrder ) {
+  //   std::cout << u << " ";
+  // }
+  // std::cout << "\n";
+  /// END DEBUG
+
+  /// construct the vector ordering to have
+  /// ordering[2] = 9 means node 2 should be relabelled 9
+  std::vector<uint64_t> ordering;
+
+  uint64_t N = data_ -> poset_ . size();
+  ordering . resize( N );
+  for ( uint64_t i=0; i<N; ++i ) {
+    ordering [ posetOrder[i] ] = i;
   }
-  // END DEBUG
+
+  Poset newPoset = data_ -> poset_ . reorder ( ordering );
+
+  /// std::cout << newPoset;
 
 }
 
