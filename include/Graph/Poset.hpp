@@ -33,14 +33,14 @@ reduction ( void ) {
   dataPoset_ -> reachability_ = data_ -> adjacencies_;
 
 
-  std::cout << "Reachability\n";
-  for ( uint64_t i=0; i<N; ++i ) {
-    std::cout << i << " : ";
-    for ( auto u : data_ -> adjacencies_ [ i ] ) {
-      std::cout << u << " ";
-    }
-    std::cout << "\n";
-  }
+  // std::cout << "Reachability\n";
+  // for ( uint64_t i=0; i<N; ++i ) {
+  //   std::cout << i << " : ";
+  //   for ( auto u : data_ -> adjacencies_ [ i ] ) {
+  //     std::cout << u << " ";
+  //   }
+  //   std::cout << "\n";
+  // }
 
   dataPoset_ -> parentsCount_ . resize ( N );
   dataPoset_ -> childrenCount_ . resize ( N );
@@ -70,15 +70,15 @@ reduction ( void ) {
   }
 
 
-  std::cout << "transitive closure\n";
-
-  for ( uint64_t i=0; i<N; ++i ) {
-    std::cout << i << " : ";
-    for ( auto u : data_ -> adjacencies_ [ i ] ) {
-      std::cout << u << " ";
-    }
-    std::cout << "\n";
-  }
+  // std::cout << "transitive closure\n";
+  //
+  // for ( uint64_t i=0; i<N; ++i ) {
+  //   std::cout << i << " : ";
+  //   for ( auto u : data_ -> adjacencies_ [ i ] ) {
+  //     std::cout << u << " ";
+  //   }
+  //   std::cout << "\n";
+  // }
 
   computeNumberOfParents();
   computeNumberOfChildren();
