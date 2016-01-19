@@ -186,6 +186,26 @@ _canonicalize ( void ) {
 
   data_ -> poset_ = newPoset;
 
+  // std::cout << "Old Annotation\n";
+  // for ( uint64_t i=0; i<N; ++i ) {
+  //   std::cout << data_ -> annotations_ [ i ] << "\n";
+  // }
+  // std::cout << data_ -> poset_;
+
+  /// update the Annotation
+  std::unordered_map<uint64_t, Annotation> newAnnotations;
+  for ( uint64_t i=0; i<N; ++i ) {
+    newAnnotations [ ordering[i] ] = data_ -> annotations_ [ i ];
+  }
+
+  data_ -> annotations_ = newAnnotations;
+
+  // std::cout << "New Annotation\n";
+  // for ( uint64_t i=0; i<N; ++i ) {
+  //   std::cout << data_ -> annotations_ [ i ] << "\n";
+  // }
+
+
 }
 
 #endif
