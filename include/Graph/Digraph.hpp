@@ -101,4 +101,13 @@ INLINE_IF_HEADER_ONLY std::ostream& operator << ( std::ostream& stream, Digraph 
 }
 
 
+INLINE_IF_HEADER_ONLY void Digraph::
+sortAdjacencies ( void ) {
+  // Sort the adjacency list in increasing order
+  for ( auto & u : data_ -> adjacencies_ ) {
+    sort ( u.begin(), u.end() );
+  }
+}
+
+
 #endif

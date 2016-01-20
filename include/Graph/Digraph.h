@@ -18,7 +18,7 @@ public:
   Digraph ( void );
 
   /// construct a Diagraph from an adjacency list
-  Digraph ( std::vector<std::vector<uint64_t>> & adjacencies ); 
+  Digraph ( std::vector<std::vector<uint64_t>> & adjacencies );
 
   /// adjacencies (getter)
   ///   Return vector of Vertices which are out-edge adjacencies of input v
@@ -70,6 +70,10 @@ public:
 
 protected:
   std::shared_ptr<Digraph_> data_;
+  //
+  void
+  sortAdjacencies ( void );
+  //
   /// serialize
   ///   For use with BOOST Serialization library,
   ///   which is used by the cluster-delegator MPI package
