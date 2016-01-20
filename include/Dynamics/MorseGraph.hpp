@@ -86,22 +86,13 @@ SHA256 ( void ) const {
 
 INLINE_IF_HEADER_ONLY void MorseGraph::
 _canonicalize ( void ) {
-
+  //
   /// create the original poset numbering : 0 ... N-1
   std::vector<uint64_t> posetOrder;
   for ( uint64_t i=0; i<data_ -> poset_ .size(); ++i ) {
     posetOrder . push_back ( i );
   }
-
-  ///DEBUG
-  // std::cout << "Before\n";
-  // for ( auto u : posetOrder ) {
-  //   std::cout << u << " ";
-  // }
-  // std::cout << "\n";
-  // std::cout << data_ -> poset_;
-  /// END DEBUG
-
+  //
   /// Create the sort function
   auto compare = [this](const int & i, const int & j) {
 
@@ -159,53 +150,27 @@ _canonicalize ( void ) {
   };
 
   /// posetOrder[i] represent the original numbering of the node i
-  /// after sort, posetOrder[1] = 7 means the node 1 used to be labelled 7
+  /// after sort, posetOrder[1] = 7 means the node 7 should be 1
   sort ( posetOrder.begin(), posetOrder.end(), compare );
-
-  /// DEBUG
-  // std::cout << "After\n";
-  // for ( auto u : posetOrder ) {
-  //   std::cout << u << " ";
-  // }
-  // std::cout << "\n";
-  /// END DEBUG
-
+  //
   /// construct the vector ordering to have
   /// ordering[2] = 9 means node 2 should be relabelled 9
   std::vector<uint64_t> ordering;
-
   uint64_t N = data_ -> poset_ . size();
   ordering . resize( N );
   for ( uint64_t i=0; i<N; ++i ) {
     ordering [ posetOrder[i] ] = i;
   }
-
+  //
   Poset newPoset = data_ -> poset_ . reorder ( ordering );
-
-  /// std::cout << newPoset;
-
   data_ -> poset_ = newPoset;
-
-  // std::cout << "Old Annotation\n";
-  // for ( uint64_t i=0; i<N; ++i ) {
-  //   std::cout << data_ -> annotations_ [ i ] << "\n";
-  // }
-  // std::cout << data_ -> poset_;
-
+  //
   /// update the Annotation
   std::unordered_map<uint64_t, Annotation> newAnnotations;
   for ( uint64_t i=0; i<N; ++i ) {
     newAnnotations [ ordering[i] ] = data_ -> annotations_ [ i ];
   }
-
   data_ -> annotations_ = newAnnotations;
-
-  // std::cout << "New Annotation\n";
-  // for ( uint64_t i=0; i<N; ++i ) {
-  //   std::cout << data_ -> annotations_ [ i ] << "\n";
-  // }
-
-
 }
 
 #endif
