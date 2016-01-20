@@ -43,7 +43,7 @@ public:
   bool reachable ( const uint64_t & n, const uint64_t & m ) const;
 
   /// Reorder the poset according to the vector ordering
-  /// ordering[2] = 7 means the node numbered 2 should be numbered now 2
+  /// ordering[2] = 7 means the node numbered 2 should be numbered now 7
   Poset
   reorder ( const std::vector<uint64_t> & ordering ) const;
 
@@ -58,7 +58,7 @@ private:
   computeNumberOfAncestors ( void ) const;
   void
   computeNumberOfDescendants ( void ) const;
-
+  //
   /// serialize
   ///   For use with BOOST Serialization library,
   ///   which is used by the cluster-delegator MPI package
