@@ -30,25 +30,14 @@ reduction ( void ) {
   // (Assumes original state is transitively closed.)
   //
   uint64_t N = size ();
+  //
   dataPoset_ -> reachability_ = data_ -> adjacencies_;
-
-
-  // std::cout << "Reachability\n";
-  // for ( uint64_t i=0; i<N; ++i ) {
-  //   std::cout << i << " : ";
-  //   for ( auto u : data_ -> adjacencies_ [ i ] ) {
-  //     std::cout << u << " ";
-  //   }
-  //   std::cout << "\n";
-  // }
-
   dataPoset_ -> parentsCount_ . resize ( N );
   dataPoset_ -> childrenCount_ . resize ( N );
   dataPoset_ -> ancestorsCount_ . resize ( N );
   dataPoset_ -> descendantsCount_ . resize ( N );
   computeNumberOfAncestors();
   computeNumberOfDescendants();
-
   //
   for ( uint64_t u = 0; u < N; ++ u ) {
     std::unordered_set<uint64_t> double_hop;
@@ -68,18 +57,7 @@ reduction ( void ) {
                                removal_predicate );
     data_ -> adjacencies_[u].erase ( it, data_ ->adjacencies_[u].end() );
   }
-
-
-  // std::cout << "transitive closure\n";
   //
-  // for ( uint64_t i=0; i<N; ++i ) {
-  //   std::cout << i << " : ";
-  //   for ( auto u : data_ -> adjacencies_ [ i ] ) {
-  //     std::cout << u << " ";
-  //   }
-  //   std::cout << "\n";
-  // }
-
   computeNumberOfParents();
   computeNumberOfChildren();
 }
