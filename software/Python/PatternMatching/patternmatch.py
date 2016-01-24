@@ -23,7 +23,7 @@
 import preprocess as pp
 import sys
 
-def callPatternMatch(morseset_jsonstr,domgraph_jsonstr,domcells_jsonstr,patternstr,fname_results='results.txt',cyclic=1,findallmatches=1, printtoscreen=0,writetofile=1,returnmatches=0,numberofmatchesonly=1): # pragma: no cover
+def callPatternMatch(morseset_jsonstr,domgraph_jsonstr,domcells_jsonstr,patternstr,fname_results='results.txt',cyclic=1,findallmatches=1, printtoscreen=0,writetofile=1,returnmatches=0,numberofmatchesonly=1,onlyonepattern=0): # pragma: no cover
     if printtoscreen:
         print "Preprocessing..."
         sys.stdout.flush()
@@ -66,6 +66,8 @@ def callPatternMatch(morseset_jsonstr,domgraph_jsonstr,domcells_jsonstr,patterns
             else:
                 matches_result.append(matches)
                 patterns_result.append(origpat)
+        if onlyonepattern and matches:
+            break
     if writetofile: 
         f.close()
     if returnmatches:

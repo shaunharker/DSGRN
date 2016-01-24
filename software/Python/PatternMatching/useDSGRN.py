@@ -40,7 +40,7 @@ from math import ceil
 #
 
 
-def patternSearch(networkfile,paramfile,resultsfile,patternstr,printtoscreen,findallmatches):
+def patternSearch(networkfile,paramfile,resultsfile,patternstr,printtoscreen,findallmatches,onlyonepattern=0):
     domaincells_jsonstr=getJSONstring(networkfile,['domaingraph'])
     results_list=[]
     with open(paramfile,'r') as P:
@@ -49,7 +49,7 @@ def patternSearch(networkfile,paramfile,resultsfile,patternstr,printtoscreen,fin
             domaingraph_jsonstr=getJSONstring(networkfile,['domaingraph', 'json',param])
             morseset_jsonstr=getJSONstring(networkfile,['analyze', 'morseset', morseset, param])
             try:
-                patterns,matches=patternmatch.callPatternMatch(morseset_jsonstr,domaingraph_jsonstr,domaincells_jsonstr,patternstr,resultsfile,writetofile=0,returnmatches=1,printtoscreen=printtoscreen,findallmatches=findallmatches)
+                patterns,matches=patternmatch.callPatternMatch(morseset_jsonstr,domaingraph_jsonstr,domaincells_jsonstr,patternstr,resultsfile,writetofile=0,returnmatches=1,printtoscreen=printtoscreen,findallmatches=findallmatches,onlyonepattern=onlyonepattern)
                 for pat,match in zip(patterns,matches):
                     if findallmatches:
                         results_list.append("Parameter: {}, Morse Graph: {}, Morse Set: {}, Pattern: {}, Results: {}".format(param,morsegraph,morseset,pat,match)+'\n')
@@ -119,7 +119,7 @@ def mergeFiles(mergefile,splitfiles):
             except:
                 pass
     removeFiles(splitfiles)
-    print '{} results files merged.'.format{count}
+    print '{} results files merged.'.format(count)
     sys.stdout.flush()
 
 
@@ -346,24 +346,27 @@ if __name__=='__main__':
     paramsperslice=100
     # paramsperslice=5
 
-    # # Run on local file system 
-    # allparamsfile='/Users/bcummins/patternmatch_helper_files/parameterfiles/5D_2015_09_11_MG1298_concatenatedparams.txt'
-    # with open(allparamsfile,'w') as ap:
-    #     # ap.write('565|0|1196132\n565|0|1203690\n565|0|2654015\n565|0|6046050')
-    #     # ap.write('1298|2|3736292')
-    #     ap.write('4618|1|6079889')
-    # # listofargs=main_local_filesystem(patternsetter,allparamsfile,networkfilename,morsegraphselection,paramsperslice,printtoscreen=0,findallmatches=0)
-    # listofargs=main_local_filesystem_paramlist(patternsetter,allparamsfile,networkfilename,morsegraphselection,printtoscreen=0,findallmatches=0)
-    # # paramfile=listofargs[1]+'_0000.txt'
-    # # patternSearch_paramlist(listofargs[5],paramfile,listofargs[2],listofargs[4],0,0)
-    # job_server = pp.Server(ppservers=("*",))
-    # N = sum(job_server.get_active_nodes().values())
-    # print "There are", N, " cores in total."
-    # parallelrun_paramlist(job_server,paramsperslice,*listofargs)
-
-    # Run on conley3 
-    listofargs=main_conley3_filesystem_paramlist(patternsetter,getMorseGraphs,networkfilename,morsegraphselection,morsegraph,morseset,printtoscreen=0,findallmatches=0)
-    job_server=initServer()
+    # Run on local file system 
+    networkfilename="5D_2015_09_11"
+    patternsetter=setPattern_Malaria_20hr_2015_09_11
+    morsegraphselection="MG1298"
+    allparamsfile='/Users/bcummins/patternmatch_helper_files/parameterfiles/5D_2015_09_11_MG1298_concatenatedparams.txt'
+    with open(allparamsfile,'w') as ap:
+        # ap.write('565|0|1196132\n565|0|1203690\n565|0|2654015\n565|0|6046050')
+        ap.write('1298|2|3736292')
+        # ap.write('4618|1|6079889')
+    # listofargs=main_local_filesystem(patternsetter,allparamsfile,networkfilename,morsegraphselection,paramsperslice,printtoscreen=0,findallmatches=0)
+    listofargs=main_local_filesystem_paramlist(patternsetter,allparamsfile,networkfilename,morsegraphselection,printtoscreen=0,findallmatches=0)
+    # paramfile=listofargs[1]+'_0000.txt'
+    # patternSearch_paramlist(listofargs[5],paramfile,listofargs[2],listofargs[4],0,0)
+    job_server = pp.Server(ppservers=("*",))
+    N = sum(job_server.get_active_nodes().values())
+    print "There are", N, " cores in total."
     parallelrun_paramlist(job_server,paramsperslice,*listofargs)
+
+    # # Run on conley3 
+    # listofargs=main_conley3_filesystem_paramlist(patternsetter,getMorseGraphs,networkfilename,morsegraphselection,morsegraph,morseset,printtoscreen=0,findallmatches=0)
+    # job_server=initServer()
+    # parallelrun_paramlist(job_server,paramsperslice,*listofargs)
 
 
