@@ -17,7 +17,7 @@ def countDistinctParamsInMorseGraph(fname,MGN):
     return len(set(parameters))
 
 if __name__=='__main__':
-    fname = '/share/data/bcummins/parameterresults/5D_2016_01_05_C_MG2658_allresults.txt'
-    MGN = 2658
+    fname = '/share/data/bcummins/parameterresults/5D_2016_01_16_A_MG4578_allresults.txt'
+    # MGN = 4578
     print countDistinctParams(fname)
-    print countDistinctParamsInMorseGraph(fname,MGN)
+    # print countDistinctParamsInMorseGraph(fname,MGN)
