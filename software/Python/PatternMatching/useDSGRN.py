@@ -40,7 +40,7 @@ from math import ceil
 #
 
 
-def patternSearch(networkfile,paramfile,resultsfile,patternstr,printtoscreen,findallmatches,onlyonepattern=0):
+def patternSearch(networkfile,paramfile,resultsfile,patternstr,printtoscreen,findallmatches,onlyonepattern=1):
     domaincells_jsonstr=getJSONstring(networkfile,['domaingraph'])
     results_list=[]
     with open(paramfile,'r') as P:
@@ -325,7 +325,7 @@ if __name__=='__main__':
     # patternsetter=setPattern_Malaria_20hr_2015_09_11
     # networkfilename="5D_2016_01_05_C"
     patternsetter=setPattern_Malaria_20hr_2016_01_05
-    networkfilename="5D_2016_01_16_A"    
+    networkfilename="5D_2016_01_16_B"    
     # morsegraphselection="MG4618_onebadparameter"
     # morsegraph=565
     # morseset=0
@@ -336,9 +336,9 @@ if __name__=='__main__':
     # morsegraphselection="stableFCs"
     # morsegraph=None
     # morseset=None
-    morsegraph=4578
+    morsegraph=1976
     morseset=0
-    morsegraphselection="MG4578"
+    morsegraphselection="MG1976"
     getMorseGraphs=selectOneMorseGraph
     # morsegraphselection="anyFCs"
     # getMorseGraphs=selectAnyFC
