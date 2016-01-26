@@ -16,6 +16,15 @@ MorseGraph ( void ) {
   data_ . reset ( new MorseGraph_ );
 }
 
+INLINE_IF_HEADER_ONLY MorseGraph::
+MorseGraph ( Poset const & ps,
+             std::unordered_map<uint64_t, Annotation> const & annotations ) {
+  data_ . reset ( new MorseGraph_ );
+  data_ -> poset_ = ps;
+  data_ -> annotations_ = annotations;
+  _canonicalize();
+}
+
 INLINE_IF_HEADER_ONLY Poset const MorseGraph::
 poset ( void ) const {
   return data_ ->poset_;
@@ -86,13 +95,13 @@ SHA256 ( void ) const {
 
 INLINE_IF_HEADER_ONLY void MorseGraph::
 _canonicalize ( void ) {
-  //
+  ///
   /// create the original poset numbering : 0 ... N-1
   std::vector<uint64_t> posetOrder;
   for ( uint64_t i=0; i<data_ -> poset_ .size(); ++i ) {
     posetOrder . push_back ( i );
   }
-  //
+  ///
   /// Create the sort function
   auto compare = [this](const int & i, const int & j) {
 
@@ -152,7 +161,7 @@ _canonicalize ( void ) {
   /// posetOrder[i] represent the original numbering of the node i
   /// after sort, posetOrder[1] = 7 means the node 7 should be 1
   sort ( posetOrder.begin(), posetOrder.end(), compare );
-  //
+  ///
   /// construct the vector ordering to have
   /// ordering[2] = 9 means node 2 should be relabelled 9
   std::vector<uint64_t> ordering;
@@ -161,10 +170,10 @@ _canonicalize ( void ) {
   for ( uint64_t i=0; i<N; ++i ) {
     ordering [ posetOrder[i] ] = i;
   }
-  //
+  ///
   Poset newPoset = data_ -> poset_ . reorder ( ordering );
   data_ -> poset_ = newPoset;
-  //
+  ///
   /// update the Annotation
   std::unordered_map<uint64_t, Annotation> newAnnotations;
   for ( uint64_t i=0; i<N; ++i ) {
