@@ -40,7 +40,12 @@ public:
 
   /// Check if we have the reachability n -> m
   /// Assume we have a topologically sorted digraph ( n < m )
-  bool reachable ( const uint64_t & n, const uint64_t & m ) const;
+  bool
+  reachable ( const uint64_t & n, const uint64_t & m ) const;
+
+  /// Perform the transitive closure using Warshall Algorithm
+  void
+  transitiveClosure ( void );
 
   /// Reorder the poset according to the vector ordering
   /// ordering[2] = 7 means the node numbered 2 should be numbered now 7
@@ -51,13 +56,13 @@ private:
   std::shared_ptr<Poset_> dataPoset_;
   //
   void
-  computeNumberOfParents ( void) const;
+  _computeNumberOfParents ( void) const;
   void
-  computeNumberOfChildren ( void ) const;
+  _computeNumberOfChildren ( void ) const;
   void
-  computeNumberOfAncestors ( void ) const;
+  _computeNumberOfAncestors ( void ) const;
   void
-  computeNumberOfDescendants ( void ) const;
+  _computeNumberOfDescendants ( void ) const;
   //
   /// serialize
   ///   For use with BOOST Serialization library,
