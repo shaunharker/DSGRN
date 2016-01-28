@@ -1,3 +1,5 @@
+import sys
+
 def countDistinctParams(fname):
     with open(fname) as f:
         parameters=[]
@@ -17,7 +19,7 @@ def countDistinctParamsInMorseGraph(fname,MGN):
     return len(set(parameters))
 
 if __name__=='__main__':
-    fname = '/share/data/bcummins/parameterresults/5D_2016_01_16_A_MG4578_allresults.txt'
+    #fname = '/share/data/bcummins/parameterresults/5D_2016_01_16_A_MG4578_allresults.txt'
     # MGN = 4578
-    print countDistinctParams(fname)
+    print countDistinctParams(sys.argv[1])
     # print countDistinctParamsInMorseGraph(fname,MGN)
