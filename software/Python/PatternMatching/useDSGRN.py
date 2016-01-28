@@ -143,6 +143,7 @@ def parallelrun_paramlist(job_server,paramsperslice,allparamsfile,resultsfile,al
         while paramlist:
             unique_identifier='{:04d}'.format(identity)
             identity+=1
+            print identity
             subresultsfile=resultsfile+unique_identifier+'.txt'
             allsubresultsfiles.append(subresultsfile)        
             jobs.append(job_server.submit(patternSearch_paramlist,(networkfile,paramlist,subresultsfile,patternstr,printtoscreen,findallmatches), depfuncs=(),modules = ("subprocess","patternmatch", "preprocess","fileparsers","walllabels","itertools","numpy","json","traceback","sys"),globals=globals()))
