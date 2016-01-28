@@ -40,7 +40,7 @@ from math import ceil
 #
 
 
-def patternSearch(networkfile,paramfile,resultsfile,patternstr,printtoscreen,findallmatches,onlyonepattern=1):
+def patternSearch(networkfile,paramfile,resultsfile,patternstr,printtoscreen,findallmatches):
     domaincells_jsonstr=getJSONstring(networkfile,['domaingraph'])
     results_list=[]
     with open(paramfile,'r') as P:
@@ -49,7 +49,7 @@ def patternSearch(networkfile,paramfile,resultsfile,patternstr,printtoscreen,fin
             domaingraph_jsonstr=getJSONstring(networkfile,['domaingraph', 'json',param])
             morseset_jsonstr=getJSONstring(networkfile,['analyze', 'morseset', morseset, param])
             try:
-                patterns,matches=patternmatch.callPatternMatch(morseset_jsonstr,domaingraph_jsonstr,domaincells_jsonstr,patternstr,resultsfile,writetofile=0,returnmatches=1,printtoscreen=printtoscreen,findallmatches=findallmatches,onlyonepattern=onlyonepattern)
+                patterns,matches=patternmatch.callPatternMatch(morseset_jsonstr,domaingraph_jsonstr,domaincells_jsonstr,patternstr,resultsfile,writetofile=0,returnmatches=1,printtoscreen=printtoscreen,findallmatches=findallmatches)
                 for pat,match in zip(patterns,matches):
                     if findallmatches:
                         results_list.append("Parameter: {}, Morse Graph: {}, Morse Set: {}, Pattern: {}, Results: {}".format(param,morsegraph,morseset,pat,match)+'\n')
