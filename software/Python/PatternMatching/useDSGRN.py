@@ -334,8 +334,8 @@ if __name__=='__main__':
     # morsegraph=4618
     # morseset=1
     # morsegraphselection="stableFCs"
-    # morsegraph=None
-    # morseset=None
+    morsegraph=None
+    morseset=None
     # morsegraph=1976
     # morseset=0
     # morsegraphselection="MG1976"
