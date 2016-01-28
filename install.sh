@@ -28,8 +28,9 @@ cd $SRC_ROOT/software/NetworkLogic
 $build --prefix=$PREFIX --searchpath=$SEARCHPATH --build=$BUILDTYPE $MASS || exit 1
 
 # Install Logic files
+echo Computing logic resource files. This may take several minutes.
 mkdir -p $PREFIX/share/DSGRN/logic         || exit 1
-./bin/NetworkLogic 4                       || exit 1
+./bin/NetworkLogic 6                       || exit 1
 mv -f *.dat $PREFIX/share/DSGRN/logic/     || exit 1
 
 # Build "DSGRN"
@@ -37,5 +38,9 @@ cd ${SRC_ROOT}
 $build --prefix=$PREFIX --searchpath=$SEARCHPATH --build=$BUILDTYPE --test $MASS || exit 1
 
 # Build and Test "Signatures"
+cd $SRC_ROOT/software/Signatures
+$build --prefix=$PREFIX --searchpath=$SEARCHPATH --build=$BUILDTYPE --test $MASS || exit 1
+
+# Build and Test "DSGRN-Database"
 cd $SRC_ROOT/software/DSGRN-Database
 $build --prefix=$PREFIX --searchpath=$SEARCHPATH --build=$BUILDTYPE --test $MASS || exit 1
