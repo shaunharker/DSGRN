@@ -38,6 +38,10 @@ from math import ceil
 # The following finds the Morse set number:
 # sqlite3 /share/data/CHomP/Projects/DSGRN/DB/data/DATABASEFILE.db 'select * from MorseGraphAnnotations where MorseGraphIndex=MGN'
 #
+#
+# Count the number of parameters in all stable FCs:
+# sqlite3 /share/data/CHomP/Projects/DSGRN/DB/data/DATABASEFILE.db 'select count(*) from Signatures natural join (select distinct(MorseGraphIndex) from (select MorseGraphIndex,Vertex from MorseGraphAnnotations where Label="FC" except select MorseGraphIndex,Source from MorseGraphEdges))'
+
 
 
 def patternSearch(networkfile,paramfile,resultsfile,patternstr,printtoscreen,findallmatches):
