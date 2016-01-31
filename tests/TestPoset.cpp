@@ -1,49 +1,125 @@
-/// TestDigraph.cpp
-/// Shaun Harker
-/// 2015-06-30
+/// TestPoset.cpp
+/// Arnaud Goullet
+/// 2016-01-26
 
 #include "common.h"
 #include "DSGRN.h"
 
 int main ( int argc, char * argv [] ) {
   try {
-
-    Poset ps;
-
-    uint64_t n0 = ps . add_vertex ();
-    uint64_t n1 = ps . add_vertex ();
-    uint64_t n2 = ps . add_vertex ();
-    uint64_t n3 = ps . add_vertex ();
-    uint64_t n4 = ps . add_vertex ();
-    uint64_t n5 = ps . add_vertex ();
-    uint64_t n6 = ps . add_vertex ();
-
-    ps . add_edge ( n0, n1 );
-    ps . add_edge ( n0, n2 );
-    ps . add_edge ( n1, n3 );
-    ps . add_edge ( n2, n3 );
-    ps . add_edge ( n3, n4 );
-
-    ps . add_edge ( n0, n3 );
-    ps . add_edge ( n4, n5 );
-    ps . add_edge ( n4, n6 );
-
-    std::cout << ps;
-
-    ps . reduction ( );
-
-    for ( uint64_t i=0; i<ps.size(); ++i ) {
-      std::cout << "Node " << i << "\n";
-      std::cout << "#ancestors   : " << ps.numberOfAncestors(i) << "\n";
-      std::cout << "#descendants : " << ps.numberOfDescendants(i) << "\n";
-      std::cout << "#parents     : " << ps.numberOfParents(i) << "\n";
-      std::cout << "#children    : " << ps.numberOfChildren(i) << "\n";
+    ///
+    /// Create two posets that have identical structure
+    /// the nodes have identical annotations but different numbering
+    /// From the posets and annotations, create two morsegraphs
+    /// the constructor will call the canonicalize method.
+    /// The two morsegraphs should be identical (numbering and annotations)
+    ///
+    Poset poset1, poset2;
+    std::unordered_map<uint64_t, Annotation> annotations1, annotations2;
+    ///
+    /// Declaration of the first poset
+    uint64_t n0 = poset1 . add_vertex ();
+    uint64_t n1 = poset1 . add_vertex ();
+    uint64_t n2 = poset1 . add_vertex ();
+    uint64_t n3 = poset1 . add_vertex ();
+    uint64_t n4 = poset1 . add_vertex ();
+    uint64_t n5 = poset1 . add_vertex ();
+    uint64_t n6 = poset1 . add_vertex ();
+    poset1 . add_edge ( n0, n1 );
+    poset1 . add_edge ( n0, n6 );
+    poset1 . add_edge ( n1, n2 );
+    poset1 . add_edge ( n1, n3 );
+    poset1 . add_edge ( n3, n4 );
+    poset1 . add_edge ( n3, n5 );
+    /// Define the annotations
+    for ( uint64_t i=0; i<poset1.size(); ++i ) {
+      std::stringstream ss;
+      ss << i;
+      Annotation newAnnotation;
+      newAnnotation . append ( ss.str() );
+      annotations1 [ i ] = newAnnotation;
     }
-
-    std::cout << ps;
-    boost::archive::text_oarchive oa(std::cout);
-    oa << ps;
-
+    ///
+    /// Declaration of the second poset
+    uint64_t nn0 = poset2 . add_vertex ();
+    uint64_t nn1 = poset2 . add_vertex ();
+    uint64_t nn2 = poset2 . add_vertex ();
+    uint64_t nn3 = poset2 . add_vertex ();
+    uint64_t nn4 = poset2 . add_vertex ();
+    uint64_t nn5 = poset2 . add_vertex ();
+    uint64_t nn6 = poset2 . add_vertex ();
+    poset2 . add_edge ( nn0, nn1 );
+    poset2 . add_edge ( nn0, nn3 );
+    poset2 . add_edge ( nn1, nn6 );
+    poset2 . add_edge ( nn1, nn2 );
+    poset2 . add_edge ( nn2, nn4 );
+    poset2 . add_edge ( nn2, nn5 );
+    annotations2 = annotations1;
+    /// Fix 3 nodes, because we swapped 3 nodes numbers from poset1
+    Annotation an2, an3, an6;
+    an2 . append ( "2" );
+    an3 . append ( "3" );
+    an6 . append ( "6" );
+    annotations2 [ 6 ] = an2;
+    annotations2 [ 2 ] = an3;
+    annotations2 [ 3 ] = an6;
+    ///
+    /// Apply transitive closure and reduction
+    poset1 . transitiveClosure ( );
+    poset1 . reduction ( );
+    ///
+    poset2 . transitiveClosure ( );
+    poset2 . reduction ( );
+    ///
+    /// output on the screen te two posets and annotations
+    std::cout << "Poset1 Digraph\n";
+    std::cout << poset1;
+    std::cout << "Poset1 Annotations\n";
+    for ( uint64_t i=0; i<poset1.size(); ++i ) {
+      for ( auto u : annotations1[i] ) {
+        std::cout << u << " ";
+      }
+      std::cout << "\n";
+    }
+    std::cout << "Poset2 Digraph\n";
+    std::cout << poset2;
+    std::cout << "Poset2 Annotations\n";
+    for ( uint64_t i=0; i<poset2.size(); ++i ) {
+      for ( auto u : annotations2[i] ) {
+        std::cout << u << " ";
+      }
+      std::cout << "\n";
+    }
+    ///
+    /// Construct two morsegraphs from the posets and annotations
+    /// The constructor will call the canonicalize method
+    MorseGraph mg1 ( poset1, annotations1 );
+    MorseGraph mg2 ( poset2, annotations2 );
+    ///
+    /// Output on the screen the two posets and annotations from the morsegraphs
+    /// they should be identical
+    std::cout << "============================\n";
+    std::cout << "After Morsegraph Constructor\n";
+    std::cout << "============================\n";
+    std::cout << "Poset1 Digraph\n";
+    std::cout << mg1 . poset ();
+    std::cout << "Poset1 Annotations\n";
+    for ( uint64_t i=0; i<poset1.size(); ++i ) {
+      for ( auto u : mg1.annotation(i) ) {
+        std::cout << u << " ";
+      }
+      std::cout << "\n";
+    }
+    ///
+    std::cout << "Poset2 Digraph\n";
+    std::cout << mg2 . poset();
+    std::cout << "Poset2 Annotations\n";
+    for ( uint64_t i=0; i<poset2.size(); ++i ) {
+      for ( auto u : mg2.annotation(i) ) {
+        std::cout << u << " ";
+      }
+      std::cout << "\n";
+    }
 
   } catch ( std::exception & e ) {
     std::cout << e . what () << "\n";
