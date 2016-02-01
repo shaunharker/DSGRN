@@ -58,6 +58,26 @@ def constructPatterns(genes,patternfile,datastruct=dataStruct43Genes):
     f.close()
  
 if __name__=='__main__':
-    constructPatterns(['PF3D7_1115500','PF3D7_1006100','PF3D7_0504700'],'patterns_43genes_20hr.txt',dataStruct43Genes)        
+    import os,sys
+
+    # names = ['PF3D7_0504700','PF3D7_0506700','PF3D7_0818700','PF3D7_0919000','PF3D7_0925700','PF3D7_0729000'] 
+    # aliases =  ['72', '77', '177', '199', '204', '156']
+    # savename = 'patterns_43genes_6Dnode.txt'
+
+    names = ['PF3D7_0504700','PF3D7_0506700','PF3D7_0818700','PF3D7_0919000','PF3D7_0925700'] 
+    aliases =  ['72', '77', '177', '199', '204']
+    savename = 'patterns_43genes_5Dnode.txt'
+
+
+    constructPatterns(names,savename,dataStruct43Genes)
+    with open(savename,'r') as s, open('temp.txt','w') as t:
+        for line in s:
+            for a,n in zip(aliases,names):
+                line = line.replace(n,a)
+            t.write(line)
+    os.rename('temp.txt',savename)
+
+
+
 
 
