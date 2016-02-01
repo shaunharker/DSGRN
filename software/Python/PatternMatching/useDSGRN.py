@@ -351,7 +351,7 @@ if __name__=='__main__':
     # patternsetter=setPattern_Malaria_20hr_2015_09_11
     # networkfilename="5D_2016_01_05_C"
     # patternsetter=setPattern_Malaria_20hr_2016_01_05
-    patternsetter = setPattern_Malaria_20hr_2016_01_05_patternsnatch()
+    patternsetter = setPattern_Malaria_20hr_2016_01_05_patternsnatch
     networkfilename="5D_2016_01_28"    
     morsegraphselection="stableFCs_patternsnatch"
     # networkfilename="6D_2016_01_29"    
