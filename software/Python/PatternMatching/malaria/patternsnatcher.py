@@ -44,18 +44,17 @@ def recurseOverGraph(extrema,outedges,pattern,filehandle):
     if len(extrema)==0:
         filehandle.write(pattern+'\n')
     else:
-        fewer_outedges=extractSubGraph(extrema,outedges)
-        base_set=identifyNoInComingEdges(extrema,fewer_outedges)
-        fewer_extrema=[e for e in extrema if e[0] not in base_set]
-        for p in permutations(base_set):
-            recurseOverGraph(fewer_extrema,fewer_outedges,pattern+' '.join(p)+' ',filehandle)
+        base_set=identifyNoInComingEdges(extrema,outedges)
+        for b in base_set:
+            fewer_extrema=[e for e in extrema if e[0] != b]
+            fewer_outedges=extractSubGraph(fewer_extrema,outedges)
+            recurseOverGraph(fewer_extrema,fewer_outedges,pattern+b+' ',filehandle)
             
 def constructPatterns(genes,patternfile,datastruct=dataStruct43Genes):
     gene_name_master_list,setmins,setmaxes,outedges=constructPartialOrder(datastruct)
     extrema=getSubset(genes,setmins,setmaxes,gene_name_master_list)
-    f=open(patternfile,'w',0)
-    recurseOverGraph(extrema,outedges,'',f)
-    f.close()
+    with open(patternfile,'w',0) as f:
+        recurseOverGraph(extrema,outedges,'',f)
  
 if __name__=='__main__':
     import os,sys
@@ -76,8 +75,6 @@ if __name__=='__main__':
                 line = line.replace(n,a)
             t.write(line)
     os.rename('temp.txt',savename)
-
-
 
 
 
