@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+import malaria.patternsnatcher as patternsnatch
 import itertools
 import subprocess
 import patternmatch
@@ -288,6 +289,27 @@ def setPattern_Malaria_20hr_2016_01_05():
             patternstr.append(patternstr2)
     return ' '.join(patternstr)
             
+def setPattern_Malaria_20hr_2016_01_05_patternsnatch():
+    names = ['PF3D7_0504700','PF3D7_0506700','PF3D7_0818700','PF3D7_0919000','PF3D7_0925700'] 
+    aliases =  ['72', '77', '177', '199', '204']
+    savename = 'patterns_43genes_5Dnode.txt'
+    patternsnatch.constructPatterns(names,savename,patternsnatch.dataStruct43Genes)
+    patternstr = ''
+    with open(savename,'r') as s:
+        for line in s:
+            for a,n in zip(aliases,names):
+                line = line.replace(n,a)
+            patternstr+=line
+    return patternstr
+    
+    patternstr=[]
+    for s1 in itertools.permutations(['x3 max','x5 max','x1 max', 'x4 max']):
+        patternstr1=', '.join(s1) + ', x2 max, '
+        for s2 in itertools.permutations(['x1 min', 'x3 min','x5  min', 'x2 min','x4 min']):
+            patternstr2=patternstr1 + ', '.join(s2) + ', ' + s1[0] + '\n'
+            patternstr.append(patternstr2)
+    return ' '.join(patternstr)
+            
 def setPattern_5D_Cycle():
     return 'X3 max, X4 max, X3 min, X4 min\n X3 max, X4 min, X3 min, X4 max'
 
@@ -317,7 +339,7 @@ def selectOneMorseGraph(networkfile,morsegraphfile,morsegraph,morseset):
 
 if __name__=='__main__':
     # # Select which network to analyze
-    morsegraphselection="stableFCs"
+    # morsegraphselection="stableFCs"
     getMorseGraphs=selectStableFC
     # networkfilename="5D_Cycle"
     # patternsetter=setPattern_5D_Cycle
@@ -328,8 +350,11 @@ if __name__=='__main__':
     # networkfilename="5D_2015_09_11"
     # patternsetter=setPattern_Malaria_20hr_2015_09_11
     # networkfilename="5D_2016_01_05_C"
-    patternsetter=setPattern_Malaria_20hr_2016_01_05
-    networkfilename="6D_2016_01_29"    
+    # patternsetter=setPattern_Malaria_20hr_2016_01_05
+    patternsetter = setPattern_Malaria_20hr_2016_01_05_patternsnatch()
+    networkfilename="5D_2016_01_28"    
+    morsegraphselection="stableFCs_patternsnatch"
+    # networkfilename="6D_2016_01_29"    
     # morsegraphselection="MG4618_onebadparameter"
     # morsegraph=565
     # morseset=0

@@ -44,6 +44,7 @@ def recurseOverGraph(extrema,outedges,pattern,filehandle):
     if len(extrema)==0:
         filehandle.write(pattern+'\n')
     else:
+        # topological sort
         base_set=identifyNoInComingEdges(extrema,outedges)
         for b in base_set:
             fewer_extrema=[e for e in extrema if e[0] != b]
@@ -56,25 +57,5 @@ def constructPatterns(genes,patternfile,datastruct=dataStruct43Genes):
     with open(patternfile,'w',0) as f:
         recurseOverGraph(extrema,outedges,'',f)
  
-if __name__=='__main__':
-    import os,sys
-
-    # names = ['PF3D7_0504700','PF3D7_0506700','PF3D7_0818700','PF3D7_0919000','PF3D7_0925700','PF3D7_0729000'] 
-    # aliases =  ['72', '77', '177', '199', '204', '156']
-    # savename = 'patterns_43genes_6Dnode.txt'
-
-    names = ['PF3D7_0504700','PF3D7_0506700','PF3D7_0818700','PF3D7_0919000','PF3D7_0925700'] 
-    aliases =  ['72', '77', '177', '199', '204']
-    savename = 'patterns_43genes_5Dnode.txt'
-
-
-    constructPatterns(names,savename,dataStruct43Genes)
-    with open(savename,'r') as s, open('temp.txt','w') as t:
-        for line in s:
-            for a,n in zip(aliases,names):
-                line = line.replace(n,a)
-            t.write(line)
-    os.rename('temp.txt',savename)
-
 
 
