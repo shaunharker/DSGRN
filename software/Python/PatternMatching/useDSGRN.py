@@ -289,6 +289,15 @@ def setPattern_Malaria_20hr_2016_01_05():
             patternstr.append(patternstr2)
     return ' '.join(patternstr)
             
+def setPattern_Malaria_20hr_2016_01_05_move77min():
+    patternstr=[]
+    for s1 in itertools.permutations(['199 max','177 max','72 max', '204 max', '77 min']):
+        patternstr1=', '.join(s1) + ', 77 max, '
+        for s2 in itertools.permutations(['72 min', '199 min','177  min','204 min']):
+            patternstr2=patternstr1 + ', '.join(s2) + ', ' + s1[0] + '\n'
+            patternstr.append(patternstr2)
+    return ' '.join(patternstr)
+            
 def setPattern_Malaria_20hr_2016_01_05_patternsnatch():
     names = ['PF3D7_0504700','PF3D7_0506700','PF3D7_0818700','PF3D7_0919000','PF3D7_0925700'] 
     aliases =  ['72', '77', '177', '199', '204']
@@ -351,9 +360,9 @@ if __name__=='__main__':
     # patternsetter=setPattern_Malaria_20hr_2015_09_11
     # networkfilename="5D_2016_01_05_C"
     # patternsetter=setPattern_Malaria_20hr_2016_01_05
-    patternsetter = setPattern_Malaria_20hr_2016_01_05_patternsnatch
+    patternsetter = setPattern_Malaria_20hr_2016_01_05_move77min
     networkfilename="5D_2016_01_28"    
-    morsegraphselection="stableFCs_patternsnatch"
+    morsegraphselection="stableFCs_move77min"
     # networkfilename="6D_2016_01_29"    
     # morsegraphselection="MG4618_onebadparameter"
     # morsegraph=565
