@@ -32,14 +32,14 @@ from math import ceil
 # Call this module as python useDSGRN.py
 
 # Given a Morse graph number MGN for a database DATABASEFILE (.db), do the following database searches:
-# 
+
 # The following gives the list of parameters in the file PARAMFILE (.txt)
 # sqlite3 /share/data/CHomP/Projects/DSGRN/DB/data/DATABASEFILE.db 'select ParameterIndex from Signatures where MorseGraphIndex=MGN' > ./PARAMFILE
-#
+
 # The following finds the Morse set number:
 # sqlite3 /share/data/CHomP/Projects/DSGRN/DB/data/DATABASEFILE.db 'select * from MorseGraphAnnotations where MorseGraphIndex=MGN'
-#
-#
+
+
 # Count the number of parameters in all stable FCs:
 # sqlite3 /share/data/CHomP/Projects/DSGRN/DB/data/DATABASEFILE.db 'select count(*) from Signatures natural join (select distinct(MorseGraphIndex) from (select MorseGraphIndex,Vertex from MorseGraphAnnotations where Label="FC" except select MorseGraphIndex,Source from MorseGraphEdges))'
 
