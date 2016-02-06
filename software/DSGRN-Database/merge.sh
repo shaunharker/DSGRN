@@ -14,21 +14,20 @@ echo 'Indexing database shards...'
 for db in `ls $folder`; do
     echo $db
     echo "PRAGMA temp_store_directory = '$(pwd)';" > commands.sql    
-    echo "create index if not exists MorseGraphViz2 on MorseGraphViz (Graphviz, MorseGraphIndex);" >> commands.sql
+    echo "create index if not exists MorseGraphVizAsc on MorseGraphViz (Graphviz ASC, MorseGraphIndex);" >> commands.sql
     cat commands.sql | sqlite3 $folder/$db
     rm commands.sql
 done
 
 # Create List of all Morse Graphs (in graphviz form)
 echo 'Scanning database shards...'
-sqlite3 $target 'create table MGList (Graphviz TEXT, unique(Graphviz));'
-sqlite3 $target 'create index if not exists MGList2 on MGList (Graphviz);'
+sqlite3 $target 'create table MGList (Graphviz TEXT PRIMARY KEY ASC);'
 for db in `ls $folder`; do
     echo $db
     echo "PRAGMA temp_store_directory = '$(pwd)';" > commands.sql    
     echo "attach '$folder/$db' as mergeMe;" >> commands.sql
-    echo "explain query plan insert or ignore into MGList select Graphviz from mergeMe.MorseGraphViz;" >> commands.sql
-    echo "insert or ignore into MGList select Graphviz from mergeMe.MorseGraphViz;" >> commands.sql
+    echo "explain query plan insert or ignore into MGList select Graphviz from mergeMe.MorseGraphViz order by Graphviz;" >> commands.sql
+    echo "insert or ignore into MGList select Graphviz from mergeMe.MorseGraphViz order by Graphviz;" >> commands.sql
     cat commands.sql | sqlite3 $target
     rm commands.sql
 done
