@@ -14,10 +14,14 @@ echo 'Indexing database shards...'
 for db in `ls $folder`; do
     echo $db
     echo "PRAGMA temp_store_directory = '$(pwd)';" > commands.sql    
+    echo "drop index MorseGraphVizAsc;" >> commands.sql
+    echo "drop index MorseGraphVertices1;" >> commands.sql
+    echo "drop index MorseGraphEdges1;" >> commands.sql
+    echo "drop index MorseGraphAnnotations1;" >> commands.sql
     echo "create index if not exists MorseGraphVizAsc on MorseGraphViz (Graphviz ASC, MorseGraphIndex);" >> commands.sql
     echo "create index if not exists MorseGraphVertices1 on MorseGraphVertices (MorseGraphIndex, Vertex);" >> commands.sql
-    echo "create index if not exists MorseGraphEdges1 on MorseGraphEdges (MorseGraphIndex);" >> commands.sql
-    echo "create index if not exists MorseGraphAnnotations1 on MorseGraphAnnotations (MorseGraphIndex);" >> commands.sql
+    echo "create index if not exists MorseGraphEdges1 on MorseGraphEdges (MorseGraphIndex, Source, Target);" >> commands.sql
+    echo "create index if not exists MorseGraphAnnotations1 on MorseGraphAnnotations (MorseGraphIndex, Vertex, Label);" >> commands.sql
     cat commands.sql | sqlite3 $folder/$db
     rm commands.sql
 done
@@ -38,7 +42,7 @@ done
 
 echo "Indexing amalgamated Morse graph information..."
 echo "PRAGMA temp_store_directory = '$(pwd)';" > commands.sql   
-echo "create index ByMorseGraph on BigMorseGraphviz (Graphviz);" >> commands.sql
+echo "create index ByMorseGraph on BigMorseGraphviz (Graphviz, ShardIndex, Shard);" >> commands.sql
 cat commands.sql | sqlite3 $target
 rm commands.sql
 echo `date`
@@ -47,6 +51,7 @@ echo "Creating Master MorseGraph table..."
 echo "PRAGMA temp_store_directory = '$(pwd)';" > commands.sql   
 echo "create temp table MGList as unique(MorseGraph) from BigMorseGraphviz;" >> commands.sql
 echo "create table xMorseGraphviz (MorseGraphIndex INTEGER PRIMARY KEY, Graphviz TEXT);" >> commands.sql
+echo "explain query plan insert into xMorseGraphviz select rowid as MorseGraphIndex, Graphviz from MGList;" >> commands.sql
 echo "insert into xMorseGraphviz select rowid as MorseGraphIndex, Graphviz from MGList;" >> commands.sql
 cat commands.sql | sqlite3 $target
 rm commands.sql
@@ -62,6 +67,7 @@ echo `date`
 echo "Creating Index Mapping table..."
 echo "PRAGMA temp_store_directory = '$(pwd)';" > commands.sql   
 echo "create table BigMap (ShardIndex INTEGER, Shard TEXT, GlobalIndex INTEGER);" >> commands.sql
+echo "explain query plan insert into BigMap select ShardIndex, Shard, MorseGraphIndex from xMorseGraphviz natural join BigMorseGraphviz;" >> commands.sql
 echo "insert into BigMap select ShardIndex, Shard, MorseGraphIndex from xMorseGraphviz natural join BigMorseGraphviz;" >> commands.sql
 cat commands.sql | sqlite3 $target
 rm commands.sql
@@ -92,22 +98,57 @@ for db in `ls $folder`; do
     echo $db
     echo "PRAGMA temp_store_directory = '$(pwd)';" > commands.sql    
     echo "attach '$folder/$db' as mergeMe;" >> commands.sql
+    
+    echo "explain query plan insert into xMorseGraphVertices select GlobalIndex as MorseGraphIndex, Vertex from mergeMe.MorseGraphVertices join BigMap where MorseGraphIndex=ShardIndex and Shard='$db';" >> commands.sql
     echo "insert into xMorseGraphVertices select GlobalIndex as MorseGraphIndex, Vertex from mergeMe.MorseGraphVertices join BigMap where MorseGraphIndex=ShardIndex and Shard='$db';" >> commands.sql
+    
+    echo "explain query plan insert into xMorseGraphEdges select GlobalIndex as MorseGraphIndex, mergeMe.MorseGraphEdges.Source, mergeMe.MorseGraphEdges.Target from mergeMe.MorseGraphEdges join BigMap where MorseGraphIndex=ShardIndex and Shard='$db';" >> commands.sql
     echo "insert into xMorseGraphEdges select GlobalIndex as MorseGraphIndex, mergeMe.MorseGraphEdges.Source, mergeMe.MorseGraphEdges.Target from mergeMe.MorseGraphEdges join BigMap where MorseGraphIndex=ShardIndex and Shard='$db';" >> commands.sql
+
+    echo "explain query plan insert into xMorseGraphAnnotations select GlobalIndex as MorseGraphIndex, Vertex, Label from mergeMe.MorseGraphAnnotations join BigMap where MorseGraphIndex=ShardIndex and Shard='$db';" >> commands.sql    
     echo "insert into xMorseGraphAnnotations select GlobalIndex as MorseGraphIndex, Vertex, Label from mergeMe.MorseGraphAnnotations join BigMap where MorseGraphIndex=ShardIndex and Shard='$db';" >> commands.sql
+
+    echo "explain query plan insert or ignore into xSignatures select ParameterIndex, GlobalIndex as MorseGraphIndex from mergeMe.Signatures join BigMap where MorseGraphIndex=ShardIndex and Shard='$db';" >> commands.sql    
     echo "insert or ignore into xSignatures select ParameterIndex, GlobalIndex as MorseGraphIndex from mergeMe.Signatures join BigMap where MorseGraphIndex=ShardIndex and Shard='$db';" >> commands.sql
+
     echo 'insert or ignore into xNetwork select * from mergeMe.Network;'
     cat commands.sql | sqlite3 $target
     rm commands.sql
 done
 
 # Rename tables
-echo 'Renaming tables...'
+echo 'Finalizing MorseGraphViz...'
 echo "PRAGMA temp_store_directory = '$(pwd)';" > commands.sql    
 echo 'alter table xMorseGraphViz rename to MorseGraphViz;' >> commands.sql
-echo 'alter table xMorseGraphVertices rename to MorseGraphVertices;' >> commands.sql
-echo 'alter table xMorseGraphEdges rename to MorseGraphEdges;' >> commands.sql
-echo 'alter table xMorseGraphAnnotations rename to MorseGraphAnnotations;' >> commands.sql
+cat commands.sql | sqlite3 $target
+rm commands.sql
+
+echo 'Finalizing MorseGraphVertices...'
+echo "PRAGMA temp_store_directory = '$(pwd)';" > commands.sql    
+echo 'create index xMorseGraphVertices1 on xMorseGraphVertices (MorseGraphIndex, Vertex);' >> commands.sql
+echo 'create table MorseGraphVertices as select distinct * from xMorseGraphVertices;' >> commands.sql
+echo 'drop table xMorseGraphVertices;' >> commands.sql
+cat commands.sql | sqlite3 $target
+rm commands.sql
+
+echo 'Finalizing MorseGraphEdges...'
+echo "PRAGMA temp_store_directory = '$(pwd)';" > commands.sql    
+echo 'create index xMorseGraphEdges1 on xMorseGraphEdges (MorseGraphIndex, Source, Target);' >> commands.sql
+echo 'create table MorseGraphEdges as select distinct * from xMorseGraphEdges;' >> commands.sql
+echo 'drop table xMorseGraphEdges;' >> commands.sql
+cat commands.sql | sqlite3 $target
+rm commands.sql
+
+echo 'Finalizing MorseGraphAnnotations...'
+echo "PRAGMA temp_store_directory = '$(pwd)';" > commands.sql    
+echo 'create index xMorseGraphAnnotations1 on xMorseGraphAnnotations (MorseGraphIndex, Vertex, Label);' >> commands.sql
+echo 'create table MorseGraphAnnotations as select distinct * from xMorseGraphAnnotations;' >> commands.sql
+echo 'drop table xMorseGraphAnnotations;' >> commands.sql
+cat commands.sql | sqlite3 $target
+rm commands.sql
+
+echo 'Finalizing Signatures...'
+echo "PRAGMA temp_store_directory = '$(pwd)';" > commands.sql    
 echo 'alter table xSignatures rename to Signatures;' >> commands.sql
 echo 'alter table xNetwork rename to Network;' >> commands.sql
 cat commands.sql | sqlite3 $target
