@@ -42,14 +42,14 @@ done
 
 echo "Indexing amalgamated Morse graph information..."
 echo "PRAGMA temp_store_directory = '$(pwd)';" > commands.sql   
-echo "create index ByMorseGraph on BigMorseGraphviz (Graphviz, ShardIndex, Shard);" >> commands.sql
+echo "create index BigMorseGraphviz1 on BigMorseGraphviz (Graphviz, ShardIndex, Shard);" >> commands.sql
 cat commands.sql | sqlite3 $target
 rm commands.sql
 echo `date`
 
 echo "Creating Master MorseGraph table..."
 echo "PRAGMA temp_store_directory = '$(pwd)';" > commands.sql   
-echo "create temp table MGList as unique(MorseGraph) from BigMorseGraphviz;" >> commands.sql
+echo "create temp table MGList as select unique(Graphviz) from BigMorseGraphviz;" >> commands.sql
 echo "create table xMorseGraphviz (MorseGraphIndex INTEGER PRIMARY KEY, Graphviz TEXT);" >> commands.sql
 echo "explain query plan insert into xMorseGraphviz select rowid as MorseGraphIndex, Graphviz from MGList;" >> commands.sql
 echo "insert into xMorseGraphviz select rowid as MorseGraphIndex, Graphviz from MGList;" >> commands.sql
@@ -75,7 +75,7 @@ echo `date`
 
 echo "Indexing Mapping table..."
 echo "PRAGMA temp_store_directory = '$(pwd)';" > commands.sql   
-echo "create index BigMap2 on BigMap (Shard, ShardIndex, MorseGraphIndex);" >> commands.sql
+echo "create index BigMap2 on BigMap (Shard, ShardIndex, GlobalIndex);" >> commands.sql
 cat commands.sql | sqlite3 $target
 rm commands.sql
 echo `date`
@@ -125,6 +125,13 @@ for db in `ls $folder`; do
 done
 
 # Rename tables
+echo 'Dropping mapping table...'
+echo "PRAGMA temp_store_directory = '$(pwd)';" > commands.sql    
+echo 'drop table BigMap;' >> commands.sql
+cat commands.sql | sqlite3 $target
+rm commands.sql
+echo `date`
+
 echo 'Finalizing MorseGraphViz...'
 echo "PRAGMA temp_store_directory = '$(pwd)';" > commands.sql    
 echo 'alter table xMorseGraphViz rename to MorseGraphViz;' >> commands.sql
