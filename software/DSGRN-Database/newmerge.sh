@@ -118,7 +118,7 @@ for db in `ls $folder`; do
     echo "explain query plan insert or ignore into xSignatures select ParameterIndex, GlobalIndex as MorseGraphIndex from mergeMe.Signatures join BigMap where MorseGraphIndex=ShardIndex and Shard='$db';" >> commands.sql    
     echo "insert or ignore into xSignatures select ParameterIndex, GlobalIndex as MorseGraphIndex from mergeMe.Signatures join BigMap where MorseGraphIndex=ShardIndex and Shard='$db';" >> commands.sql
 
-    echo 'insert or ignore into xNetwork select * from mergeMe.Network;' >> commands.sql
+    echo "insert or ignore into xNetwork select '$1',Dimension,Specification,Graphviz from mergeMe.Network;" >> commands.sql
     cat commands.sql | sqlite3 $target
     rm commands.sql
     echo `date`
