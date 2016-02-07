@@ -49,7 +49,7 @@ echo `date`
 
 echo "Creating Master MorseGraph table..."
 echo "PRAGMA temp_store_directory = '$(pwd)';" > commands.sql   
-echo "create temp table MGList as select unique(Graphviz) from BigMorseGraphviz;" >> commands.sql
+echo "create temp table MGList as select distinct Graphviz from BigMorseGraphviz;" >> commands.sql
 echo "create table xMorseGraphviz (MorseGraphIndex INTEGER PRIMARY KEY, Graphviz TEXT);" >> commands.sql
 echo "explain query plan insert into xMorseGraphviz select rowid as MorseGraphIndex, Graphviz from MGList;" >> commands.sql
 echo "insert into xMorseGraphviz select rowid as MorseGraphIndex, Graphviz from MGList;" >> commands.sql
