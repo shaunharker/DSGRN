@@ -16,18 +16,20 @@ int main() {
 		wallgraph.push_back(w);
 	}
 
+	int testresult = 0; // good result
 
-	// // works
-	// patternlist pattern = { {"Muu","uud"}, {"dmd","ddu"}, {"Mdd","ddd"} };
-	// uint64_t initial = 0;
+	// works
+	patternlist pattern = { {"Muu","uud"}, {"dmd","ddu"}, {"Mdd","ddd"} };
+	uint64_t initial = 0;
+	ismatch = recursePattern_withmatch( initial, pattern, wallgraphptr );
 	// // should match 0 5 3 1
 
 	// patternlist pattern = { {"uuM","uud"}, {"umd","udd"}, {"Muu","uud"}, {"dmd","ddu"}, {"Mdd","ddd"}, {"uuM","uud"} };
 	// uint64_t initial = 4;
 	// // should match 4 6 0 5 3 1 4
 
-	patternlist pattern = { {"mdd","uud"}, {"Muu","udd"}, {"Muu","uud"}, {"dmd","ddu"}, {"umd","uuu"}, {"Mdd","uud"} };
-	uint64_t initial = 2;
+	pattern = { {"mdd","uud"}, {"Muu","udd"}, {"Muu","uud"}, {"dmd","ddu"}, {"umd","uuu"}, {"Mdd","uud"} };
+	initial = 2;
 	// should match 2 0 6 0 5 4 6 1
 
 	bool ismatch = recursePattern_withmatch( initial, pattern, wallgraphptr );

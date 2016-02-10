@@ -51,7 +51,7 @@ bool recursePattern (uint64_t currentwallindex, patternlist pattern, wallgraphve
 
 }
 
-bool recursePattern_withmatch (uint64_t currentwallindex, patternlist pattern, wallgraphvector* wallgraphptr, std::list<uint64_t> match) {
+std::list<uint64_t> match recursePattern_withmatch (uint64_t currentwallindex, patternlist pattern, wallgraphvector* wallgraphptr, std::list<uint64_t> match) {
 
 	if ( pattern.empty() ) {
 		std::cout << "HAVE MATCH!!\n";

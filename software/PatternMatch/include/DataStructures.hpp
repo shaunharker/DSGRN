@@ -5,7 +5,7 @@
 #include <list>
 #include <vector>
 
-const int DIMENSION;
+const int DIMENSION = 2;
 
 struct patternElement {
 	std::string extremum;
@@ -17,9 +17,9 @@ typedef std::list<patternElement> patternlist;
 struct wallStruct {
 	std::list<uint64_t> outedges;
 	std::list<uint64_t> inedges;
-	double[DIMENSION] phasespace;
-	int[DIMENSION] outsigns;
-	int[DIMENSION] insigns;
+	double phasespace [DIMENSION];
+	int outsigns [DIMENSION];
+	int insigns [DIMENSION];
 	std::list<std::string> walllabels;
 	int var_affected;
 };

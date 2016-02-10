@@ -1,6 +1,4 @@
-#include "DataStructures.hpp"
-
-wallgraphvector WallGraph;
+#include "LabelWalls.hpp"
 
 void constructDiffs ( wallStruct* wall, wallgraphvector* wgptr, bool out ) {
 
@@ -8,7 +6,7 @@ void constructDiffs ( wallStruct* wall, wallgraphvector* wgptr, bool out ) {
 	double d;
 	bool plustrue;
 	bool minustrue;
-	auto edges;
+	std::list<uint64_t> edges;
 
 	if ( out ) {
 		edges = wall.outedges;
@@ -24,13 +22,19 @@ void constructDiffs ( wallStruct* wall, wallgraphvector* wgptr, bool out ) {
 
 		for ( auto e : edges ) {
 			other_wall = ( *wgptr )[e];
-			d = wall->phasespace[ i ] - other_wall.phasespace[ i ];
-			if ( d > 0 ) {
-				plustrue = true;
+			if ( out ) {
+				for ( auto f : other_wall.inedges ) {
+					
+				}
+				
 			}
-			else if ( d < 0 ) {
-				minustrue = true;
-			}
+					d = wall->phasespace[ i ] - other_wall.phasespace[ i ]; // this is not the full function
+					if ( d > 0 ) {
+						plustrue = true;
+					}
+					else if ( d < 0 ) {
+						minustrue = true;
+					}
 		}
 
 		if ( out ) {
@@ -42,9 +46,29 @@ void constructDiffs ( wallStruct* wall, wallgraphvector* wgptr, bool out ) {
 			}
 		}
 		else {
-			wall->insigns[ i ] = plustrue - minustrue;		
+			wall->insigns[ i ] = plustrue - minustrue;	// focusing flow OK, value 0
 		}
 	}
+}
+
+std::list<std::string> appendToStringInList ( const std::list<std::string> labels, std::list<std::string> addme ) {
+
+	std::list<std::string>::const_iterator iterator;
+	std::list<std::string> newlabels = {};
+	std::list<std::string> templabels;
+	std::string temp;
+
+	for ( auto a : addme ) {
+		templabels = {};
+		for ( iterator = labels.begin(); iterator != labels.end(); ++iterator ) { 
+			temp = *iterator;
+			temp += a;
+			templabels.push_back( temp );
+		}
+		newlabels.splice(newlabels.end(),templabels);
+	}
+
+	return newlabels
 }
 
 void FTable ( wallStruct* wall ) {
@@ -57,26 +81,52 @@ void FTable ( wallStruct* wall ) {
 		os = wall->outsigns[ i ];
 		is = wall->insigns[ i ];
 
-		if ( i != wall->var_affected ) { // no extrema allowed if variable is not affected
-			if ( os*is == -1 ) {
+		if ( i != wall->var_affected ) { 
+			if ( os*is == -1 ) { // no extrema allowed if variable is not affected
 				throw;
-			}
+			}			
 			else if ( is == 1 || os == 1 ) {
-				for ( auto label : labels ) { // will this work? do I need a pointer?
-					label += "I"
-				}
+				labels = appendToStringInList( labels, {"I"} );
 			}
 			else if ( is == -1 || os == -1) {
-				for ( auto label : labels ) { // will this work? do I need a pointer?
-					label += "D"
-				}
+				labels = appendToStringInList( labels, {"D"} );
 			}
 			else {
-				// make new labels for both I and D
-				;
+				labels = appendToStringInList( labels, {"I","D"} );
 			}
 		}
+		else {
+			if ( is == -1 && os == 1) { 
+				labels = appendToStringInList( labels, {"m"} );
+			}			
+			else if ( is == 1 && os == -1 ) {
+				labels = appendToStringInList( labels, {"M"} );
+			}
+			else if ( is == 1 && os == 1 ) {
+				labels = appendToStringInList( labels, {"I"} );
+			}
+			else if ( is == -1 && os == -1) {
+				labels = appendToStringInList( labels, {"D"} );
+			}
+			else if ( is == 1 ) {
+				labels = appendToStringInList( labels, {"I","M"} );
+			}			
+			else if ( is == -1 ) {
+				labels = appendToStringInList( labels, {"D","m"} );
+			}			
+			else if ( os == 1 ) {
+				labels = appendToStringInList( labels, {"I","m"} );
+			}			
+			else if ( os == -1 ) {
+				labels = appendToStringInList( labels, {"D","M"} );
+			}			
+			else {
+				labels = appendToStringInList( labels, {"I","D","M","m"} );
+			}			
+		}
 	}
+
+	wall->walllabels = labels;
 }
 
 void makeWallLabels ( wallgraphvector* wgptr ) {
@@ -84,6 +134,7 @@ void makeWallLabels ( wallgraphvector* wgptr ) {
 	for ( auto wall : *wgptr ) {
 		constructDiffs ( &wall, wgptr, true )
 		constructDiffs ( &wall, wgptr, false)
+		FTable ( &wall )
 
 	}
 }
