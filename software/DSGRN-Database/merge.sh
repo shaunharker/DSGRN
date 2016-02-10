@@ -9,14 +9,25 @@ folder=$1
 target=$2
 rm -rf $target
 
-# Create List of all Morse Graphs (in graphviz form)
-echo 'Scanning database shards...'
-sqlite3 $target 'create table MGList (Graphviz TEXT, unique(Graphviz));'
+# Index database shards
+echo 'Indexing database shards...'
 for db in `ls $folder`; do
     echo $db
-    echo "attach '$folder/$db' as mergeMe;" > commands.sql
-    echo "explain query plan insert or ignore into MGList select Graphviz from mergeMe.MorseGraphViz;" >> commands.sql
-    echo "insert or ignore into MGList select Graphviz from mergeMe.MorseGraphViz;" >> commands.sql
+    echo "PRAGMA temp_store_directory = '$(pwd)';" > commands.sql    
+    echo "create index if not exists MorseGraphVizAsc on MorseGraphViz (Graphviz ASC, MorseGraphIndex);" >> commands.sql
+    cat commands.sql | sqlite3 $folder/$db
+    rm commands.sql
+done
+
+# Create List of all Morse Graphs (in graphviz form)
+echo 'Scanning database shards...'
+sqlite3 $target 'create table MGList (Graphviz TEXT PRIMARY KEY ASC);'
+for db in `ls $folder`; do
+    echo $db
+    echo "PRAGMA temp_store_directory = '$(pwd)';" > commands.sql    
+    echo "attach '$folder/$db' as mergeMe;" >> commands.sql
+    echo "explain query plan insert or ignore into MGList select Graphviz from mergeMe.MorseGraphViz order by Graphviz;" >> commands.sql
+    echo "insert or ignore into MGList select Graphviz from mergeMe.MorseGraphViz order by Graphviz;" >> commands.sql
     cat commands.sql | sqlite3 $target
     rm commands.sql
 done
@@ -24,7 +35,8 @@ done
 # Enumerate Morse graphs (i.e. give MorseGraphIndex field)
 # and initialize database
 echo 'Initializing database'
-echo 'create table xMorseGraphViz (MorseGraphIndex INTEGER PRIMARY KEY, Graphviz TEXT);' > commands.sql
+echo "PRAGMA temp_store_directory = '$(pwd)';" > commands.sql    
+echo 'create table xMorseGraphViz (MorseGraphIndex INTEGER PRIMARY KEY, Graphviz TEXT);' >> commands.sql
 echo 'insert or ignore into xMorseGraphViz select rowid as MorseGraphIndex,Graphviz from MGList;' >> commands.sql
 echo 'drop table MGList;' >> commands.sql
 echo 'create table xMorseGraphVertices (MorseGraphIndex INTEGER, Vertex INTEGER, unique(MorseGraphIndex,Vertex));' >> commands.sql
@@ -48,7 +60,8 @@ echo 'Merging database shards...'
 for db in `ls $folder`; do
     echo ' ---------------------- '
     echo $db
-    echo "attach '$folder/$db' as mergeMe;" > commands.sql
+    echo "PRAGMA temp_store_directory = '$(pwd)';" > commands.sql    
+    echo "attach '$folder/$db' as mergeMe;" >> commands.sql
     
     echo 'explain query plan create table Map as select S.MorseGraphIndex as source,T.MorseGraphIndex as target from (mergeMe.MorseGraphViz as S join xMorseGraphViz as T on S.Graphviz=T.Graphviz);' >> commands.sql    
     echo 'create table Map as select S.MorseGraphIndex as source,T.MorseGraphIndex as target from (mergeMe.MorseGraphViz as S join xMorseGraphViz as T on S.Graphviz=T.Graphviz);' >> commands.sql
@@ -80,7 +93,8 @@ for db in `ls $folder`; do
 done
 
 # Rename tables
-echo 'alter table xMorseGraphViz rename to MorseGraphViz;' > commands.sql
+echo "PRAGMA temp_store_directory = '$(pwd)';" > commands.sql    
+echo 'alter table xMorseGraphViz rename to MorseGraphViz;' >> commands.sql
 echo 'alter table xMorseGraphVertices rename to MorseGraphVertices;' >> commands.sql
 echo 'alter table xMorseGraphEdges rename to MorseGraphEdges;' >> commands.sql
 echo 'alter table xMorseGraphAnnotations rename to MorseGraphAnnotations;' >> commands.sql
