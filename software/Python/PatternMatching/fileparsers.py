@@ -22,6 +22,23 @@
 
 import json
 
+def parseMorseGraphs(fname="morsegraphs.txt"):
+    f=open(fname,'r')
+    morse_graphs_and_sets=[]
+    for l in f.readlines():
+        L=l.replace('|',' ').split()
+        morse_graphs_and_sets.append((L[0],L[1:]))
+    f.close()
+    return morse_graphs_and_sets
+
+def parseParameters(fname="concatenatedparams.txt"):
+    f=open(fname,'r')
+    morsegraph_morseset_param=[]
+    for l in f.readlines():
+        morsegraph_morseset_param.append(tuple(l.split('|')))
+    f.close()
+    return morsegraph_morseset_param
+
 def parsePatterns(fname="patterns.txt"):
     f=open(fname,'r')
     maxmin=[]
@@ -34,6 +51,7 @@ def parsePatterns(fname="patterns.txt"):
         L=l.replace(',',' ').split()
         varnames.append(L[::2])
         maxmin.append(L[1::2])
+    f.close()
     return varnames, maxmin, originalpatterns
 
 def parseMorseSet(fname='dsgrn_output.json'):
@@ -46,8 +64,7 @@ def parseDomainCells(fname='dsgrn_domaincells.json'):
     parsed = json.load(open(fname),strict=False)
     return parsed["cells"]
 
-def parseDomainGraph(fname="dsgrn_domaingraph.txt"):
+def parseDomainGraph(fname="dsgrn_domaingraph.json"):
     return json.load(open(fname),strict=False)
-
 
 

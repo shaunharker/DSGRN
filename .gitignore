@@ -41,3 +41,7 @@ dsgrn.session
 *.dat
 *.db
 
+# IntelliJ Idea
+*.iml
+*.idea
+

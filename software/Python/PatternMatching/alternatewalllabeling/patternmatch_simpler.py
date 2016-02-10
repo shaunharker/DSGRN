@@ -23,11 +23,11 @@
 import preprocess as pp
 import sys
 
-def callPatternMatch(morseset_jsonstr,domgraph_jsonstr,domcells_jsonstr,patternstr,fname_results='results.txt',cyclic=1,findallmatches=1, printtoscreen=0,writetofile=1,returnmatches=0,numberofmatchesonly=1): # pragma: no cover
+def callPatternMatch(fname_morseset='dsgrn_output.json',fname_domgraph='dsgrn_domaingraph.json',fname_domcells='dsgrn_domaincells.json',fname_patterns='patterns.txt',fname_results='results.txt',cyclic=1,findallmatches=1, printtoscreen=0,writetofile=1,returnmatches=0,numberofmatchesonly=1): # pragma: no cover
     if printtoscreen:
         print "Preprocessing..."
         sys.stdout.flush()
-    patternlist,originalpatterns,wallinfo=pp.preprocess(morseset_jsonstr,domgraph_jsonstr,domcells_jsonstr,patternstr,cyclic) 
+    patternlist,originalpatterns,wallinfo=pp.preprocess(fname_morseset,fname_domgraph,fname_domcells,fname_patterns,cyclic) 
     if printtoscreen:
         print "Searching..."
         sys.stdout.flush()
@@ -66,8 +66,6 @@ def callPatternMatch(morseset_jsonstr,domgraph_jsonstr,domcells_jsonstr,patterns
             else:
                 matches_result.append(matches)
                 patterns_result.append(origpat)
-        # if onlyonepattern and matches:
-        #     break
     if writetofile: 
         f.close()
     if returnmatches:
@@ -116,10 +114,11 @@ def matchPattern(pattern,wallinfo,cyclic=1,findallmatches=1):
     if not pattern:
         return "None, no results found. Pattern is empty."
     # check if any word in pattern is not a wall label (it's pointless to search in that case)
-    flatlabels = set([w for _,list_of_labels in wallinfo.iteritems() for (_,labels) in list_of_labels for w in labels])
+    flatlabels = set([w for (_,labels) in wallinfo for w in labels])
     if not set(pattern).issubset(flatlabels):
         return "None, no results found. Pattern contains an element that is not a wall label."
     # find all possible starting nodes for a matching path
+    # FIXME starting here
     startwallpairs=pathInitializer(pattern[0],wallinfo)
     # return trivial length one patterns
     if len(pattern)==1:
@@ -154,32 +153,34 @@ def pathInitializer(firstpattern,wallinfo):
                 startwallpairs.append((currentwall,nextwall))
     return list(set(startwallpairs))
 
-def recursePattern(lastwall,currentwall,match,matches,pattern,wallinfo,cyclic):
+def recursePattern(currentwall,match,matches,pattern,wallinfo,cyclic):
     # Core algorithm for pattern matching.
     if len(pattern)==0:
-        if (cyclic and match[0]==lastwall) or not cyclic: 
+        if (cyclic and match[0]==match[-1]) or not cyclic: 
             matches.append(tuple(match))
-    elif (lastwall,currentwall) in wallinfo:
-        extremum,intermediate = pattern[0]
-        for (nextwall,labels) in wallinfo[(lastwall,currentwall)]:
+    else:
+        (extremum,intermediate) = pattern[0]
+        (outedges,labels) = wallinfo[currentwall]
+        for nextwall in outedges:
             if extremum in labels: # extremum = reduce pattern by one
-                matches=recursePattern(currentwall,nextwall,match+[currentwall],matches,pattern[1:],wallinfo,cyclic)
+                matches=recursePattern(nextwall,match+[currentwall],matches,pattern[1:],wallinfo,cyclic)
             if intermediate in labels: # intermediate = same pattern
-                matches=recursePattern(currentwall,nextwall,match+[currentwall],matches,pattern,wallinfo,cyclic)
+                matches=recursePattern(nextwall,match+[currentwall],matches,pattern,wallinfo,cyclic)
     return matches
 
-def recursePatternOneMatch(lastwall,currentwall,match,pattern,wallinfo,cyclic):
+def recursePatternOneMatch(currentwall,match,pattern,wallinfo,cyclic):
     # Stop after one match by throwing an error. Return the match as a string in the error text.
     if len(pattern)==0:
-        if (cyclic and match[0]==lastwall) or not cyclic: 
+        if (cyclic and match[0]==match[-1]) or not cyclic: 
             raise ValueError(str([tuple(match)]))
-    elif (lastwall,currentwall) in wallinfo:
-        extremum,intermediate = pattern[0]
-        for (nextwall,labels) in wallinfo[(lastwall,currentwall)]:
+    else:
+        (extremum,intermediate) = pattern[0]
+        (outedges,labels) = wallinfo[currentwall]
+        for nextwall in outedges:
             if extremum in labels: # extremum = reduce pattern by one
-                matches=recursePatternOneMatch(currentwall,nextwall,match+[currentwall],pattern[1:],wallinfo,cyclic)
+                matches=recursePattern(nextwall,match+[currentwall],matches,pattern[1:],wallinfo,cyclic)
             if intermediate in labels: # intermediate = same pattern
-                matches=recursePatternOneMatch(currentwall,nextwall,match+[currentwall],pattern,wallinfo,cyclic)
+                matches=recursePattern(nextwall,match+[currentwall],matches,pattern,wallinfo,cyclic)
     return []
 
 
