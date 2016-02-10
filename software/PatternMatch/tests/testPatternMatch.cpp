@@ -2,7 +2,6 @@
 
 int main() {
 	wallgraphvector wallgraph;
-	wallgraphvector *wallgraphptr = &wallgraph;
 
 	wallStruct wall0 = { {5,6}, {"Muu"} };
 	wallStruct wall1 = { {2,4}, {"udd","Mdd","ddd","mdd"} };
@@ -21,7 +20,7 @@ int main() {
 	// works
 	patternlist pattern = { {"Muu","uud"}, {"dmd","ddu"}, {"Mdd","ddd"} };
 	uint64_t initial = 0;
-	ismatch = recursePattern_withmatch( initial, pattern, wallgraphptr );
+	ismatch = recursePattern_withmatch( initial, pattern, wallgraph );
 	// // should match 0 5 3 1
 
 	// patternlist pattern = { {"uuM","uud"}, {"umd","udd"}, {"Muu","uud"}, {"dmd","ddu"}, {"Mdd","ddd"}, {"uuM","uud"} };
@@ -32,7 +31,7 @@ int main() {
 	initial = 2;
 	// should match 2 0 6 0 5 4 6 1
 
-	bool ismatch = recursePattern_withmatch( initial, pattern, wallgraphptr );
+	bool ismatch = recursePattern_withmatch( initial, pattern, wallgraph );
 
 	std::cout << ismatch << "\n";
 

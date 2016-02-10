@@ -4,6 +4,8 @@
 #include <String>
 #include <list>
 #include <vector>
+#include <set>
+#include "DSGRN.h"
 
 const int DIMENSION = 2;
 
@@ -20,7 +22,7 @@ struct wallStruct {
 	double phasespace [DIMENSION];
 	int outsigns [DIMENSION];
 	int insigns [DIMENSION];
-	std::list<std::string> walllabels;
+	std::vector<std::set<char>> walllabels;
 	int var_affected;
 };
 
