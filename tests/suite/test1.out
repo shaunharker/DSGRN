@@ -1,6 +1,6 @@
 digraph {
 0[label="XC {X1, X3}"];
-1[label="FP ON"];
+1[label="FP { 3, 1, 1 }"];
 0 -> 1;
 }
 
