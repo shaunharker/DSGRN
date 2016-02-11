@@ -360,9 +360,9 @@ if __name__=='__main__':
     # patternsetter=setPattern_Malaria_20hr_2015_09_11
     # networkfilename="5D_2016_01_05_C"
     # patternsetter=setPattern_Malaria_20hr_2016_01_05
-    patternsetter = setPattern_Malaria_20hr_2016_01_05_move77min
-    networkfilename="5D_2016_01_28"    
-    morsegraphselection="stableFCs_move77min"
+    patternsetter = setPattern_Malaria_20hr_2016_01_05
+    networkfilename="6D_2016_02_10_malaria_essential"    
+    morsegraphselection="stableFCs"
     # networkfilename="6D_2016_01_29"    
     # morsegraphselection="MG4618_onebadparameter"
     # morsegraph=565
