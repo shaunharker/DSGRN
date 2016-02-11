@@ -43,6 +43,8 @@ find_package(Boost 1.58.0 REQUIRED COMPONENTS serialization)
 
 include_directories ( 
   ${CMAKE_SOURCE_DIR}/include
+  ./include
+  ../../include
   /usr/local/include 
   /opt/local/include 
   ${Boost_INCLUDE_DIRS} 
