@@ -9,18 +9,26 @@ void printMatch( std::list<uint64_t> match ) {
 	std::cout << "\n";
 }
 
-bool recursePattern (uint64_t currentwallindex, patternlist pattern, const wallgraphvector& wallgraphptr ) {
+bool recursePattern (uint64_t currentwallindex, patternlist pattern, const wallgraphvector& wallgraphptr, const bool boolflag = true ) {
 
-	// make extremum list
-	// make hash_value
-	// if hash_value in hash_table, use hash_table[hash_value] as result, otherwise continue
+	// memoize should be member of class
 
-	if ( pattern.empty() ) {
-		// add hash_value true
-		return true;
+	std::size_t key = boost::hash_value(std::pair<currentwallindex,patternlist>);
+	
+	if ( memoize.count(key) ) {
+		; 
+	} else if ( pattern.empty() ) {
+		if ( boolflag ) {
+			return true;
+		} else {
+			memoize[key] = true;
+		}		
 	} else {
-		auto extremum = ( pattern.front() ).extremum;
-		auto intermediate = ( pattern.front() ).intermediate;
+		auto extremum = pattern.front();
+		auto intermediate = pattern.front();
+		std::replace(intermediate.begin(),intermediate.end(),'M','I')
+		std::replace(intermediate.begin(),intermediate.end(),'m','D')
+
 		auto walllabels = wallgraphptr[ currentwallindex ].walllabels;
 		bool extremum_in_labels = true;
 		bool intermediate_in_labels = true;
@@ -33,7 +41,7 @@ bool recursePattern (uint64_t currentwallindex, patternlist pattern, const wallg
 				intermediate_in_labels = false;				
 			}
 			if ( !extremum_in_labels && !intermediate_in_labels ) {
-				// add hash_value false
+				memoize[key] = false;
 				break; 
 			}
 		}
@@ -45,14 +53,14 @@ bool recursePattern (uint64_t currentwallindex, patternlist pattern, const wallg
 		if ( extremum_in_labels ) {
 			for ( auto nextwallindex : outedges) {
 				if ( recursePattern( nextwallindex, patterntail, wallgraphptr ) ) {
-					return true;
+					return true; // do with memosize
 				} // else, keep recursing
 			}
 		}
 		if ( intermediate_in_labels ) {
 			for ( auto nextwallindex : outedges) {
 				if ( recursePattern( nextwallindex, pattern, wallgraphptr ) ) {
-					return true;
+					return true; // do with memosize
 				} // else, keep recursing
 			}
 		}

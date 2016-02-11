@@ -11,15 +11,15 @@
 
 const int DIMENSION = 2;
 
-typedef std::list<std::string> extremumlist; 
-typedef std::pair<uint64_t,extremumlist> keypair;
+typedef std::list<std::string> patternlist; 
+typedef std::pair<uint64_t,patternlist> keypair;
 
-struct patternElement {
-	std::string extremum;
-	std::string intermediate;
-};
+// struct patternElement {
+// 	std::string extremum;
+// 	std::string intermediate;
+// };
 
-typedef std::list<patternElement> patternlist; 
+// typedef std::list<patternElement> patternlist; 
 
 struct wallStruct {
 	std::list<uint64_t> outedges;
