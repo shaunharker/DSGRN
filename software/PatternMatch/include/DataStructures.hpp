@@ -1,6 +1,8 @@
 #ifndef PATTERNMATCH_DATASTRUCTURES_HPP
 #define PATTERNMATCH_DATASTRUCTURES_HPP
 
+#include <boost/unordered_map.hpp>
+#include <boost/functional/hash.hpp> // boost can hash "pair"; note: not guaranteed same hash run-to-run
 #include <String>
 #include <list>
 #include <vector>
@@ -8,6 +10,9 @@
 #include "DSGRN.h"
 
 const int DIMENSION = 2;
+
+typedef std::list<std::string> extremumlist; 
+typedef std::pair<uint64_t,extremumlist> keypair;
 
 struct patternElement {
 	std::string extremum;

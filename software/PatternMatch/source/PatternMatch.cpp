@@ -11,7 +11,12 @@ void printMatch( std::list<uint64_t> match ) {
 
 bool recursePattern (uint64_t currentwallindex, patternlist pattern, const wallgraphvector& wallgraphptr ) {
 
+	// make extremum list
+	// make hash_value
+	// if hash_value in hash_table, use hash_table[hash_value] as result, otherwise continue
+
 	if ( pattern.empty() ) {
+		// add hash_value true
 		return true;
 	} else {
 		auto extremum = ( pattern.front() ).extremum;
@@ -27,9 +32,10 @@ bool recursePattern (uint64_t currentwallindex, patternlist pattern, const wallg
 			if ( walllabels[ i ].count( intermediate[ i ] ) == 0) {
 				intermediate_in_labels = false;				
 			}
-			// if ( !extremum_in_labels && !intermediate_in_labels ) {
-			// 	break;
-			// }
+			if ( !extremum_in_labels && !intermediate_in_labels ) {
+				// add hash_value false
+				break; 
+			}
 		}
 
 		auto outedges = wallgraphptr[ currentwallindex ].outedges;
