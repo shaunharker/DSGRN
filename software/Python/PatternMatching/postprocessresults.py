@@ -88,7 +88,7 @@ if __name__ == '__main__':
     #     for u in uniqueparams:
     #         uf.write(str(u)+'\n')
     # print len(uniqueparams)
-    filename='5D_2016_01_28_essential_stableFCs_allresults.txt'
+    filename='/share/data/bcummins/parameterresults_archive/5D_2016_01_28_essential_stableFCs_allresults.txt'
     uniquepatterns, countpatterns = resultsFileParser(filename)
     counts, patterns = sort_by_list(countpatterns,uniquepatterns,True)
     with open('countedpatterns.txt','w') as cp:
