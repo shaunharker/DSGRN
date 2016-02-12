@@ -80,29 +80,30 @@ def sort_by_list(X,Y,reverse=False):
     return newX,newY
      
 if __name__ == '__main__':
-    filename='5D_2016_01_28_stableFCs_allresults.txt'
-    listofpatterns = ['199 max, 72 max, 177 max, 204 max, 77 max, 72 min, 199 min, 204 min, 177  min, 77 min, 199 max', '72 max, 199 max, 204 max, 177 max, 77 max, 199 min, 72 min, 177  min, 204 min, 77 min, 72 max','72 max, 199 max, 177 max, 204 max, 77 max, 199 min, 72 min, 204 min, 177  min, 77 min, 72 max','199 max, 72 max, 204 max, 177 max, 77 max, 72 min, 199 min, 177  min, 204 min, 77 min, 199 max','199 max, 72 max, 204 max, 177 max, 77 max, 72 min, 199 min, 177  min, 77 min, 204 min, 199 max','72 max, 199 max, 204 max, 177 max, 77 max, 199 min, 72 min, 177  min, 77 min, 204 min, 72 max','199 max, 72 max, 177 max, 204 max, 77 max, 72 min, 199 min, 177  min, 204 min, 77 min, 199 max','72 max, 199 max, 177 max, 204 max, 77 max, 199 min, 72 min, 177  min, 204 min, 77 min, 72 max','199 max, 72 max, 177 max, 204 max, 77 max, 72 min, 199 min, 177  min, 77 min, 204 min, 199 max','72 max, 199 max, 177 max, 204 max, 77 max, 199 min, 72 min, 177  min, 77 min, 204 min, 72 max','72 max, 199 max, 177 max, 204 max, 77 max, 72 min, 199 min, 204 min, 177  min, 77 min, 72 max','72 max, 199 max, 204 max, 177 max, 77 max, 72 min, 199 min, 177  min, 204 min, 77 min, 72 max','72 max, 199 max, 177 max, 204 max, 77 max, 72 min, 199 min, 177  min, 204 min, 77 min, 72 max','72 max, 199 max, 204 max, 177 max, 77 max, 72 min, 199 min, 177  min, 77 min, 204 min, 72 max','72 max, 199 max, 177 max, 204 max, 77 max, 72 min, 199 min, 177  min, 77 min, 204 min, 72 max']
-    listofpatterns = ['199 max, 72 max, 177 max, 204 max, 77 max, 72 min, 199 min, 204 min, 177  min, 77 min, 199 max', '72 max, 199 max, 204 max, 177 max, 77 max, 199 min, 72 min, 177  min, 204 min, 77 min, 72 max']    
-    uniqueparams = searchUniqueParamsInListOfPatterns(filename,listofpatterns)
-    with open('uniqueparamsintop15patterns.txt','w') as uf:
-        for u in uniqueparams:
-            uf.write(str(u)+'\n')
-    print len(uniqueparams)
-    # uniquepatterns, countpatterns = resultsFileParser(filename)
-    # counts, patterns = sort_by_list(countpatterns,uniquepatterns,True)
-    # with open('countedpatterns.txt','w') as cp:
-    #     for (p,c) in zip(patterns,counts):
-    #         cp.write(str(c) + '     '  + p+ '\n')
-    # print sum(counts)
-    # # # with open('uniquepatterns.txt','w') as uf:
-    # # #     for up in uniquepatterns:
-    # # #         uf.write(up+'\n')
-    # # uniquepatterns=[]
-    # # with open('uniquepatterns.txt','r') as uf:
-    # #     for line in uf:
-    # #         uniquepatterns.append(line[:-1])
-    # # # check5D_2016_01_28_originalpatterns(uniquepatterns) 
-    # # lattice = [ ['199 max'], ['177 max', '72 max'],['204 max'],
-    # #             ['77 max'], ['199 min'],['72 min', '177  min', '204 min'],['77 min']]    
-    # # totalorders = makeTotalOrdersFromLattice(lattice,cyclic=1)
-    # # searchFile(uniquepatterns,totalorders,lattice)
+    # filename='5D_2016_01_28_stableFCs_allresults.txt'
+    # listofpatterns = ['199 max, 72 max, 177 max, 204 max, 77 max, 72 min, 199 min, 204 min, 177  min, 77 min, 199 max', '72 max, 199 max, 204 max, 177 max, 77 max, 199 min, 72 min, 177  min, 204 min, 77 min, 72 max','72 max, 199 max, 177 max, 204 max, 77 max, 199 min, 72 min, 204 min, 177  min, 77 min, 72 max','199 max, 72 max, 204 max, 177 max, 77 max, 72 min, 199 min, 177  min, 204 min, 77 min, 199 max','199 max, 72 max, 204 max, 177 max, 77 max, 72 min, 199 min, 177  min, 77 min, 204 min, 199 max','72 max, 199 max, 204 max, 177 max, 77 max, 199 min, 72 min, 177  min, 77 min, 204 min, 72 max','199 max, 72 max, 177 max, 204 max, 77 max, 72 min, 199 min, 177  min, 204 min, 77 min, 199 max','72 max, 199 max, 177 max, 204 max, 77 max, 199 min, 72 min, 177  min, 204 min, 77 min, 72 max','199 max, 72 max, 177 max, 204 max, 77 max, 72 min, 199 min, 177  min, 77 min, 204 min, 199 max','72 max, 199 max, 177 max, 204 max, 77 max, 199 min, 72 min, 177  min, 77 min, 204 min, 72 max','72 max, 199 max, 177 max, 204 max, 77 max, 72 min, 199 min, 204 min, 177  min, 77 min, 72 max','72 max, 199 max, 204 max, 177 max, 77 max, 72 min, 199 min, 177  min, 204 min, 77 min, 72 max','72 max, 199 max, 177 max, 204 max, 77 max, 72 min, 199 min, 177  min, 204 min, 77 min, 72 max','72 max, 199 max, 204 max, 177 max, 77 max, 72 min, 199 min, 177  min, 77 min, 204 min, 72 max','72 max, 199 max, 177 max, 204 max, 77 max, 72 min, 199 min, 177  min, 77 min, 204 min, 72 max']
+    # listofpatterns = ['199 max, 72 max, 177 max, 204 max, 77 max, 72 min, 199 min, 204 min, 177  min, 77 min, 199 max', '72 max, 199 max, 204 max, 177 max, 77 max, 199 min, 72 min, 177  min, 204 min, 77 min, 72 max']    
+    # uniqueparams = searchUniqueParamsInListOfPatterns(filename,listofpatterns)
+    # with open('uniqueparamsintop15patterns.txt','w') as uf:
+    #     for u in uniqueparams:
+    #         uf.write(str(u)+'\n')
+    # print len(uniqueparams)
+    filename='5D_2016_01_28_essential_stableFCs_allresults.txt'
+    uniquepatterns, countpatterns = resultsFileParser(filename)
+    counts, patterns = sort_by_list(countpatterns,uniquepatterns,True)
+    with open('countedpatterns.txt','w') as cp:
+        for (p,c) in zip(patterns,counts):
+            cp.write(str(c) + '     '  + p+ '\n')
+    print sum(counts)
+    # # with open('uniquepatterns.txt','w') as uf:
+    # #     for up in uniquepatterns:
+    # #         uf.write(up+'\n')
+    # uniquepatterns=[]
+    # with open('uniquepatterns.txt','r') as uf:
+    #     for line in uf:
+    #         uniquepatterns.append(line[:-1])
+    # # check5D_2016_01_28_originalpatterns(uniquepatterns) 
+    # lattice = [ ['199 max'], ['177 max', '72 max'],['204 max'],
+    #             ['77 max'], ['199 min'],['72 min', '177  min', '204 min'],['77 min']]    
+    # totalorders = makeTotalOrdersFromLattice(lattice,cyclic=1)
+    # searchFile(uniquepatterns,totalorders,lattice)
