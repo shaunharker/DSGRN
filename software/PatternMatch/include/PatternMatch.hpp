@@ -4,9 +4,8 @@
 #include "DataStructures.hpp"
 #include <algorithm>
 #include <iostream>
+#include <deque>
 
-void printMatch( std::list<uint64_t> match ); 
-bool recursePattern_withmatch (uint64_t currentwallindex, patternlist pattern, wallgraphvector* wallgraphptr, std::list<uint64_t> match = {});
-bool recursePattern (uint64_t currentwallindex, patternlist pattern, wallgraphvector* wallgraphptr );
- 
- #endif
+bool patternMatch (uint64_t startwall, patternlist pattern, const wallgraphvector& wallgraphptr );
+
+#endif

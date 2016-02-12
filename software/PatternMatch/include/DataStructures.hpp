@@ -7,7 +7,7 @@
 #include <list>
 #include <vector>
 #include <set>
-#include "DSGRN.h"
+// #include "DSGRN.h"
 
 const int DIMENSION = 2;
 
@@ -23,12 +23,12 @@ typedef std::pair<uint64_t,patternlist> keypair;
 
 struct wallStruct {
 	std::list<uint64_t> outedges;
-	std::list<uint64_t> inedges;
-	double phasespace [DIMENSION];
-	int outsigns [DIMENSION];
-	int insigns [DIMENSION];
-	std::vector<std::set<char>> walllabels;
-	int var_affected;
+	// std::list<uint64_t> inedges;
+	// double phasespace [DIMENSION];
+	// int outsigns [DIMENSION];
+	// int insigns [DIMENSION];
+	std::vector<std::set<char>> labels;
+	// int var_affected;
 };
 
 typedef std::vector<wallStruct> wallgraphvector;
