@@ -14,6 +14,8 @@ const int DIMENSION = 2;
 typedef std::list<std::string> patternlist; 
 typedef std::pair<uint64_t,patternlist> keypair;
 
+// // I can use the following custom data type if I provide a hash function for it:
+
 // struct patternElement {
 // 	std::string extremum;
 // 	std::string intermediate;

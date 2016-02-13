@@ -6,6 +6,6 @@
 #include <iostream>
 #include <deque>
 
-bool patternMatch (uint64_t startwall, patternlist pattern, const wallgraphvector& wallgraphptr );
+bool patternMatch (uint64_t startwall, patternlist pattern, const wallgraphvector& wallgraphptr, const bool findonlyone = true );
 
 #endif
