@@ -1,51 +1,84 @@
 #include "PatternMatch.hpp"
 
-bool patternMatch ( ) {
+std::list<std::pair<patternlist,uint64_t>> patternMatch ( std::list<patternvector> allpatterns ) {
 
-	bool foundmatch = false;
+	memoize keepcount; 
+	std::list<std::pair<patternlist,uint64_t>> results;
+	patternvector oldpattern = allpatterns.front();
 
+	for ( auto pattern : allpatterns ) {
+		 // keepcount = checkMemoize ( pattern, oldpattern ); clear elements from keepcount based on mismatch between old and new
+
+		nummatches = _patternMatch( pattern, keepcount );
+
+		if ( nummatches > 0 ) {
+			results.push_back( std::make_pair(pattern, nummatches) );
+			if ( findoption == 1 ) {
+				return results;
+			}
+		}
+	}
+	return results;
+}
+
+uint64_t _patternMatch ( const patternvector pattern, memoize& keepcount ) {
+
+	uint64_t N = pattern.size();
+
+	// construct intermediate labels
+	std::vector<std::string> temp = pattern;
+	for ( auto& t : temp ) {
+		std::replace(t.begin(),t.end(),'M','I');
+		std::replace(t.begin(),t.end(),'m','D');		
+	}
+	const std::vector<std::string> intermediates = temp;
+
+	// initialize the stack and store top level nodes
+	nodes_to_visit = _initializeStack ( pattern );
+	const auto original_keys = nodes_to_visit;
+
+	// depth first search
 	while ( !nodes_to_visit.empty() ) {
 
-		wallpair key = nodes_to_visit.front();
+		auto thisnode = nodes_to_visit.front()
+		auto wall = thisnode.first;
+		auto patternlen = thisnode.second;
 		nodes_to_visit.pop_front();
-		auto pattern = key.second;
 
-		if ( pattern.empty() ) {
-			if ( findonlyone ) {
-				return true;
+		if ( patternlen == 0 ) {
+			if ( findoption < 3 ) {
+				return 1;
 			} else {
-				memoize[ key ] = true;
-				foundmatch = true;
+				keepcount[ thisnode ] = 1;
 				continue;
 			}
 		}
 
-		auto walllabels = wallgraph[ key.first ].labels;
-		auto extremum = pattern.front();
-		auto intermediate = pattern.front();
-		std::replace(intermediate.begin(),intermediate.end(),'M','I');
-		std::replace(intermediate.begin(),intermediate.end(),'m','D');
-		// possible improvement -- write hashing function for PatternElement
-		// data type and use it as the map key,
-		// that way intermediate does not have to be recalculated each time
-		bool extremum_in_labels = _checkForWordInLabels( extremum, walllabels );
-		bool intermediate_in_labels = _checkForWordInLabels( intermediate, walllabels );
+		auto walllabels = wallgraph[ wall ].labels;
+		bool extremum_in_labels = _checkForWordInLabels( pattern[ N - patternlen ], walllabels );
+		bool intermediate_in_labels = _checkForWordInLabels( intermediates[ N - patternlen ], walllabels );
 
 		if ( !extremum_in_labels && !intermediate_in_labels ) {
-			memoize[ key ] = false;
+			keepcount[ thisnode ] = 0;
 			continue; 
 		}
 		if intermediate_in_labels {
-			_addToStack( pattern, key );
+			_addToStack( patternlen, thisnode );
 		}
 		if extremum_in_labels {
-			auto patterntail = pattern;
-			patterntail.pop_front();
-			_addToStack( patterntail, key );
+			_addToStack( patternlen-1, thisnode );
 		}
 	}
-	// save memoize to a "results" class member if !findonlyone?
-	return foundmatch;
+
+	if ( findoption < 3 ) {
+		return 0;
+	} else {
+		uint64_t count = 0;
+		for ( auto key : original_keys ) {
+			count += keepcount[ key ];
+		}
+		return count;
+	}
 }
 
 bool _checkForWordInLabels( const std::string word, const std::vector<std::set<char>> labels) {
@@ -59,171 +92,27 @@ bool _checkForWordInLabels( const std::string word, const std::vector<std::set<c
 	return inthere;	
 }
 
-void _addToStack ( const patternlist p, const wallpair key ) {
+void _addToStack ( uint64_t patternlen, node thisnode ) {
 
 	bool assign = true;
-	bool ispath = false;
-	auto outedges = wallgraph[ key.first ].outedges;
-	wallpair new_node;
+	uint64_t numpaths = 0;
+	auto outedges = wallgraph[ thisnode.first ].outedges;
+	node new_node;
 
 	for ( auto nextwall : outedges) {
-		new_node = std::make_pair( nextwall, p );
-		if ( !memoize.count( new_node ) ) {
+		new_node = std::make_pair( nextwall, patternlen );
+		if ( !keepcount.count( new_node ) ) {
 			assign = false;
 			nodes_to_visit.push_front( new_node );
-		} else if ( memoize[ new_node ] ) {
-			ispath = true;
-		} // else do nothing
+		} else if ( assign ) {
+			numpaths += keepcount[ new_node ];
+		} 
 	} 
 	if ( assign ) {
-		// if all children previously traversed, assign truth value
-		memoize[ key ] = ispath; 
+		// if all children previously traversed, add together number of paths
+		keepcount[ thisnode ] = numpaths; 
 	}
 }
-
-
-// bool patternMatch (uint64_t startwall, patternlist startpattern, const wallgraphvector& wallgraphptr ) {
-
-// 	typedef std::pair<uint64_t,patternlist> wallpair;
-// 	std::deque<wallpair> nodes_to_visit;
-// 	nodes_to_visit.push_front( std::make_pair(startwall,startpattern) );
-
-// 	// 	// memoize should be member of class
-// 	// 	// wallgraph should be member of class
-
-// 	while ( !(nodes_to_visit.empty()) ) {
-// 		// std::cout << "New while: \n";
-// 		// for (auto p : nodes_to_visit) {
-// 		// 	std::cout << p.first << "\n";
-// 		// }
-// 		// std::cout << "\n";
-
-// 		wallpair node = nodes_to_visit.front();
-// 		nodes_to_visit.pop_front();
-
-// 		auto wall = node.first;
-// 		auto pattern = node.second;
-
-// 		if ( pattern.empty() ) {
-// 			return true;
-// 		}
-
-// 		auto extremum = pattern.front();
-// 		auto intermediate = pattern.front();
-// 		std::replace(intermediate.begin(),intermediate.end(),'M','I');
-// 		std::replace(intermediate.begin(),intermediate.end(),'m','D');
-// 		// std::cout << "extremum: " << extremum << ", intermediate: " << intermediate << "\n"; 
-
-// 		auto walllabels = wallgraphptr[ wall ].labels;
-// 		bool extremum_in_labels = true;
-// 		bool intermediate_in_labels = true;
-
-// 		for ( int i = 0; i < walllabels.size(); ++i ) {
-// 			if ( walllabels[ i ].count( extremum[ i ] ) == 0) {
-// 				extremum_in_labels = false;				
-// 			}
-// 			if ( walllabels[ i ].count( intermediate[ i ] ) == 0) {
-// 				intermediate_in_labels = false;				
-// 			}
-// 			if ( !extremum_in_labels && !intermediate_in_labels ) {
-// 				break; 
-// 			}
-// 		}
-
-// 		if ( !extremum_in_labels && !intermediate_in_labels ) {
-// 			continue; 
-// 		}
-
-// 		auto outedges = wallgraphptr[ wall ].outedges;
-// 		auto patterntail = pattern;
-// 		patterntail.pop_front();
-
-// 		if ( intermediate_in_labels ) {
-// 			for ( auto nextwallindex : outedges) {
-// 				nodes_to_visit.push_front( std::make_pair( nextwallindex, pattern ) );
-// 			} 
-// 		}
-// 		if ( extremum_in_labels ) {
-// 			for ( auto nextwallindex : outedges) {
-// 				nodes_to_visit.push_front( std::make_pair( nextwallindex, patterntail ) );
-// 			} 
-// 		}
-// 	}
-// 	return false;
-// }
-
-
-// bool recursePattern (uint64_t currentwallindex, patternlist pattern, const wallgraphvector& wallgraphptr, const bool boolflag = true ) {
-
-// 	// memoize should be member of class
-// 	// wallgraph should be member of class
-
-// 	static bool foundmatch = false;
-// 	std::pair<uint64_t,patternlist> key (currentwallindex,pattern);
-	
-// 	if ( !(memoize.count(key)) ) {
-// 		if ( pattern.empty() ) {
-// 			if ( boolflag ) {
-// 				return true;
-// 			} else {
-// 				foundmatch = true;
-// 				memoize[key] = true;
-// 			}		
-// 		} else {
-// 			auto extremum = pattern.front();
-// 			auto intermediate = pattern.front();
-// 			std::replace(intermediate.begin(),intermediate.end(),'M','I')
-// 			std::replace(intermediate.begin(),intermediate.end(),'m','D')
-
-// 			auto walllabels = wallgraphptr[ currentwallindex ].walllabels;
-// 			bool extremum_in_labels = true;
-// 			bool intermediate_in_labels = true;
-
-// 			for ( int i = 0; i < walllabels.size(); ++i ) {
-// 				if ( walllabels[ i ].count( extremum[ i ] ) == 0) {
-// 					extremum_in_labels = false;				
-// 				}
-// 				if ( walllabels[ i ].count( intermediate[ i ] ) == 0) {
-// 					intermediate_in_labels = false;				
-// 				}
-// 				if ( !extremum_in_labels && !intermediate_in_labels ) {
-// 					memoize[key] = false;
-// 					break; 
-// 				}
-// 			}
-
-// 			auto outedges = wallgraphptr[ currentwallindex ].outedges;
-// 			auto patterntail = pattern;
-// 			patterntail.pop_front();
-
-// 			if ( extremum_in_labels ) {
-// 				for ( auto nextwallindex : outedges) {
-// 					if ( recursePattern( nextwallindex, patterntail, wallgraphptr ) ) {
-// 						if ( boolflag ) {
-// 							return true;
-// 						} else {
-// 							foundmatch = true;
-// 							memoize[key] = true;
-// 						}		
-// 					} // else, keep recursing
-// 				}
-// 			}
-// 			if ( intermediate_in_labels ) {
-// 				for ( auto nextwallindex : outedges) {
-// 					if ( recursePattern( nextwallindex, pattern, wallgraphptr ) ) {
-// 						if ( boolflag ) {
-// 							return true;
-// 						} else {
-// 							foundmatch = true;
-// 							memoize[key] = true;
-// 						}		
-// 					} // else, keep recursing
-// 				}
-// 			}
-// 		}
-// 		return foundmatch;
-// 	}
-// }
 
 // void printMatch( std::list<uint64_t> match ) {
 // 	for ( auto m : match ) {
@@ -232,7 +121,7 @@ void _addToStack ( const patternlist p, const wallpair key ) {
 // 	std::cout << "\n";
 // }
 
-// std::list<uint64_t> match recursePattern_withmatch (uint64_t currentwallindex, patternlist pattern, const wallgraphvector& wallgraphptr, std::list<uint64_t> match) {
+// std::list<uint64_t> match recursePattern_withmatch (uint64_t currentwallindex, patternvector pattern, const wallgraphvector& wallgraphptr, std::list<uint64_t> match) {
 
 // 	if ( pattern.empty() ) {
 // 		std::cout << "HAVE MATCH!!\n";
