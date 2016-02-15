@@ -8,8 +8,6 @@
 #include <set>
 // #include "DSGRN.h"
 
-const int DIMENSION = 2;
-
 typedef std::vector<std::string> patternvector; 
 typedef std::pair<uint64_t,patternlist> keypair;
 
