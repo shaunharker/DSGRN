@@ -1,7 +1,7 @@
 #ifndef PATTERNMATCH_DATASTRUCTURES_HPP
 #define PATTERNMATCH_DATASTRUCTURES_HPP
 
-#include <boost/unordered_map.hpp>
+#include <boost/unordered_map.hpp> // boost has hash for std::pair
 #include <String>
 #include <list>
 #include <vector>
@@ -9,7 +9,6 @@
 // #include "DSGRN.h"
 
 typedef std::vector<std::string> patternvector; 
-typedef std::pair<uint64_t,patternlist> keypair;
 
 struct wallStruct {
 	std::list<uint64_t> outedges;

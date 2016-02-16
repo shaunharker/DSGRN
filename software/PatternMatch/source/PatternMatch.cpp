@@ -1,14 +1,27 @@
 #include "PatternMatch.hpp"
 
-resultslist PatternMatch::patternMatch ( std::list<patternvector> allpatterns ) {
+PatternMatch::resultslist PatternMatch::patternMatch ( std::list<patternvector> allpatterns, const int findoption ) {
 
-	memoize keepcount; 
-	resultslist results;
+	/* 
+	patterns that are intended to be periodic may be overcounted, because we are not guaranteed to return
+	to the same place in phase space
+	*/
+
+	// make sure findoption has allowable value
+	const std::list<int> allowableoptions = {1,2,3};
+	if ( std::find( allowableoptions.begin(), allowableoptions.end(), findoption ) == allowableoptions.end() ) {
+		throw;
+	}
+
+	PatternMatch::memoize keepcount; // initializes empty map 
+	PatternMatch::resultslist results;
 	patternvector oldpattern = allpatterns.front();
 
 	for ( auto pattern : allpatterns ) {
+		// keep keys in keepcount that are going to be searched again
 		_pruneRegister( pattern, oldpattern, keepcount );
-		nummatches = _patternMatch( pattern, keepcount );
+		// perform the pattern match
+		uint64_t nummatches = _patternMatch( pattern, findoption, keepcount );
 
 		if ( nummatches > 0 ) {
 			results.push_back( std::make_pair(pattern, nummatches) );
@@ -21,7 +34,7 @@ resultslist PatternMatch::patternMatch ( std::list<patternvector> allpatterns ) 
 	return results;
 }
 
-void PatternMatch::_pruneRegister( patternvector newpattern, patternvector oldpattern, memoize& keepcount ) {
+void PatternMatch::_pruneRegister( patternvector newpattern, patternvector oldpattern, PatternMatch::memoize& keepcount ) {
 	std::reverse(newpattern.begin(),newpattern.end());
 	std::reverse(oldpattern.begin(),oldpattern.end());
 	uint64_t tailmatch = 0;
@@ -45,7 +58,13 @@ void PatternMatch::_pruneRegister( patternvector newpattern, patternvector oldpa
 	}
 }
 
-uint64_t PatternMatch::_patternMatch ( const patternvector pattern, memoize& keepcount ) {
+uint64_t PatternMatch::_patternMatch ( const patternvector pattern, const int findoption, PatternMatch::memoize& keepcount ) {
+
+	// require nonzero length pattern 
+	uint64_t N = pattern.size();
+	if ( N < 1 ) { 
+		return 0;
+	}
 
 	// construct intermediate labels
 	std::vector<std::string> temp = pattern;
@@ -55,22 +74,30 @@ uint64_t PatternMatch::_patternMatch ( const patternvector pattern, memoize& kee
 	}
 	const std::vector<std::string> intermediates = temp;
 
-	// initialize the stack and store top level nodes
-	uint64_t N = pattern.size();
-	if ( N < 1 ) { // require nonzero length pattern for extremum_in_labels if block
-		return 0;
-	}
-	nodes_to_visit = _initializeStack ( N, pattern.front() ); // note initialize is recalculated in the while loop, is there a better way to do this?
-	if ( N == 1 ) { // result for trivial pattern
+	/* explicit initialize: 
+	 -- to return trivial results
+	 -- to record top nodes for final counts
+	 -- to avoid intermediate label on top nodes in while loop
+	 **The initialization is recalculated in the while loop, unfortunately. 
+	*/
+	std::stack< PatternMatch::node > nodes_to_visit = _initializeStack ( N, pattern.front() ); 
+	// result for trivial pattern
+	if ( N == 1 ) { 
 		return nodes_to_visit.size();
 	}
-	const auto original_keys = nodes_to_visit; // only used if findoption==3
+	// record top nodes as list for later searching
+	std::list<PatternMatch::node> top_nodes;
+	auto tn = nodes_to_visit;
+	for ( int i = 0; i < tn.size(); ++i ) {
+		top_nodes.push_back(tn.top());
+		tn.pop();
+	}
 
 	// depth first search
 	while ( !nodes_to_visit.empty() ) {
 
-		auto thisnode = nodes_to_visit.front()
-		nodes_to_visit.pop_front();
+		auto thisnode = nodes_to_visit.top();
+		nodes_to_visit.pop();
 
 		auto wall = thisnode.first;
 		auto patternlen = thisnode.second;
@@ -82,12 +109,15 @@ uint64_t PatternMatch::_patternMatch ( const patternvector pattern, memoize& kee
 			keepcount[ thisnode ] = 0;
 			continue; 
 		}
-		if intermediate_in_labels {
-			_addToStack( patternlen, thisnode );
+
+		bool in_top_nodes = _checkForNodeInTopNodes( thisnode, top_nodes );
+		if ( intermediate_in_labels && !in_top_nodes ) {
+			_addToStack( patternlen, thisnode, keepcount, nodes_to_visit );
 		}
-		if extremum_in_labels { // implicitly, patternlen > 0
+
+		if ( extremum_in_labels ) { 
 			if ( patternlen > 1 ) {
-				_addToStack( patternlen-1, thisnode );
+				_addToStack( patternlen-1, thisnode, keepcount, nodes_to_visit );
 			// else if patternlen == 1 and extremum_in_labels, we have reached the final leaf in a path
 			} else if ( findoption < 3 ) { 
 				return 1;
@@ -101,48 +131,57 @@ uint64_t PatternMatch::_patternMatch ( const patternvector pattern, memoize& kee
 		return 0;
 	} else {
 		uint64_t count = 0;
-		for ( auto key : original_keys ) {
+		for ( auto key : top_nodes ) {
 			count += keepcount[ key ];
 		}
 		return count;
 	}
 }
 
-std::stack<node> PatternMatch::_initializeStack ( const uint64_t N, const std::string extremum ) {
+std::stack<PatternMatch::node> PatternMatch::_initializeStack ( const uint64_t N, const std::string extremum ) {
 
-	std::stack<node> nodes_to_visit;
+	std::stack<PatternMatch::node> nodes_to_visit;
 
 	for ( uint64_t i = 0; i < wallgraph.size(); ++i ) {
 		if ( _checkForWordInLabels( extremum, wallgraph[ i ].labels ) ) {
-			nodes_to_visit.push_front( std::make_pair( i, N ) );
+			nodes_to_visit.push( std::make_pair( i, N ) );
 		}
 	}
 	return nodes_to_visit;
 }
 
 bool PatternMatch::_checkForWordInLabels( const std::string word, const std::vector<std::set<char>> labels) {
-	bool inthere = true;
+	// match all
 	for ( int i = 0; i < labels.size(); ++i ) {
 		if ( labels[ i ].count( word[ i ] ) == 0 ) {
-			inthere = false;	
-			break;			
+			return false;	
 		}
 	}
-	return inthere;	
+	return true;	
 }
 
-void PatternMatch::_addToStack ( uint64_t patternlen, node thisnode ) {
+bool PatternMatch::_checkForNodeInTopNodes( const PatternMatch::node thisnode, const std::list<PatternMatch::node> top_nodes ) {
+	// match any
+	for ( auto topnode : top_nodes ) {
+		if ( topnode == thisnode ) {
+			return true;
+		}
+	}
+	return false;
+}
+
+void PatternMatch::_addToStack ( const uint64_t patternlen, const PatternMatch::node thisnode, PatternMatch::memoize& keepcount, std::stack< PatternMatch::node >& nodes_to_visit ) {
 
 	bool assign = true;
 	uint64_t numpaths = 0;
 	auto outedges = wallgraph[ thisnode.first ].outedges;
-	node new_node;
+	PatternMatch::node new_node;
 
 	for ( auto nextwall : outedges) {
 		new_node = std::make_pair( nextwall, patternlen );
 		if ( !keepcount.count( new_node ) ) {
 			assign = false;
-			nodes_to_visit.push_front( new_node );
+			nodes_to_visit.push( new_node );
 		} else if ( assign ) {
 			numpaths += keepcount[ new_node ];
 		} 

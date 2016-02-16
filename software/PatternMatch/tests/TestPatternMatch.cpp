@@ -16,24 +16,30 @@ int main() {
 		wallgraph.push_back(w);
 	}
 
-	int testresult = 0; // good result
+	PatternMatch PM ( wallgraph );
 
 	std::cout << "Test 1: \n";
 	// works
-	patternlist pattern = { "MII","DmD","MDD" };
-	uint64_t initial = 0;
-	std::cout << patternMatch( initial, pattern, wallgraph ) << "\n\n";
-	// should match 0 5 3 1
+	std::list<patternvector> patterns = { { "MII","DmD","MDD" } };
+	PatternMatch::resultslist results = PM.patternMatch( patterns, 3 );
+	for (auto keypair : results ) {
+			for ( auto str : keypair.first ) {
+				std::cout << str << " ";
+			}
+			std::cout << "has " << keypair.second << " match(es)\n";		
+	}
+		// should match 0 5 3 1
+	std::cout << "\n";
 
-	std::cout << "Test 2: \n";
-	pattern = { "IIM","ImD","MII","DmD","MDD","IIM" };
-	initial = 4;
-	std::cout << patternMatch( initial, pattern, wallgraph ) << "\n\n";
-	// should match 4 6 0 5 3 1 4
+	// std::cout << "Test 2: \n";
+	// pattern = { "IIM","ImD","MII","DmD","MDD","IIM" };
+	// initial = 4;
+	// std::cout << patternMatch( initial, pattern, wallgraph ) << "\n\n";
+	// // should match 4 6 0 5 3 1 4
 
-	std::cout << "Test 3: \n";
-	pattern = { "DmD","MII","MID","MDD" };
-	initial = 5;
-	std::cout << patternMatch( initial, pattern, wallgraph ) << "\n";
-	// should match 5 4 0 6 2 3 1
+	// std::cout << "Test 3: \n";
+	// pattern = { "DmD","MII","MID","MDD" };
+	// initial = 5;
+	// std::cout << patternMatch( initial, pattern, wallgraph ) << "\n";
+	// // should match 5 4 0 6 2 3 1
 } 
