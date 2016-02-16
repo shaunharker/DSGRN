@@ -88,13 +88,23 @@ uint64_t PatternMatch::_patternMatch ( const patternvector pattern, const int fi
 	// record top nodes as list for later searching
 	std::list<PatternMatch::node> top_nodes;
 	auto tn = nodes_to_visit;
+	std::cout << "\nTop nodes: ";
 	for ( int i = 0; i < tn.size(); ++i ) {
+		std::cout << tn.top().first << " ";
 		top_nodes.push_back(tn.top());
 		tn.pop();
 	}
+	std::cout << "\n";
 
 	// depth first search
 	while ( !nodes_to_visit.empty() ) {
+
+		// DEBUG
+		std::cout << "\nNew loop: \n";
+		for ( auto kvp : keepcount ) {
+			std::cout << "wall " << ( kvp.first ).first << " has " << kvp.second << " matches.\n";
+		}
+		// END DEBUG
 
 		auto thisnode = nodes_to_visit.top();
 		nodes_to_visit.pop();
@@ -191,6 +201,8 @@ void PatternMatch::_addToStack ( const uint64_t patternlen, const PatternMatch::
 		keepcount[ thisnode ] = numpaths; 
 	}
 }
+
+
 
 // void printMatch( std::list<uint64_t> match ) {
 // 	for ( auto m : match ) {
