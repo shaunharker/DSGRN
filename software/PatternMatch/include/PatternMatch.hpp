@@ -10,8 +10,8 @@ class PatternMatch {
 	
 	public:
 		typedef std::list<std::pair<patternvector,uint64_t>> resultslist; // list< pair < pattern, number_matches > >
-		typedef std::pair<uint64_t,uint64_t> node; // key in map = pair< wall_index, pattern_length > 
-		typedef boost::unordered_map< node, uint64_t > memoize; // map< node, number_matches >
+		typedef std::pair<uint64_t,uint64_t> node; // data type for stack, < wall_index, pattern_len > 
+		typedef std::vector<std::pair<std::list<uint64_t>,std::list<uint64_t>>> memoize; // indexed by pattern length, first list in the pair is wall_index, second is count
 
 		// constructor
 		PatternMatch ( wallgraphvector& wg ) : wallgraph(wg) {}

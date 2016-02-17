@@ -13,9 +13,9 @@ PatternMatch::resultslist PatternMatch::patternMatch ( std::list<patternvector> 
 		throw;
 	}
 
-	PatternMatch::memoize keepcount; // initializes empty map 
 	PatternMatch::resultslist results;
 	patternvector oldpattern = allpatterns.front();
+	PatternMatch::memoize keepcount ( oldpattern.size(), std::make_pair({},{}) ); // initializes vector of pairs of empty lists
 
 	for ( auto pattern : allpatterns ) {
 		// keep keys in keepcount that are going to be searched again
@@ -48,13 +48,13 @@ void PatternMatch::_pruneRegister( patternvector newpattern, patternvector oldpa
 	}
 
 	if ( tailmatch == 0 ) {
-		keepcount.clear();
+		keepcount.assign ( newpattern.size(), std::make_pair({},{}) );
 	} else {
-		for ( auto kvp : keepcount ) {
-			if ( ( kvp.first ).second > tailmatch ) {
-				keepcount.erase(kvp.first);
-			}
+		PatternMatch::memoize new_keepcount ( newpattern.size(), std::make_pair({},{}) );
+		for ( int j = 0; j < tailmatch; ++j ) {
+			new_keepcount[ j ] = keepcount[ j ];
 		}
+		keepcount = new_keepcount;
 	}
 }
 
@@ -88,13 +88,19 @@ uint64_t PatternMatch::_patternMatch ( const patternvector pattern, const int fi
 	// record top nodes as list for later searching
 	std::list<PatternMatch::node> top_nodes;
 	auto tn = nodes_to_visit;
+	// DEBUG
 	std::cout << "\nTop nodes: ";
+	// END DEBUG
 	for ( int i = 0; i < tn.size(); ++i ) {
+		// DEBUG
 		std::cout << tn.top().first << " ";
+		// END DEBUG
 		top_nodes.push_back(tn.top());
 		tn.pop();
 	}
+	// DEBUG	
 	std::cout << "\n";
+	// END DEBUG
 
 	// depth first search
 	while ( !nodes_to_visit.empty() ) {
@@ -116,7 +122,8 @@ uint64_t PatternMatch::_patternMatch ( const patternvector pattern, const int fi
 		bool intermediate_in_labels = _checkForWordInLabels( intermediates[ N - patternlen ], walllabels );
 
 		if ( !extremum_in_labels && !intermediate_in_labels ) {
-			keepcount[ thisnode ] = 0;
+			( keepcount[ patternlen ].first ).push_back( wall );
+			( keepcount[ patternlen ].second ).push_back( 0 );
 			continue; 
 		}
 
