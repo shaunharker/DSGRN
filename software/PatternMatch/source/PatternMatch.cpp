@@ -144,6 +144,8 @@ uint64_t PatternMatch::_patternMatch ( const patternvector pattern, const int fi
 		}
 	}
 
+	// FIXME: add backfill
+
 	if ( findoption < 3 ) {
 		return 0;
 	} else {
@@ -189,17 +191,17 @@ bool PatternMatch::_checkForNodeInTopNodes( const PatternMatch::node thisnode, c
 
 void PatternMatch::_addToStack ( const uint64_t patternlen, const PatternMatch::node thisnode, PatternMatch::memoize& keepcount, std::stack< PatternMatch::node >& nodes_to_visit ) {
 
-	bool assign = true;
 	uint64_t numpaths = 0;
 	auto outedges = wallgraph[ thisnode.first ].outedges;
 	PatternMatch::node new_node;
 
 	for ( auto nextwall : outedges) {
-		new_node = std::make_pair( nextwall, patternlen );
-		// ( keepcount[ patternlen ].second ).push_back( 0 );	
-		if ( !keepcount.count( new_node ) ) {
-			assign = false;
-			nodes_to_visit.push( new_node );
+		auto walls = keepcount[ patternlen ].first;	
+		if ( std::find( walls.begin(), walls.end(), nextwall ) == walls.end() ) {
+			nodes_to_visit.push( std::make_pair( nextwall, patternlen ) );
+			( keepcount[ patternlen ].first ).push_back( nextwall );
+			( keepcount[ patternlen ].second ).push_back( -1 );
+		//FIXME with new memoization structure
 		} else if ( assign ) {
 			numpaths += keepcount[ new_node ];
 		} 
