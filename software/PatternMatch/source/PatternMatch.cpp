@@ -196,6 +196,7 @@ void PatternMatch::_addToStack ( const uint64_t patternlen, const PatternMatch::
 
 	for ( auto nextwall : outedges) {
 		new_node = std::make_pair( nextwall, patternlen );
+		// ( keepcount[ patternlen ].second ).push_back( 0 );	
 		if ( !keepcount.count( new_node ) ) {
 			assign = false;
 			nodes_to_visit.push( new_node );
