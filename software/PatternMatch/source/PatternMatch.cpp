@@ -15,7 +15,7 @@ PatternMatch::resultslist PatternMatch::patternMatch ( std::list<patternvector> 
 
 	PatternMatch::resultslist results;
 	patternvector oldpattern = allpatterns.front();
-	PatternMatch::memoize keepcount ( oldpattern.size(), std::make_pair({},{}) ); // initializes vector of pairs of empty lists
+	PatternMatch::memoize keepcount ( oldpattern.size()+1, std::make_pair({},{}) ); // initializes vector of pairs of empty vectors; keepcount[0] will always be a pair of empties; memoization starts at pattern length 1
 
 	for ( auto pattern : allpatterns ) {
 		// keep keys in keepcount that are going to be searched again
@@ -48,10 +48,11 @@ void PatternMatch::_pruneRegister( patternvector newpattern, patternvector oldpa
 	}
 
 	if ( tailmatch == 0 ) {
-		keepcount.assign ( newpattern.size(), std::make_pair({},{}) );
+		keepcount.assign ( newpattern.size()+1, std::make_pair({},{}) );
 	} else {
-		PatternMatch::memoize new_keepcount ( newpattern.size(), std::make_pair({},{}) );
-		for ( int j = 0; j < tailmatch; ++j ) {
+		PatternMatch::memoize new_keepcount ( newpattern.size()+1, std::make_pair({},{}) );
+		// recall keepcount[0] is empty; matching starts at pattern length 1
+		for ( int j = 1; j < tailmatch+1; ++j ) { 
 			new_keepcount[ j ] = keepcount[ j ];
 		}
 		keepcount = new_keepcount;
@@ -74,43 +75,14 @@ uint64_t PatternMatch::_patternMatch ( const patternvector pattern, const int fi
 	}
 	const std::vector<std::string> intermediates = temp;
 
-	/* explicit initialize: 
-	 -- to return trivial results
-	 -- to record top nodes for final counts
-	 -- to avoid intermediate label on top nodes in while loop
-	 **The initialization is recalculated in the while loop, unfortunately. 
-	*/
-	std::stack< PatternMatch::node > nodes_to_visit = _initializeStack ( N, pattern.front() ); 
-	// result for trivial pattern
-	if ( N == 1 ) { 
-		return nodes_to_visit.size();
+	// initialize stack
+	std::stack< PatternMatch::node > nodes_to_visit; 
+	for ( uint64_t i = 0; i < wallgraph.size(); ++i ) {
+		nodes_to_visit.push( std::make_pair( i, N ) );
 	}
-	// record top nodes as list for later searching
-	std::list<PatternMatch::node> top_nodes;
-	auto tn = nodes_to_visit;
-	// DEBUG
-	std::cout << "\nTop nodes: ";
-	// END DEBUG
-	for ( int i = 0; i < tn.size(); ++i ) {
-		// DEBUG
-		std::cout << tn.top().first << " ";
-		// END DEBUG
-		top_nodes.push_back(tn.top());
-		tn.pop();
-	}
-	// DEBUG	
-	std::cout << "\n";
-	// END DEBUG
 
 	// depth first search
 	while ( !nodes_to_visit.empty() ) {
-
-		// DEBUG
-		std::cout << "\nNew loop: \n";
-		for ( auto kvp : keepcount ) {
-			std::cout << "wall " << ( kvp.first ).first << " has " << kvp.second << " matches.\n";
-		}
-		// END DEBUG
 
 		auto thisnode = nodes_to_visit.top();
 		nodes_to_visit.pop();
@@ -127,8 +99,7 @@ uint64_t PatternMatch::_patternMatch ( const patternvector pattern, const int fi
 			continue; 
 		}
 
-		bool in_top_nodes = _checkForNodeInTopNodes( thisnode, top_nodes );
-		if ( intermediate_in_labels && !in_top_nodes ) {
+		if ( intermediate_in_labels && ( patternlen < N ) ) { // patternlen < N -> don't search intermediate labels at top nodes
 			_addToStack( patternlen, thisnode, keepcount, nodes_to_visit );
 		}
 
@@ -137,6 +108,8 @@ uint64_t PatternMatch::_patternMatch ( const patternvector pattern, const int fi
 				_addToStack( patternlen-1, thisnode, keepcount, nodes_to_visit );
 			// else if patternlen == 1 and extremum_in_labels, we have reached the final leaf in a path
 			} else if ( findoption < 3 ) { 
+				// FIXME: memoization structure incomplete for findoption 2; will have to remove -1 entries, because these represent unfinished nodes in the stack and they won't be in the stack in a new search
+				// findoption 1 can just have return statement because the for loop will break anyway
 				return 1;
 			} else {
 				keepcount[ thisnode ] = 1; 
@@ -144,14 +117,24 @@ uint64_t PatternMatch::_patternMatch ( const patternvector pattern, const int fi
 		}
 	}
 
-	// FIXME: add backfill
+	// backfill memo structure -> want this even for findoptions 1 and 2 to save computation
+
+	for ( auto i : keepcount[1].second ) {
+		if ( i != 0 ) && ( i != 1 ) {
+			throw; // leaves should all be assigned
+		}
+	}
+
+	for ( uint64_t i = 2; i < N; ++i ) {
+		auto walls =  keepcount[ i ].first;
+	}
 
 	if ( findoption < 3 ) {
 		return 0;
 	} else {
 		uint64_t count = 0;
-		for ( auto key : top_nodes ) {
-			count += keepcount[ key ];
+		for ( auto n : keepcount[ N-1 ].second ){
+			count += n;
 		}
 		return count;
 	}
@@ -179,36 +162,42 @@ bool PatternMatch::_checkForWordInLabels( const std::string word, const std::vec
 	return true;	
 }
 
-bool PatternMatch::_checkForNodeInTopNodes( const PatternMatch::node thisnode, const std::list<PatternMatch::node> top_nodes ) {
-	// match any
-	for ( auto topnode : top_nodes ) {
-		if ( topnode == thisnode ) {
-			return true;
-		}
-	}
-	return false;
-}
+void PatternMatch::_addToStack ( const uint64_t newpatternlen, const PatternMatch::node thisnode, PatternMatch::memoize& keepcount, std::stack< PatternMatch::node >& nodes_to_visit ) {
 
-void PatternMatch::_addToStack ( const uint64_t patternlen, const PatternMatch::node thisnode, PatternMatch::memoize& keepcount, std::stack< PatternMatch::node >& nodes_to_visit ) {
-
+	bool assign = true;
 	uint64_t numpaths = 0;
 	auto outedges = wallgraph[ thisnode.first ].outedges;
-	PatternMatch::node new_node;
+	auto knownwalls = keepcount[ newpatternlen ].first; 
 
+	// add new walls to stack and memoization structure
 	for ( auto nextwall : outedges) {
-		auto walls = keepcount[ patternlen ].first;	
-		if ( std::find( walls.begin(), walls.end(), nextwall ) == walls.end() ) {
-			nodes_to_visit.push( std::make_pair( nextwall, patternlen ) );
-			( keepcount[ patternlen ].first ).push_back( nextwall );
-			( keepcount[ patternlen ].second ).push_back( -1 );
-		//FIXME with new memoization structure
+		int i;
+		for ( i = 0; i < knownwalls.size(), ++i ) {
+			if ( nextwall == knownwalls[ i ] ) {
+				break;
+			} 
+		}
+		if ( i == knownwalls.size() ) {
+			assign = false;
+			nodes_to_visit.push( std::make_pair( nextwall, newpatternlen ) );
+			( keepcount[ newpatternlen ].first ).push_back( nextwall );
+			( keepcount[ newpatternlen ].second ).push_back( -1 );			
+		} else if ( ( keepcount[ newpatternlen ].second )[ i ] < 0 ) {
+			assign = false;
 		} else if ( assign ) {
-			numpaths += keepcount[ new_node ];
-		} 
+			numpaths += ( keepcount[ newpatternlen ].second )[ i ];
+		}
 	} 
+
+	// update cumsums -> if all children previously traversed, add together number of paths
 	if ( assign ) {
-		// if all children previously traversed, add together number of paths
-		keepcount[ thisnode ] = numpaths; 
+		auto walls = keepcount[ thisnode.second ].first;
+		for ( int i = 0; i < walls.size(); ++i ) {
+			if ( thisnode.first == walls[ i ] ) {
+				( keepcount[ thisnode.second ].second )[ i ] = numpaths;
+				break;
+			}
+		}
 	}
 }
 

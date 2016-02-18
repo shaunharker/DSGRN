@@ -11,7 +11,7 @@ class PatternMatch {
 	public:
 		typedef std::list<std::pair<patternvector,uint64_t>> resultslist; // list< pair < pattern, number_matches > >
 		typedef std::pair<uint64_t,uint64_t> node; // data type for stack, < wall_index, pattern_len > 
-		typedef std::vector<std::pair<std::list<uint64_t>,std::list<uint64_t>>> memoize; // indexed by pattern length, first list in the pair is wall_index, second is count
+		typedef std::vector<std::pair<std::vector<uint64_t>,std::vector<uint64_t>>> memoize; // indexed by pattern length, first vector is wall_index, second is count
 
 		// constructor
 		PatternMatch ( wallgraphvector& wg ) : wallgraph(wg) {}
@@ -26,12 +26,10 @@ class PatternMatch {
 	private:
 		const wallgraphvector& wallgraph;
 
-		std::stack<node> _initializeStack ( const uint64_t N, const std::string extremum ); 
 		void _pruneRegister( patternvector newpattern, patternvector oldpattern, memoize& keepcount );
 		uint64_t _patternMatch ( const patternvector pattern, const int findoption, memoize& keepcount );
 		bool _checkForWordInLabels( const std::string word, const std::vector<std::set<char>> labels);
-		bool _checkForNodeInTopNodes( const node thisnode, const std::list<node> top_nodes );		
-		void _addToStack ( const uint64_t patternlen, const node thisnode, memoize& keepcount, std::stack<node>& nodes_to_visit );
+		void _addToStack ( const uint64_t newpatternlen, const node thisnode, memoize& keepcount, std::stack<node>& nodes_to_visit );
 };
 
 #endif
