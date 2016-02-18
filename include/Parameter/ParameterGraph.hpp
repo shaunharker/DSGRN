@@ -157,9 +157,10 @@ index ( Parameter const& p ) const {
   };
 
   typedef std::vector<uint64_t> Interval;
+
   /// Return interval of the form : [ m*n*k+m*a, m*n*k+m*a+m )
-  auto getInterval = [](uint64_t &k, uint64_t &m, uint64_t &n, uint64_t &a ) -> std::vector<uint64_t>  {
-      return std::vector<uint64_t> { m*n*k+m*a,m*n*k+m*a+m };
+  auto getInterval = [](uint64_t &k, uint64_t &m, uint64_t &n, uint64_t &a ) -> Interval  {
+      return Interval { m*n*k+m*a,m*n*k+m*a+m };
   };
 
   auto insideInterval = [](uint64_t &n, Interval &interval) -> bool {
@@ -168,7 +169,7 @@ index ( Parameter const& p ) const {
 
   // List all the subintervals for logic_index and store the potential good values for logic index
   std::cout << "\n\nList of all subintervals for logic index\n";
-  std::vector<Interval> intervals; // needed just for debug 
+  std::vector<Interval> intervals; // needed just for debug
   std::vector<uint64_t> logicindexvalues;
   for ( uint64_t R = 0; R<data_->reorderings_; ++R ) {
       Interval interval = getInterval( R,
