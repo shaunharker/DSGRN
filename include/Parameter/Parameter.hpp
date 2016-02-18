@@ -313,4 +313,13 @@ INLINE_IF_HEADER_ONLY std::ostream& operator << ( std::ostream& stream, Paramete
   return stream;
 }
 
+INLINE_IF_HEADER_ONLY std::vector<LogicParameter> Parameter::
+logic ( void ) const { 
+    return data_ -> logic_;
+}
+
+INLINE_IF_HEADER_ONLY std::vector<OrderParameter> Parameter::
+order ( void ) const { 
+    return data_ -> order_;
+}
 #endif

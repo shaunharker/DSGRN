@@ -98,6 +98,14 @@ public:
   ///   Output debug data to stream
   friend std::ostream& operator << ( std::ostream& stream, Parameter const& p );
 
+  /// Return the logic of the parameter
+  std::vector<LogicParameter> 
+  logic ( void ) const;
+
+  /// Return the order of the parameter
+  std::vector<OrderParameter> 
+  order ( void ) const; 
+
 private:
   std::shared_ptr<Parameter_> data_;
   /// serialize
