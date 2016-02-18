@@ -185,18 +185,37 @@ index ( Parameter const& p ) const {
   /// (hmmmm no)
   /// ...
 
+  ///
+  /// TWO NODE NETWORK
+  ///
+  ///========================= LOGIC INDEX : L
 
-  ///=========================
-  /// Using only A[0] and A[1]
-
-  /// A[0] = m_0 * lpv[0] + lis[0]  : GOAL : Find m_0
+  /// L = m_0 * lpv[0] + lis[0]  : GOAL : Find m_0
 
   /// A[1] = m_1 * lpv[1] + lis[1]
-  ///        lpv[0]*( m_1 * lpv[1] + lis[1] ) <= A[0] < lpv[0]*( m_1 * lpv[1] + lis[1] + 1 )
+  ///        lpv[0]*( m_1 * lpv[1] + lis[1] ) <= L < lpv[0]*( m_1 * lpv[1] + lis[1] + 1 )
+  ///       m_1*lpv[0]*lpv[1] + lpv[0]*lis[1] <= L < m_1*lpv[0]*lpv[1] + lpv[0]*lis[1] + lpv[0]
   ///
-  /// Find the set of intervals {I_1}
-
-
+  /// because index = order_index * fixedordersize_ + logic_index < fixedordersize_*reorderings_
+  /// and
+  /// fixedordersize_ = product of the elements of logic_place_values_
+  /// reorderings_ = product of the elements of order_place_values_
+  ///
+  /// 0 < logic_index  < fixedordersize_*reorderings_
+  /// 0 < order_index  < reorderings_
+  ///
+  /// so m_1 < reorderings
+  ///
+  ///========================= ORDER INDEX : K
+  ///
+  /// K = n_0 * opv[0] + ois[0]
+  /// B[1] = n_1 * opv[1] + ois[1] with B[1] = floor( K / opv[0] )
+  ///
+  /// n_1*opv[0]*opv[1]+opv[0]*ois[1] < K < n_1*n_1*opv[0]*opv[1]+opv[0]*ois[1]+opv[0]*ois[1]+opv[0]
+  ///
+  /// because 0 < K < reorderings, n_1 = 0
+  ///
+  ///
 /// BELOW WAS INCOMPLETE TEST FOR 2 NODES NETWORKS
   /// Return : m * Q + R
   auto getInteger = []( const uint64_t &m, const uint64_t &Q, const uint64_t &R ) -> uint64_t {
@@ -218,6 +237,7 @@ index ( Parameter const& p ) const {
   std::cout << "\n\nList of all subintervals for logic index\n";
   std::vector<Interval> intervals; // needed just for debug
   std::vector<uint64_t> logicindexvalues;
+
   for ( uint64_t R = 0; R<data_->reorderings_; ++R ) {
       Interval interval = getInterval( R,
                                        data_ -> logic_place_values_[0],
@@ -229,7 +249,7 @@ index ( Parameter const& p ) const {
       uint64_t myvalue = getInteger(data_ -> logic_place_values_[0],
                                     R*data_ -> logic_place_values_[1]+logic_indices[1],
                                     logic_indices[0]);
-      std::cout << "value=" << myvalue << " ";
+      std::cout << "logic value=" << myvalue << " ";
       if ( insideInterval(myvalue,interval) ) {
           std::cout << "is good\n";
           logicindexvalues . push_back ( myvalue );
@@ -239,7 +259,9 @@ index ( Parameter const& p ) const {
   }
   // List all the subintervals for order_index and store the potential good values for order index
   std::vector<uint64_t> orderindexvalues;
-  for ( uint64_t R = 0; R<data_->reorderings_; ++R ) {
+  // Bounds wrong
+  {
+    uint64_t R = 0;
       Interval interval = getInterval( R,
                                        data_ -> order_place_values_[0],
                                        data_ -> order_place_values_[1],
@@ -250,7 +272,7 @@ index ( Parameter const& p ) const {
       uint64_t myvalue = getInteger(data_ -> order_place_values_[0],
                                     R*data_ -> order_place_values_[1]+order_indices[1],
                                     order_indices[0]);
-      std::cout << "value=" << myvalue << " ";
+      std::cout << "order value=" << myvalue << " ";
       if ( insideInterval(myvalue,interval) ) {
           std::cout << "is good\n";
           orderindexvalues . push_back ( myvalue );
