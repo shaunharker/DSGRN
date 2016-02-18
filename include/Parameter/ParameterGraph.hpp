@@ -164,7 +164,9 @@ index ( Parameter const& p ) const {
   /// L = m_0 * lpv[0] + lis[0] for n = 0
   /// with
   ///     A[n] = floor( A[n-1] / lpv[n-1] ) and A[0] = L
-  ///
+  ////
+  /// 1)
+  ////
   /// By using the floor function at the step n, we have :
   ///
   /// lpv[n-1]*( m_n * lpv[n] + lis[n] ) <= A[n-1] < lpv[n-1]*( m_n * lpv[n] + lis[n] + 1 )
@@ -175,15 +177,24 @@ index ( Parameter const& p ) const {
   ///         a_{n-1} = lpv[n-1]*( m_n * lpv[n] + lis[n] )
   ///         b_{n-1} = lpv[n-1]*( m_n * lpv[n] + lis[n] + 1 ) = a_{n-1} + lpv[n-1]
   ///
+  /// Assume we consider M values of m_n, so we have M intervals for A[n-1]
   ///
+  /// 2)
+  ///
+  /// using A[n-1] = m_{n-1} * lpv[n-1] + lis[n-1] we can find (up to) M values
+  /// for m_{n-1} to be in one of those intervals or (up to) M possible values for A[n-1]
+  ///
+  /// 3)
+  ///
+  /// using the definition : A[n-1] = floor( A[n-2]/lpv[n-2] ) (now A[n-1] is known (M possible values))
+  ///
+  ///             lpv[n-2]*A[n-1] <= A[n-2] < lpv[n-2]*A[n-1] + lpv[n-2]
+  ///
+  /// using A[n-2] = m_{n-2} * lpv[n-2] + lis[n-2] we can find (up to) M values
+  /// for m_{n-2} to be in one of those intervals or (up to) M possible values for A[n-2]
+  ///
+  /// repeat 3) till n = 0
 
-  /// and according to the step n-1
-  ///
-  /// A[n-1] = m_{n-1} * lpv[n-1] + lis[n-1]
-  ///
-  /// Find all m_{n-1} such that A[n-1] is in the set I_{n-1}
-  /// (hmmmm no)
-  /// ...
 
   ///
   /// TWO NODE NETWORK
@@ -282,6 +293,10 @@ index ( Parameter const& p ) const {
   }
 
   // Find which pair of logicindexvalues and orderindexvalues is correct
+  //
+  // ***** BUG *****
+  // for index < 60=fixedordersize, we have 2 solutions : i and 60+i with i = index
+  //
   for ( uint64_t L : logicindexvalues ) {
     for ( uint64_t O : orderindexvalues ) {
       uint64_t myindex = O * data_ -> fixedordersize_ + L;
