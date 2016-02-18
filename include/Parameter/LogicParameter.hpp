@@ -103,4 +103,9 @@ INLINE_IF_HEADER_ONLY std::ostream& operator << ( std::ostream& stream, LogicPar
   return stream;
 }
 
+INLINE_IF_HEADER_ONLY std::string LogicParameter::
+hex ( void ) const { 
+    return data_ -> hex_;
+}
+
 #endif

@@ -54,6 +54,10 @@ public:
   ///   Output debug data to stream
   friend std::ostream& operator << ( std::ostream& stream, LogicParameter const& p );
 
+  /// Return the hex code of the LogicParameter
+  std::string 
+  hex ( void ) const;
+
 private:
   std::shared_ptr<LogicParameter_> data_;
   /// serialize
