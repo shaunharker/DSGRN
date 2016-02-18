@@ -30,7 +30,14 @@ int main ( int argc, char * argv [] ) {
     // Missing Features (currently they throw):
     Parameter z = pg . parameter ( 0 );
     try { 
-      uint64_t i = pg . index ( z );
+        for ( uint64_t i = 0; i < N; ++i ) {
+            std::cout << "-------\n";
+            std::cout << "The index was : " << i << "\n\n";  
+            uint64_t j = pg . index ( pg . parameter(i) );  
+            std::cout << "-------\n";
+              
+        }
+      
     } catch ( ... ) {}
     try { 
       auto adj = pg . adjacencies ( 0 );
