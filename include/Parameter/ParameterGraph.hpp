@@ -151,48 +151,56 @@ index ( Parameter const& p ) const {
   std::cout << "\n\n";
   // end debug
 
-  /// Return : m * Q + R
-  auto getInteger = []( const uint64_t &m, const uint64_t &Q, const uint64_t &R ) -> uint64_t {
-      return m * Q + R;
-  };
 
-  typedef std::vector<uint64_t> Interval;
-
-  /// Return interval of the form : [ m*n*k+m*a, m*n*k+m*a+m )
-  auto getInterval = [](uint64_t &k, uint64_t &m, uint64_t &n, uint64_t &a ) -> Interval  {
-      return Interval { m*n*k+m*a,m*n*k+m*a+m };
-  };
-
-  auto insideInterval = [](uint64_t &n, Interval &interval) -> bool {
-    return n>=interval[0] && n<=interval[1];
-  };
-
-  // List all the subintervals for logic_index and store the potential good values for logic index
-  std::cout << "\n\nList of all subintervals for logic index\n";
-  std::vector<Interval> intervals; // needed just for debug
-  std::vector<uint64_t> logicindexvalues;
-  for ( uint64_t R = 0; R<data_->reorderings_; ++R ) {
-      Interval interval = getInterval( R,
-                                       data_ -> logic_place_values_[0],
-                                       data_ -> logic_place_values_[1],
-                                       logic_indices[1] );
-      std::cout << "[ " << interval[0] << ", " << interval[1] << " ]\n";
-      intervals . push_back ( interval );
-      /// check for good values inside the interval
-      uint64_t myvalue = getInteger(data_ -> logic_place_values_[0],
-                                    R*data_ -> logic_place_values_[1]+logic_indices[1],
-                                    logic_indices[0]);
-      std::cout << "value=" << myvalue << " ";
-      if ( insideInterval(myvalue,interval) ) {
-          std::cout << "is good\n";
-          logicindexvalues . push_back ( myvalue );
-      } else {
-          std::cout << "is bad\n";
-      }
-  }
-  // List all the subintervals for order_index and store the potential good values for order index
+  /// Find logic_index and order_index, in general 
 
 
+
+
+
+/// BELOW WAS INCOMPLETE TEST FOR 2 NODES NETWORKS
+  // /// Return : m * Q + R
+  // auto getInteger = []( const uint64_t &m, const uint64_t &Q, const uint64_t &R ) -> uint64_t {
+  //     return m * Q + R;
+  // };
+  //
+  // typedef std::vector<uint64_t> Interval;
+  //
+  // /// Return interval of the form : [ m*n*k+m*a, m*n*k+m*a+m )
+  // auto getInterval = [](uint64_t &k, uint64_t &m, uint64_t &n, uint64_t &a ) -> Interval  {
+  //     return Interval { m*n*k+m*a,m*n*k+m*a+m };
+  // };
+  //
+  // auto insideInterval = [](uint64_t &n, Interval &interval) -> bool {
+  //   return n>=interval[0] && n<=interval[1];
+  // };
+  //
+  // // List all the subintervals for logic_index and store the potential good values for logic index
+  // std::cout << "\n\nList of all subintervals for logic index\n";
+  // std::vector<Interval> intervals; // needed just for debug
+  // std::vector<uint64_t> logicindexvalues;
+  // for ( uint64_t R = 0; R<data_->reorderings_; ++R ) {
+  //     Interval interval = getInterval( R,
+  //                                      data_ -> logic_place_values_[0],
+  //                                      data_ -> logic_place_values_[1],
+  //                                      logic_indices[1] );
+  //     std::cout << "[ " << interval[0] << ", " << interval[1] << " ]\n";
+  //     intervals . push_back ( interval );
+  //     /// check for good values inside the interval
+  //     uint64_t myvalue = getInteger(data_ -> logic_place_values_[0],
+  //                                   R*data_ -> logic_place_values_[1]+logic_indices[1],
+  //                                   logic_indices[0]);
+  //     std::cout << "value=" << myvalue << " ";
+  //     if ( insideInterval(myvalue,interval) ) {
+  //         std::cout << "is good\n";
+  //         logicindexvalues . push_back ( myvalue );
+  //     } else {
+  //         std::cout << "is bad\n";
+  //     }
+  // }
+  // // List all the subintervals for order_index and store the potential good values for order index
+
+/// END INCOMPLETE TEST 2 NODES NETWORK
 
 
   return 0;
