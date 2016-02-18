@@ -5,22 +5,23 @@ set ( LIBS ${LIBS}
            sqlite3 )
 
 set( TARGETS 
-        TestAnnotation
-        TestComponents
-        TestStrongComponents
-        TestDigraph
-        TestDomain
-        TestWall        
-        TestDomainGraph
-        TestWallGraph
-        TestMorseDecomposition
-        TestMorseGraph
-        TestNetwork
-        TestOrderParameter
-        TestParameter
+#        TestAnnotation
+#        TestComponents
+#        TestStrongComponents
+#        TestDigraph
+#        TestDomain
+#        TestWall        
+#        TestDomainGraph
+#        TestWallGraph
+#        TestMorseDecomposition
+#        TestMorseGraph
+#        TestNetwork
+#        TestOrderParameter
+#        TestParameter
         TestParameterGraph
-	TestPoset )
-
+#	TestPoset )
+        )
+        
 foreach ( TARGET ${TARGETS} ) 
   add_executable ( ${TARGET} ${TARGET}.cpp )
   target_link_libraries ( ${TARGET} ${LIBS} )
