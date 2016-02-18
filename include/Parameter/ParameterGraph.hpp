@@ -152,7 +152,21 @@ index ( Parameter const& p ) const {
   // end debug
 
 
-  /// Find logic_index and order_index, in general 
+  /// Find logic_index and order_index, in general
+  /// notation :
+  /// Logic_place_values : lpv
+  /// logics_indices : lis
+  ///
+  /// For the logic index L :
+  /// A[n] = m_n * lpv[n] + lis[n] for n > 1, and m_n are unknown integers.
+  /// L = m_0 * lpv[0] + lis[0] for n = 0
+  /// with
+  ///     A[n] = floor( A[n-1] / lpv[n-1] ) and A[0] = L
+  ///
+  
+
+
+
 
 
 
