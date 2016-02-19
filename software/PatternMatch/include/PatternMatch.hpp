@@ -11,8 +11,10 @@ class PatternMatch {
 	public:
 		// results data type: list< pair < pattern, number_matches > >
 		typedef std::list<std::pair<patternvector,uint64_t>> resultslist; 
+
 		// stack element data type: < wall_index, pattern_len > 
 		typedef std::pair<uint64_t,uint64_t> node; 
+
 		// data structure for memoization indexed by pattern length
 		typedef std::pair<uint64_t, bool> keypair; // key = < wall_index, is_extremum > 
 		typedef boost::unordered_map< keypair, int64_t> pathElementMap; // map = < key, count_of_paths >
@@ -33,8 +35,10 @@ class PatternMatch {
 
 		void _pruneRegister( patternvector newpattern, patternvector oldpattern, memoize& keepcount );
 		uint64_t _patternMatch ( const patternvector pattern, const int findoption, memoize& keepcount );
-		bool _checkForWordInLabels( const std::string word, const std::vector<std::set<char>> labels);
-		void _addToStack ( const uint64_t newpatternlen, const node thisnode, memoize& keepcount, std::stack<node>& nodes_to_visit );
+		bool _checkForWordInLabels( const std::string headpattern, const labelset walllabels );
+		void _addToStack ( const bool is_extremum, const uint64_t newpatternlen, const node thisnode, memoize& keepcount, std::stack<node>& nodes_to_visit );
+		void _removeMinusOne ( const uint64_t N, memoize& keepcount );
+		void _backFill ( const uint64_t N, memoize& keepcount );
 };
 
 #endif

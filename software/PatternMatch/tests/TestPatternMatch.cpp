@@ -19,17 +19,17 @@ int main() {
 	PatternMatch PM ( wallgraph );
 
 	std::cout << "Test 1: \n";
-	// works
 	std::list<patternvector> patterns = { { "MII","DmD","MDD" } };
 	PatternMatch::resultslist results = PM.patternMatch( patterns, 3 );
-	// for (auto keypair : results ) {
-	// 		for ( auto str : keypair.first ) {
-	// 			std::cout << str << " ";
-	// 		}
-	// 		std::cout << "has " << keypair.second << " match(es)\n";		
-	// }
-	// 	// should match 0 5 3 1
-	// std::cout << "\n";
+
+	for (auto keypair : results ) {
+			for ( auto str : keypair.first ) {
+				std::cout << str << " ";
+			}
+			std::cout << "has " << keypair.second << " match(es)\n";		
+	}
+		// should match 0 5 3 1
+	std::cout << "\n";
 
 	// std::cout << "Test 2: \n";
 	// pattern = { "IIM","ImD","MII","DmD","MDD","IIM" };

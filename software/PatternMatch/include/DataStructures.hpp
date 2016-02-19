@@ -9,10 +9,11 @@
 // #include "DSGRN.h"
 
 typedef std::vector<std::string> patternvector; 
+typedef std::vector<std::set<char>> labelset;
 
 struct wallStruct {
 	std::list<uint64_t> outedges;
-	std::vector<std::set<char>> labels;
+	labelset labels;
 };
 
 typedef std::vector<wallStruct> wallgraphvector;
