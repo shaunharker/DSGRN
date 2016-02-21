@@ -123,9 +123,9 @@ index ( Parameter const& p ) const {
       }
   }
   // debug
-  std::cout << "\nLogic indices:\n";
-  for ( uint64_t d = 0; d< D; ++d ) std::cout << logic_indices[d] << " ";
-  std::cout << "\n";
+  // std::cout << "\nLogic indices:\n";
+  // for ( uint64_t d = 0; d< D; ++d ) std::cout << logic_indices[d] << " ";
+  // std::cout << "\n";
   // end debug
 
   /// Construct Order indices
@@ -134,23 +134,23 @@ index ( Parameter const& p ) const {
       order_indices . push_back ( order[d].index() );
   }
   // debug
-  std::cout << "\nOrder indices:\n";
-  for ( uint64_t d = 0; d< D; ++d ) std::cout << order_indices[d] << " ";
-  std::cout << "\n";
+  // std::cout << "\nOrder indices:\n";
+  // for ( uint64_t d = 0; d< D; ++d ) std::cout << order_indices[d] << " ";
+  // std::cout << "\n";
   // end debug
 
   // Debug
-  std::cout << "\n\n";
-  std::cout << "Logic_place_values : ";
-  for ( uint64_t d = 0; d< D; ++d ) std::cout << data_ -> logic_place_values_[d] << " ";
-  std::cout << "\n";
-  std::cout << "Order_place_values : ";
-  for ( uint64_t d = 0; d< D; ++d ) std::cout << data_ -> order_place_values_[d] << " ";
-  std::cout << "\n";
-  std::cout << "Fixed order size : " << data_ -> fixedordersize_;
-  std::cout << "\n";
-  std::cout << "reorderings : " << data_ -> reorderings_;
-  std::cout << "\n\n";
+  // std::cout << "\n\n";
+  // std::cout << "Logic_place_values : ";
+  // for ( uint64_t d = 0; d< D; ++d ) std::cout << data_ -> logic_place_values_[d] << " ";
+  // std::cout << "\n";
+  // std::cout << "Order_place_values : ";
+  // for ( uint64_t d = 0; d< D; ++d ) std::cout << data_ -> order_place_values_[d] << " ";
+  // std::cout << "\n";
+  // std::cout << "Fixed order size : " << data_ -> fixedordersize_;
+  // std::cout << "\n";
+  // std::cout << "reorderings : " << data_ -> reorderings_;
+  // std::cout << "\n\n";
   // end debug
 
 
@@ -159,161 +159,103 @@ index ( Parameter const& p ) const {
   /// Logic_place_values : lpv
   /// logics_indices : lis
   ///
-  /// For the logic index L :
-  /// A[n] = m_n * lpv[n] + lis[n] ,m_n are unknown integers.
-  /// L = m_0 * lpv[0] + lis[0] for n = 0
-  /// with
-  ///     A[n] = floor( A[n-1] / lpv[n-1] ) and A[0] = L
-  ////
-  /// 1)
-  ////
-  /// By using the floor function at the step n, we have :
+  /// For the logic index L (but similar for order index)
+  /// for various level of d's
+  /// d = 0 : lis[0] = L % lpv[0]
+  /// d = 1 : lis[1] = floor( L/lpv[0] ) % lpv[1]
+  /// d = 2 : lis[2] = floor( floor(L/lpv[0]) / lpv[1] ) % lpv[2]
+  /// ...
+  /// so for we have :
   ///
-  /// lpv[n-1]*( m_n * lpv[n] + lis[n] ) <= A[n-1] < lpv[n-1]*( m_n * lpv[n] + lis[n] + 1 )
+  /// from d = 0 :
+  /// L = m_0 * lpv[0] + lis[0] and 0 <= L < size()                          (0)
+  /// so 0 <= m_0 < floor(size()/lpv[0])
   ///
-  /// so A[n-1] is a set of intervals of the form
-  ///     I_{n-1} = [ a_{n-1}, b_{n-1} )   for various m_n (positive integers)
-  ///     with
-  ///         a_{n-1} = lpv[n-1]*( m_n * lpv[n] + lis[n] )
-  ///         b_{n-1} = lpv[n-1]*( m_n * lpv[n] + lis[n] + 1 ) = a_{n-1} + lpv[n-1]
+  /// from d = 1 :
+  /// floor(L/lpv[0]) = m_1 * lpv[1] + lis[1]
+  /// or
+  /// m_0 = m_1 * lpv[1] + lis[1]                                            (1)
+  /// a given value m_0 is admissible if there is a value m_1 such that
+  /// the equation (1) is satisfied, meaning (m_0-lis[1]) % lpv[1] == 0
+  /// if (1) is satisfied, compute m_1 and go to the next level for d.
+  /// if (1) is not satisfied, go back to (0) with a new value for m_0
   ///
-  /// Assume we consider M values of m_n, so we have M intervals for A[n-1]
+  /// from d = 2 :
+  /// floor( floor(L/lpv[0])/lpv[1] ) =  m_2 * lpv[2] + lis[2]
+  /// or
+  /// m_1 = m_2 * lpv[2] + lis[2]                                            (3)
+  /// the m_1 value found is admissible is (3) can be satisfied,
+  /// meaning :  (m_1-lpv[2]) % lpv[2] == 0
   ///
-  /// 2)
+  /// keep going till the last level for d.
   ///
-  /// using A[n-1] = m_{n-1} * lpv[n-1] + lis[n-1] we can find (up to) M values
-  /// for m_{n-1} to be in one of those intervals or (up to) M possible values for A[n-1]
+  /// if d = 2 is the last level, and (3) is satisfied then m_0 is an admissible
+  /// value and L can be computed using (0). If (3) is not satisfied, then
+  /// go back to (0) with a new value for m_0
   ///
-  /// 3)
+  /// In general, a set of values of m_0 will be admissible.
+  /// it goes like  :
+  /// for 0<index<fixedordersize_                 : "reorderings_" admissible values
+  /// for fixedordersize_<index<2*fixedordersize_ : "reorderings_-1" admissible values
+  /// ...
+  /// for size()-fixedordersize_<index<size()     : we have 1 admissible value
   ///
-  /// using the definition : A[n-1] = floor( A[n-2]/lpv[n-2] ) (now A[n-1] is known (M possible values))
+  /// In practice, the first admissible value for m_0, meaning satisfying all
+  /// the different equations for each d-level is the right now. (or so it seems)
   ///
-  ///             lpv[n-2]*A[n-1] <= A[n-2] < lpv[n-2]*A[n-1] + lpv[n-2]
-  ///
-  /// using A[n-2] = m_{n-2} * lpv[n-2] + lis[n-2] we can find (up to) M values
-  /// for m_{n-2} to be in one of those intervals or (up to) M possible values for A[n-2]
-  ///
-  /// repeat 3) till n = 0
 
-
-  ///
-  /// TWO NODE NETWORK
-  ///
-  ///========================= LOGIC INDEX : L
-
-  /// L = m_0 * lpv[0] + lis[0]  : GOAL : Find m_0
-
-  /// A[1] = m_1 * lpv[1] + lis[1]
-  ///        lpv[0]*( m_1 * lpv[1] + lis[1] ) <= L < lpv[0]*( m_1 * lpv[1] + lis[1] + 1 )
-  ///       m_1*lpv[0]*lpv[1] + lpv[0]*lis[1] <= L < m_1*lpv[0]*lpv[1] + lpv[0]*lis[1] + lpv[0]
-  ///
-  /// because index = order_index * fixedordersize_ + logic_index < fixedordersize_*reorderings_
-  /// and
-  /// fixedordersize_ = product of the elements of logic_place_values_
-  /// reorderings_ = product of the elements of order_place_values_
-  ///
-  /// 0 < logic_index  < fixedordersize_*reorderings_
-  /// 0 < order_index  < reorderings_
-  ///
-  /// so m_1 < reorderings
-  ///
-  ///========================= ORDER INDEX : K
-  ///
-  /// K = n_0 * opv[0] + ois[0]
-  /// B[1] = n_1 * opv[1] + ois[1] with B[1] = floor( K / opv[0] )
-  ///
-  /// n_1*opv[0]*opv[1]+opv[0]*ois[1] < K < n_1*n_1*opv[0]*opv[1]+opv[0]*ois[1]+opv[0]*ois[1]+opv[0]
-  ///
-  /// because 0 < K < reorderings, n_1 = 0
-  ///
-  ///
-/// BELOW WAS INCOMPLETE TEST FOR 2 NODES NETWORKS
-  /// Return : m * Q + R
-  auto getInteger = []( const uint64_t &m, const uint64_t &Q, const uint64_t &R ) -> uint64_t {
-      return m * Q + R;
-  };
-
-  typedef std::vector<uint64_t> Interval;
-
-  /// Return interval of the form : [ m*n*k+m*a, m*n*k+m*a+m )
-  auto getInterval = [](uint64_t &k, uint64_t &m, uint64_t &n, uint64_t &a ) -> Interval  {
-      return Interval { m*n*k+m*a,m*n*k+m*a+m };
-  };
-
-  auto insideInterval = [](uint64_t &n, Interval &interval) -> bool {
-    return n>=interval[0] && n<=interval[1];
-  };
-
-  // List all the subintervals for logic_index and store the potential good values for logic index
-  std::cout << "\n\nList of all subintervals for logic index\n";
-  std::vector<Interval> intervals; // needed just for debug
-  std::vector<uint64_t> logicindexvalues;
-
-  for ( uint64_t R = 0; R<data_->reorderings_; ++R ) {
-      Interval interval = getInterval( R,
-                                       data_ -> logic_place_values_[0],
-                                       data_ -> logic_place_values_[1],
-                                       logic_indices[1] );
-      std::cout << "[ " << interval[0] << ", " << interval[1] << " ]\n";
-      // intervals . push_back ( interval );
-      /// check for good values inside the interval
-      uint64_t myvalue = getInteger(data_ -> logic_place_values_[0],
-                                    R*data_ -> logic_place_values_[1]+logic_indices[1],
-                                    logic_indices[0]);
-      std::cout << "logic value=" << myvalue << " ";
-      if ( insideInterval(myvalue,interval) ) {
-          std::cout << "is good\n";
-          logicindexvalues . push_back ( myvalue );
+///--- Logic Index ---
+  uint64_t logic_index;
+  uint64_t nmax = floor(size()/data_ -> logic_place_values_[0]);
+  for ( uint64_t i = 0; i < nmax; ++i ) {
+    uint64_t d = 1;
+    bool flag = true;
+    uint64_t R = i;
+    while ( (d < D) && flag ) {
+      /// careful with negative values and %
+      int A = R - logic_indices[d];
+      while ( A < 0 ) { A+= data_->logic_place_values_[d]; }
+      ///
+      if ( A%data_->logic_place_values_[d] == 0 ) {
+        R = ( R - logic_indices[d] ) / data_->logic_place_values_[d];
       } else {
-          std::cout << "is bad\n";
+        flag = false;
       }
-  }
-  // List all the subintervals for order_index and store the potential good values for order index
-  std::vector<uint64_t> orderindexvalues;
-  // Bounds wrong
-  {
-    uint64_t R = 0;
-      Interval interval = getInterval( R,
-                                       data_ -> order_place_values_[0],
-                                       data_ -> order_place_values_[1],
-                                       order_indices[1] );
-      std::cout << "[ " << interval[0] << ", " << interval[1] << " ]\n";
-      // intervals . push_back ( interval );
-      /// check for good values inside the interval
-      uint64_t myvalue = getInteger(data_ -> order_place_values_[0],
-                                    R*data_ -> order_place_values_[1]+order_indices[1],
-                                    order_indices[0]);
-      std::cout << "order value=" << myvalue << " ";
-      if ( insideInterval(myvalue,interval) ) {
-          std::cout << "is good\n";
-          orderindexvalues . push_back ( myvalue );
-      } else {
-          std::cout << "is bad\n";
-      }
-  }
-
-  // Find which pair of logicindexvalues and orderindexvalues is correct
-  //
-  // ***** BUG *****
-  // for index < 60=fixedordersize, we have 2 solutions : i and 60+i with i = index
-  //
-  for ( uint64_t L : logicindexvalues ) {
-    for ( uint64_t O : orderindexvalues ) {
-      uint64_t myindex = O * data_ -> fixedordersize_ + L;
-
-      if ( myindex < size() ) {
-        std::cout << "Found a good pair (L,O)=( " << L << ", " << O << " ) with index : " << myindex << "\n";
-      }
-
+      ++d;
+    }
+    if ( flag ) {
+      logic_index = i * data_ -> logic_place_values_ [ 0 ] + logic_indices [ 0 ];
+      break; // Find only the first good value
     }
   }
 
+///--- Order Index ---
+  uint64_t order_index;
+  nmax = data_->reorderings_;
+  for ( uint64_t i = 0; i < nmax; ++i ) {
+    uint64_t d = 1;
+    bool flag = true;
+    uint64_t R = i;
 
+    while ( (d < D) && flag ) {
+      /// careful with negative values and %
+      int A = R - order_indices[d];
+      while ( A < 0 ) { A += data_ -> order_place_values_[d]; }
+      ///
+      if ( A % data_ -> order_place_values_[d] == 0 ) {
+        R = ( R - order_indices [ d ] ) / data_ -> order_place_values_ [ d ];
+      } else {
+        flag = false;
+      }
+      ++d;
+    }
+    if ( flag ) {
+      order_index = i *data_ -> order_place_values_ [ 0 ] + order_indices [ 0 ];
+      break; // Find only the first good value
+    }
+  }
 
-/// END INCOMPLETE TEST 2 NODES NETWORK
-
-
-  return 0;
+  return order_index * data_->fixedordersize_ + logic_index;
 
 }
 
