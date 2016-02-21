@@ -9,7 +9,7 @@ int main ( int argc, char * argv [] ) {
   try {
     ParameterGraph pg0;
     std::string filename;
-    if ( argc < 2 ) filename = "networks/network3.txt";
+    if ( argc < 2 ) filename = "networks/network2.txt";
     else filename = argv[1];
     Network network ( filename );
     ParameterGraph pg ( network );
@@ -41,6 +41,13 @@ int main ( int argc, char * argv [] ) {
     } catch ( ... ) {}
     try {
       auto adj = pg . adjacencies ( 0 );
+
+      std::cout << "adjacent parameter index : ";
+      for ( auto i : adj ) {
+        std::cout << i << " ";
+      }
+      std::cout << "\n";
+
     } catch ( ... ) {}
     try {
       Network net ( "networks/network4.txt" );
