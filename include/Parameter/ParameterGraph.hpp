@@ -103,7 +103,6 @@ parameter ( uint64_t index ) const {
 
 INLINE_IF_HEADER_ONLY uint64_t ParameterGraph::
 index ( Parameter const& p ) const {
-//   throw std::runtime_error ( "Feature not implemented" );  // TODO
 
   std::vector<LogicParameter> logic = p . logic ( );
   std::vector<OrderParameter> order = p . order ( );
@@ -122,37 +121,12 @@ index ( Parameter const& p ) const {
           }
       }
   }
-  // debug
-  // std::cout << "\nLogic indices:\n";
-  // for ( uint64_t d = 0; d< D; ++d ) std::cout << logic_indices[d] << " ";
-  // std::cout << "\n";
-  // end debug
 
   /// Construct Order indices
   std::vector<uint64_t> order_indices;
   for ( uint64_t d = 0; d < D; ++ d ) {
       order_indices . push_back ( order[d].index() );
   }
-  // debug
-  // std::cout << "\nOrder indices:\n";
-  // for ( uint64_t d = 0; d< D; ++d ) std::cout << order_indices[d] << " ";
-  // std::cout << "\n";
-  // end debug
-
-  // Debug
-  // std::cout << "\n\n";
-  // std::cout << "Logic_place_values : ";
-  // for ( uint64_t d = 0; d< D; ++d ) std::cout << data_ -> logic_place_values_[d] << " ";
-  // std::cout << "\n";
-  // std::cout << "Order_place_values : ";
-  // for ( uint64_t d = 0; d< D; ++d ) std::cout << data_ -> order_place_values_[d] << " ";
-  // std::cout << "\n";
-  // std::cout << "Fixed order size : " << data_ -> fixedordersize_;
-  // std::cout << "\n";
-  // std::cout << "reorderings : " << data_ -> reorderings_;
-  // std::cout << "\n\n";
-  // end debug
-
 
   /// Find logic_index and order_index, in general
   /// notation :
