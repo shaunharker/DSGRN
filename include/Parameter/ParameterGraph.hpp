@@ -235,7 +235,162 @@ index ( Parameter const& p ) const {
 
 INLINE_IF_HEADER_ONLY std::vector<uint64_t> ParameterGraph::
 adjacencies ( uint64_t index ) const {
-  throw std::runtime_error ( "Feature not implemented" );   //TODO
+  std::vector<uint64_t> output;
+  /// Get the parameter from the index
+  Parameter p = parameter ( index );
+  /// Get the logic
+  std::vector<LogicParameter> logics = p . logic ( );
+  /// get the order
+  std::vector<OrderParameter> orders = p . order ( );
+  ///
+  std::vector<std::string> hexcodes;
+  uint64_t D = data_ -> network_ . size ( );
+  for ( uint64_t d = 0; d < D; ++d ) {
+    hexcodes . push_back ( logics [ d ] . hex ( ) );
+  }
+  ///
+  std::vector<std::string> newHexCodes;
+  newHexCodes = hexcodes;
+
+  auto Hex2Bin = [] ( const char & c ) -> std::vector<bool> {
+    switch ( c ) {
+      case '0' : return std::vector<bool> {0,0,0,0};
+      case '1' : return std::vector<bool> {0,0,0,1};
+      case '2' : return std::vector<bool> {0,0,1,0};
+      case '3' : return std::vector<bool> {0,0,1,1};
+      case '4' : return std::vector<bool> {0,1,0,0};
+      case '5' : return std::vector<bool> {0,1,0,1};
+      case '6' : return std::vector<bool> {0,1,1,0};
+      case '7' : return std::vector<bool> {0,1,1,1};
+      case '8' : return std::vector<bool> {1,0,0,0};
+      case '9' : return std::vector<bool> {1,0,0,1};
+      case 'A' : return std::vector<bool> {1,0,1,0};
+      case 'B' : return std::vector<bool> {1,0,1,1};
+      case 'C' : return std::vector<bool> {1,1,0,0};
+      case 'D' : return std::vector<bool> {1,1,0,1};
+      case 'E' : return std::vector<bool> {1,1,1,0};
+      case 'F' : return std::vector<bool> {1,1,1,1};
+    }
+  };
+
+  auto Hex2BinCode = [&Hex2Bin] ( const std::string & str ) -> std::vector<bool> {
+    std::vector<bool> output;
+    for ( const char & c : str ) {
+      std::vector<bool> nymble = Hex2Bin ( c );
+      for ( bool b : nymble ) output . push_back ( b );
+    }
+    return output;
+  };
+
+  auto Bin2HexCode = [] ( const std::vector<bool> & bin ) -> std::string {
+    uint64_t nymbleSize = 4;
+    typedef std::bitset<4> Nymble;
+    std::vector<bool>::const_iterator it;
+    std::stringstream res;
+    for ( it = bin.begin(); it!=bin.end(); it+=nymbleSize ) {
+      Nymble nymble;
+
+      nymble[0] = *it;
+      nymble[1] = *(it+1);
+      nymble[2] = *(it+2);
+      nymble[3] = *(it+3);
+
+      res << std::hex << std::uppercase << nymble.to_ulong();
+    }
+    return res.str();
+  };
+
+
+  std::set<uint64_t> outputSet;
+  // Will do in-place bit flip to avoid copy
+  for ( uint64_t d = 0; d < D; ++d ) {
+    /// make a copy of the Logic Parameter
+    LogicParameter lp = logics [ d ];
+    /// extract the hexcode of the logic parameter
+    std::string hexCode = lp . hex ( );
+    /// Convert the hexCode into binary code
+    std::vector<bool> binCode = Hex2BinCode ( hexCode );
+    // for ( const char & c : hexCode ) {
+    //   std::vector<bool> nymble = Hex2Bin ( c );
+    //   for ( bool b : nymble ) binCode . push_back ( b );
+    // }
+    /// Flip one bit at a time and construct a new adjacent parameter
+    uint64_t N = binCode . size ( );
+    for ( uint64_t i = 0; i < N; ++i ) {
+      binCode[i] = !binCode[i];
+      /// convert the binary code to hex code
+      std::string newHexCode = Bin2HexCode ( binCode );
+      uint64_t nInputs = data_ -> network_ . inputs ( d ) . size();
+      uint64_t nOutputs = data_ -> network_ . outputs ( d ) . size();
+      std::vector<LogicParameter> newLogics = logics;
+      newLogics [ d ] =  LogicParameter(nInputs,nOutputs,newHexCode);
+      Parameter adj_p ( newLogics,
+                        orders, /// Don't change the order of reference parameter
+                        data_ -> network_ );
+
+      uint64_t newindex = ParameterGraph::index(adj_p);
+
+      outputSet . insert ( newindex );
+
+      std::cout << "newindex : " << newindex << "\n";
+
+      binCode[i] = !binCode[i]; // flip it back
+    }
+  }
+
+
+  for ( auto i : outputSet ) { output . push_back ( i ); }
+
+  return output;
+
+  //
+  //
+  //
+  // for ( uint64_t d = 1; d < D; ++d ) {
+  //
+  //   std::cout << "d = " << d << "\n";
+  //
+  //   std::cout << "logic:\n";
+  //
+  //   std::cout << logics[d];
+  //
+  //   std::cout << "\n";
+  //
+  //   std::cout << "hexString = " << hexcodes[d] << "\n";
+  //   std::vector<bool> boolString;
+  //   for ( const char & c : hexcodes [ d ] ) {
+  //     std::vector<bool> nymble = Hex2Bin ( c );
+  //     for ( bool b : nymble ) boolString . push_back ( b );
+  //     std::cout << c << "\n";
+  //   }
+  //   std::cout << "\n";
+  //
+  //   std::cout << "binString = ";
+  //   for ( auto b : boolString ) {
+  //     std::cout << b << " ";
+  //   }
+  //   std::cout << "\n";
+  //
+  //   binCodes . push_back ( boolString );
+  //
+  // }
+  //
+  // for ( uint64_t d = 0; d < D; ++d ) {
+  //   std::vector<bool> newBinCodes = binCodes;
+  //   for ( auto & b : newBinCodes ) {
+  //     b != b;
+  //     /// reconstruct the parameter with one bit difference
+  //     ///
+  //     /// convert back the bin code into an Hex code.
+  //
+  //
+  //     Parameter adj_p;
+  //     /// flip it back
+  //     b != b;
+  //   }
+  // }
+
+
 }
 
 INLINE_IF_HEADER_ONLY Network const ParameterGraph::
