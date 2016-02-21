@@ -270,6 +270,8 @@ adjacencies ( uint64_t index ) const {
       case 'D' : return std::vector<bool> {1,1,0,1};
       case 'E' : return std::vector<bool> {1,1,1,0};
       case 'F' : return std::vector<bool> {1,1,1,1};
+
+
     }
   };
 
@@ -290,10 +292,12 @@ adjacencies ( uint64_t index ) const {
     for ( it = bin.begin(); it!=bin.end(); it+=nymbleSize ) {
       Nymble nymble;
 
-      nymble[0] = *it;
-      nymble[1] = *(it+1);
-      nymble[2] = *(it+2);
-      nymble[3] = *(it+3);
+      nymble[3] = *it;
+      nymble[2] = *(it+1);
+      nymble[1] = *(it+2);
+      nymble[0] = *(it+3);
+
+      // std::cout << "nymble:" << nymble << "\n";
 
       res << std::hex << std::uppercase << nymble.to_ulong();
     }
@@ -301,58 +305,61 @@ adjacencies ( uint64_t index ) const {
   };
 
   /// DEBUG
-  std::string testString = "07AF56A10C";
-
-  std::string s = Bin2HexCode ( Hex2BinCode ( testString ) );
-
-  std::cout << testString << "\n";
-  std::cout << s << "\n";
-
+  // std::string testString = "0C";
+  // std::vector<bool> testBool = Hex2BinCode ( testString );
+  //
+  // for ( bool b : testBool ) std::cout << b << " ";
+  // std::cout << "\n";
+  //
+  // std::string s = Bin2HexCode ( Hex2BinCode ( testString ) );
+  //
+  // std::cout << testString << "\n";
+  // std::cout << s << "\n";
 
   /// END DEBUG
 
-  //
-  // std::set<uint64_t> outputSet;
-  // // Will do in-place bit flip to avoid copy
-  // for ( uint64_t d = 0; d < D; ++d ) {
-  //   /// make a copy of the Logic Parameter
-  //   LogicParameter lp = logics [ d ];
-  //   /// extract the hexcode of the logic parameter
-  //   std::string hexCode = lp . hex ( );
-  //   /// Convert the hexCode into binary code
-  //   std::vector<bool> binCode = Hex2BinCode ( hexCode );
-  //   // for ( const char & c : hexCode ) {
-  //   //   std::vector<bool> nymble = Hex2Bin ( c );
-  //   //   for ( bool b : nymble ) binCode . push_back ( b );
-  //   // }
-  //   /// Flip one bit at a time and construct a new adjacent parameter
-  //   uint64_t N = binCode . size ( );
-  //   for ( uint64_t i = 0; i < N; ++i ) {
-  //     binCode[i] = !binCode[i];
-  //     /// convert the binary code to hex code
-  //     std::string newHexCode = Bin2HexCode ( binCode );
-  //     uint64_t nInputs = data_ -> network_ . inputs ( d ) . size();
-  //     uint64_t nOutputs = data_ -> network_ . outputs ( d ) . size();
-  //     std::vector<LogicParameter> newLogics = logics;
-  //     newLogics [ d ] =  LogicParameter(nInputs,nOutputs,newHexCode);
-  //     Parameter adj_p ( newLogics,
-  //                       orders, /// Don't change the order of reference parameter
-  //                       data_ -> network_ );
-  //
-  //     uint64_t newindex = ParameterGraph::index(adj_p);
-  //
-  //     outputSet . insert ( newindex );
-  //
-  //     std::cout << "newindex : " << newindex << "\n";
-  //
-  //     binCode[i] = !binCode[i]; // flip it back
-  //   }
-  // }
-  //
-  //
-  // for ( auto i : outputSet ) { output . push_back ( i ); }
-  //
-  // return output;
+
+  std::set<uint64_t> outputSet;
+  // Will do in-place bit flip to avoid copy
+  for ( uint64_t d = 0; d < D; ++d ) {
+    /// make a copy of the Logic Parameter
+    LogicParameter lp = logics [ d ];
+    /// extract the hexcode of the logic parameter
+    std::string hexCode = lp . hex ( );
+    /// Convert the hexCode into binary code
+    std::vector<bool> binCode = Hex2BinCode ( hexCode );
+    // for ( const char & c : hexCode ) {
+    //   std::vector<bool> nymble = Hex2Bin ( c );
+    //   for ( bool b : nymble ) binCode . push_back ( b );
+    // }
+    /// Flip one bit at a time and construct a new adjacent parameter
+    uint64_t N = binCode . size ( );
+    for ( uint64_t i = 0; i < N; ++i ) {
+      binCode[i] = !binCode[i];
+      /// convert the binary code to hex code
+      std::string newHexCode = Bin2HexCode ( binCode );
+      uint64_t nInputs = data_ -> network_ . inputs ( d ) . size();
+      uint64_t nOutputs = data_ -> network_ . outputs ( d ) . size();
+      std::vector<LogicParameter> newLogics = logics;
+      newLogics [ d ] =  LogicParameter(nInputs,nOutputs,newHexCode);
+      Parameter adj_p ( newLogics,
+                        orders, /// Don't change the order of reference parameter
+                        data_ -> network_ );
+
+      uint64_t newindex = ParameterGraph::index(adj_p);
+
+      outputSet . insert ( newindex );
+
+      // std::cout << "newindex : " << newindex << "\n";
+
+      binCode[i] = !binCode[i]; // flip it back
+    }
+  }
+
+
+  for ( auto i : outputSet ) { output . push_back ( i ); }
+
+  return output;
 
 
 
