@@ -39,6 +39,7 @@ class PatternMatch {
 		void _addToStack ( const bool is_extremum, const uint64_t newpatternlen, const node thisnode, memoize& keepcount, std::stack<node>& nodes_to_visit );
 		void _removeMinusOne ( const uint64_t N, memoize& keepcount );
 		void _backFill ( const uint64_t N, memoize& keepcount );
+		void _backFillIntermediate ( const uint64_t i, memoize& keepcount);
 };
 
 #endif
