@@ -31,18 +31,11 @@ int main ( int argc, char * argv [] ) {
     Parameter z = pg . parameter ( 0 );
     try {
         for ( uint64_t i = 0; i < N; ++i ) {
-            // std::cout << "-------\n";
-            // std::cout << "The index was : " << i << "\n\n";
             uint64_t j = pg . index ( pg . parameter(i) );
-            // std::cout << "index returned : " << j << "\n";
-            // std::cout << "-------\n";
-
             if ( i != j ) {
               std::cout << "Wrong index\n";
               std::cout << "The index was " << i << " but returned " << j << "\n";
             }
-
-
         }
 
     } catch ( ... ) {}
