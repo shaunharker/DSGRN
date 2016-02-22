@@ -10,7 +10,7 @@ class PatternMatch {
 	
 	public:
 		// results data type: list< pair < pattern, number_matches > >
-		typedef std::list<std::pair<patternvector,uint64_t>> resultslist; 
+		typedef std::vector<std::pair<patternvector,uint64_t>> resultsvector; 
 
 		// stack element data type: < wall_index, pattern_len > 
 		typedef std::pair<uint64_t,uint64_t> node; 
@@ -28,7 +28,7 @@ class PatternMatch {
 		findoption == 2 -> find at most one match per pattern (check all patterns)
 		findoption == 3 -> find number of matches for every pattern (check all patterns)
 		*/
-		resultslist patternMatch ( std::list<patternvector> allpatterns, const int findoption ); 
+		resultsvector patternMatch ( std::list<patternvector> allpatterns, const int findoption ); 
 		
 	private:
 		const wallgraphvector& wallgraph;
@@ -40,6 +40,7 @@ class PatternMatch {
 		void _removeMinusOne ( const uint64_t N, memoize& keepcount );
 		void _backFill ( const uint64_t N, memoize& keepcount );
 		void _backFillIntermediate ( const uint64_t i, memoize& keepcount);
+		bool _sumcounts (const keypair key, const std::list<uint64_t> outedges, const uint64_t patternlen, memoize& keepcount);
 };
 
 #endif
