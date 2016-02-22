@@ -86,6 +86,22 @@ parameter ( uint64_t index ) const {
     order_index /= data_ -> order_place_values_ [ d ];
     order_indices . push_back ( i );
   }
+
+  std::cout << "\n-----------------------\n";
+  std::cout << "Method ParameterGraph::Parameter \n";
+  std::cout << "logic indices : ";
+  for ( auto i : logic_indices ) std::cout << i << " ";
+  std::cout << "\n";
+  std::cout << "logic_place_values_ : ";
+  for ( auto i : data_ -> logic_place_values_ ) std::cout << i << " ";
+  std::cout << "\n";
+  std::cout << "order indices : ";
+  for ( auto i : order_indices ) std::cout << i << " ";
+  std::cout << "\n";
+  std::cout << "order_place_values_ : ";
+  for ( auto i : data_ -> order_place_values_ ) std::cout << i << " ";
+  std::cout << "\n-----------------------\n";
+
   std::vector<LogicParameter> logic;
   std::vector<OrderParameter> order;
   for ( uint64_t d = 0; d < D; ++ d ) {
@@ -127,6 +143,81 @@ index ( Parameter const& p ) const {
   for ( uint64_t d = 0; d < D; ++ d ) {
       order_indices . push_back ( order[d].index() );
   }
+
+
+  std::cout << "\n-----------------------\n";
+  std::cout << "Method ParameterGraph::Index \n";
+  std::cout << "logic indices : ";
+  for ( auto i : logic_indices ) std::cout << i << " ";
+  std::cout << "\n";
+  std::cout << "order indices : ";
+  for ( auto i : order_indices ) std::cout << i << " ";
+  std::cout << "\n-----------------------\n";
+
+
+  std::vector<uint64_t> place_values ( 2*D );
+  // place_values[0] = 1;
+  // for ( uint64_t i = 1; i < 2*D; ++ i ) {
+  //   uint64_t possibilities = ( i < D ) ? data_ -> factors_ [ i ] . size () :
+  //                                        order [ i - D ] . size ();
+  //
+  //   place_values[i] = place_values[i-1] * possibilities;
+  // }
+
+  place_values[0] = 1;
+  place_values[D] = 1;
+  std::vector<uint64_t> possibilities ( 2*D );
+  for ( uint64_t i = 1; i < D; ++ i ) {
+    possibilities [ i ] = data_ -> factors_ [ i - 1 ] . size ();
+  }
+  for ( uint64_t i = D+1; i < 2*D; ++ i ) {
+    possibilities [ i ] = order [ i - D - 1] . size ();
+  }
+  for ( uint64_t i = 1; i < D; ++ i ) {
+    place_values[i] = place_values[i-1] * possibilities[i];
+  }
+  for ( uint64_t i = D+1; i < 2*D; ++ i ) {
+    place_values[i] = place_values[i-1] * possibilities[i];
+  }
+
+  std::cout << "\n-----------------------\n";
+  std::cout << "Method ParameterGraph::Index \n";
+  std::cout << "place values : ";
+  for ( auto i : place_values ) std::cout << i << " ";
+  std::cout << "\n-----------------------\n";
+
+  uint64_t logic_index = 0;
+  for ( uint64_t i = 0; i < D; ++ i ) {
+    logic_index += place_values[i] * logic_indices [ i ];
+  }
+  uint64_t order_index = 0;
+  for ( uint64_t i = D; i < 2*D; ++ i ) {
+    order_index += place_values[i] * order_indices [ i - D ];
+  }
+
+
+  std::cout << "\n-----------------------\n";
+  std::cout << "Method ParameterGraph::Index \n";
+  std::cout << "logic index : " << logic_index << "\n";
+  std::cout << "order index : " << order_index;
+  std::cout << "\n-----------------------\n";
+
+
+    // uint64_t result = 0;
+    // for ( uint64_t i = 0; i < 2*D; ++ i ) {
+    //   uint64_t digit = (i < D) ? logic_indices [ i ] : order_indices [ i - D ];
+    //   result += place_values[i] * digit;
+    // }
+    // return result;
+
+
+
+  return order_index * data_ -> fixedordersize_ + logic_index;
+
+
+
+
+
 
   /// Find logic_index and order_index, in general
   /// notation :
@@ -177,59 +268,59 @@ index ( Parameter const& p ) const {
   /// In practice, the first admissible value for m_0, meaning satisfying all
   /// the different equations for each d-level is the right now. (or so it seems)
   ///
-
-///--- Logic Index ---
-  uint64_t logic_index;
-  uint64_t nmax = floor(size()/data_ -> logic_place_values_[0]);
-  for ( uint64_t i = 0; i < nmax; ++i ) {
-    uint64_t d = 1;
-    bool flag = true;
-    uint64_t R = i;
-    while ( (d < D) && flag ) {
-      /// careful with negative values and %
-      int A = R - logic_indices[d];
-      while ( A < 0 ) { A+= data_->logic_place_values_[d]; }
-      ///
-      if ( A%data_->logic_place_values_[d] == 0 ) {
-        R = ( R - logic_indices[d] ) / data_->logic_place_values_[d];
-      } else {
-        flag = false;
-      }
-      ++d;
-    }
-    if ( flag ) {
-      logic_index = i * data_ -> logic_place_values_ [ 0 ] + logic_indices [ 0 ];
-      break; // Find only the first good value
-    }
-  }
-
-///--- Order Index ---
-  uint64_t order_index;
-  nmax = data_->reorderings_;
-  for ( uint64_t i = 0; i < nmax; ++i ) {
-    uint64_t d = 1;
-    bool flag = true;
-    uint64_t R = i;
-
-    while ( (d < D) && flag ) {
-      /// careful with negative values and %
-      int A = R - order_indices[d];
-      while ( A < 0 ) { A += data_ -> order_place_values_[d]; }
-      ///
-      if ( A % data_ -> order_place_values_[d] == 0 ) {
-        R = ( R - order_indices [ d ] ) / data_ -> order_place_values_ [ d ];
-      } else {
-        flag = false;
-      }
-      ++d;
-    }
-    if ( flag ) {
-      order_index = i *data_ -> order_place_values_ [ 0 ] + order_indices [ 0 ];
-      break; // Find only the first good value
-    }
-  }
-
-  return order_index * data_->fixedordersize_ + logic_index;
+//
+// ///--- Logic Index ---
+//   uint64_t logic_index;
+//   uint64_t nmax = floor(size()/data_ -> logic_place_values_[0]);
+//   for ( uint64_t i = 0; i < nmax; ++i ) {
+//     uint64_t d = 1;
+//     bool flag = true;
+//     uint64_t R = i;
+//     while ( (d < D) && flag ) {
+//       /// careful with negative values and %
+//       int A = R - logic_indices[d];
+//       while ( A < 0 ) { A+= data_->logic_place_values_[d]; }
+//       ///
+//       if ( A%data_->logic_place_values_[d] == 0 ) {
+//         R = ( R - logic_indices[d] ) / data_->logic_place_values_[d];
+//       } else {
+//         flag = false;
+//       }
+//       ++d;
+//     }
+//     if ( flag ) {
+//       logic_index = i * data_ -> logic_place_values_ [ 0 ] + logic_indices [ 0 ];
+//       break; // Find only the first good value
+//     }
+//   }
+//
+// ///--- Order Index ---
+//   uint64_t order_index;
+//   nmax = data_->reorderings_;
+//   for ( uint64_t i = 0; i < nmax; ++i ) {
+//     uint64_t d = 1;
+//     bool flag = true;
+//     uint64_t R = i;
+//
+//     while ( (d < D) && flag ) {
+//       /// careful with negative values and %
+//       int A = R - order_indices[d];
+//       while ( A < 0 ) { A += data_ -> order_place_values_[d]; }
+//       ///
+//       if ( A % data_ -> order_place_values_[d] == 0 ) {
+//         R = ( R - order_indices [ d ] ) / data_ -> order_place_values_ [ d ];
+//       } else {
+//         flag = false;
+//       }
+//       ++d;
+//     }
+//     if ( flag ) {
+//       order_index = i *data_ -> order_place_values_ [ 0 ] + order_indices [ 0 ];
+//       break; // Find only the first good value
+//     }
+//   }
+//
+//   return order_index * data_->fixedordersize_ + logic_index;
 
 }
 
