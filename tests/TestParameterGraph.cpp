@@ -41,12 +41,22 @@ int main ( int argc, char * argv [] ) {
     } catch ( ... ) {}
     try {
       auto adj = pg . adjacencies ( 0 );
+      // std::cout << "\n\n";
+      // std::cout << pg. parameter (0) . inequalities ();
+      //
+      // std::cout << "\nadjacent parameter index : ";
+      // for ( auto i : adj ) {
+      //   std::cout << "\n\n" << i << "\n\n ";
+      //
+      //     std::cout << pg. parameter (i) . inequalities ();
+      //
+      // }
 
+      std::cout << "\n---------------------------\n";
       std::cout << "adjacent parameter index : ";
-      for ( auto i : adj ) {
-        std::cout << i << " ";
-      }
-      std::cout << "\n";
+      for ( auto i : adj ) std::cout << i << " ";
+      std::cout << "\n---------------------------\n";
+
 
     } catch ( ... ) {}
     try {
