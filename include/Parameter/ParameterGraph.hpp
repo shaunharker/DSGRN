@@ -234,134 +234,115 @@ index ( Parameter const& p ) const {
 }
 
 INLINE_IF_HEADER_ONLY std::vector<uint64_t> ParameterGraph::
-adjacencies ( uint64_t index ) const {
+adjacencies ( const uint64_t myindex ) const {
   std::vector<uint64_t> output;
   /// Get the parameter from the index
-  Parameter p = parameter ( index );
+  Parameter p = parameter ( myindex );
   /// Get the logic
   std::vector<LogicParameter> logics = p . logic ( );
   /// get the order
   std::vector<OrderParameter> orders = p . order ( );
-  ///
-  std::vector<std::string> hexcodes;
+
   uint64_t D = data_ -> network_ . size ( );
-  for ( uint64_t d = 0; d < D; ++d ) {
-    hexcodes . push_back ( logics [ d ] . hex ( ) );
-  }
-  ///
-  std::vector<std::string> newHexCodes;
-  newHexCodes = hexcodes;
 
-  auto Hex2Bin = [] ( const char & c ) -> std::vector<bool> {
+  typedef uint64_t bitType;
+  typedef std::vector<bitType> BitContainer;
+  // Convert an hex char into a vector of bits (length 4)
+  auto Hex2Bin = [] ( const char & c ) -> BitContainer {
     switch ( c ) {
-      case '0' : return std::vector<bool> {0,0,0,0};
-      case '1' : return std::vector<bool> {0,0,0,1};
-      case '2' : return std::vector<bool> {0,0,1,0};
-      case '3' : return std::vector<bool> {0,0,1,1};
-      case '4' : return std::vector<bool> {0,1,0,0};
-      case '5' : return std::vector<bool> {0,1,0,1};
-      case '6' : return std::vector<bool> {0,1,1,0};
-      case '7' : return std::vector<bool> {0,1,1,1};
-      case '8' : return std::vector<bool> {1,0,0,0};
-      case '9' : return std::vector<bool> {1,0,0,1};
-      case 'A' : return std::vector<bool> {1,0,1,0};
-      case 'B' : return std::vector<bool> {1,0,1,1};
-      case 'C' : return std::vector<bool> {1,1,0,0};
-      case 'D' : return std::vector<bool> {1,1,0,1};
-      case 'E' : return std::vector<bool> {1,1,1,0};
-      case 'F' : return std::vector<bool> {1,1,1,1};
-
-
+      case '0' : return BitContainer {0,0,0,0};
+      case '1' : return BitContainer {0,0,0,1};
+      case '2' : return BitContainer {0,0,1,0};
+      case '3' : return BitContainer {0,0,1,1};
+      case '4' : return BitContainer {0,1,0,0};
+      case '5' : return BitContainer {0,1,0,1};
+      case '6' : return BitContainer {0,1,1,0};
+      case '7' : return BitContainer {0,1,1,1};
+      case '8' : return BitContainer {1,0,0,0};
+      case '9' : return BitContainer {1,0,0,1};
+      case 'A' : return BitContainer {1,0,1,0};
+      case 'B' : return BitContainer {1,0,1,1};
+      case 'C' : return BitContainer {1,1,0,0};
+      case 'D' : return BitContainer {1,1,0,1};
+      case 'E' : return BitContainer {1,1,1,0};
+      case 'F' : return BitContainer {1,1,1,1};
     }
   };
 
-  auto Hex2BinCode = [&Hex2Bin] ( const std::string & str ) -> std::vector<bool> {
-    std::vector<bool> output;
+  // convert a string of hex code into vector of bits.
+  auto Hex2BinCode = [&Hex2Bin] ( const std::string & str ) -> BitContainer {
+    BitContainer output;
     for ( const char & c : str ) {
-      std::vector<bool> nymble = Hex2Bin ( c );
+      BitContainer nymble = Hex2Bin ( c );
       for ( bool b : nymble ) output . push_back ( b );
     }
     return output;
   };
 
-  auto Bin2HexCode = [] ( const std::vector<bool> & bin ) -> std::string {
+  // convert a vector of bits into a string of hex code
+  auto Bin2HexCode = [] ( const BitContainer & bin ) -> std::string {
     uint64_t nymbleSize = 4;
     typedef std::bitset<4> Nymble;
-    std::vector<bool>::const_iterator it;
+    BitContainer::const_iterator it;
     std::stringstream res;
     for ( it = bin.begin(); it!=bin.end(); it+=nymbleSize ) {
       Nymble nymble;
-
       nymble[3] = *it;
       nymble[2] = *(it+1);
       nymble[1] = *(it+2);
       nymble[0] = *(it+3);
-
-      // std::cout << "nymble:" << nymble << "\n";
-
       res << std::hex << std::uppercase << nymble.to_ulong();
     }
     return res.str();
   };
 
-  /// DEBUG
-  // std::string testString = "0C";
-  // std::vector<bool> testBool = Hex2BinCode ( testString );
-  //
-  // for ( bool b : testBool ) std::cout << b << " ";
+  /// DEBUG hex/bin conversion
+  // std::string testString = "0F9ABD12146C";
+  // BitContainer testBool = Hex2BinCode ( testString );
+  // for ( bitType b : testBool ) std::cout << b << " ";
   // std::cout << "\n";
-  //
   // std::string s = Bin2HexCode ( Hex2BinCode ( testString ) );
-  //
   // std::cout << testString << "\n";
   // std::cout << s << "\n";
-
   /// END DEBUG
 
-
-  std::set<uint64_t> outputSet;
-  // Will do in-place bit flip to avoid copy
+  std::set<uint64_t> outputSet; // to have unicity
+  // Will do in-place bit flip to avoid temporary copies
   for ( uint64_t d = 0; d < D; ++d ) {
     /// make a copy of the Logic Parameter
     LogicParameter lp = logics [ d ];
     /// extract the hexcode of the logic parameter
-    std::string hexCode = lp . hex ( );
+    std::string hexCode ( lp . hex ( ) );
     /// Convert the hexCode into binary code
-    std::vector<bool> binCode = Hex2BinCode ( hexCode );
-    // for ( const char & c : hexCode ) {
-    //   std::vector<bool> nymble = Hex2Bin ( c );
-    //   for ( bool b : nymble ) binCode . push_back ( b );
-    // }
-    /// Flip one bit at a time and construct a new adjacent parameter
+    BitContainer binCode ( Hex2BinCode ( hexCode ) );
+    /// Flip one bit at a time, construct a new adjacent parameter
+    /// and retrieve its index
     uint64_t N = binCode . size ( );
     for ( uint64_t i = 0; i < N; ++i ) {
-      binCode[i] = !binCode[i];
-      /// convert the binary code to hex code
-      std::string newHexCode = Bin2HexCode ( binCode );
-      uint64_t nInputs = data_ -> network_ . inputs ( d ) . size();
-      uint64_t nOutputs = data_ -> network_ . outputs ( d ) . size();
-      std::vector<LogicParameter> newLogics = logics;
-      newLogics [ d ] =  LogicParameter(nInputs,nOutputs,newHexCode);
-      Parameter adj_p ( newLogics,
-                        orders, /// Don't change the order of reference parameter
+      binCode[i] = 1-binCode[i]; // flip
+      //
+      // new logic from the flipped binCode
+      logics [ d ] = LogicParameter (
+                            data_ -> network_ . inputs ( d ) . size(),
+                            data_ -> network_ . outputs ( d ) . size(),
+                            Bin2HexCode ( binCode )
+                                    );
+      //
+      Parameter adj_p ( logics,
+                        orders, /// Don't change the order of reference parameter?
                         data_ -> network_ );
-
-      uint64_t newindex = ParameterGraph::index(adj_p);
-
-      outputSet . insert ( newindex );
-
-      // std::cout << "newindex : " << newindex << "\n";
-
-      binCode[i] = !binCode[i]; // flip it back
+      //
+      outputSet . insert ( ParameterGraph::index(adj_p) );
+      //
+      // undo the modifications
+      binCode[i] = 1-binCode[i]; // flip it back
+      logics [ d ] = lp;
     }
   }
-
 
   for ( auto i : outputSet ) { output . push_back ( i ); }
 
   return output;
-
-
 
 }
 
