@@ -12,7 +12,7 @@
 #include "LogicParameter.h"
 
 INLINE_IF_HEADER_ONLY LogicParameter::
-LogicParameter ( void ) { 
+LogicParameter ( void ) {
   data_ . reset ( new LogicParameter_ );
 }
 
@@ -35,10 +35,10 @@ assign ( uint64_t n, uint64_t m, std::string const& hex ) {
     char hex_digit = hex [ i ];
     hex_digit -= '0';
     if ( hex_digit >= 10 ) hex_digit += ('0'-'A'+10);
-    data_ -> comp_ . push_back ( hex_digit & 1 ); 
-    data_ -> comp_ . push_back ( hex_digit & 2 ); 
-    data_ -> comp_ . push_back ( hex_digit & 4 ); 
-    data_ -> comp_ . push_back ( hex_digit & 8 ); 
+    data_ -> comp_ . push_back ( hex_digit & 1 );
+    data_ -> comp_ . push_back ( hex_digit & 2 );
+    data_ -> comp_ . push_back ( hex_digit & 4 );
+    data_ -> comp_ . push_back ( hex_digit & 8 );
   }
   data_ -> comp_ . resize ( N );
 }
@@ -75,7 +75,7 @@ stringify ( void ) const {
   std::stringstream ss;
   ss << "[" << data_ ->n_ << "," << data_ ->m_ << ",\"" << data_ ->hex_ << "\"]";
   return ss . str ();
-} 
+}
 
 INLINE_IF_HEADER_ONLY void LogicParameter::
 parse ( std::string const& str ) {
@@ -103,8 +103,8 @@ INLINE_IF_HEADER_ONLY std::ostream& operator << ( std::ostream& stream, LogicPar
   return stream;
 }
 
-INLINE_IF_HEADER_ONLY std::string LogicParameter::
-hex ( void ) const { 
+INLINE_IF_HEADER_ONLY std::string const & LogicParameter::
+hex ( void ) const {
     return data_ -> hex_;
 }
 

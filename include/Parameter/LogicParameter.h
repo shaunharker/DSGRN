@@ -36,7 +36,7 @@ public:
   /// bin
   ///   Return bin number corresponding to input combination
   ///   (uses uint64_t, assumes there are 64 or fewer inputs)
-  uint64_t 
+  uint64_t
   bin ( uint64_t input_combination ) const;
 
   /// stringify
@@ -55,7 +55,7 @@ public:
   friend std::ostream& operator << ( std::ostream& stream, LogicParameter const& p );
 
   /// Return the hex code of the LogicParameter
-  std::string 
+  std::string const &
   hex ( void ) const;
 
 private:

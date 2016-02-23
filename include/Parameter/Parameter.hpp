@@ -12,13 +12,13 @@
 #include "Parameter.h"
 
 INLINE_IF_HEADER_ONLY Parameter::
-Parameter ( void ) { 
+Parameter ( void ) {
   data_ . reset ( new Parameter_ );
 }
 
 INLINE_IF_HEADER_ONLY Parameter::
 Parameter ( std::vector<LogicParameter> const& logic,
-            std::vector<OrderParameter> const& order, 
+            std::vector<OrderParameter> const& order,
             Network const& network ) {
   assign ( logic, order, network );
 }
@@ -30,7 +30,7 @@ Parameter ( Network const& network ) {
 
 INLINE_IF_HEADER_ONLY void Parameter::
 assign ( std::vector<LogicParameter> const& logic,
-         std::vector<OrderParameter> const& order, 
+         std::vector<OrderParameter> const& order,
          Network const& network ) {
   data_ . reset ( new Parameter_ );
   data_ -> logic_ = logic;
@@ -44,7 +44,7 @@ assign ( Network const& network ) {
   data_ -> network_ = network;
 }
 
-  
+
 INLINE_IF_HEADER_ONLY bool Parameter::
 attracting ( Domain const& dom ) const {
   int D = data_ -> network_ . size ();
@@ -77,9 +77,9 @@ absorbing ( Domain const& dom, int collapse_dim, int direction ) const {
     //std::cout << "      Hence, the input combination digit is " << (result ? "1" : "0") << "\n";
   }
   //std::cout << "  Input combination formed. Big-endian representation = ";
-  //for ( int i = input_combination . size () - 1; i >= 0; -- i ){ 
+  //for ( int i = input_combination . size () - 1; i >= 0; -- i ){
   // std::cout << (input_combination[i] ? "1" : "0");
-  //} 
+  //}
   //std::cout << "\n";
   //std::cout << "  Consulting parameter " <<  data_ -> logic_ [ collapse_dim ] . stringify () << ".\n";
   bool flow_direction = data_ -> logic_ [ collapse_dim ] ( input_combination, thres );
@@ -112,7 +112,7 @@ labelling ( void ) const {
     N *= limits [ d ];
   }
   // N is now number of domains
-  // Domains are implicitly indexed. 
+  // Domains are implicitly indexed.
   // "jump" is an array telling us how much to change the index
   //   to move +1 in each dimension
   result . resize ( N, 0 );
@@ -142,23 +142,23 @@ labelling ( void ) const {
         if ( activating ^ side ) {
           //std::cout << "Case A.\n";
           lower_limits[source] = 0;
-          upper_limits[source] = thres;  
+          upper_limits[source] = thres;
         } else {
           //std::cout << "Case B.\n";
           lower_limits[source] = thres;
-          upper_limits[source] = limits [ source ]; 
+          upper_limits[source] = limits [ source ];
         }
       }
       /// Iterate through two zones:
       ///   Zone 1. domain left of bin
       ///   Zone 2. domain right of bin
-      ///   Note. domains matching bin do not 
+      ///   Note. domains matching bin do not
       ///         require anything to be done
       auto apply_mask = [&] ( uint64_t mask ) {
         // Iterate between lower and upper limits applying mask
         uint64_t dom_index = 0;
         dom = lower_limits;
-        for ( uint64_t k = 0; k < D; ++ k ) { 
+        for ( uint64_t k = 0; k < D; ++ k ) {
           width[k] = upper_limits[k] - lower_limits[k];
           dom_index += jump[k] * lower_limits[k];
           if ( width[k] == 0 ) return;
@@ -187,10 +187,10 @@ labelling ( void ) const {
       uint64_t right = upper_limits [ d ];
 
       // Zone 1. (Flows to right.)
-      if ( bin > left ) { 
+      if ( bin > left ) {
         lower_limits [ d ] = left;
         upper_limits [ d ] = bin;
-        apply_mask (1LL << (D+d)); 
+        apply_mask (1LL << (D+d));
       }
       // Zone 2. (Flows to left.)
       if ( bin+1 < right ) {
@@ -215,7 +215,7 @@ stringify ( void ) const {
   ss << "[";
   for ( uint64_t d = 0; d < D; ++ d ) {
     if ( d > 0 ) ss << ",";
-    ss << "[\"" << network() . name ( d ) << "\"," 
+    ss << "[\"" << network() . name ( d ) << "\","
        << data_ -> logic_[d] << "," << data_ -> order_[d] << "]";
   }
   ss << "]";
@@ -250,7 +250,7 @@ inequalities ( void ) const {
     uint64_t N = ( 1LL << n );
     auto input_combo_string = [&](uint64_t i) {
       std::stringstream input_ss;
-      std::vector<std::vector<uint64_t>> logic = 
+      std::vector<std::vector<uint64_t>> logic =
         network () . logic ( d );
       uint64_t bit = 1;
       uint64_t k = 0;
@@ -268,7 +268,7 @@ inequalities ( void ) const {
           bit <<= 1;
           ++ k;
         }
-        if ( factor . size () > 1 ) input_ss << ")"; 
+        if ( factor . size () > 1 ) input_ss << ")";
         else if ( k < n ) input_ss << " ";
       }
       return input_ss . str ();
@@ -291,8 +291,8 @@ inequalities ( void ) const {
       } else if ( j == m ) {
         ss << output_string (m-1) << " < " << input_combo_string ( i );
       } else {
-        ss << output_string (j-1) << " < " 
-           << input_combo_string ( i ) << " < " 
+        ss << output_string (j-1) << " < "
+           << input_combo_string ( i ) << " < "
            << output_string (j);
       }
     }
@@ -313,13 +313,13 @@ INLINE_IF_HEADER_ONLY std::ostream& operator << ( std::ostream& stream, Paramete
   return stream;
 }
 
-INLINE_IF_HEADER_ONLY std::vector<LogicParameter> Parameter::
-logic ( void ) const { 
+INLINE_IF_HEADER_ONLY std::vector<LogicParameter> const & Parameter::
+logic ( void ) const {
     return data_ -> logic_;
 }
 
-INLINE_IF_HEADER_ONLY std::vector<OrderParameter> Parameter::
-order ( void ) const { 
+INLINE_IF_HEADER_ONLY std::vector<OrderParameter> const & Parameter::
+order ( void ) const {
     return data_ -> order_;
 }
 #endif
