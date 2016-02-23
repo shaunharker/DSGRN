@@ -47,9 +47,16 @@ assign ( Network const& network, std::string const& path ) {
       throw std::runtime_error ( "Error: Could not find logic resource " + ss.str() + ".\n");
     }
     std::string line;
-    while ( std::getline ( infile, line ) ) hex_codes . push_back ( line );
+    std::unordered_map<std::string,uint64_t> hx;
+    uint64_t counter = 0;
+    while ( std::getline ( infile, line ) ) {
+      hex_codes . push_back ( line );
+      hx [ line ] = counter;
+      ++counter;
+    }
     infile . close ();
     data_ -> factors_ . push_back ( hex_codes );
+    data_ -> hex_code_lut_ . push_back ( hx );
     data_ -> logic_place_values_ . push_back ( hex_codes . size () );
     data_ -> fixedordersize_ *= hex_codes . size ();
     //std::cout << d << ": " << hex_codes . size () << " factorial(" << m << ")=" << _factorial ( m ) << "\n";
@@ -125,13 +132,13 @@ index ( Parameter const& p ) const {
   uint64_t D = data_ -> network_ . size ();
   for ( uint64_t d = 0; d< D; ++d ) {
       std::string hexcode = logic [ d ] . hex ( );
-      // If factors_ was a different container, we could use find instead
-      // find the hex code within factors_ for the appropriate node
-      uint64_t hexsize = data_ -> factors_ [ d ] . size ( );      
-      for ( uint64_t i = 0; i < hexsize; ++i ) {
-          if ( hexcode == data_ -> factors_ [ d ] [ i ] ) {
-              logic_indices . push_back ( i );
-          }
+      //
+      auto it = data_ -> hex_code_lut_[d] . find ( hexcode );
+      if ( it != data_ -> hex_code_lut_[d] . end ( )  ) {
+        logic_indices . push_back ( it -> second );
+      } else {
+        std::cout << "could not find the hex code\n";
+        return -1;
       }
   }
 
