@@ -36,11 +36,10 @@ class PatternMatch {
 		void _pruneRegister( patternvector newpattern, patternvector oldpattern, memoize& keepcount );
 		uint64_t _patternMatch ( const patternvector pattern, const int findoption, memoize& keepcount );
 		bool _checkForWordInLabels( const std::string headpattern, const labelset walllabels );
-		void _addToStack ( const bool is_extremum, const uint64_t newpatternlen, const node thisnode, memoize& keepcount, std::stack<node>& nodes_to_visit );
-		void _removeMinusOne ( const uint64_t N, memoize& keepcount );
-		void _backFill ( const uint64_t N, memoize& keepcount );
-		void _backFillIntermediate ( const uint64_t i, memoize& keepcount);
-		bool _sumcounts (const keypair key, const std::list<uint64_t> outedges, const uint64_t patternlen, memoize& keepcount);
+		void _addToStack ( const bool is_extremum, const uint64_t newpatternlen, const node thisnode, const int findoption, memoize& keepcount, std::stack<node>& nodes_to_visit );
+		void _backFill ( const uint64_t N, const int findoption, memoize& keepcount );
+		void _backFillIntermediate ( const uint64_t i, const int findoption, memoize& keepcount);
+		bool _sumcounts (const keypair key, const std::list<uint64_t> outedges, const uint64_t patternlen, const int findoption, memoize& keepcount);
 };
 
 #endif
