@@ -185,6 +185,7 @@ adjacencies ( const uint64_t myindex ) const {
       logics [ d ] = logicsTmp [ d ];
     }
   }
+  std::sort ( output . begin ( ), output . end ( ) );
   return output;
 }
 
