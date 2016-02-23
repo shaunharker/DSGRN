@@ -55,6 +55,18 @@ assign ( Network const& network, std::string const& path ) {
     //std::cout << d << ": " << hex_codes . size () << " factorial(" << m << ")=" << _factorial ( m ) << "\n";
   }
   data_ -> size_ = data_ -> fixedordersize_ * data_ -> reorderings_;
+  // construction of place_values_ used in method index
+  data_ -> place_values_ . resize ( 2*D, 0 );
+  data_ -> place_values_ [ 0 ] = 1;
+  data_ -> place_values_ [ D ] = 1;
+  for ( uint64_t i = 1; i < D; ++ i ) {
+    data_ -> place_values_ [ i ] = data_ -> place_values_ [ i - 1 ] *
+                                   data_ -> logic_place_values_ [ i - 1 ];
+  }
+  for ( uint64_t i = D+1; i < 2*D; ++ i ) {
+    data_ -> place_values_ [ i ] = data_ -> place_values_ [ i - 1 ] *
+                                   data_ -> order_place_values_ [ i - D - 1 ];
+  }
 }
 
 INLINE_IF_HEADER_ONLY uint64_t ParameterGraph::
@@ -87,21 +99,6 @@ parameter ( uint64_t index ) const {
     order_indices . push_back ( i );
   }
 
-  std::cout << "\n-----------------------\n";
-  std::cout << "Method ParameterGraph::Parameter \n";
-  std::cout << "logic indices : ";
-  for ( auto i : logic_indices ) std::cout << i << " ";
-  std::cout << "\n";
-  std::cout << "logic_place_values_ : ";
-  for ( auto i : data_ -> logic_place_values_ ) std::cout << i << " ";
-  std::cout << "\n";
-  std::cout << "order indices : ";
-  for ( auto i : order_indices ) std::cout << i << " ";
-  std::cout << "\n";
-  std::cout << "order_place_values_ : ";
-  for ( auto i : data_ -> order_place_values_ ) std::cout << i << " ";
-  std::cout << "\n-----------------------\n";
-
   std::vector<LogicParameter> logic;
   std::vector<OrderParameter> order;
   for ( uint64_t d = 0; d < D; ++ d ) {
@@ -123,14 +120,14 @@ index ( Parameter const& p ) const {
   std::vector<LogicParameter> logic = p . logic ( );
   std::vector<OrderParameter> order = p . order ( );
 
-  /// Construct Logic indices
+  // Construct Logic indices
   std::vector<uint64_t> logic_indices;
   uint64_t D = data_ -> network_ . size ();
   for ( uint64_t d = 0; d< D; ++d ) {
       std::string hexcode = logic [ d ] . hex ( );
-      /// If factors_ was a different container, we could use find instead
-      /// find the hex code within factors_ for the appropriate node
-      uint64_t hexsize = data_ -> factors_ [ d ] . size ( );
+      // If factors_ was a different container, we could use find instead
+      // find the hex code within factors_ for the appropriate node
+      uint64_t hexsize = data_ -> factors_ [ d ] . size ( );      
       for ( uint64_t i = 0; i < hexsize; ++i ) {
           if ( hexcode == data_ -> factors_ [ d ] [ i ] ) {
               logic_indices . push_back ( i );
@@ -138,77 +135,21 @@ index ( Parameter const& p ) const {
       }
   }
 
-  /// Construct Order indices
+  // Construct Order indices
   std::vector<uint64_t> order_indices;
   for ( uint64_t d = 0; d < D; ++ d ) {
       order_indices . push_back ( order[d].index() );
   }
 
-
-  std::cout << "\n-----------------------\n";
-  std::cout << "Method ParameterGraph::Index \n";
-  std::cout << "logic indices : ";
-  for ( auto i : logic_indices ) std::cout << i << " ";
-  std::cout << "\n";
-  std::cout << "order indices : ";
-  for ( auto i : order_indices ) std::cout << i << " ";
-  std::cout << "\n-----------------------\n";
-
-
-  std::vector<uint64_t> place_values ( 2*D );
-  // place_values[0] = 1;
-  // for ( uint64_t i = 1; i < 2*D; ++ i ) {
-  //   uint64_t possibilities = ( i < D ) ? data_ -> factors_ [ i ] . size () :
-  //                                        order [ i - D ] . size ();
-  //
-  //   place_values[i] = place_values[i-1] * possibilities;
-  // }
-
-  place_values[0] = 1;
-  place_values[D] = 1;
-  std::vector<uint64_t> possibilities ( 2*D );
-  for ( uint64_t i = 1; i < D; ++ i ) {
-    possibilities [ i ] = data_ -> factors_ [ i - 1 ] . size ();
-  }
-  for ( uint64_t i = D+1; i < 2*D; ++ i ) {
-    possibilities [ i ] = order [ i - D - 1] . size ();
-  }
-  for ( uint64_t i = 1; i < D; ++ i ) {
-    place_values[i] = place_values[i-1] * possibilities[i];
-  }
-  for ( uint64_t i = D+1; i < 2*D; ++ i ) {
-    place_values[i] = place_values[i-1] * possibilities[i];
-  }
-
-  std::cout << "\n-----------------------\n";
-  std::cout << "Method ParameterGraph::Index \n";
-  std::cout << "place values : ";
-  for ( auto i : place_values ) std::cout << i << " ";
-  std::cout << "\n-----------------------\n";
-
   uint64_t logic_index = 0;
   for ( uint64_t i = 0; i < D; ++ i ) {
-    logic_index += place_values[i] * logic_indices [ i ];
+    logic_index += data_ -> place_values_[i] * logic_indices [ i ];
   }
+
   uint64_t order_index = 0;
   for ( uint64_t i = D; i < 2*D; ++ i ) {
-    order_index += place_values[i] * order_indices [ i - D ];
+    order_index += data_ -> place_values_[i] * order_indices [ i - D ];
   }
-
-
-  std::cout << "\n-----------------------\n";
-  std::cout << "Method ParameterGraph::Index \n";
-  std::cout << "logic index : " << logic_index << "\n";
-  std::cout << "order index : " << order_index;
-  std::cout << "\n-----------------------\n";
-
-
-    // uint64_t result = 0;
-    // for ( uint64_t i = 0; i < 2*D; ++ i ) {
-    //   uint64_t digit = (i < D) ? logic_indices [ i ] : order_indices [ i - D ];
-    //   result += place_values[i] * digit;
-    // }
-    // return result;
 
   return order_index * data_ -> fixedordersize_ + logic_index;
 }
