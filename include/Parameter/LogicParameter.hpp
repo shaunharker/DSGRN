@@ -115,26 +115,18 @@ adjacencies ( void ) const {
   typedef bool bitType;
   typedef std::vector<bitType> BitContainer;
   // Convert an hex char into a vector of bits (length 4)
-  auto Hex2Bin = [] ( const char & c ) -> BitContainer {
-    switch ( c ) {
-      case '0' : return BitContainer {0,0,0,0};
-      case '1' : return BitContainer {0,0,0,1};
-      case '2' : return BitContainer {0,0,1,0};
-      case '3' : return BitContainer {0,0,1,1};
-      case '4' : return BitContainer {0,1,0,0};
-      case '5' : return BitContainer {0,1,0,1};
-      case '6' : return BitContainer {0,1,1,0};
-      case '7' : return BitContainer {0,1,1,1};
-      case '8' : return BitContainer {1,0,0,0};
-      case '9' : return BitContainer {1,0,0,1};
-      case 'A' : return BitContainer {1,0,1,0};
-      case 'B' : return BitContainer {1,0,1,1};
-      case 'C' : return BitContainer {1,1,0,0};
-      case 'D' : return BitContainer {1,1,0,1};
-      case 'E' : return BitContainer {1,1,1,0};
-      case 'F' : return BitContainer {1,1,1,1};
-    }
+  static std::unordered_map<char, BitContainer> hex_lookup =
+    { { '0', {0,0,0,0} }, { '1', {0,0,0,1} }, { '2', {0,0,1,0} },
+      { '3', {0,0,1,1} }, { '4', {0,1,0,0} }, { '5', {0,1,0,1} },
+      { '6', {0,1,1,0} }, { '7', {0,1,1,1} }, { '8', {1,0,0,0} },
+      { '9', {1,0,0,1} }, { 'A', {1,0,1,0} }, { 'B', {1,0,1,1} },
+      { 'C', {1,1,0,0} }, { 'D', {1,1,0,1} }, { 'E', {1,1,1,0} },
+      { 'F', {1,1,1,1} }
+    };
+  auto Hex2Bin = [&](char c) {
+    return hex_lookup[c];
   };
+
 
   // convert a string of hex code into vector of bits.
   auto Hex2BinCode = [&Hex2Bin] ( const std::string & str ) -> BitContainer {
