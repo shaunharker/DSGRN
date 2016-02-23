@@ -168,105 +168,24 @@ adjacencies ( const uint64_t myindex ) const {
 
   uint64_t D = data_ -> network_ . size ( );
 
-  typedef uint64_t bitType;
-  typedef std::vector<bitType> BitContainer;
-  // Convert an hex char into a vector of bits (length 4)
-  auto Hex2Bin = [] ( const char & c ) -> BitContainer {
-    switch ( c ) {
-      case '0' : return BitContainer {0,0,0,0};
-      case '1' : return BitContainer {0,0,0,1};
-      case '2' : return BitContainer {0,0,1,0};
-      case '3' : return BitContainer {0,0,1,1};
-      case '4' : return BitContainer {0,1,0,0};
-      case '5' : return BitContainer {0,1,0,1};
-      case '6' : return BitContainer {0,1,1,0};
-      case '7' : return BitContainer {0,1,1,1};
-      case '8' : return BitContainer {1,0,0,0};
-      case '9' : return BitContainer {1,0,0,1};
-      case 'A' : return BitContainer {1,0,1,0};
-      case 'B' : return BitContainer {1,0,1,1};
-      case 'C' : return BitContainer {1,1,0,0};
-      case 'D' : return BitContainer {1,1,0,1};
-      case 'E' : return BitContainer {1,1,1,0};
-      case 'F' : return BitContainer {1,1,1,1};
-    }
-  };
+  std::vector<LogicParameter> logicsTmp = logics;
 
-  // convert a string of hex code into vector of bits.
-  auto Hex2BinCode = [&Hex2Bin] ( const std::string & str ) -> BitContainer {
-    BitContainer output;
-    for ( const char & c : str ) {
-      BitContainer nymble = Hex2Bin ( c );
-      for ( bool b : nymble ) output . push_back ( b );
-    }
-    return output;
-  };
-
-  // convert a vector of bits into a string of hex code
-  auto Bin2HexCode = [] ( const BitContainer & bin ) -> std::string {
-    uint64_t nymbleSize = 4;
-    typedef std::bitset<4> Nymble;
-    BitContainer::const_iterator it;
-    std::stringstream res;
-    for ( it = bin.begin(); it!=bin.end(); it+=nymbleSize ) {
-      Nymble nymble;
-      nymble[3] = *it;
-      nymble[2] = *(it+1);
-      nymble[1] = *(it+2);
-      nymble[0] = *(it+3);
-      res << std::hex << std::uppercase << nymble.to_ulong();
-    }
-    return res.str();
-  };
-
-  /// DEBUG hex/bin conversion
-  // std::string testString = "0F9ABD12146C";
-  // BitContainer testBool = Hex2BinCode ( testString );
-  // for ( bitType b : testBool ) std::cout << b << " ";
-  // std::cout << "\n";
-  // std::string s = Bin2HexCode ( Hex2BinCode ( testString ) );
-  // std::cout << testString << "\n";
-  // std::cout << s << "\n";
-  /// END DEBUG
-
-  std::set<uint64_t> outputSet; // to have unicity
-  // Will do in-place bit flip to avoid temporary copies
   for ( uint64_t d = 0; d < D; ++d ) {
-    /// make a copy of the Logic Parameter
-    LogicParameter lp = logics [ d ];
-    /// extract the hexcode of the logic parameter
-    std::string hexCode ( lp . hex ( ) );
-    /// Convert the hexCode into binary code
-    BitContainer binCode ( Hex2BinCode ( hexCode ) );
-    /// Flip one bit at a time, construct a new adjacent parameter
-    /// and retrieve its index
-    uint64_t N = binCode . size ( );
-    for ( uint64_t i = 0; i < N; ++i ) {
-      binCode[i] = 1-binCode[i]; // flip
-      //
-      // new logic from the flipped binCode
-      logics [ d ] = LogicParameter (
-                            data_ -> network_ . inputs ( d ) . size(),
-                            data_ -> network_ . outputs ( d ) . size(),
-                            Bin2HexCode ( binCode )
-                                    );
+    // Get the adjacents logic parameter
+    std::vector<LogicParameter> lp_adjacencies = logics [ d ] . adjacencies ( );
+    for ( auto lp_adj : lp_adjacencies ) {
+      logics [ d ] = lp_adj;
       //
       Parameter adj_p ( logics,
                         orders, /// Don't change the order of reference parameter?
                         data_ -> network_ );
       //
-      outputSet . insert ( ParameterGraph::index(adj_p) );
-      //
-      // undo the modifications
-      binCode[i] = 1-binCode[i]; // flip it back
-      logics [ d ] = lp;
+      uint64_t index_adj = ParameterGraph::index ( adj_p );
+      if ( index_adj != -1 ) { output . push_back ( index_adj ); }
+      logics [ d ] = logicsTmp [ d ];
     }
   }
-
-  for ( auto i : outputSet ) { output . push_back ( i ); }
-
   return output;
-
 }
 
 INLINE_IF_HEADER_ONLY Network const ParameterGraph::
