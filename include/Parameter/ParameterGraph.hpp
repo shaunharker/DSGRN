@@ -47,14 +47,33 @@ assign ( Network const& network, std::string const& path ) {
       throw std::runtime_error ( "Error: Could not find logic resource " + ss.str() + ".\n");
     }
     std::string line;
-    while ( std::getline ( infile, line ) ) hex_codes . push_back ( line );
+    std::unordered_map<std::string,uint64_t> hx;
+    uint64_t counter = 0;
+    while ( std::getline ( infile, line ) ) {
+      hex_codes . push_back ( line );
+      hx [ line ] = counter;
+      ++counter;
+    }
     infile . close ();
     data_ -> factors_ . push_back ( hex_codes );
+    data_ -> hex_code_lut_ . push_back ( hx );
     data_ -> logic_place_values_ . push_back ( hex_codes . size () );
     data_ -> fixedordersize_ *= hex_codes . size ();
     //std::cout << d << ": " << hex_codes . size () << " factorial(" << m << ")=" << _factorial ( m ) << "\n";
   }
   data_ -> size_ = data_ -> fixedordersize_ * data_ -> reorderings_;
+  // construction of place_values_ used in method index
+  data_ -> place_values_ . resize ( 2*D, 0 );
+  data_ -> place_values_ [ 0 ] = 1;
+  data_ -> place_values_ [ D ] = 1;
+  for ( uint64_t i = 1; i < D; ++ i ) {
+    data_ -> place_values_ [ i ] = data_ -> place_values_ [ i - 1 ] *
+                                   data_ -> logic_place_values_ [ i - 1 ];
+  }
+  for ( uint64_t i = D+1; i < 2*D; ++ i ) {
+    data_ -> place_values_ [ i ] = data_ -> place_values_ [ i - 1 ] *
+                                   data_ -> order_place_values_ [ i - D - 1 ];
+  }
 }
 
 INLINE_IF_HEADER_ONLY uint64_t ParameterGraph::
@@ -86,6 +105,7 @@ parameter ( uint64_t index ) const {
     order_index /= data_ -> order_place_values_ [ d ];
     order_indices . push_back ( i );
   }
+
   std::vector<LogicParameter> logic;
   std::vector<OrderParameter> order;
   for ( uint64_t d = 0; d < D; ++ d ) {
@@ -107,130 +127,38 @@ index ( Parameter const& p ) const {
   std::vector<LogicParameter> logic = p . logic ( );
   std::vector<OrderParameter> order = p . order ( );
 
-  /// Construct Logic indices
+  // Construct Logic indices
   std::vector<uint64_t> logic_indices;
   uint64_t D = data_ -> network_ . size ();
   for ( uint64_t d = 0; d< D; ++d ) {
       std::string hexcode = logic [ d ] . hex ( );
-      /// If factors_ was a different container, we could use find instead
-      /// find the hex code within factors_ for the appropriate node
-      uint64_t hexsize = data_ -> factors_ [ d ] . size ( );
-      for ( uint64_t i = 0; i < hexsize; ++i ) {
-          if ( hexcode == data_ -> factors_ [ d ] [ i ] ) {
-              logic_indices . push_back ( i );
-          }
+      //
+      auto it = data_ -> hex_code_lut_[d] . find ( hexcode );
+      if ( it != data_ -> hex_code_lut_[d] . end ( )  ) {
+        logic_indices . push_back ( it -> second );
+      } else {
+        std::cout << "could not find the hex code\n";
+        return -1;
       }
   }
 
-  /// Construct Order indices
+  // Construct Order indices
   std::vector<uint64_t> order_indices;
   for ( uint64_t d = 0; d < D; ++ d ) {
       order_indices . push_back ( order[d].index() );
   }
 
-  /// Find logic_index and order_index, in general
-  /// notation :
-  /// Logic_place_values : lpv
-  /// logics_indices : lis
-  ///
-  /// For the logic index L (but similar for order index)
-  /// for various level of d's
-  /// d = 0 : lis[0] = L % lpv[0]
-  /// d = 1 : lis[1] = floor( L/lpv[0] ) % lpv[1]
-  /// d = 2 : lis[2] = floor( floor(L/lpv[0]) / lpv[1] ) % lpv[2]
-  /// ...
-  /// so for we have :
-  ///
-  /// from d = 0 :
-  /// L = m_0 * lpv[0] + lis[0] and 0 <= L < size()                          (0)
-  /// so 0 <= m_0 < floor(size()/lpv[0])
-  ///
-  /// from d = 1 :
-  /// floor(L/lpv[0]) = m_1 * lpv[1] + lis[1]
-  /// or
-  /// m_0 = m_1 * lpv[1] + lis[1]                                            (1)
-  /// a given value m_0 is admissible if there is a value m_1 such that
-  /// the equation (1) is satisfied, meaning (m_0-lis[1]) % lpv[1] == 0
-  /// if (1) is satisfied, compute m_1 and go to the next level for d.
-  /// if (1) is not satisfied, go back to (0) with a new value for m_0
-  ///
-  /// from d = 2 :
-  /// floor( floor(L/lpv[0])/lpv[1] ) =  m_2 * lpv[2] + lis[2]
-  /// or
-  /// m_1 = m_2 * lpv[2] + lis[2]                                            (3)
-  /// the m_1 value found is admissible is (3) can be satisfied,
-  /// meaning :  (m_1-lpv[2]) % lpv[2] == 0
-  ///
-  /// keep going till the last level for d.
-  ///
-  /// if d = 2 is the last level, and (3) is satisfied then m_0 is an admissible
-  /// value and L can be computed using (0). If (3) is not satisfied, then
-  /// go back to (0) with a new value for m_0
-  ///
-  /// In general, a set of values of m_0 will be admissible.
-  /// it goes like  :
-  /// for 0<index<fixedordersize_                 : "reorderings_" admissible values
-  /// for fixedordersize_<index<2*fixedordersize_ : "reorderings_-1" admissible values
-  /// ...
-  /// for size()-fixedordersize_<index<size()     : we have 1 admissible value
-  ///
-  /// In practice, the first admissible value for m_0, meaning satisfying all
-  /// the different equations for each d-level is the right now. (or so it seems)
-  ///
-
-///--- Logic Index ---
-  uint64_t logic_index;
-  uint64_t nmax = floor(size()/data_ -> logic_place_values_[0]);
-  for ( uint64_t i = 0; i < nmax; ++i ) {
-    uint64_t d = 1;
-    bool flag = true;
-    uint64_t R = i;
-    while ( (d < D) && flag ) {
-      /// careful with negative values and %
-      int A = R - logic_indices[d];
-      while ( A < 0 ) { A+= data_->logic_place_values_[d]; }
-      ///
-      if ( A%data_->logic_place_values_[d] == 0 ) {
-        R = ( R - logic_indices[d] ) / data_->logic_place_values_[d];
-      } else {
-        flag = false;
-      }
-      ++d;
-    }
-    if ( flag ) {
-      logic_index = i * data_ -> logic_place_values_ [ 0 ] + logic_indices [ 0 ];
-      break; // Find only the first good value
-    }
+  uint64_t logic_index = 0;
+  for ( uint64_t i = 0; i < D; ++ i ) {
+    logic_index += data_ -> place_values_[i] * logic_indices [ i ];
   }
 
-///--- Order Index ---
-  uint64_t order_index;
-  nmax = data_->reorderings_;
-  for ( uint64_t i = 0; i < nmax; ++i ) {
-    uint64_t d = 1;
-    bool flag = true;
-    uint64_t R = i;
-
-    while ( (d < D) && flag ) {
-      /// careful with negative values and %
-      int A = R - order_indices[d];
-      while ( A < 0 ) { A += data_ -> order_place_values_[d]; }
-      ///
-      if ( A % data_ -> order_place_values_[d] == 0 ) {
-        R = ( R - order_indices [ d ] ) / data_ -> order_place_values_ [ d ];
-      } else {
-        flag = false;
-      }
-      ++d;
-    }
-    if ( flag ) {
-      order_index = i *data_ -> order_place_values_ [ 0 ] + order_indices [ 0 ];
-      break; // Find only the first good value
-    }
+  uint64_t order_index = 0;
+  for ( uint64_t i = D; i < 2*D; ++ i ) {
+    order_index += data_ -> place_values_[i] * order_indices [ i - D ];
   }
 
-  return order_index * data_->fixedordersize_ + logic_index;
-
+  return order_index * data_ -> fixedordersize_ + logic_index;
 }
 
 INLINE_IF_HEADER_ONLY std::vector<uint64_t> ParameterGraph::
