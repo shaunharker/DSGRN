@@ -56,7 +56,7 @@ assign ( Network const& network, std::string const& path ) {
     }
     infile . close ();
     data_ -> factors_ . push_back ( hex_codes );
-    data_ -> hex_code_lut_ . push_back ( hx );
+    data_ -> factors_inv_ . push_back ( hx );
     data_ -> logic_place_values_ . push_back ( hex_codes . size () );
     data_ -> fixedordersize_ *= hex_codes . size ();
     //std::cout << d << ": " << hex_codes . size () << " factorial(" << m << ")=" << _factorial ( m ) << "\n";
@@ -132,8 +132,8 @@ index ( Parameter const& p ) const {
   for ( uint64_t d = 0; d< D; ++d ) {
       std::string hexcode = logic [ d ] . hex ( );
       //
-      auto it = data_ -> hex_code_lut_[d] . find ( hexcode );
-      if ( it != data_ -> hex_code_lut_[d] . end ( )  ) {
+      auto it = data_ -> factors_inv_[d] . find ( hexcode );
+      if ( it != data_ -> factors_inv_[d] . end ( )  ) {
         logic_indices . push_back ( it -> second );
       } else {
         return -1;
