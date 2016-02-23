@@ -21,27 +21,52 @@
 # THE SOFTWARE.
 
 import walllabels as wl
-import fileparsers as fp
-import itertools
+# import fileparsers as fp
+import itertools, sys
+import json
 
-def preprocess(fname1='dsgrn_output.json',fname2='dsgrn_domaingraph.json',fname3='dsgrn_domaincells.json',pname='patterns.txt',cyclic=1):
-    # read input files
-    varnames,threshnames,morsedomgraph,morsecells,vertexmap=fp.parseMorseSet(fname1)
-    domaingraph=fp.parseDomainGraph(fname2)
-    domaincells=fp.parseDomainCells(fname3)
-    patternnames,patternmaxmin,originalpatterns=fp.parsePatterns(pname)
+def preprocess(morseset_jsonstr,domgraph_jsonstr,domaincells_jsonstr,patternstr,cyclic=1):
+    # read json strings
+    varnames,threshnames,morsedomgraph,morsecells,vertexmap,domaingraph,domaincells=extractFromJSON(morseset_jsonstr,domgraph_jsonstr,domaincells_jsonstr)
+    # read pattern string
+    patternnames,patternmaxmin,originalpatterns=parsePatternString(patternstr)
     # put max/min patterns in terms of the alphabet u,m,M,d
     patterns=translatePatterns(varnames,patternnames,patternmaxmin,cyclic=cyclic)
-    # translate domain graph into wall graph
-    extendedmorsegraph,extendedmorsecells=makeExtendedMorseSetDomainGraph(vertexmap,morsecells,domaingraph,domaincells)
+    # translate domain graph into extended wall graph
+    extendedmorsegraph,extendedmorsecells=reindexDomainGraph(vertexmap,morsecells,domaingraph,domaincells)
     outedges,wallthresh,walldomains,booleanoutedges=makeWallGraphFromDomainGraph(len(vertexmap),extendedmorsegraph, extendedmorsecells)
     # record which variable is affected at each wall
     varsaffectedatwall=varsAtWalls(threshnames,walldomains,wallthresh,varnames)
-    # make wall labels
+    # make wall labels with extended wall graph
     wallinfo = wl.makeWallInfo(outedges,walldomains,varsaffectedatwall)
-    # truncate back to Morse wall graph
+    # REQUIRED: truncate back to Morse wall graph so that the pattern search is only over the morse set
+    # However, reindexing may not be necessary
     wallinfo = truncateExtendedWallGraph(booleanoutedges,outedges,wallinfo)
     return patterns, originalpatterns, wallinfo
+
+def extractFromJSON(morseset_jsonstr,domgraph_jsonstr,domaincells_jsonstr):
+    # read json strings
+    parsed=json.loads(morseset_jsonstr)
+    varnames = [ x[0] for x in parsed["network"] ]
+    threshnames = [ [parsed["network"][i][2][j] for j in parsed["parameter"][i][2]] for i in range(len(parsed["network"])) ]
+    morsedomgraph=parsed["graph"]
+    morsecells=parsed["cells"]
+    vertexmap=parsed["vertices"]
+    domaingraph=json.loads(domgraph_jsonstr)
+    domaincells=json.loads(domaincells_jsonstr)['cells']
+    return varnames,threshnames,morsedomgraph,morsecells,vertexmap,domaingraph,domaincells
+
+def parsePatternString(patternstr):
+    maxmin=[]
+    patternnames=[]
+    originalpatterns=[]
+    patternlist = patternstr.split('\n ')
+    for pat in patternlist:
+        originalpatterns.append(pat)
+        p=pat.replace(',',' ').split()
+        patternnames.append(p[::2])
+        maxmin.append(p[1::2])
+    return patternnames, maxmin, originalpatterns
 
 def translatePatterns(varnames,patternnames,patternmaxmin,cyclic=0):
     numvars=len(varnames)
@@ -116,9 +141,27 @@ def varsAtWalls(threshnames,walldomains,wallthresh,varnames):
         raise ValueError('Affected variables are undefined at some walls.')
     return varsaffectedatwall
 
-def makeWallGraphFromDomainGraph(N,domgraph,cells):
-    morseinds=range(N) # number of domains in morse set
-    domedges=[(k,d) for k,e in enumerate(domgraph) for d in e]
+def makeWallGraphFromDomainGraph(morsegraphlen,domgraph,cells):
+    # number of domains in morse set
+    morseinds=range(morsegraphlen)
+    # make domain edges (walls) except for self-loops
+    domedges=[(k,d) for k,e in enumerate(domgraph) for d in e if k != d]
+    # construct wall domains and record each variable at threshold
+    wallthresh=[]
+    walldomains=[]
+    for de in domedges:
+        c0=cells[de[0]]
+        c1=cells[de[1]]
+        n=len(c0)
+        location=[True if c0[k]!=c1[k] else False for k in range(n)]
+        if sum(location) > 1: 
+            raise ValueError("The domain graph has an edge between nonadjacent domains. Aborting.")
+        elif sum(location)==0: 
+            raise ValueError("Self-loop in domain graph. Aborting.")
+        else:
+            wallthresh.append(location.index(True))
+            walldomains.append(tuple([sum(c0[k]+c1[k])/4.0 for k in range(n)])) # the addition operator is list concatenation: sum([0,1]+[1,2])/4.0 = 4/4 = 1
+    # convert domain edges into wall edges
     booleanwallgraph=[]
     wallgraph=[]
     for k,edge1 in enumerate(domedges):
@@ -128,7 +171,8 @@ def makeWallGraphFromDomainGraph(N,domgraph,cells):
                 if edge1[0] in morseinds and edge1[1] in morseinds and edge2[1] in morseinds:
                     booleanwallgraph.append(True)
                 else:
-                    booleanwallgraph.append(False)                       
+                    booleanwallgraph.append(False)  
+    # record the wall graph                     
     outedges=[[] for _ in range(len(domedges))]
     booleanoutedges=[[] for _ in range(len(domedges))]
     for e,b in zip(wallgraph,booleanwallgraph):
@@ -136,30 +180,15 @@ def makeWallGraphFromDomainGraph(N,domgraph,cells):
         booleanoutedges[e[0]].append(b)
     outedges=[tuple(o) for o in outedges]
     booleanoutedges=[tuple(o) for o in booleanoutedges]
-    wallthresh=[]
-    walldomains=[]
-    for de in domedges:
-        c0=cells[de[0]]
-        c1=cells[de[1]]
-        n=len(c0)
-        location=[True if c0[k]!=c1[k] else False for k in range(n)]
-        if sum(location) > 1: # check for errors
-            raise ValueError("The domain graph has an edge between nonadjacent domains. Aborting.")
-        elif sum(location)==0: # handle self-loops
-            wallthresh.append(None)
-            walldomains.append(tuple([sum(c0[k]+c1[k])/4.0 for k in range(n)])) 
-        else:
-            wallthresh.append(location.index(True))
-            walldomains.append(tuple([sum(c0[k]+c1[k])/4.0 for k in range(n)])) 
     return outedges,wallthresh,walldomains,booleanoutedges
 
-def makeExtendedMorseSetDomainGraph(vertexmap,morsecells,domaingraph,domaincells):
-    # add new domains with edges to or from domains in the Morse domain graph
-    newdomains=sorted(list(set([k for v in vertexmap for k,edges in enumerate(domaingraph) if v in edges and k not in vertexmap]+[e for v in vertexmap for e in domaingraph[v] if e not in vertexmap])))
-    newvertexmap=vertexmap+newdomains # lists must be explicitly added to preserve original indexing in vertexmap
+def reindexDomainGraph(vertexmap,morsecells,domaingraph,domaincells):    
+    # add all remaining domains with new indices
+    newdomains = [k for k in range(len(domaingraph)) if k not in vertexmap]
+    newvertexmap = vertexmap + newdomains
     # extend the morse domain graph and cells
     extendedmorsecells=morsecells+[domaincells[v] for v in newdomains]
-    extendedmorsegraph=[[newvertexmap.index(e) for e in domaingraph[v] if e in newvertexmap] for v in newvertexmap]
+    extendedmorsegraph=[[newvertexmap.index(e) for e in domaingraph[v]] for v in newvertexmap]
     return extendedmorsegraph, extendedmorsecells
 
 def truncateExtendedWallGraph(booleanoutedges,outedges,wallinfo):
@@ -188,8 +217,12 @@ def truncateExtendedWallGraph(booleanoutedges,outedges,wallinfo):
 
 
 if __name__=='__main__':
-    varnames,threshnames,morsedomgraph,morsecells,vertexmap=fp.parseMorseSet()
-    domaingraph=fp.parseDomainGraph()
-    domaincells=fp.parseDomainCells()
-    print makeExtendedMorseSetDomainGraph(vertexmap,morsecells,domaingraph,domaincells)
-
+    # varnames,threshnames,morsedomgraph,morsecells,vertexmap=fp.parseMorseSet()
+    # domaingraph=fp.parseDomainGraph()
+    # domaincells=fp.parseDomainCells()
+    # print makeExtendedMorseSetDomainGraph(vertexmap,morsecells,domaingraph,domaincells)
+    patternstr = 'Z min, X min, Y min, Z max, X max, Y max\n X max, Y max, Z max, X min, Y min, Z min\n X min, Y max, Z min, X max, Y min, Z max\n X max, Y min, Z max, X min, Y max, Z min'
+    patternnames,patternmaxmin,originalpatterns=parsePatternString(patternstr)
+    print originalpatterns
+    print patternnames
+    print patternmaxmin
