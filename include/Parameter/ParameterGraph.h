@@ -93,7 +93,8 @@ struct ParameterGraph_ {
   std::vector<uint64_t> order_place_values_;
   std::vector<std::vector<std::string>> factors_;
   std::vector<std::unordered_map<std::string,uint64_t>> hex_code_lut_;
-  std::vector<uint64_t> place_values_;
+  std::vector<uint64_t> logic_place_bases_;
+  std::vector<uint64_t> order_place_bases_;
   /// serialize
   ///   For use with BOOST Serialization library,
   ///   which is used by the cluster-delegator MPI package
@@ -107,6 +108,9 @@ struct ParameterGraph_ {
     ar & logic_place_values_;
     ar & order_place_values_;
     ar & factors_;
+    ar & hex_code_lut_;
+    ar & logic_place_bases_;
+    ar & order_place_bases_;
   }
 };
 

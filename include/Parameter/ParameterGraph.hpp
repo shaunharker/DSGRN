@@ -62,17 +62,16 @@ assign ( Network const& network, std::string const& path ) {
     //std::cout << d << ": " << hex_codes . size () << " factorial(" << m << ")=" << _factorial ( m ) << "\n";
   }
   data_ -> size_ = data_ -> fixedordersize_ * data_ -> reorderings_;
-  // construction of place_values_ used in method index
-  data_ -> place_values_ . resize ( 2*D, 0 );
-  data_ -> place_values_ [ 0 ] = 1;
-  data_ -> place_values_ [ D ] = 1;
+  // construction of place_bases_ used in method index
+  data_ -> logic_place_bases_ . resize ( D, 0 );
+  data_ -> order_place_bases_ . resize ( D, 0 );
+  data_ -> logic_place_bases_ [ 0 ] = 1;
+  data_ -> order_place_bases_ [ 0 ] = 1;
   for ( uint64_t i = 1; i < D; ++ i ) {
-    data_ -> place_values_ [ i ] = data_ -> place_values_ [ i - 1 ] *
+    data_ -> logic_place_bases_ [ i ] = data_ -> logic_place_bases_ [ i - 1 ] *
                                    data_ -> logic_place_values_ [ i - 1 ];
-  }
-  for ( uint64_t i = D+1; i < 2*D; ++ i ) {
-    data_ -> place_values_ [ i ] = data_ -> place_values_ [ i - 1 ] *
-                                   data_ -> order_place_values_ [ i - D - 1 ];
+    data_ -> order_place_bases_ [ i ] = data_ -> order_place_bases_ [ i - 1 ] *
+                                  data_ -> order_place_values_ [ i - 1 ];
   }
 }
 
@@ -148,13 +147,10 @@ index ( Parameter const& p ) const {
   }
 
   uint64_t logic_index = 0;
-  for ( uint64_t i = 0; i < D; ++ i ) {
-    logic_index += data_ -> place_values_[i] * logic_indices [ i ];
-  }
-
   uint64_t order_index = 0;
-  for ( uint64_t i = D; i < 2*D; ++ i ) {
-    order_index += data_ -> place_values_[i] * order_indices [ i - D ];
+  for ( uint64_t i = 0; i < D; ++ i ) {
+    logic_index += data_ -> logic_place_bases_[i] * logic_indices [ i ];
+    order_index += data_ -> order_place_bases_[i] * order_indices [ i ];
   }
 
   return order_index * data_ -> fixedordersize_ + logic_index;
