@@ -137,7 +137,6 @@ index ( Parameter const& p ) const {
       if ( it != data_ -> hex_code_lut_[d] . end ( )  ) {
         logic_indices . push_back ( it -> second );
       } else {
-        std::cout << "could not find the hex code\n";
         return -1;
       }
   }
