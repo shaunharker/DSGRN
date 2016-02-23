@@ -12,9 +12,9 @@ struct OrderParameter_;
 /// class OrderParameter
 ///   Consider all permutations of m elements,
 ///   indexed by contiguous integers in lexigraphical
-///   order. This class provides methods which 
+///   order. This class provides methods which
 ///   allow one to convert between this indexing
-///   and the permutations, along with some convenience 
+///   and the permutations, along with some convenience
 ///   functionality (i.e. applying permutations)
 class OrderParameter {
 public:
@@ -43,7 +43,7 @@ public:
 
   /// operator ()
   ///   Apply the permutation to the input
-  uint64_t 
+  uint64_t
   operator () ( uint64_t i ) const;
 
   /// inverse
@@ -80,6 +80,9 @@ public:
   /// operator <<
   ///   Output debug data to stream
   friend std::ostream& operator << ( std::ostream& stream, OrderParameter const& p );
+
+  std::vector<OrderParameter>
+  adjacencies ( void ) const;
 
 private:
   std::shared_ptr<OrderParameter_> data_;

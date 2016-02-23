@@ -12,7 +12,7 @@
 #include "OrderParameter.h"
 
 INLINE_IF_HEADER_ONLY OrderParameter::
-OrderParameter ( void ) { 
+OrderParameter ( void ) {
   data_ . reset ( new OrderParameter_ );
 }
 
@@ -78,7 +78,7 @@ stringify ( void ) const {
   std::stringstream ss;
   ss << *this;
   return ss . str ();
-} 
+}
 
 INLINE_IF_HEADER_ONLY void OrderParameter::
 parse ( std::string const& str ) {
@@ -108,6 +108,18 @@ INLINE_IF_HEADER_ONLY std::ostream& operator << ( std::ostream& stream, OrderPar
   return stream;
 }
 
+INLINE_IF_HEADER_ONLY std::vector<OrderParameter> OrderParameter::
+adjacencies ( void ) const {
+  std::vector<OrderParameter> output;
+
+  // To be implemented
+
+  output . push_back ( *this ); 
+  return output;
+}
+
+
+
 INLINE_IF_HEADER_ONLY std::vector<uint64_t> OrderParameter::
 _index_to_tail_rep ( uint64_t index ) {
   std::vector<uint64_t> tail_rep;
@@ -123,7 +135,7 @@ _index_to_tail_rep ( uint64_t index ) {
 INLINE_IF_HEADER_ONLY std::vector<uint64_t> OrderParameter::
 _tail_rep_to_perm ( std::vector<uint64_t> const& tail_rep ) {
   // Note: This algorithm is suboptimal. It requires O(n^2) time
-  //       but there is an O(n log n) algorithm. An optimal 
+  //       but there is an O(n log n) algorithm. An optimal
   //       algorithm requires a counter tree (Red-Black tree which
   //       keeps counts of descendant elements and allows for rank
   //       based queries and insertions)
@@ -138,10 +150,10 @@ _tail_rep_to_perm ( std::vector<uint64_t> const& tail_rep ) {
   return perm;
 }
 
-INLINE_IF_HEADER_ONLY std::vector<uint64_t> OrderParameter:: 
+INLINE_IF_HEADER_ONLY std::vector<uint64_t> OrderParameter::
 _perm_to_tail_rep ( std::vector<uint64_t> const& perm ) {
   // Note: This algorithm is suboptimal. It requires O(n^2) time
-  //       but there is an O(n log n) algorithm. An optimal 
+  //       but there is an O(n log n) algorithm. An optimal
   //       algorithm requires a counter tree (Red-Black tree which
   //       keeps counts of descendant elements and allows for rank
   //       based queries and insertions)
@@ -155,7 +167,7 @@ _perm_to_tail_rep ( std::vector<uint64_t> const& perm ) {
   return tail_rep;
 }
 
-INLINE_IF_HEADER_ONLY uint64_t OrderParameter:: 
+INLINE_IF_HEADER_ONLY uint64_t OrderParameter::
 _tail_rep_to_index ( std::vector<uint64_t> const& tail_rep ) {
   uint64_t result = 0;
   uint64_t factorial = 1;
