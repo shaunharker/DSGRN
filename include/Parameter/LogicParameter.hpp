@@ -12,7 +12,7 @@
 #include "LogicParameter.h"
 
 INLINE_IF_HEADER_ONLY LogicParameter::
-LogicParameter ( void ) { 
+LogicParameter ( void ) {
   data_ . reset ( new LogicParameter_ );
 }
 
@@ -35,10 +35,10 @@ assign ( uint64_t n, uint64_t m, std::string const& hex ) {
     char hex_digit = hex [ i ];
     hex_digit -= '0';
     if ( hex_digit >= 10 ) hex_digit += ('0'-'A'+10);
-    data_ -> comp_ . push_back ( hex_digit & 1 ); 
-    data_ -> comp_ . push_back ( hex_digit & 2 ); 
-    data_ -> comp_ . push_back ( hex_digit & 4 ); 
-    data_ -> comp_ . push_back ( hex_digit & 8 ); 
+    data_ -> comp_ . push_back ( hex_digit & 1 );
+    data_ -> comp_ . push_back ( hex_digit & 2 );
+    data_ -> comp_ . push_back ( hex_digit & 4 );
+    data_ -> comp_ . push_back ( hex_digit & 8 );
   }
   data_ -> comp_ . resize ( N );
 }
@@ -75,7 +75,7 @@ stringify ( void ) const {
   std::stringstream ss;
   ss << "[" << data_ ->n_ << "," << data_ ->m_ << ",\"" << data_ ->hex_ << "\"]";
   return ss . str ();
-} 
+}
 
 INLINE_IF_HEADER_ONLY void LogicParameter::
 parse ( std::string const& str ) {
@@ -104,8 +104,86 @@ INLINE_IF_HEADER_ONLY std::ostream& operator << ( std::ostream& stream, LogicPar
 }
 
 INLINE_IF_HEADER_ONLY std::string LogicParameter::
-hex ( void ) const { 
+hex ( void ) const {
     return data_ -> hex_;
+}
+
+INLINE_IF_HEADER_ONLY std::vector<LogicParameter> LogicParameter::
+adjacencies ( void ) const {
+  std::vector<LogicParameter> output;
+  //
+  typedef bool bitType;
+  typedef std::vector<bitType> BitContainer;
+  // Convert an hex char into a vector of bits (length 4)
+  auto Hex2Bin = [] ( const char & c ) -> BitContainer {
+    switch ( c ) {
+      case '0' : return BitContainer {0,0,0,0};
+      case '1' : return BitContainer {0,0,0,1};
+      case '2' : return BitContainer {0,0,1,0};
+      case '3' : return BitContainer {0,0,1,1};
+      case '4' : return BitContainer {0,1,0,0};
+      case '5' : return BitContainer {0,1,0,1};
+      case '6' : return BitContainer {0,1,1,0};
+      case '7' : return BitContainer {0,1,1,1};
+      case '8' : return BitContainer {1,0,0,0};
+      case '9' : return BitContainer {1,0,0,1};
+      case 'A' : return BitContainer {1,0,1,0};
+      case 'B' : return BitContainer {1,0,1,1};
+      case 'C' : return BitContainer {1,1,0,0};
+      case 'D' : return BitContainer {1,1,0,1};
+      case 'E' : return BitContainer {1,1,1,0};
+      case 'F' : return BitContainer {1,1,1,1};
+    }
+  };
+
+  // convert a string of hex code into vector of bits.
+  auto Hex2BinCode = [&Hex2Bin] ( const std::string & str ) -> BitContainer {
+    BitContainer output;
+    for ( const char & c : str ) {
+      BitContainer nymble = Hex2Bin ( c );
+      for ( bool b : nymble ) output . push_back ( b );
+    }
+    return output;
+  };
+
+  // convert a vector of bits into a string of hex code
+  auto Bin2HexCode = [] ( const BitContainer & bin ) -> std::string {
+    uint64_t nymbleSize = 4;
+    typedef std::bitset<4> Nymble;
+    BitContainer::const_iterator it;
+    std::stringstream res;
+    for ( it = bin.begin(); it!=bin.end(); it+=nymbleSize ) {
+      Nymble nymble;
+      nymble[3] = *it;
+      nymble[2] = *(it+1);
+      nymble[1] = *(it+2);
+      nymble[0] = *(it+3);
+      res << std::hex << std::uppercase << nymble.to_ulong();
+    }
+    return res.str();
+  };
+
+  /// DEBUG hex/bin conversion
+  // std::string testString = "0F9ABD12146C";
+  // BitContainer testBool = Hex2BinCode ( testString );
+  // for ( bitType b : testBool ) std::cout << b << " ";
+  // std::cout << "\n";
+  // std::string s = Bin2HexCode ( Hex2BinCode ( testString ) );
+  // std::cout << testString << "\n";
+  // std::cout << s << "\n";
+  /// END DEBUG
+
+  /// Convert the hexCode into binary code
+  BitContainer binCode ( Hex2BinCode ( data_ -> hex_ ) );
+  /// Flip one bit at a time, construct a new adjacent hex code
+  /// and retrieve its index
+  uint64_t N = binCode . size ( );
+  for ( uint64_t i = 0; i < N; ++i ) {
+    binCode[i] = ~binCode[i];
+    output . push_back ( LogicParameter ( data_ -> n_, data_ -> m_ , Bin2HexCode ( binCode ) ) );
+    binCode[i] = ~binCode[i];
+  }
+  return output;
 }
 
 #endif
