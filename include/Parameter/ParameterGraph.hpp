@@ -159,11 +159,11 @@ index ( Parameter const& p ) const {
 INLINE_IF_HEADER_ONLY std::vector<uint64_t> ParameterGraph::
 adjacencies ( const uint64_t myindex ) const {
   std::vector<uint64_t> output;
-  /// Get the parameter from the index
+  // Get the parameter from the index
   Parameter p = parameter ( myindex );
-  /// Get the logic
+  // Get the logic
   std::vector<LogicParameter> logics = p . logic ( );
-  /// get the order
+  // Get the order
   std::vector<OrderParameter> orders = p . order ( );
 
   uint64_t D = data_ -> network_ . size ( );

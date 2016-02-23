@@ -115,6 +115,7 @@ adjacencies ( void ) const {
   typedef bool bitType;
   typedef std::vector<bitType> BitContainer;
   // Convert an hex char into a vector of bits (length 4)
+  // standard order (right to left)
   static std::unordered_map<char, BitContainer> hex_lookup =
     { { '0', {0,0,0,0} }, { '1', {0,0,0,1} }, { '2', {0,0,1,0} },
       { '3', {0,0,1,1} }, { '4', {0,1,0,0} }, { '5', {0,1,0,1} },
@@ -126,43 +127,39 @@ adjacencies ( void ) const {
   auto Hex2Bin = [&](char c) {
     return hex_lookup[c];
   };
-
-
+  //
   // convert a string of hex code into vector of bits.
   auto Hex2BinCode = [&Hex2Bin] ( const std::string & str ) -> BitContainer {
     BitContainer output;
     for ( const char & c : str ) {
-      BitContainer nymble = Hex2Bin ( c );
-      for ( bool b : nymble ) output . push_back ( b );
+      // Need to reverse the order
+      BitContainer nybble = Hex2Bin ( c );
+      for ( bool b : nybble ) output . push_back ( b );
     }
     return output;
   };
-
-  // convert a vector of bits into a string of hex code
-  auto Bin2HexCode = [] ( const BitContainer & bin ) -> std::string {
-    uint64_t nymbleSize = 4;
-    typedef std::bitset<4> Nymble;
-    BitContainer::const_iterator it;
-    std::stringstream res;
-    for ( it = bin.begin(); it!=bin.end(); it+=nymbleSize ) {
-      Nymble nymble;
-      nymble[3] = *it;
-      nymble[2] = *(it+1);
-      nymble[1] = *(it+2);
-      nymble[0] = *(it+3);
-      res << std::hex << std::uppercase << nymble.to_ulong();
+  //
+  static const std::vector<char> hex_digit =
+  {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
+  auto Bin2HexCode = [&] ( const BitContainer & bin ) -> std::string {
+    std::string result;
+    for ( uint64_t i = 0; i < bin . size (); i += 4 ) {
+      short digit = ( (short) bin[i] << 3 ) + ( (short) bin[i+1] << 2 )
+                   + ( (short) bin[i+2] << 1 ) + ( (short) bin [i+3] );
+      result . push_back ( hex_digit [ digit ] );
     }
-    return res.str();
+    return result;
   };
 
+  //
   /// DEBUG hex/bin conversion
-  // std::string testString = "0F9ABD12146C";
-  // BitContainer testBool = Hex2BinCode ( testString );
-  // for ( bitType b : testBool ) std::cout << b << " ";
-  // std::cout << "\n";
-  // std::string s = Bin2HexCode ( Hex2BinCode ( testString ) );
-  // std::cout << testString << "\n";
-  // std::cout << s << "\n";
+  std::string testString = "0F9ABD12146C";
+  BitContainer testBool = Hex2BinCode ( testString );
+  for ( bitType b : testBool ) std::cout << b << " ";
+  std::cout << "\n";
+  std::string s = Bin2HexCode ( Hex2BinCode ( testString ) );
+  std::cout << testString << "\n";
+  std::cout << s << "\n";
   /// END DEBUG
 
   /// Convert the hexCode into binary code
