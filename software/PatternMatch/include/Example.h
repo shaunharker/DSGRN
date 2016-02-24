@@ -5,7 +5,7 @@
 #define EXAMPLEPATTERNMATCH_H
 
 /// patternMatch  
-///  INPUT:   A labelled directed graph g with a method "adjacencies" and a method "label"
+///  INPUT:   A labelled directed graph g with methods "size" "adjacencies" and "label"
 ///           A pattern p which is an array of labels.           
 ///  OUTPUT:  For mode == 0, the function returns 1 if there is a "match" and 0 otherwise
 ///           For mode == 1, the function returns the number of matches
@@ -85,7 +85,7 @@ patternMatch ( LabelledGraph const& g,
   };
   // Loop through all initial walls and sum match counts
   uint64_t result = 0;
-  for ( uint64_t wi : Walls ) {
+  for ( uint64_t wi = 0; wi < g . size(); ++ wi ) {
     result += match_count ( wi );
   }
   return result;
