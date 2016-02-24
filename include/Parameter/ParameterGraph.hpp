@@ -169,19 +169,26 @@ adjacencies ( const uint64_t myindex ) const {
   uint64_t D = data_ -> network_ . size ( );
 
   std::vector<LogicParameter> logicsTmp = logics;
+  std::vector<OrderParameter> ordersTmp = orders;
 
   for ( uint64_t d = 0; d < D; ++d ) {
-    // Get the adjacents logic parameter
+    // Get the adjacents logic parameter and order parameter
     std::vector<LogicParameter> lp_adjacencies = logics [ d ] . adjacencies ( );
+    std::vector<OrderParameter> op_adjacencies = orders [ d ] . adjacencies ( );
     for ( auto lp_adj : lp_adjacencies ) {
       logics [ d ] = lp_adj;
-      //
-      Parameter adj_p ( logics,
-                        orders, /// Don't change the order of reference parameter?
-                        data_ -> network_ );
-      //
-      uint64_t index_adj = ParameterGraph::index ( adj_p );
-      if ( index_adj != -1 ) { output . push_back ( index_adj ); }
+      for ( auto op_adj : op_adjacencies ) {
+        orders [ d ] = op_adj;
+        //
+        Parameter adj_p ( logics,
+                          orders,
+                          data_ -> network_ );
+        //
+        uint64_t index_adj = ParameterGraph::index ( adj_p );
+        if ( index_adj != -1 ) { output . push_back ( index_adj ); }
+        //
+        orders [ d ] = ordersTmp [ d ];
+      }
       logics [ d ] = logicsTmp [ d ];
     }
   }
