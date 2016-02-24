@@ -41,7 +41,7 @@ def main(networkname,pnMG):
         counter += 1
         HMS(p,networkname,pnMG_dict[p])
         if counter % 500 == 0:
-                print(counter)
+            print(counter)
 
 def HMS(parameterstring,networkname,morsegraph):
     # specify the full path to your file, unless it is in the same directory
@@ -71,15 +71,15 @@ def HMS(parameterstring,networkname,morsegraph):
 
 
     if not os.path.exists(savein0):
-            os.makedirs(savein0) #if a folder AND its child folder don't exist, this creates both of them
+        os.makedirs(savein0) #if a folder AND its child folder don't exist, this creates both of them
     if not os.path.exists(savein0_2):
-            os.makedirs(savein0_2)
+        os.makedirs(savein0_2)
     if not os.path.exists(savein0_3):
-            os.makedirs(savein0_3)
+        os.makedirs(savein0_3)
     if not os.path.exists(savein_ts0):
-            os.makedirs(savein_ts0)
+        os.makedirs(savein_ts0)
     if not os.path.exists(savein_eqns0):
-            os.makedirs(savein_eqns0)
+        os.makedirs(savein_eqns0)
 
     #the following creates the sample file of parameters (samplefile2) using DSGRN outputs (raw_samples)
     raw_samples = '/home/mike/DSGRN_outputs/new/'+networkname+'/'+parameterstring+'.txt'
