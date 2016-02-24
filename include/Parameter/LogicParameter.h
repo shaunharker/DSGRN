@@ -55,7 +55,7 @@ public:
   friend std::ostream& operator << ( std::ostream& stream, LogicParameter const& p );
 
   /// Return the hex code of the LogicParameter
-  std::string
+  std::string const &
   hex ( void ) const;
 
   std::vector<LogicParameter>
