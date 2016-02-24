@@ -153,13 +153,13 @@ adjacencies ( void ) const {
 
   //
   /// DEBUG hex/bin conversion
-  std::string testString = "0F9ABD12146C";
-  BitContainer testBool = Hex2BinCode ( testString );
-  for ( bitType b : testBool ) std::cout << b << " ";
-  std::cout << "\n";
-  std::string s = Bin2HexCode ( Hex2BinCode ( testString ) );
-  std::cout << testString << "\n";
-  std::cout << s << "\n";
+  // std::string testString = "0F9ABD12146C";
+  // BitContainer testBool = Hex2BinCode ( testString );
+  // for ( bitType b : testBool ) std::cout << b << " ";
+  // std::cout << "\n";
+  // std::string s = Bin2HexCode ( Hex2BinCode ( testString ) );
+  // std::cout << testString << "\n";
+  // std::cout << s << "\n";
   /// END DEBUG
 
   /// Convert the hexCode into binary code
