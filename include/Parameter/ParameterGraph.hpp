@@ -129,7 +129,7 @@ index ( Parameter const& p ) const {
   // Construct Logic indices
   std::vector<uint64_t> logic_indices;
   uint64_t D = data_ -> network_ . size ();
-  for ( uint64_t d = 0; d< D; ++d ) {
+  for ( uint64_t d = 0; d < D; ++d ) {
       std::string hexcode = logic [ d ] . hex ( );
       //
       auto it = data_ -> factors_inv_[d] . find ( hexcode );
@@ -177,17 +177,32 @@ adjacencies ( const uint64_t myindex ) const {
     std::vector<OrderParameter> op_adjacencies = orders [ d ] . adjacencies ( );
     for ( auto lp_adj : lp_adjacencies ) {
       logics [ d ] = lp_adj;
-      for ( auto op_adj : op_adjacencies ) {
-        orders [ d ] = op_adj;
-        //
-        Parameter adj_p ( logics,
-                          orders,
-                          data_ -> network_ );
-        //
-        uint64_t index_adj = ParameterGraph::index ( adj_p );
-        if ( index_adj != -1 ) { output . push_back ( index_adj ); }
-        //
-        orders [ d ] = ordersTmp [ d ];
+      // Check if the logic is admissible
+      auto admissibleLogic = [&] () -> bool {
+        for ( uint64_t d = 0; d < D; ++d ) {
+            std::string hexcode = logics [ d ] . hex ( );
+            auto it = data_ -> factors_inv_[d] . find ( hexcode );
+            if ( it != data_ -> factors_inv_[d] . end ( )  ) {
+              return true;
+            } else {
+              return false;
+            }
+        }
+      };
+      //
+      if ( admissibleLogic() ) {
+        for ( auto op_adj : op_adjacencies ) {
+          orders [ d ] = op_adj;
+          //
+          Parameter adj_p ( logics,
+                            orders,
+                            data_ -> network_ );
+          //
+          uint64_t index_adj = ParameterGraph::index ( adj_p );
+          if ( index_adj != -1 ) { output . push_back ( index_adj ); }
+          //
+          orders [ d ] = ordersTmp [ d ];
+        }
       }
       logics [ d ] = logicsTmp [ d ];
     }
