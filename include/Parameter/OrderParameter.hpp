@@ -114,7 +114,7 @@ adjacencies ( void ) const {
 
   // To be implemented
 
-  output . push_back ( *this ); 
+  output . push_back ( *this );
   return output;
 }
 
