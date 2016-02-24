@@ -29,6 +29,21 @@ def resultsFileParser(filename):
                 countpatterns[uniquepatterns.index(pattern)] += 1
     return uniquepatterns,countpatterns
 
+def searchUniqueParamsInListOfPatterns(filename,listofpatterns):
+    uniqueparams = set()
+    with open(filename,'r') as f:
+        for line in f:
+            words = line.split(':')
+            parameter = int(words[1].replace(',',' ').split()[0])
+            pattern = words[-1][1:-1]
+            if pattern in listofpatterns:
+                if parameter not in uniqueparams:
+                    uniqueparams.add(parameter)
+    return uniqueparams
+
+        
+
+
 def searchFile(uniquepatterns,totalorders,lattice):
     count = 0
     for u in uniquepatterns:
@@ -65,7 +80,15 @@ def sort_by_list(X,Y,reverse=False):
     return newX,newY
      
 if __name__ == '__main__':
-    filename='5D_2016_01_28_stableFCs_allresults.txt'
+    # filename='5D_2016_01_28_stableFCs_allresults.txt'
+    # listofpatterns = ['199 max, 72 max, 177 max, 204 max, 77 max, 72 min, 199 min, 204 min, 177  min, 77 min, 199 max', '72 max, 199 max, 204 max, 177 max, 77 max, 199 min, 72 min, 177  min, 204 min, 77 min, 72 max','72 max, 199 max, 177 max, 204 max, 77 max, 199 min, 72 min, 204 min, 177  min, 77 min, 72 max','199 max, 72 max, 204 max, 177 max, 77 max, 72 min, 199 min, 177  min, 204 min, 77 min, 199 max','199 max, 72 max, 204 max, 177 max, 77 max, 72 min, 199 min, 177  min, 77 min, 204 min, 199 max','72 max, 199 max, 204 max, 177 max, 77 max, 199 min, 72 min, 177  min, 77 min, 204 min, 72 max','199 max, 72 max, 177 max, 204 max, 77 max, 72 min, 199 min, 177  min, 204 min, 77 min, 199 max','72 max, 199 max, 177 max, 204 max, 77 max, 199 min, 72 min, 177  min, 204 min, 77 min, 72 max','199 max, 72 max, 177 max, 204 max, 77 max, 72 min, 199 min, 177  min, 77 min, 204 min, 199 max','72 max, 199 max, 177 max, 204 max, 77 max, 199 min, 72 min, 177  min, 77 min, 204 min, 72 max','72 max, 199 max, 177 max, 204 max, 77 max, 72 min, 199 min, 204 min, 177  min, 77 min, 72 max','72 max, 199 max, 204 max, 177 max, 77 max, 72 min, 199 min, 177  min, 204 min, 77 min, 72 max','72 max, 199 max, 177 max, 204 max, 77 max, 72 min, 199 min, 177  min, 204 min, 77 min, 72 max','72 max, 199 max, 204 max, 177 max, 77 max, 72 min, 199 min, 177  min, 77 min, 204 min, 72 max','72 max, 199 max, 177 max, 204 max, 77 max, 72 min, 199 min, 177  min, 77 min, 204 min, 72 max']
+    # listofpatterns = ['199 max, 72 max, 177 max, 204 max, 77 max, 72 min, 199 min, 204 min, 177  min, 77 min, 199 max', '72 max, 199 max, 204 max, 177 max, 77 max, 199 min, 72 min, 177  min, 204 min, 77 min, 72 max']    
+    # uniqueparams = searchUniqueParamsInListOfPatterns(filename,listofpatterns)
+    # with open('uniqueparamsintop15patterns.txt','w') as uf:
+    #     for u in uniqueparams:
+    #         uf.write(str(u)+'\n')
+    # print len(uniqueparams)
+    filename='/share/data/bcummins/parameterresults_archive/5D_2016_01_28_essential_stableFCs_allresults.txt'
     uniquepatterns, countpatterns = resultsFileParser(filename)
     counts, patterns = sort_by_list(countpatterns,uniquepatterns,True)
     with open('countedpatterns.txt','w') as cp:

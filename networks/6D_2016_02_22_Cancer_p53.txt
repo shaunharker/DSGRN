@@ -1,0 +1,6 @@
+p53 : (Chk1 + Chk2)(~Mdm2)
+Chk1 : ~Wip1
+Chk2 : ATM(~Wip1)
+Wip1 : p53
+ATM :  ~Wip1
+Mdm2 : p53

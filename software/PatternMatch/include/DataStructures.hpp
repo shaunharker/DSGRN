@@ -1,31 +1,23 @@
 #ifndef PATTERNMATCH_DATASTRUCTURES_HPP
 #define PATTERNMATCH_DATASTRUCTURES_HPP
 
+#include <boost/unordered_map.hpp> // boost has hash for std::pair
 #include <String>
 #include <list>
 #include <vector>
+#include <set>
+// #include "DSGRN.h"
 
-const int DIMENSION;
-
-struct patternElement {
-	std::string extremum;
-	std::string intermediate;
-};
-
-typedef std::list<patternElement> patternlist; 
+typedef std::vector<std::string> patternvector; 
+typedef std::vector<std::set<char>> labelset;
 
 struct wallStruct {
 	std::list<uint64_t> outedges;
-	std::list<uint64_t> inedges;
-	double[DIMENSION] phasespace;
-	int[DIMENSION] outsigns;
-	int[DIMENSION] insigns;
-	std::list<std::string> walllabels;
-	int var_affected;
+	labelset labels;
 };
 
 typedef std::vector<wallStruct> wallgraphvector;
 
-// use Shaun's code to get domain graph
+// Shaun will provide implementation of wall graph that I can label
 
 #endif
