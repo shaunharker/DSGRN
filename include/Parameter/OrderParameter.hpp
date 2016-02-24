@@ -111,10 +111,16 @@ INLINE_IF_HEADER_ONLY std::ostream& operator << ( std::ostream& stream, OrderPar
 INLINE_IF_HEADER_ONLY std::vector<OrderParameter> OrderParameter::
 adjacencies ( void ) const {
   std::vector<OrderParameter> output;
-
-  // To be implemented
-
-  output . push_back ( *this );
+  // Retrieve the permutation
+  std::vector<uint64_t> perm = data_ -> permute_;
+  uint64_t N = perm . size ( );
+  if ( N > 1 ) {
+    for ( uint64_t i = 0; i<N; i+=2 ) {
+      std::swap( perm[i], perm[i+1] );
+      output . push_back ( OrderParameter(perm) );
+      std::swap( perm[i], perm[i+1] );
+    }
+  }
   return output;
 }
 
