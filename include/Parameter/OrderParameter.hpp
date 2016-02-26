@@ -115,7 +115,7 @@ adjacencies ( void ) const {
   std::vector<uint64_t> perm = data_ -> permute_;
   uint64_t N = perm . size ( );
   if ( N > 1 ) {
-    for ( uint64_t i = 0; i<N; i+=2 ) {
+    for ( uint64_t i = 0; i<N-1; ++i ) {
       std::swap( perm[i], perm[i+1] );
       output . push_back ( OrderParameter(perm) );
       std::swap( perm[i], perm[i+1] );
