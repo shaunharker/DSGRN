@@ -494,7 +494,7 @@ ConvertToBase16[base2_]:=Block[
 
 	(* First convert to base 10, and then convert to base 16 *)
 	IntegerInBase10 = ToExpression[StringJoin["2^^", ToString[base2]]] ;
-	IntegerInBase16 = BaseForm[IntegerInBase10, 16];
+	IntegerInBase16 = ToUpperCase[IntegerString[IntegerInBase10, 16, 4]];
 	
 	Return[IntegerInBase16];
 ];
@@ -527,4 +527,115 @@ HexRepresentation[BinningVector_, n_, m_]:=Block[
 	
 	Return[HexRep];
 
+];
+
+
+
+(* BinningVectors
+		Inputs:
+			ParameterGraph_: The parameter graph of a a particular logic. 
+		Outputs: 
+			The list of binning vectors of the parameter graph.  
+*)
+BinningVectors[ParameterGraph_]:=Block[
+{BinningV},
+	BinningV = ParameterGraph[[All, 1]];
+	Return[ BinningV ];
+];
+
+
+
+(* ParameterInequalities
+		Inputs:
+			ParameterGraph_: The parameter graph of a a particular logic. 
+		Outputs: 
+			The list of inequalities of the parameter graph.  
+*)
+ParameterInequalities[ParameterGraph_]:=Block[
+{CADIneqs},
+	CADIneqs = ParameterGraph[[All, 2]];
+	Return[ CADIneqs ];
+];
+
+
+
+(* CADOutput
+		Inputs:
+			ParameterGraph_: The parameter graph of a a particular logic. 
+		Outputs: 
+			The cylindrical algebraic decomposition as a list.  
+*)
+CADOutput[ParameterGraph_]:=Block[
+{CadDescription},
+	CadDescription = Map[LogicalExpand, ParameterGraph[[All, 3]]];
+	Return[ CadDescription ];
+];
+
+
+
+(* JSONParsing
+		Inputs:
+			HexRep_: The hex representations of a given parameter graph as a list of lists. 
+			BinningRep_ : The binning representations of a given parameter graph as a list of lists.
+			Ineqs_ : The inequalities of a given parameter graph as a list of lists.
+		Outputs: A lists of the form:
+		[{"Hex":"4CD0","Binning":[0,2,1, ...],"Inequalities":"mathematica-string-for-inequalities","CAD":"mathematica-cad-output" }, { ... }, { ... }, ... ]
+*)
+
+JSONParsing[HexRep_, BinningRep_, Ineqs_, CAD_]:=Block[
+{Base10Rep, ParsedString, i},
+
+	(* Constructs the base 10 representation of the given hex representation *)
+	Base10Rep = FromDigits[#, 16]&/@Map[ToString,HexRep];
+	
+	(* Constructs a list of lists of the form {{"Hex":"4cd0","Binning":...},{..}..} *)
+	ParsedString = Reap[
+		For[i=1, i<= Length[HexRep], i++, 
+			Sow[{"\"Hex\":"<>"\""<>ToUpperCase[IntegerString[Base10Rep[[i]], 16, 4]]<>"\""<>","<>"\"Binning\":"<>ToString[BinningRep[[i]]]<>
+			","<>"\"Inequalities\":"<>"\""<>ToString[InputForm[Ineqs[[i]]]]<>"\""<>","<>"\"CAD\":"<>"\""<>ToString[InputForm[CAD[[i]]]]<>"\""}];
+		];
+	][[2]][[1]];
+	
+	(* Sort the above list and then parses the list by converting it to a string, removing white spaces, etc *)
+	ParsedString = ToString[ SortBy[ParsedString,2]];
+	ParsedString = StringReplace[ParsedString, " "->""];
+	ParsedString = StringDrop[ParsedString, 1];
+	ParsedString = StringDrop[ParsedString, -1];
+	ParsedString = StringInsert[ParsedString, "[", 1];
+	ParsedString = StringInsert[ParsedString, "]", -1];
+	ParsedString = StringDelete[ParsedString, "\n"] ;
+	ParsedString = StringInsert[ParsedString,"\n",-1] ;
+	Return[ParsedString];
+];
+
+
+
+(* CadDatabaseCreation
+		Inputs:
+			ParameterGraph_: The parameter graph of a a particular logic. 
+			n_ : The number of inputs of the network.
+			m_ : The number of outputs of the network.
+		Outputs: A lists of the form:
+		[{"Hex":"4CD0","Binning":[0,2,1, ...],"Inequalities":"mathematica-string-for-inequalities","CAD":"mathematica-cad-output" }, { ... }, { ... }, ... ]
+*)
+CadDatabaseCreation[ParameterGraph_, n_, m_]:=Block[
+{Binning, CADDescription, CADIneqs, HexRep, CADInformation },
+
+	Binning = BinningVectors[ParameterGraph];
+	CADDescription = CADOutput[ParameterGraph];
+	CADIneqs = ParameterInequalities[ParameterGraph];
+	HexRep = {};
+
+	(* Constructs the hex representation *)
+	Do[
+		HexRep = {HexRepresentation[vector, n, m], HexRep};
+	,
+	{vector, Binning}
+	];
+
+	HexRep = Flatten[HexRep];
+	Binning = StringReplace[ Map[ToString, Binning], {"{"->"[", "}"->"]"}];
+	
+	(* Returns the lists of the form: [{"Hex":"4CD0",....]*)
+	Return[JSONParsing[HexRep, Binning, CADIneqs, CADDescription]];
 ];
