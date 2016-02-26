@@ -77,12 +77,14 @@ public:
   void
   parse ( std::string const& str );
 
+  /// adjacencies ()
+  ///   Return the adjacent OrderParameters
+  std::vector<OrderParameter>
+  adjacencies ( void ) const;
+
   /// operator <<
   ///   Output debug data to stream
   friend std::ostream& operator << ( std::ostream& stream, OrderParameter const& p );
-
-  std::vector<OrderParameter>
-  adjacencies ( void ) const;
 
 private:
   std::shared_ptr<OrderParameter_> data_;

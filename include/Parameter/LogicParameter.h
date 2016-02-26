@@ -50,16 +50,19 @@ public:
   void
   parse ( std::string const& str );
 
-  /// operator <<
-  ///   Output debug data to stream
-  friend std::ostream& operator << ( std::ostream& stream, LogicParameter const& p );
-
-  /// Return the hex code of the LogicParameter
+  /// hex ()
+  ///   Return the hex code of the LogicParameter
   std::string const &
   hex ( void ) const;
 
+  /// adjacencies ()
+  ///   Return the adjacent LogicParameters
   std::vector<LogicParameter>
   adjacencies ( void ) const;
+
+  /// operator <<
+  ///   Output debug data to stream
+  friend std::ostream& operator << ( std::ostream& stream, LogicParameter const& p );
 
 private:
   std::shared_ptr<LogicParameter_> data_;

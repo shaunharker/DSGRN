@@ -94,17 +94,19 @@ public:
   std::string
   inequalities ( void ) const;
 
-  /// operator <<
-  ///   Output debug data to stream
-  friend std::ostream& operator << ( std::ostream& stream, Parameter const& p );
-
-  /// Return the logic of the parameter
+  /// logic ()
+  ///   Return the logic of the parameter
   std::vector<LogicParameter> const &
   logic ( void ) const;
 
-  /// Return the order of the parameter
-  std::vector<OrderParameter> const & 
+  /// order ()
+  ///   Return the order of the parameter
+  std::vector<OrderParameter> const &
   order ( void ) const;
+
+  /// operator <<
+  ///   Output debug data to stream
+  friend std::ostream& operator << ( std::ostream& stream, Parameter const& p );
 
 private:
   std::shared_ptr<Parameter_> data_;

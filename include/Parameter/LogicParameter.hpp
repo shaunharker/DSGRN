@@ -97,12 +97,6 @@ parse ( std::string const& str ) {
   assign ( n, m, hex );
 }
 
-
-INLINE_IF_HEADER_ONLY std::ostream& operator << ( std::ostream& stream, LogicParameter const& p ) {
-  stream << p.stringify ();
-  return stream;
-}
-
 INLINE_IF_HEADER_ONLY std::string const & LogicParameter::
 hex ( void ) const {
     return data_ -> hex_;
@@ -150,7 +144,6 @@ adjacencies ( void ) const {
     }
     return result;
   };
-
   //
   /// DEBUG hex/bin conversion
   // std::string testString = "0F9ABD12146C";
@@ -161,7 +154,6 @@ adjacencies ( void ) const {
   // std::cout << testString << "\n";
   // std::cout << s << "\n";
   /// END DEBUG
-
   /// Convert the hexCode into binary code
   BitContainer binCode ( Hex2BinCode ( data_ -> hex_ ) );
   /// Flip one bit at a time, construct a new adjacent hex code
@@ -173,6 +165,11 @@ adjacencies ( void ) const {
     binCode[i] = ~binCode[i];
   }
   return output;
+}
+
+INLINE_IF_HEADER_ONLY std::ostream& operator << ( std::ostream& stream, LogicParameter const& p ) {
+  stream << p.stringify ();
+  return stream;
 }
 
 #endif

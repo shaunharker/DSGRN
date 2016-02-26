@@ -98,16 +98,6 @@ parse ( std::string const& str ) {
   for ( uint64_t i = 0; i < data_ -> m_; ++ i ) data_ -> inverse_[data_ -> permute_[i]]=i;
 }
 
-INLINE_IF_HEADER_ONLY std::ostream& operator << ( std::ostream& stream, OrderParameter const& p ) {
-  stream << "[";
-  for ( uint64_t i = 0; i <  p.data_ -> m_; ++ i ) {
-    if ( i > 0 ) stream << ",";
-    stream <<  p.data_ -> permute_[i];
-  }
-  stream << "]";
-  return stream;
-}
-
 INLINE_IF_HEADER_ONLY std::vector<OrderParameter> OrderParameter::
 adjacencies ( void ) const {
   std::vector<OrderParameter> output;
@@ -124,7 +114,15 @@ adjacencies ( void ) const {
   return output;
 }
 
-
+INLINE_IF_HEADER_ONLY std::ostream& operator << ( std::ostream& stream, OrderParameter const& p ) {
+  stream << "[";
+  for ( uint64_t i = 0; i <  p.data_ -> m_; ++ i ) {
+    if ( i > 0 ) stream << ",";
+    stream <<  p.data_ -> permute_[i];
+  }
+  stream << "]";
+  return stream;
+}
 
 INLINE_IF_HEADER_ONLY std::vector<uint64_t> OrderParameter::
 _index_to_tail_rep ( uint64_t index ) {

@@ -308,11 +308,6 @@ inequalities ( void ) const {
   return ss . str ();
 }
 
-INLINE_IF_HEADER_ONLY std::ostream& operator << ( std::ostream& stream, Parameter const& p ) {
-  stream << p.stringify();
-  return stream;
-}
-
 INLINE_IF_HEADER_ONLY std::vector<LogicParameter> const & Parameter::
 logic ( void ) const {
     return data_ -> logic_;
@@ -322,4 +317,10 @@ INLINE_IF_HEADER_ONLY std::vector<OrderParameter> const & Parameter::
 order ( void ) const {
     return data_ -> order_;
 }
+
+INLINE_IF_HEADER_ONLY std::ostream& operator << ( std::ostream& stream, Parameter const& p ) {
+  stream << p.stringify();
+  return stream;
+}
+
 #endif
