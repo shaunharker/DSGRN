@@ -27,6 +27,9 @@ int main ( int argc, char * argv [] ) {
     // if ( pg . fixedordersize () != 60 ) throw std::runtime_error ( "ParameterGraph::fixedordersize bug");
     // if ( pg . reorderings () != 2 ) throw std::runtime_error ( "ParameterGraph::reorderings bug");
 
+
+    std::cout << network.graphviz() << "\n\n";
+
     // Missing Features (currently they throw):
     Parameter z = pg . parameter ( 0 );
     try {
@@ -40,25 +43,37 @@ int main ( int argc, char * argv [] ) {
 
     } catch ( ... ) {}
     try {
-      auto adj = pg . adjacencies ( 0 );
-      // std::cout << "\n\n";
-      // std::cout << pg. parameter (0) . inequalities ();
-      //
-      // std::cout << "\nadjacent parameter index : ";
-      // for ( auto i : adj ) {
-      //   std::cout << "\n\n" << i << "\n\n ";
-      //
-      //     std::cout << pg. parameter (i) . inequalities ();
-      //
-      // }
 
-      std::cout << "\n---------------------------\n";
-      std::cout << "adjacent parameter index : ";
-      for ( auto i : adj ) std::cout << i << " ";
-      std::cout << "\n---------------------------\n";
+      for ( uint64_t i=0; i<N; ++ i ) {
+        std::cout << "\n\nParameter index : " << i << "\n";
+        auto adj = pg . adjacencies ( i );
+        std::cout << "\n\n";
+        std::cout << pg. parameter (0) . inequalities ();
+        //
+        std::cout << "\nadjacent parameter index : ";
+        for ( auto i : adj ) {
+          std::cout << "\n\n" << i << "\n\n ";
 
+            std::cout << pg. parameter (i) . inequalities ();
+
+        }
+        std::cout << "\n";
+        // std::cout << "\n---------------------------\n";
+        // std::cout << "adjacent parameter index : ";
+        // for ( auto j : adj ) std::cout << j << " ";
+        // std::cout << "\n---------------------------\n";
+      }
 
     } catch ( ... ) {}
+
+    //
+    //
+    try {
+      Network net;
+
+    } catch ( ... ) {}
+    //
+    //
     try {
       Network net ( "networks/network4.txt" );
       ParameterGraph pg1 ( net );
