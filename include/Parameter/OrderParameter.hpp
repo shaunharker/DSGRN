@@ -110,9 +110,7 @@ adjacencies ( void ) const {
       output . push_back ( OrderParameter(perm) );
       std::swap( perm[i], perm[i+1] );
     }
-  } else {
-    output . push_back ( OrderParameter(perm) );
-  }
+  } 
   return output;
 }
 
