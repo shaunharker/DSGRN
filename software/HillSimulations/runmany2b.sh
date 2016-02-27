@@ -1,53 +1,58 @@
 #!/bin/bash
 
 #change the following section to desired inputs:
-networkname="5D_2016_01_28"
+#networkname="5D_2016_01_28"
 
-resultsfile='/home/mike/conley3_outputs/5D_2016_01_28_stableFCs_allresults.txt'
-pnMG='/home/mike/5D_2016_01_28_pnMG.txt'
+#networkfile='/home/mike/DSGRN-master/networks/5D_2016_01_28.txt'
+#resultsfile='/home/mike/conley3_outputs/5D_2016_01_28_stableFCs_allresults.txt'
+#savein_location='/home/mike/timeseries_outputs/5D_2016_01_28/'
+#parameter_file_path='/home/mike/DSGRN_outputs/new/5D_2016_01_28/'
 
-python make_pnMG.py
+networkfile=$1
+resultsfile=$2
+savein_location=$3
+parameter_file_path=$4
 
-parameter_list_location='/home/mike/5D_2016_01_28_parameters.txt'
-
-extrema_location=$networkname'_extrema'
-
-dsgrn network ./networks/$networkname.txt
-
-if [ -f /home/mike/timeseries_outputs/$networkname/$extrema_location.txt ] 
+extrema_file = $savein_location'TimeSeries.txt'
+if [ -f $extrema_file ] 
   then
-      rm /home/mike/timeseries_outputs/$networkname/$extrema_location.txt
+      rm $extrema_file
 fi
 
-if [ ! -d /home/mike/DSGRN_outputs/new/$networkname/ ]
+if [ ! -d $parameter_file_path ]
 then
-    mkdir -p /home/mike/DSGRN_outputs/new/$networkname
+    mkdir -p $parameter_file_path
 fi
 
-va=$(python parse_conley3_3.py $parameter_list_location 2>&1 | tr -d "[],'") 
+dsgrn network $networkfile
+
+va=$(python parse_conley3_3.py $resultsfile 2>&1 | tr -d "[],'") 
 declare -a arr=($va)
 for num in "${arr[@]}"
 do
   #remove because this script writes the output after the file's old contents, instead of overwriting all its old contents
   #This is in contrast to 'file_ = open(samples, 'w')' in python
-  if [ -f /home/mike/DSGRN_outputs/new/$networkname/$num.txt ] 
+  parameters_file = $parameter_file_path$num.txt 
+  if [ -f $parameters_file] 
   then
-      rm /home/mike/DSGRN_outputs/new/$networkname/$num.txt 
+      rm $parameters_file
   fi
   dsgrn parameter inequalities $num > $num.ineq
   ./ToMathematicaTest $num >> instances.m
-  /usr/local/bin/MathKernel -script instances.m >> /home/mike/DSGRN_outputs/new/$networkname/$num.txt
+  /usr/local/bin/MathKernel -script instances.m >> $parameters_file
   rm $num.ineq
   rm instances.m
+  python hillmodelscripts3.py $num $networkfile $savein_location $parameters_file
 done
-
-python hillmodelscripts3.py $networkname $pnMG
 
 python compare.py
 
-#INSTRUCTIONS: The only inputs the user needs to change are 'networkname', 'resultsfile' and 'pnMG'. 
-#Change path names in the other scripts
-#delete extrema files that hillmodelscripts.py outputs before running new since script appends instead of w
+#INSTRUCTIONS:
+#compare: resultsfile,networkfile, extrema_location
+#4 total inputs: 1.resultsfile, 2.networkfile, 3.save_location (folder to save extrema_location (save comparison) and savein (save FCs))
+#and 4.parameter_file_path (where to save and retrieve files from DSGRN)
+
+#example: ./runmany2b.sh '/home/mike/DSGRN-master/networks/5D_2016_01_28.txt' '/home/mike/conley3_outputs/5D_2016_01_28_stableFCs_allresults.txt' '/home/mike/timeseries_outputs/5D_2016_01_28/' parameter_file_path='/home/mike/DSGRN_outputs/new/5D_2016_01_28/'
 
 #SUMMARY OF SCRIPT: This script uses: parse_conley3_3.py, make_pnMG.py, ToMathematicaTest, hillmodel.py, hillmodelscripts3.py, and compare.py
 #Given a network and one of its morse graphs, for
