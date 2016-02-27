@@ -49,8 +49,12 @@ class hillmodel(object):
         eqnstr,self.varnames = self._parseEqns(networkfile)
         parameternames,samples = self._parseSamples2(self.varnames,samplefile)
         self.eqns=self._makeHillEqns(eqnstr,parameternames,samples,hillexp)
+        self.d=len(eqnstr)
 
-    def simulateHillModel(self,savein_ts,savein_ts_2,savein_eqns,parameterstring,initialconditions,initialtime,finaltime,timestep):
+    def dim(self):
+        return self.d
+
+    def simulateHillModel(self,savein,parameterstring,initialconditions,initialtime,finaltime,timestep):
         '''
         Simulate the constructed Hill model for a given set of initial conditions 
         and time period. The given time step only specifies which output timeseries
@@ -77,7 +81,7 @@ class hillmodel(object):
         global saveXC
         saveXC = 0
         output=[]
-        max_dict={} #dict of dicts
+        max_dict={}
         min_dict={}
         for k in range(len(varnames2)):
           """
@@ -103,7 +107,7 @@ class hillmodel(object):
                 gene_min[1] = timeseries[2000:][time][k]
             max_dict[k] = gene_max
             min_dict[k] = gene_min
-        #if (not max_dict) == False and (not min_dict) == False: #must have both max and min else it's not an oscillation
+        #if (not max_dict) == False and (not min_dict) == False:
         if max_dict != {} and min_dict != {}:
           output.append(parameterstring)
           saveXC=1
@@ -122,24 +126,15 @@ class hillmodel(object):
                 if extrema_list[i] == str(k):       
                   extrema_list[i] = v
             output[j] = (' '.join(extrema_list))
-          file1 = open(savein_ts, 'a')
-          file1.write(str(output).replace('[','').replace(']','').replace("'","")+"\n")
-          file1.close()
           if len(output) == 11: #1 + 2*D
             saveFC = 1
-            file2 = open(savein_ts_2, 'a')
-            file2.write(str(output).replace('[','').replace(']','').replace("'","")+"\n")
-            file2.close()
-            """
-            file3 = open(savein_eqns, 'a')
-            file3.write("\n")
-            file3.write(parameterstring+': '+str(debug_only)+"\n")      
-            file3.close()
-            """
-      return times,timeseries
+            file = open(savein, 'a')
+            file.write(str(output).replace('[','').replace(']','').replace("'","")+"\n")
+            file.close()
+        return times,timeseries
 
     def plotResults(self,savein,savein_2,savein_3,times,timeseries,plotoptions={},legendoptions={},figuresize=()):
-        '''
+      '''
       Plot a time series.
       plotoptions and legendoptions are optional dictionaries with keys corresponding 
       to the options for matplotlib.pyplot.plot and matplotlib.pyplot.legend.
@@ -149,10 +144,10 @@ class hillmodel(object):
       figuresize = (20,10)
       '''
       if figuresize:
-          fig = plt.figure(figsize=figuresize)
+        fig = plt.figure(figsize=figuresize)
       timeseries=np.array(timeseries)
       for k in range(timeseries.shape[1]):
-          plt.plot(times,timeseries[:,k],label=self.varnames[k],**plotoptions)
+        plt.plot(times,timeseries[:,k],label=self.varnames[k],**plotoptions)
       plt.legend(**legendoptions)
       plt.axis('tight')
       #plt.savefig(savein)
@@ -163,7 +158,7 @@ class hillmodel(object):
       #plt.show()
       plt.close(fig)
 
-  def _parseEqns(self,fname='equations.txt'):
+    def _parseEqns(self,fname='equations.txt'):
       # Private parser
       #'if line [i]' lines are for inconsistent formats in equations.txt. Easier way is to modify equations.txt to consistent format
       #IE) Change 'x:x+y" into 'x : x + y' before running. Change ') (' into ')(', etc.
@@ -224,33 +219,32 @@ class hillmodel(object):
         samples_frac=[]
         lines = f.readlines()
         K=lines[0].split()
-        #K=lines[1].split()
         prefix = ''
         for word in K[:-1]:
             if '[' in word: #L[X,
                 prefix = word
             elif ']' in word: #Y]
                 pnames.append(prefix + ' ' + word)
-     	elif word[:-1].isdigit() == True or '/' in word and '[' not in word and ']' not in word:
-            samples_frac.append(word[:-1])
+            elif word[:-1].isdigit() == True or '/' in word and '[' not in word and ']' not in word:
+              samples_frac.append(word[:-1])
         samples_frac.append(K[-1])
         parameternames=[]
         samples=[]
         for p in pnames: #for networks whose genes are numbers, list should also be used
-      		p_list = p.split()    
-      		prefix2 = ''
-      		suffix2 = ''
-      		for i in range(len(p_list)):
+          p_list = p.split()    
+          prefix2 = ''
+          suffix2 = ''
+          for i in range(len(p_list)):
               for k,v in enumerate(varnames): #must do it twice b/c suffix may be replaced before prefix  
-        		if p_list[i].replace('L[',"").replace(',',"") == v:
-      				prefix2 = 'L['+str(k)
-        		elif p_list[i].replace('U[',"").replace(',',"") == v:
-      				prefix2 = 'U['+str(k)
-        		elif p_list[i].replace('THETA[',"").replace(',',"") == v:
-      				prefix2 = 'THETA['+str(k)
-        		elif p_list[i].replace(']',"") == v:
-      				suffix2 = ','+str(k)+']'
-            parameternames.append(prefix2 + suffix2)
+                if p_list[i].replace('L[',"").replace(',',"") == v:
+                  prefix2 = 'L['+str(k)
+                elif p_list[i].replace('U[',"").replace(',',"") == v:
+                  prefix2 = 'U['+str(k)
+                elif p_list[i].replace('THETA[',"").replace(',',"") == v:
+                  prefix2 = 'THETA['+str(k)
+                elif p_list[i].replace(']',"") == v:
+                  suffix2 = ','+str(k)+']'
+          parameternames.append(prefix2 + suffix2)
         for value in samples_frac:
             if '/' in value:
                 numerator = ''
@@ -283,14 +277,14 @@ class hillmodel(object):
         # Private constructor.
         # X is not yet defined; eval a lambda function
         eqns=[]
-  		global debug_only
-  		debug_only = []
+        global debug_only
+        debug_only = []
         for k,e in enumerate(eqnstr):
-      		e2 = e.replace(')',"").replace('(',"") #keep paren. in e, but remove from e2. e2 is used for if statements
-             #e2 is used for cases w/ gene eqs in the format (X+Y)(~Z)
+            e2 = e.replace(')',"").replace('(',"") #keep paren. in e, but remove from e2. e2 is used for if statements
+            #e2 is used for cases w/ gene eqs in the format (X+Y)(~Z)
             e_orig = e2.split()  #n and p are replaced during J loop, so 'if J in e' cond must use original copy of e, not changed e
             K=str(k)
-      		e_list = e.split()
+            e_list = e.split()
             for j in range(len(eqnstr)):
                 J=str(j)
                 if J in e_orig: #IE) when replacing 0p+10p, all '0 p' are replaced, so use list instead of str to replace
@@ -307,23 +301,22 @@ class hillmodel(object):
                  
                     for i in range(len(e_list) - 1): #-1 b/c [i+1]. This does replacement
                         if e_orig[i] == J and e_orig[i+1] == 'p':
-				          e_list[i] = e_list[i].replace(J,poshill)
-				          if ')' not in e_list[i+1]: #don't delete ')' from ')n' or ')p'
-	                          del e_list[i+1]
-	        				  del e_orig[i+1] #make e_orig retain same index of #s and p/n's as e_list
-          				  else:
-        					  e_list[i+1] = e_list[i+1].replace('p','')
+                          e_list[i] = e_list[i].replace(J,poshill)
+                          if ')' not in e_list[i+1]: #don't delete ')' from ')n' or ')p'
+                            del e_list[i+1]
+                            del e_orig[i+1] #make e_orig retain same index of #s and p/n's as e_list
+                          else:
+                            e_list[i+1] = e_list[i+1].replace('p','')
                         elif e_orig[i] == J and e_orig[i+1] == 'n':
-                            e_list[i] = e_list[i].replace(J,neghill)
-          					if ')' not in e_list[i+1]: #don't delete ')' from ')n' or ')p'
-                              del e_list[i+1]
-            				  del e_orig[i+1] #make e_orig retain same index of #s and p/n's as e_list
-          					else:
-        					  e_list[i+1] = e_list[i+1].replace('n','')
+                          e_list[i] = e_list[i].replace(J,neghill)
+                          if ')' not in e_list[i+1]: #don't delete ')' from ')n' or ')p'
+                            del e_list[i+1]
+                            del e_orig[i+1] #make e_orig retain same index of #s and p/n's as e_list
+                          else:
+                            e_list[i+1] = e_list[i+1].replace('n','')
             e = ''.join(e_list)
             # make a lambda function for each equation
             e="lambda X: -X["+K+"] + " + e
-      		debug_only.append(e)
+            debug_only.append(e)
             eqns.append(eval(e))
-  			#pdb.set_trace()
         return eqns
