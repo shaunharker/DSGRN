@@ -164,16 +164,6 @@ adjacencies ( void ) const {
     output . push_back ( LogicParameter ( data_ -> n_, data_ -> m_ , Bin2HexCode ( binCode ) ) );
     binCode[i] = ~binCode[i];
   }
-
-  std::cout << "\n\n";
-  std::cout << "Original Hex code : " << hex() << "\n";
-  std::cout << "Adjacent Hex code :\n";
-  for ( uint64_t i = 0; i < N; ++i ) {
-    std::cout << output[i].hex() << "\n";
-  }
-  std::cout << "\n\n";
-
-
   return output;
 }
 
