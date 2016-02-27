@@ -1,20 +1,23 @@
 #!/usr/bin/python
-#
 # PatternComparisons.py
 #
-#   This file reads "Simulation_Patterns.txt" and "Stable_FC_PatternMatch.txt"
-#   and produces a file "PatternComparisons.txt". This file contains information about
-#   which parameter nodes had simulations reported in "Simulation_Patterns.txt"
-#   for which the measured pattern of extrema matches one of the patterns predicted in
-#   "Stable_FC_PatternMatch.txt". Note that by "match" we mean any cyclic permutation
-#   of the measured extrema pattern.
+# USAGE: PatternComparisons.py /path/to/data/directory
+#
+#   This file reads "Simulation_Patterns.txt" and "Stable_FC_PatternMatch.txt" in
+#   the specified data directory and outputs a file "PatternComparisons.txt" to the
+#   specified data directory. 
+#
+#   This file contains information about which parameter nodes had simulations reported 
+#   in "Simulation_Patterns.txt" for which the measured pattern of extrema matches one of 
+#   the patterns predicted in "Stable_FC_PatternMatch.txt". Note that by "match" we mean 
+#   any cyclic permutation of the measured extrema pattern.
 
 import sys
 
 def main(argv):
-    simulation_input = open(argv[1] + 'Simulation_Patterns.txt', 'r')
-    patternmatch_input = open(argv[1] + 'Stable_FC_PatternMatch.txt','r')
-    comparison_output = open(argv[1] + 'PatternComparisons.txt','w')
+    simulation_input = open(argv[1] + '/Simulation_Patterns.txt', 'r')
+    patternmatch_input = open(argv[1] + '/Stable_FC_PatternMatch.txt','r')
+    comparison_output = open(argv[1] + '/PatternComparisons.txt','w')
     PatternTable={}
     for line in patternmatch_input:
       #  e.g. line == "Parameter: 17052, Morse Graph: 0, Morse Set: 0, Pattern: 72 max, 199 max, 204 max, 177 max, 77 max, 199 min, 177 min, 77 min, 72 min, 204 min, 72 max"
