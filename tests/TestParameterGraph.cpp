@@ -48,20 +48,20 @@ int main ( int argc, char * argv [] ) {
         std::cout << "\n\nParameter index : " << i << "\n";
         auto adj = pg . adjacencies ( i );
         std::cout << "\n\n";
-        std::cout << pg. parameter (0) . inequalities ();
+        std::cout << pg. parameter (i) . inequalities ();
         //
         std::cout << "\nadjacent parameter index : ";
-        for ( auto i : adj ) {
-          std::cout << "\n\n" << i << "\n\n ";
+        for ( auto j : adj ) {
+          std::cout << "\n\n" << j << "\n\n ";
 
-            std::cout << pg. parameter (i) . inequalities ();
+            std::cout << pg. parameter (j) . inequalities ();
 
         }
         std::cout << "\n";
-        // std::cout << "\n---------------------------\n";
-        // std::cout << "adjacent parameter index : ";
-        // for ( auto j : adj ) std::cout << j << " ";
-        // std::cout << "\n---------------------------\n";
+        std::cout << "\n---------------------------\n";
+        std::cout << "adjacent parameter index : ";
+        for ( auto j : adj ) std::cout << j << " ";
+        std::cout << "\n---------------------------\n";
       }
 
     } catch ( ... ) {}

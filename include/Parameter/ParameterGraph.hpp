@@ -166,32 +166,60 @@ adjacencies ( const uint64_t myindex ) const {
   // Get the order
   std::vector<OrderParameter> orders = p . order ( );
 
+
   uint64_t D = data_ -> network_ . size ( );
+
+  std::cout << "List of all hex code known by the ParameterGraph\n";
+  for ( uint64_t d=0; d<D; ++d ) {
+    std::cout << "d=" << d << "\n";
+    for ( auto f : data_ -> factors_[d] ) {
+      std::cout << f << " ";
+    }
+    std::cout << "\n";
+  }
+
+
+
+
 
   std::vector<LogicParameter> logicsTmp = logics;
   std::vector<OrderParameter> ordersTmp = orders;
 
   for ( uint64_t d = 0; d < D; ++d ) {
+    std::cout << "loop d=" << d << "\n";
     // Get the adjacents logic parameter and order parameter
     std::vector<LogicParameter> lp_adjacencies = logics [ d ] . adjacencies ( );
     std::vector<OrderParameter> op_adjacencies = orders [ d ] . adjacencies ( );
+
+    std::cout << "Size of lp_adjacencies=" << lp_adjacencies.size() << "\n";
+    std::cout << "Size of op_adjacencies=" << op_adjacencies.size() << "\n";
+
     for ( auto lp_adj : lp_adjacencies ) {
+      std::cout << "loop lp_adjacencies lp.hex=" << lp_adj.hex() <<"\n";
       logics [ d ] = lp_adj;
-      if ( data_ -> factors_inv_[d] . count ( logics [ d ] . hex ( ) ) == 0 ) continue;
-      //
-      for ( auto op_adj : op_adjacencies ) {
-        orders [ d ] = op_adj;
+      if ( data_ -> factors_inv_[d] . count ( logics [ d ] . hex ( ) ) == 0 ) {
+        std::cout << "Did not find the hex code\n";
+        logics [ d ] = logicsTmp [ d ];
+      } else {
         //
-        Parameter adj_p ( logics,
-                          orders,
-                          data_ -> network_ );
-        //
-        uint64_t index_adj = ParameterGraph::index ( adj_p );
-        if ( index_adj != -1 ) { output . push_back ( index_adj ); }
-        //
-        orders [ d ] = ordersTmp [ d ];
+        for ( auto op_adj : op_adjacencies ) {
+          std::cout << "loop op_adjacencies\n";
+          orders [ d ] = op_adj;
+          //
+          Parameter adj_p ( logics,
+                            orders,
+                            data_ -> network_ );
+          //
+          uint64_t index_adj = ParameterGraph::index ( adj_p );
+          if ( index_adj != -1 ) {
+            std::cout << "add a new index for the adjacency list\n";
+            output . push_back ( index_adj );
+          }
+          //
+          orders [ d ] = ordersTmp [ d ];
+        }
+        logics [ d ] = logicsTmp [ d ];
       }
-      logics [ d ] = logicsTmp [ d ];
     }
   }
   std::sort ( output . begin ( ), output . end ( ) );
