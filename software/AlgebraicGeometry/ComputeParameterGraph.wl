@@ -684,23 +684,24 @@ SolveInequalities[Ineq_, P_]:=Block[
 			{ {x_1->value_1,..,x_n->value_n}, {x_1->value_1,..,x_n->value_n},..}
 *)
 GibbsSample[Ineq_, Var_, SampleSize_]:=Block[
-{InitialP, BurnInPeriod, SamplePoints, NewP, SolutionInterval, RandUniform, RandExponential, NewVar, i, j},
+{InitialP, BurnInPeriod, SamplePoints, NewP, a, b, RandUniform, RandExponential, NewVar, i, j},
 
 	InitialP = Flatten[FindInstance[Ineq, Var]];
 	BurnInPeriod = 1000;
 	SamplePoints = {};
 
-	(*Loops through the Samplesize + BurnInPeriod *)
+	(* Loops through the Samplesize + BurnInPeriod *)
 	Do[
 		(* Loops through the variables *)
 		Do[
 			NewP = Drop[InitialP, {j}] ;
-			SolutionInterval = SolveInequalities[Ineq, NewP] ;
+			a = SolveInequalities[Ineq, NewP][[1]] ;
+			b = SolveInequalities[Ineq, NewP][[2]] ;
 			RandUniform = RandomVariate[UniformDistribution[]];
-			If[MemberQ[SolutionInterval, Infinity], 
-				RandExponential = -Log[Exp[-SolutionInterval[[1]]] - RandUniform*(Exp[-SolutionInterval[[1]]])] ;
+			If[b==Infinity, 
+				RandExponential = -Log[Exp[-a] - RandUniform*(Exp[-a])] ;
 			,
-				RandExponential = -Log[Exp[-SolutionInterval[[1]]] - RandUniform*(Exp[-SolutionInterval[[1]]]-Exp[-SolutionInterval[[2]]])] ;
+				RandExponential = -Log[Exp[-a] - RandUniform*(Exp[-a]-Exp[-b])] ;
 			];
 			NewVar = Var[[j]]->RandExponential ;
 			NewP = Insert[ NewP, NewVar, j] ;
@@ -717,4 +718,4 @@ GibbsSample[Ineq_, Var_, SampleSize_]:=Block[
 	SamplePoints = Drop[Partition[Flatten[SamplePoints], Length[Vars]], -BurnInPeriod];
 	
 	Return[SamplePoints];
-];
+];	
