@@ -639,3 +639,83 @@ CadDatabaseCreation[ParameterGraph_, n_, m_]:=Block[
 	(* Returns the lists of the form: [{"Hex":"4CD0",....]*)
 	Return[JSONParsing[HexRep, Binning, CADIneqs, CADDescription]];
 ];
+
+
+
+(* SolveInequalities
+		Inputs:
+			Ineq_: A list of inequalities in n variables. 
+			P_   : A list of the form {x_1->value_1, x_2->value_2,..,x_(n-1)->value_(n-1)} where
+			       x_i takes on the value value_i.
+		Output: 
+			The "solution" set (see Rules below) in interval notation represented as a list.
+			Ex. The solution 1<=x<2 would be {1,2}.
+*)
+SolveInequalities[Ineq_, P_]:=Block[
+{Rules, SolutionInterval},
+	
+	(* Rules to convert inequalities in set notation to "interval notation". Ex:
+		min < x < max -> {min, max}, min <= x < max -> {min, max}, min < x <= max -> {min, max}, min <= x <= max -> {min, max}, 
+		x > min -> {min, Infinity}, x >= min -> {min, Infinity}
+	*)
+	Rules={Inequality[min_,Less,__,Less,max_]->{min, max},Inequality[min_,LessEqual,__,Less,max_]->{min, max} ,
+		   Inequality[min_,Less,__,LessEqual,max_]->{min, max},Inequality[min_,LessEqual,__,LessEqual,max_]->{min, max},
+		   Greater[__,min_]->{min, Infinity},GreaterEqual[__,min_]->{min, Infinity}} ;
+	
+	(* Solve for the solution set if the set of inequalities evaluated at the (n-1) points does not return false. *)
+	If[ MemberQ[Ineq/.P, False],
+		Return[False];
+	,
+		SolutionInterval = Replace[Quiet@Reduce[Complement[Ineq/.P, {True}]/.List->And], Rules];
+	];
+
+	Return[SolutionInterval] ;
+];
+
+
+
+(* GibbsSample
+		Inputs:
+			Ineq_       : A list of inequalities. 
+			Var_        : A list of variables.
+			SampleSize_ : The sample size.
+		Outputs: 
+			A list of sample points from the set of inequalities of the form:
+			{ {x_1->value_1,..,x_n->value_n}, {x_1->value_1,..,x_n->value_n},..}
+*)
+GibbsSample[Ineq_, Var_, SampleSize_]:=Block[
+{InitialP, BurnInPeriod, SamplePoints, NewP, a, b, RandUniform, RandExponential, NewVar, i, j},
+
+	InitialP = Flatten[FindInstance[Ineq, Var]];
+	BurnInPeriod = 1000;
+	SamplePoints = {};
+
+	(* Loops through the Samplesize + BurnInPeriod *)
+	Do[
+		(* Loops through the variables *)
+		Do[
+			NewP = Drop[InitialP, {j}] ;
+			a = SolveInequalities[Ineq, NewP][[1]] ;
+			b = SolveInequalities[Ineq, NewP][[2]] ;
+			RandUniform = RandomVariate[UniformDistribution[]];
+			If[b==Infinity, 
+				RandExponential = -Log[Exp[-a] - RandUniform*(Exp[-a])] ;
+			,
+				RandExponential = -Log[Exp[-a] - RandUniform*(Exp[-a]-Exp[-b])] ;
+			];
+			NewVar = Var[[j]]->RandExponential ;
+			NewP = Insert[ NewP, NewVar, j] ;
+			InitialP = NewP ;
+		,
+		{j, Length[Var]}
+		];
+		SamplePoints = {InitialP, SamplePoints};
+	,
+	{i, SampleSize+BurnInPeriod}]
+	;
+
+	(* Removes the BurnInPeriod from the sample points. *)
+	SamplePoints = Drop[Partition[Flatten[SamplePoints], Length[Vars]], -BurnInPeriod];
+	
+	Return[SamplePoints];
+];	
