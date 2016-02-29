@@ -13,8 +13,8 @@ int main ( int argc, char * argv [] ) {
     else filename = argv[1];
     Network network ( filename );
     ParameterGraph pg ( network );
-    std::cout << pg << "\n";
-    std::cout << pg . network () << "\n";
+    // std::cout << pg << "\n";
+    // std::cout << pg . network () << "\n";
     uint64_t N = pg . size ();
     // for ( uint64_t i = 0; i < N; ++ i ) {
     //   Parameter p = pg . parameter ( i );
@@ -27,8 +27,7 @@ int main ( int argc, char * argv [] ) {
     // if ( pg . fixedordersize () != 60 ) throw std::runtime_error ( "ParameterGraph::fixedordersize bug");
     // if ( pg . reorderings () != 2 ) throw std::runtime_error ( "ParameterGraph::reorderings bug");
 
-
-    std::cout << network.graphviz() << "\n\n";
+    // std::cout << network.graphviz() << "\n\n";
 
     // Missing Features (currently they throw):
     Parameter z = pg . parameter ( 0 );
@@ -44,25 +43,25 @@ int main ( int argc, char * argv [] ) {
     } catch ( ... ) {}
     try {
 
-      for ( uint64_t i=0; i<N; ++ i ) {
-        std::cout << "\n\nParameter index : " << i << "\n";
-        auto adj = pg . adjacencies ( i );
-        std::cout << "\n\n";
-        std::cout << pg. parameter (i) . inequalities ();
+      // for ( uint64_t i=0; i<N; ++ i ) {
+        // std::cout << "\n\nParameter index : " << i << "\n";
+        auto adj = pg . adjacencies ( 1448 );
+        // std::cout << "\n\n";
+        // std::cout << pg. parameter (i) . stringify ();
         //
-        std::cout << "\nadjacent parameter index : ";
+        // std::cout << "\nadjacent parameter index : ";
         for ( auto j : adj ) {
-          std::cout << "\n\n" << j << "\n\n ";
-
-            std::cout << pg. parameter (j) . inequalities ();
+          // std::cout << "\n\n" << j << "\n\n ";
+            std::cout << pg. parameter (j) . stringify () << "\n";
 
         }
-        std::cout << "\n";
-        std::cout << "\n---------------------------\n";
-        std::cout << "adjacent parameter index : ";
-        for ( auto j : adj ) std::cout << j << " ";
-        std::cout << "\n---------------------------\n";
-      }
+        // std::cout << "\n";
+        // std::cout << "\n---------------------------\n";
+        // std::cout << "adjacent parameter index : " << adj.size() << " : ";
+        // for ( auto j : adj ) std::cout << j << " ";
+        // std::cout << "\n---------------------------\n";
+
+      // }
 
     } catch ( ... ) {}
 
@@ -78,8 +77,8 @@ int main ( int argc, char * argv [] ) {
       Network net ( "networks/network4.txt" );
       ParameterGraph pg1 ( net );
     } catch ( ... ) {}
-    boost::archive::text_oarchive oa(std::cout);
-    oa << pg;
+    // boost::archive::text_oarchive oa(std::cout);
+    // oa << pg;
   } catch ( std::exception & e ) {
     std::cout << e . what () << "\n";
     return 1;
