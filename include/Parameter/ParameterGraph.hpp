@@ -153,7 +153,12 @@ index ( Parameter const& p ) const {
     order_index += data_ -> order_place_bases_[i] * order_indices [ i ];
   }
 
-  return order_index * data_ -> fixedordersize_ + logic_index;
+  uint64_t index = order_index * data_ -> fixedordersize_ + logic_index;
+  if ( index < size() ) {
+    return index;
+  } else {
+    return -1;
+  }
 }
 
 INLINE_IF_HEADER_ONLY std::vector<uint64_t> ParameterGraph::
@@ -170,41 +175,48 @@ adjacencies ( const uint64_t myindex ) const {
 
   std::vector<LogicParameter> logicsTmp = logics;
   std::vector<OrderParameter> ordersTmp = orders;
-
+  //
+  // Step 1 :
+  // Adjacent parameters of the given parameter over the OrderParameter only
+  // keep the logic parameter the same
   for ( uint64_t d = 0; d < D; ++d ) {
-    // Get the adjacents logic parameter and order parameter
-    std::vector<LogicParameter> lp_adjacencies = logics [ d ] . adjacencies ( );
+    // Get the adjacent order parameters
     std::vector<OrderParameter> op_adjacencies = orders [ d ] . adjacencies ( );
+    if ( op_adjacencies.size() > 0 ) {
+      for ( auto op_adj : op_adjacencies ) {
+        orders [ d ] = op_adj;
+        //
+        Parameter adj_p ( logics,
+                          orders,
+                          data_ -> network_ );
+        //
+        uint64_t index_adj = ParameterGraph::index ( adj_p );
+        if ( index_adj != -1 ) { output . push_back ( index_adj ); }
+        //
+        orders [ d ] = ordersTmp [ d ];
+      }
+    }
+  }
+  // Step 2 :
+  // Adjacent parameters of the given parameter over the Logic Parameter only
+  // keep the order parameter the same
+  for ( uint64_t d = 0; d < D; ++d ) {
+    // Get the adjacent logic parameters
+    std::vector<LogicParameter> lp_adjacencies = logics [ d ] . adjacencies ( );
     //
     for ( auto lp_adj : lp_adjacencies ) {
+      //
+      if ( data_ -> factors_inv_[d] . count ( lp_adj . hex ( ) ) == 0 ) { continue; }
+      //
       logics [ d ] = lp_adj;
-      if ( data_ -> factors_inv_[d] . count ( logics [ d ] . hex ( ) ) == 0 ) {
-        logics [ d ] = logicsTmp [ d ];
-      } else {
-        //
-        if ( op_adjacencies.size() > 0 ) {
-          for ( auto op_adj : op_adjacencies ) {
-            orders [ d ] = op_adj;
-            //
-            Parameter adj_p ( logics,
-                              orders,
-                              data_ -> network_ );
-            //
-            uint64_t index_adj = ParameterGraph::index ( adj_p );
-            if ( index_adj != -1 ) { output . push_back ( index_adj ); }
-            //
-            orders [ d ] = ordersTmp [ d ];
-          }
-        } else {
-          Parameter adj_p ( logics,
-                            orders,
-                            data_ -> network_ );
-          //
-          uint64_t index_adj = ParameterGraph::index ( adj_p );
-          if ( index_adj != -1 ) { output . push_back ( index_adj ); }
-        }
-        logics [ d ] = logicsTmp [ d ];
-      }
+      Parameter adj_p ( logics,
+                        orders,
+                        data_ -> network_ );
+      //
+      uint64_t index_adj = ParameterGraph::index ( adj_p );
+      if ( index_adj != -1 ) { output . push_back ( index_adj ); }
+      //
+      logics [ d ] = logicsTmp [ d ];
     }
   }
   std::sort ( output . begin ( ), output . end ( ) );
