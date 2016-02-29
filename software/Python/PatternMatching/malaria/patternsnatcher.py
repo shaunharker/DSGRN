@@ -1,4 +1,5 @@
 from itertools import permutations
+import json
 
 def dataStruct43Genes():
     gene_name_master_list=['PF3D7_1115500','PF3D7_1006100','PF3D7_0504700','PF3D7_0604600','PF3D7_1408400','PF3D7_1027000','PF3D7_1103800','PF3D7_0614800','PF3D7_1435700','PF3D7_1405100','PF3D7_0403500','PF3D7_1301500','PF3D7_1428800','PF3D7_0506700','PF3D7_1350900','PF3D7_0925700','PF3D7_0518400','PF3D7_0529500','PF3D7_0809900','PF3D7_1008000','PF3D7_1009400','PF3D7_1225200','PF3D7_1337400','PF3D7_1437000','PF3D7_0313000','PF3D7_0627300','PF3D7_0629800','PF3D7_0704600','PF3D7_0729000','PF3D7_0812600','PF3D7_0818700','PF3D7_0915100','PF3D7_0919000','PF3D7_0926100','PF3D7_1119400','PF3D7_1138800','PF3D7_1225800','PF3D7_1227400','PF3D7_1233600','PF3D7_1237800','PF3D7_1302500','PF3D7_1406100','PF3D7_1412900']
@@ -57,5 +58,13 @@ def constructPatterns(genes,patternfile,datastruct=dataStruct43Genes):
     with open(patternfile,'w',0) as f:
         recurseOverGraph(extrema,outedges,'',f)
  
+def constructPartialOrderSubset(genes,savefile,datastruct=dataStruct43Genes):
+    gene_name_master_list,setmins,setmaxes,outedges=constructPartialOrder(datastruct)
+    extrema=getSubset(genes,setmins,setmaxes,gene_name_master_list)
+    subset_po = extractSubGraph(extrema,outedges)
+    print '\n'
+    print extrema
+    print '\n'
+    print subset_po
 
 
