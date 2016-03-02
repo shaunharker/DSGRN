@@ -1,6 +1,7 @@
 # The MIT License (MIT)
 
 # Copyright (c) 2016 Breschine Cummins
+# Modified by Michael Lan
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -47,12 +48,72 @@ class hillmodel(object):
         Construct the Hill model for a given network and parameter sample.
         '''
         eqnstr,self.varnames = self._parseEqns(networkfile)
-        parameternames,samples = self._parseSamples2(self.varnames,samplefile)
+        parameternames,samples = self._parseSamples(self.varnames,samplefile)
         self.eqns=self._makeHillEqns(eqnstr,parameternames,samples,hillexp)
         self.d=len(eqnstr)
 
     def dim(self):
+        #Dimension, or total # of genes in network
         return self.d
+
+    def checkForOscillations(self,savein,parameterstring,initialconditions,initialtime,finaltime,timestep,timeseries):
+        """
+        The procedure below will be fixed later once a better one is found:
+        Checks to see if ODE solutions do not go to fixed points. First, it checks to see if there are any bumps at the end 
+        of the solution (at high time values). If there are, then for each gene, it finds their extrema. Next, it goes through the 
+        list 'timeseries' and sees which extrema come first as time goes from 0 to infinity. It records the order the extrema appear
+        at and puts the ordering in a list 'output'. If all genes were oscillating, this parameter node's extrema ordering is written 
+        to a file, located in path 'savein'
+
+        Structure of list 'timeseries':
+        timeseries[time][value of each gene at time]
+
+        e.g. timeseries[5] gives [0.5,0.4,0.3], which is a list of the values of each gene at time=5. Each gene is indexed by an 
+        integer. For instance, p53 is indexed as '1', so timeseries[5][1] would correspond to p53's value
+        """
+        output=[]
+        max_dict={}
+        min_dict={}
+        for k in range(len(self.varnames)):
+          signal = 0    #starts by assuming no bumps detected
+          for increment in range(100): #n of range(n) must be sufficiently large to detect bumps
+            #when at FP, may have value 0.33334 and the next value be 0.33335, so compare differences instead of truncate and rounding
+            if abs(timeseries[-1000][k]-timeseries[-1000+(increment*10)][k]) > 10**-2: # if there's at least one bump in the section
+              signal = 1
+              break    
+          if signal == 1:
+            #Gene_max was a list that recorded both time and value b/c that was for debugging purposes; after debugging I forgot to change it
+            gene_max=0
+            gene_min=10**15
+            gene_values={}
+            for time in range(len(timeseries[-1000:])): #relative time, not absolute time
+              if timeseries[-1000:][time][k] > gene_max:
+                gene_max = timeseries[-1000:][time][k]
+              if timeseries[-1000:][time][k] < gene_min:
+                gene_min = timeseries[-1000:][time][k]
+            max_dict[k] = gene_max
+            min_dict[k] = gene_min
+        if max_dict != {} and min_dict != {}:
+          output.append(parameterstring)
+          for time in range(len(timeseries[-1000:])): #relative time, not absolute time
+            for k in range(len(self.varnames)): #time is the outer loop so we can have 1max,2max,1min (etc)
+              if k in max_dict:
+                if abs(timeseries[-1000:][time][k] - max_dict[k]) < 10**-5 and (str(k)+' max') not in output: 
+                  output.append(str(k)+' max') #must have space or else replacing w/ varnames won't work
+                if abs(timeseries[-1000:][time][k] == min_dict[k]) < 10**-5 and (str(k)+' min') not in output:
+                  output.append(str(k)+' min')
+          for j in range(len(output)):
+            extrema = output[j]
+            extrema_list = extrema.split()
+            for i in range(len(extrema_list)):
+              for k,v in enumerate(self.varnames):
+                if extrema_list[i] == str(k):       
+                  extrema_list[i] = v
+            output[j] = (' '.join(extrema_list))
+          if len(output) == (1+2*self.dim()): #Checks if all genes oscillated, and thus had their extrema recorded in output
+            file = open(savein, 'a')
+            file.write(str(output).replace('[','').replace(']','').replace("'","")+"\n")
+            file.close()
 
     def simulateHillModel(self,savein,parameterstring,initialconditions,initialtime,finaltime,timestep):
         '''
@@ -76,61 +137,8 @@ class hillmodel(object):
         r.set_initial_value(initialconditions,initialtime).set_f_params(self.eqns)
         times,timeseries = integrate(r,initialconditions,initialtime,finaltime,timestep)
   
-        global saveFC
-        saveFC = 0
-        global saveXC
-        saveXC = 0
-        output=[]
-        max_dict={}
-        min_dict={}
-        for k in range(len(varnames2)):
-          """
-          signal = 0    #starts by assuming not FC 
-          for increment in range(10):
-            if abs(timeseries[2500][k]-timeseries[2500+(increment*10)][k]) > 10**-2: # if there's at least one bump in the section
-              signal = 1
-              break    
-          if signal == 1:
-          """
-          #when at FP, may have value 0.33334 and the next value be 0.33335, so compare differences instead of truncate and rounding
-          if abs(timeseries[2500][k]-timeseries[2600][k]) > 10**-2 or abs(timeseries[2500][k]-timeseries[2650][k]) > 10**-2:
-            #plot's end behavior is FC
-            gene_max=[0,0] #time,value
-            gene_min=[0,10**15]
-            gene_values={}
-            for time in range(len(timeseries[2000:])): #relative time, not absolute time
-              if timeseries[2000:][time][k] > gene_max[1]:
-                gene_max[0] = time
-                gene_max[1] = timeseries[2000:][time][k]
-              if timeseries[2000:][time][k] < gene_min[1]:
-                gene_min[0] = time
-                gene_min[1] = timeseries[2000:][time][k]
-            max_dict[k] = gene_max
-            min_dict[k] = gene_min
-        #if (not max_dict) == False and (not min_dict) == False:
-        if max_dict != {} and min_dict != {}:
-          output.append(parameterstring)
-          saveXC=1
-          for time in range(len(timeseries[2000:])): #relative time, not absolute time
-            for k in range(len(varnames2)): #time is the outer loop so we can have 1max,2max,1min (etc)
-              if k in max_dict:
-                if timeseries[2000:][time][k] == max_dict[k][1] and (str(k)+' max') not in output: 
-                  output.append(str(k)+' max') #must have space or else replacing w/ varnames won't work
-                if timeseries[2000:][time][k] == min_dict[k][1] and (str(k)+' min') not in output:
-                  output.append(str(k)+' min')
-          for j in range(len(output)):
-            extrema = output[j]
-            extrema_list = extrema.split()
-            for i in range(len(extrema_list)):
-              for k,v in enumerate(varnames2):
-                if extrema_list[i] == str(k):       
-                  extrema_list[i] = v
-            output[j] = (' '.join(extrema_list))
-          if len(output) == 11: #1 + 2*D
-            saveFC = 1
-            file = open(savein, 'a')
-            file.write(str(output).replace('[','').replace(']','').replace("'","")+"\n")
-            file.close()
+        self.checkForOscillations(savein,parameterstring,initialconditions,initialtime,finaltime,timestep,timeseries)
+
         return times,timeseries
 
     def plotResults(self,savein,savein_2,savein_3,times,timeseries,plotoptions={},legendoptions={},figuresize=()):
@@ -162,8 +170,26 @@ class hillmodel(object):
       # Private parser
       #'if line [i]' lines are for inconsistent formats in equations.txt. Easier way is to modify equations.txt to consistent format
       #IE) Change 'x:x+y" into 'x : x + y' before running. Change ') (' into ')(', etc.
+      """
+      Takes the network file (in network spec format) and returns eqnstr, varnames. Eqnstr is a list of ODEs, one for each gene, in the
+      p-n format (explained below). Varnames maps each gene name to an index number, which makes it easier to match each gene's ODE
+      with its set of parameters by using enum functions (as seen in makeHillEqns)
+
+      For example, if a gene W has the equation (~X + Y)(Z), and varnames =[X,Y,Z], then its ODE in eqnstr would be (0n + 1p)(1p). 
+      X, which has index 0 as it's in the 0th index in varnames, represses W due to the symbol ~, and thus is assigned '0n'. 
+      Y activates W and thus is assigned '1p' in p-n format.
+
+      For 'e in eqns', e.split() was used because without .split(), using replace made the program encounter errors in cases such as
+      matching '10' with the appropriate gene name, as '10' contains '0' so instead of matching '10' to the gene name at index 10,
+      it would match it with the gene name at index 0, etc. Each time I encountered an error I used .split() on the string and parsed
+      it as a list instead. This was done in parseSamples and makeHillEqns too.
+
+      The network spec files had some formatting inconsistencies; e.g. a gene X might have X:Z+Y , while all other genes would be in
+      the format Y : ~W. The parser addresses these inconsistencies whenever they were encountered; however, they do not address all
+      potential inconsistencies.
+
+      """
       f=open(fname,'r')
-      global varnames2 #so it can be use in simulateHillModel
       varnames=[]
       eqns=[]
       for line in f:
@@ -209,10 +235,20 @@ class hillmodel(object):
                 e_list[i] = ' '+e_list[i]+' '
             new_e = ''.join(e_list)
         eqnstr.append(new_e)
-      varnames2 = varnames
       return eqnstr,varnames
         
-    def _parseSamples2(self,varnames,fname='samples.txt'):
+    def _parseSamples(self,varnames,fname='samples.txt'):
+        """
+        This takes the DSGRN output, the solutions to the CAD inequalities, and returns lists 'parameternames' and 'samples'. 
+        
+        'Parameternames' takes the each parameter, such as L[X,Y], and replaces each gene name by its index name, as described
+        in 'varnames' in the function parseEqns's comments. So L[X,Y] will become L[0,1] and added to 'parameternames'
+
+        'Samples' is the corresponding value for each parameter. The parameter and its value are mapped to each other through the
+        index positions in both lists. For example, L[X,Y]=0.5, so parameternames[0]=L[X,Y] and samples[0]=0.5
+
+        The DSGRN output has the values as fractions so they were converted to decimals
+        """
         # Private parser.
         f=open(fname,'r')
         pnames=[]
@@ -276,9 +312,19 @@ class hillmodel(object):
     def _makeHillEqns(self,eqnstr,parameternames,samples,n):
         # Private constructor.
         # X is not yet defined; eval a lambda function
+        """
+        After obtaining the ODEs from the network spec format and the parameter's names and values from the DSGRN solution file, this
+        function places the parameters in each ODE. Eqnstr has each parameter in p-n format, e.g. 0p+10n, so replace each index # with
+        the appropriate hill functions and parameters (IE 0p would have the hill function corresponding to activation, and since 0
+        maps with p53, then place parameters with the format L[X,p53] into the right places, since these parameters show how other 
+        genes affect p53)
+
+        This function first matches 0p with its parameters. Then it reads if it's p or n, and chooses the appropriate hill function
+        using 'makeHillStrs'; however, before replacing p or n with the hill function, there is some other parsing to do. Due to
+        errors encountered that were mentioned in parseEqns's comments, each string 'e' (an equation from eqnstr) was parsed as a list
+        instead of as a string. 
+        """
         eqns=[]
-        global debug_only
-        debug_only = []
         for k,e in enumerate(eqnstr):
             e2 = e.replace(')',"").replace('(',"") #keep paren. in e, but remove from e2. e2 is used for if statements
             #e2 is used for cases w/ gene eqs in the format (X+Y)(~Z)
@@ -317,6 +363,5 @@ class hillmodel(object):
             e = ''.join(e_list)
             # make a lambda function for each equation
             e="lambda X: -X["+K+"] + " + e
-            debug_only.append(e)
             eqns.append(eval(e))
         return eqns
