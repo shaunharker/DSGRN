@@ -1,6 +1,7 @@
 # The MIT License (MIT)
 
 # Copyright (c) 2016 Breschine Cummins
+# Modified by Michael Lan
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -49,7 +50,8 @@ def main(parameterstring,networkfile,savein_location,parameters_file):
             file_.write(line)
             file_.close()
 
-    # make an instance of class hillmodel
+    # make an instance of class hillmodel. Its attributes include the ODEs obtained from the network spec file and parameter values
+    #obtained from the DSGRN outputs 
     HM_Instance = hm.hillmodel(networkfile,samples,hillexp)
 
     dim = HM_Instance.dim()
@@ -60,7 +62,8 @@ def main(parameterstring,networkfile,savein_location,parameters_file):
     t1 = 30 # start at 0 and run for 10 time units
     dt = 0.01 # give me a new data point every hundredth of a time unit
 
-    # run the Hill model
+    # run the Hill model- solved the ODEs and check for oscillations, and if all genes are oscillating, output the parameter node's
+    #extrema ordering to a file
     times, timeseries = HM_Instance.simulateHillModel(savein,parameterstring,y0,t0,t1,dt) 
 
     # choose plotting options
