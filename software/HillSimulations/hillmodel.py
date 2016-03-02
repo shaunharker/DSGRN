@@ -68,8 +68,8 @@ class hillmodel(object):
         Structure of list 'timeseries':
         timeseries[time][value of each gene at time]
 
-        e.g. timeseries[5] gives [0.5,0.4,0.3], which is a list of the values of each gene at time=5. Each gene is indexed by an 
-        integer. For instance, p53 is indexed as '1', so timeseries[5][1] would correspond to p53's value
+        e.g. timeseries[5] gives [0.5, 0.4, 0.3], which is a list of the values of each gene at time=5. Each gene is indexed by an 
+        integer. For instance, if p53 is indexed as '1', then timeseries[5][1] would correspond to p53's value
         """
         output=[]
         max_dict={}
@@ -184,8 +184,8 @@ class hillmodel(object):
       it would match it with the gene name at index 0, etc. Each time I encountered an error I used .split() on the string and parsed
       it as a list instead. This was done in parseSamples and makeHillEqns too.
 
-      The network spec files had some formatting inconsistencies; e.g. a gene X might have X:Z+Y , while all other genes would be in
-      the format Y : ~W. The parser addresses these inconsistencies whenever they were encountered; however, they do not address all
+      Some network spec files had some formatting inconsistencies; e.g. a gene X might have X:Z+Y , while all other genes would be in
+      the format Y : ~W. The parser addresses these inconsistencies whenever they were encountered; however, it does not address all
       potential inconsistencies.
 
       """
@@ -314,10 +314,10 @@ class hillmodel(object):
         # X is not yet defined; eval a lambda function
         """
         After obtaining the ODEs from the network spec format and the parameter's names and values from the DSGRN solution file, this
-        function places the parameters in each ODE. Eqnstr has each parameter in p-n format, e.g. 0p+10n, so replace each index # with
+        function places the parameters in each ODE. Eqnstr has each parameter in p-n format, e.g. 1: 0p+10n, so replace each index # with
         the appropriate hill functions and parameters (IE 0p would have the hill function corresponding to activation, and since 0
-        maps with p53, then place parameters with the format L[X,p53] into the right places, since these parameters show how other 
-        genes affect p53)
+        maps with p53 and 1 with brca1, the script recognizes L[0,1] as L[p53,brca1] and places parameters with the format into the right places,
+        since these parameters show how p53 affects brca1)
 
         This function first matches 0p with its parameters. Then it reads if it's p or n, and chooses the appropriate hill function
         using 'makeHillStrs'; however, before replacing p or n with the hill function, there is some other parsing to do. Due to
