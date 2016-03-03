@@ -85,27 +85,44 @@ class hillmodel(object):
           #uses 'or' because the function's period may be at 10 timesteps; if so, it won't be at 15 timesteps. Prevents eval oscillations as fixed points
           if abs(timeseries[-1000:][time][k] - timeseries[-990:][time][k]) > 10**-3 or abs(timeseries[-1000:][time][k] - timeseries[-985:][time][k]) > 10**-3: 
               extrema_order_k={} #records all extrema for gene k in time:value format
+              list_of_max=[] #to be used to find # of outliers
+              list_of_min=[]
               slope = ''
               for i in range(999):
                 if slope == 'decreasing' and (timeseries[-1000+i][k] - timeseries[-1000+i+1][k])<0:
                   extrema_order_k[-1000+i] = timeseries[-1000+i][k]
+                  list_of_min.append(timeseries[-1000+i][k])
                   slope = 'increasing'
                 elif slope == 'increasing' and (timeseries[-1000+i][k] - timeseries[-1000+i+1][k])>0:
                   extrema_order_k[-1000+i] = timeseries[-1000+i][k]
+                  list_of_max.append(timeseries[-1000+i][k])
                   slope = 'decreasing'
                 elif (timeseries[-1000+i][k] - timeseries[-1000+i+1][k])>0 and slope == '':
                   slope = 'decreasing'
                 elif (timeseries[-1000+i][k] - timeseries[-1000+i+1][k])<0 and slope == '':
                   slope = 'increasing'
-              values=extrema_order_k.values()
-              global_max = max(values)
-              global_min = min(values)
-              if abs(global_max - global_min) > 10**-3: #second check: if True, function even more likely didn't go to a fixed point
-                numOfGenes+=1
-                for time in extrema_order_k:
-                    if abs(extrema_order_k[time]-global_max)<10**-3:
+              
+              #loop through and compare each max/min to the max/min. If too many outlier extrema, reject the oscillation as 'undesired'
+              #Question: what if 3 outliers are adjacent to each other in list_of_max? Then the ones on this interval's boundaries are not outliers,
+              #so at least 2 of the 3 outliers will be detected. Since if there are >2 outliers oscillation is rejected, this seems okay.
+              num_of_outliers_max = 0
+              for index in range(len(list_of_max)-1):
+                if abs(list_of_max[index] - list_of_max[index+1]) > 10**-3: #if True, one of the two is outlier; doesn't matter which b/c just want count # of outliers
+                  num_of_outliers_max += 1
+              num_of_outliers_min = 0
+              for index in range(len(list_of_min)-1):
+                if abs(list_of_min[index] - list_of_min[index+1]) > 10**-3: #if True, one of the two is outlier; doesn't matter which b/c just want count # of outliers
+                  num_of_outliers_min += 1
+              if num_of_outliers_max < 2 and num_of_outliers_min <2:
+                values=extrema_order_k.values()
+                global_max = max(values)
+                global_min = min(values)
+                if abs(global_max - global_min) > 10**-3: #second check: if True, function even more likely didn't go to a fixed point
+                  numOfGenes+=1
+                  for time in extrema_order_k:
+                    if abs(extrema_order_k[time]-global_max) < 10**-3:
                       time_of_extrema[time] = str(k)+' max' #if extrema close to global max, add it to outputs
-                    if abs(extrema_order_k[time]-global_min)<10**-3:
+                    if abs(extrema_order_k[time]-global_min) < 10**-3:
                       time_of_extrema[time] = str(k)+' min'
         if numOfGenes == self.dim():      #Checks if all genes oscillated
           #rearrange all extrema of every gene according to where they are in time
