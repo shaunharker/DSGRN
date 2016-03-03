@@ -98,7 +98,7 @@ class hillmodel(object):
           global_max = max(values)
           global_min = min(values)
           if abs(global_max - global_min) > 10**-3: #if True, function didn't go to a fixed point
-          	numOfGenes+=1
+            numOfGenes+=1
             for time in extrema_order_k:
                 if abs(extrema_order_k[time]-global_max)<10**-3:
                   time_of_extrema[time] = str(k)+' max'
