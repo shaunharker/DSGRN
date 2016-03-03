@@ -59,22 +59,30 @@ class hillmodel(object):
 
     def checkForOscillations(self,savein,parameterstring,timeseries):
         """
-        This method relies on several assumptions, namely: We only desire oscillations with consistent amplitudes and periods. In other 
-        words, all the max in the end behavior of the function are equal, and same with the min.
-
+        Checks if all genes are in desired oscillation:
         For each gene's function, take its end slice, assuming that at this end slice the function would have already settled into the 
-        desired behavior. Going from left to right in the end slice, just record each max/min based on whether the area around that point 
+        desired behavior. Going from left to right in the end slice, record each max/min based on whether the area around that point 
         changes its direction of increase or decrease (the basic definition of an extrema point; checking increasing or decreasing is done 
         just by seeing if adjacent points are bigger/smaller). 
 
         After this is done, it checks if the global max and min are within a degree of error to one another. If they are, that function 
         has probably gone to a fixed point, so conclude the function is not oscillating. Since we assume that we only want one unique 
-        max and min in this end slice, if a min does not equal the global min within a degree of error, the behavior of that function
+        max and min in this end slice, if there are too many non-unique extrema (outliers), then the behavior of that function
         is not considered a 'desired oscillation'; same with comparing each max with the global max. Later, another add-on to the method
         may be: If periods (distance b/w max/min) do not match, that function may also be ruled out as a 'desired oscillation'.
+        
+        Finally, record the order the extrema appear at and puts the ordering in a list 'output', which is saved in a file acc. to path 'savein'
 
         So far this new method has been tested on the parameter node '923669' and found all its genes are oscillating. The extrema
         ordering that this method outputs also matches one of the experimental extrema ordering patterns
+
+        Structure of list 'timeseries':
+        timeseries[time][value of each gene at time]
+
+        e.g. timeseries[5] gives [0.5,0.4,0.3], which is a list of the values of each gene at time=5. Each gene is indexed by an 
+        integer. For instance, p53 is indexed as '1', so timeseries[5][1] would correspond to p53's value
+        This method relies on several assumptions, namely: We only desire oscillations with consistent amplitudes and periods. In other 
+        words, all the max in the end behavior of the function are equal, and same with the min.
         """
         output=[]
         output.append(parameterstring)
@@ -149,65 +157,6 @@ class hillmodel(object):
           file.write(str(output).replace('[','').replace(']','').replace("'","")+"\n")
           file.close()
           
-    def old_checkForOscillations(self,savein,parameterstring,timeseries):
-        """
-        The procedure below will be fixed later once a better one is found:
-        Checks to see if ODE solutions do not go to fixed points. First, it checks to see if there are any bumps at the end 
-        of the solution (at high time values). If there are, then for each gene, it finds their extrema. Next, it goes through the 
-        list 'timeseries' and sees which extrema come first as time goes from 0 to infinity. It records the order the extrema appear
-        at and puts the ordering in a list 'output'. If all genes were oscillating, this parameter node's extrema ordering is written 
-        to a file, located in path 'savein'
-
-        Structure of list 'timeseries':
-        timeseries[time][value of each gene at time]
-
-        e.g. timeseries[5] gives [0.5,0.4,0.3], which is a list of the values of each gene at time=5. Each gene is indexed by an 
-        integer. For instance, p53 is indexed as '1', so timeseries[5][1] would correspond to p53's value
-        """
-        output=[]
-        max_dict={}
-        min_dict={}
-        for k in range(len(self.varnames)):
-          signal = 0    #starts by assuming no bumps detected
-          for increment in range(100): #n of range(n) must be sufficiently large to detect bumps
-            #when at FP, may have value 0.33334 and the next value be 0.33335, so compare differences instead of truncate and rounding
-            if abs(timeseries[-1000][k]-timeseries[-1000+(increment*10)][k]) > 10**-2: # if there's at least one bump in the section
-              signal = 1
-              break    
-          if signal == 1:
-            #Gene_max was a list that recorded both time and value b/c that was for debugging purposes; after debugging I forgot to change it
-            gene_max=0
-            gene_min=10**15
-            gene_values={}
-            for time in range(len(timeseries[-1000:])): #relative time, not absolute time
-              if timeseries[-1000:][time][k] > gene_max:
-                gene_max = timeseries[-1000:][time][k]
-              if timeseries[-1000:][time][k] < gene_min:
-                gene_min = timeseries[-1000:][time][k]
-            max_dict[k] = gene_max
-            min_dict[k] = gene_min
-        if max_dict != {} and min_dict != {}:
-          output.append(parameterstring)
-          for time in range(len(timeseries[-1000:])): #relative time, not absolute time
-            for k in range(len(self.varnames)): #time is the outer loop so we can have 1max,2max,1min (etc)
-              if k in max_dict:
-                if abs(timeseries[-1000:][time][k] - max_dict[k]) < 10**-5 and (str(k)+' max') not in output: 
-                  output.append(str(k)+' max') #must have space or else replacing w/ varnames won't work
-                if abs(timeseries[-1000:][time][k] == min_dict[k]) < 10**-5 and (str(k)+' min') not in output:
-                  output.append(str(k)+' min')
-          for j in range(len(output)):
-            extrema = output[j]
-            extrema_list = extrema.split()
-            for i in range(len(extrema_list)):
-              for k,v in enumerate(self.varnames):
-                if extrema_list[i] == str(k):       
-                  extrema_list[i] = v
-            output[j] = (' '.join(extrema_list))
-          if len(output) == (1+2*self.dim()): #Checks if all genes oscillated, and thus had their extrema recorded in output
-            file = open(savein, 'a')
-            file.write(str(output).replace('[','').replace(']','').replace("'","")+"\n")
-            file.close()
-
     def simulateHillModel(self,savein,parameterstring,initialconditions,initialtime,finaltime,timestep):
         '''
         Simulate the constructed Hill model for a given set of initial conditions 
