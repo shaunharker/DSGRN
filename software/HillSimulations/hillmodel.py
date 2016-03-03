@@ -32,6 +32,7 @@ matplotlib.rc('font', **font)
 """
 import pdb
 from decimal import Decimal
+import collections
 
 class hillmodel(object):
     '''
@@ -56,7 +57,69 @@ class hillmodel(object):
         #Dimension, or total # of genes in network
         return self.d
 
-    def checkForOscillations(self,savein,parameterstring,initialconditions,initialtime,finaltime,timestep,timeseries):
+    def checkForOscillations(self,savein,parameterstring,timeseries):
+        """
+        This method relies on several assumptions, namely: We only desire oscillations with consistent amplitudes and periods. In other 
+        words, all the max in the end behavior of the function are equal, and same with the min.
+
+        For each gene's function, take its end slice, assuming that at this end slice the function would have already settled into the 
+        desired behavior. Going from left to right in the end slice, just record each max/min based on whether the area around that point 
+        changes its direction of increase or decrease (the basic definition of an extrema point; checking increasing or decreasing is done 
+        just by seeing if adjacent points are bigger/smaller). 
+
+        After this is done, it checks if the global max and min are within a degree of error to one another. If they are, that function 
+        has probably gone to a fixed point, so conclude the function is not oscillating. Since we assume that we only want one unique 
+        max and min in this end slice, if a min does not equal the global min within a degree of error, the behavior of that function
+        is not considered a 'desired oscillation'; same with comparing each max with the global max. Later, another add-on to the method
+        may be: If periods (distance b/w max/min) do not match, that function may also be ruled out as a 'desired oscillation'.
+
+        So far this new method has been tested on the parameter node '923669' and found all its genes are oscillating. The extrema
+        ordering that this method outputs also matches one of the experimental extrema ordering patterns
+        """
+        output=[]
+        output.append(parameterstring)
+        time_of_extrema={}
+        for k in range(len(self.varnames)):
+          extrema_order_k={}
+          slope = ''
+          for i in range(999):
+            if slope == 'decreasing' and (timeseries[-1000+i][k] - timeseries[-1000+i+1][k])<0:
+              extrema_order_k[-1000+i] = timeseries[-1000+i][k]
+              slope = 'increasing'
+            elif slope == 'increasing' and (timeseries[-1000+i][k] - timeseries[-1000+i+1][k])>0:
+              extrema_order_k[-1000+i] = timeseries[-1000+i][k]
+              slope = 'decreasing'
+            elif (timeseries[-1000+i][k] - timeseries[-1000+i+1][k])>0 and slope == '':
+              slope = 'decreasing'
+            elif (timeseries[-1000+i][k] - timeseries[-1000+i+1][k])<0 and slope == '':
+              slope = 'increasing'
+          values=extrema_order_k.values()
+          global_max = max(values)
+          global_min = min(values)
+          if abs(global_max - global_min) > 10**-3: #if True, function didn't go to a fixed point
+            for time in extrema_order_k:
+                if abs(extrema_order_k[time]-global_max)<10**-3:
+                  time_of_extrema[time] = str(k)+' max'
+                if abs(extrema_order_k[time]-global_min)<10**-3:
+                  time_of_extrema[time] = str(k)+' min'      
+        ordered_extrema = collections.OrderedDict(sorted(time_of_extrema.items()))
+        for time in ordered_extrema:
+          if ordered_extrema[time] not in output:
+            output.append(ordered_extrema[time])
+        for j in range(len(output)): #replace index number, used in timeseries, with varname
+          extrema = output[j]
+          extrema_list = extrema.split()
+          for i in range(len(extrema_list)):
+            for k,v in enumerate(self.varnames):
+              if extrema_list[i] == str(k):       
+                extrema_list[i] = v
+          output[j] = (' '.join(extrema_list))
+        if len(output) == (1+2*self.dim()): #Checks if all genes oscillated, and thus had their extrema recorded in output
+          file = open(savein, 'a')
+          file.write(str(output).replace('[','').replace(']','').replace("'","")+"\n")
+          file.close()
+          
+    def old_checkForOscillations(self,savein,parameterstring,timeseries):
         """
         The procedure below will be fixed later once a better one is found:
         Checks to see if ODE solutions do not go to fixed points. First, it checks to see if there are any bumps at the end 
@@ -68,8 +131,8 @@ class hillmodel(object):
         Structure of list 'timeseries':
         timeseries[time][value of each gene at time]
 
-        e.g. timeseries[5] gives [0.5, 0.4, 0.3], which is a list of the values of each gene at time=5. Each gene is indexed by an 
-        integer. For instance, if p53 is indexed as '1', then timeseries[5][1] would correspond to p53's value
+        e.g. timeseries[5] gives [0.5,0.4,0.3], which is a list of the values of each gene at time=5. Each gene is indexed by an 
+        integer. For instance, p53 is indexed as '1', so timeseries[5][1] would correspond to p53's value
         """
         output=[]
         max_dict={}
@@ -137,7 +200,7 @@ class hillmodel(object):
         r.set_initial_value(initialconditions,initialtime).set_f_params(self.eqns)
         times,timeseries = integrate(r,initialconditions,initialtime,finaltime,timestep)
   
-        self.checkForOscillations(savein,parameterstring,initialconditions,initialtime,finaltime,timestep,timeseries)
+        self.checkForOscillations(savein,parameterstring,timeseries)
 
         return times,timeseries
 
@@ -184,8 +247,8 @@ class hillmodel(object):
       it would match it with the gene name at index 0, etc. Each time I encountered an error I used .split() on the string and parsed
       it as a list instead. This was done in parseSamples and makeHillEqns too.
 
-      Some network spec files had some formatting inconsistencies; e.g. a gene X might have X:Z+Y , while all other genes would be in
-      the format Y : ~W. The parser addresses these inconsistencies whenever they were encountered; however, it does not address all
+      The network spec files had some formatting inconsistencies; e.g. a gene X might have X:Z+Y , while all other genes would be in
+      the format Y : ~W. The parser addresses these inconsistencies whenever they were encountered; however, they do not address all
       potential inconsistencies.
 
       """
@@ -314,10 +377,10 @@ class hillmodel(object):
         # X is not yet defined; eval a lambda function
         """
         After obtaining the ODEs from the network spec format and the parameter's names and values from the DSGRN solution file, this
-        function places the parameters in each ODE. Eqnstr has each parameter in p-n format, e.g. 1: 0p+10n, so replace each index # with
+        function places the parameters in each ODE. Eqnstr has each parameter in p-n format, e.g. 0p+10n, so replace each index # with
         the appropriate hill functions and parameters (IE 0p would have the hill function corresponding to activation, and since 0
-        maps with p53 and 1 with brca1, the script recognizes L[0,1] as L[p53,brca1] and places parameters with the format into the right places,
-        since these parameters show how p53 affects brca1)
+        maps with p53, then place parameters with the format L[X,p53] into the right places, since these parameters show how other 
+        genes affect p53)
 
         This function first matches 0p with its parameters. Then it reads if it's p or n, and chooses the appropriate hill function
         using 'makeHillStrs'; however, before replacing p or n with the hill function, there is some other parsing to do. Due to
