@@ -103,36 +103,33 @@ class hillmodel(object):
                   slope = 'increasing'
               
               #loop through and compare each max/min to the max/min. If too many outlier extrema, reject the oscillation as 'undesired'
-              list_of_outliers_max=[]
+              list_of_normals_max=[] #max values which are not outliers relative to other max values
               for i in range(len(list_of_max)):
-                if list_of_max[i] not in list_of_outliers_max:
                     num_of_differnces = 0 #how many times is max[i] different than other max, max[j]?
                     for j in range(len(list_of_max)):
                       if abs(list_of_max[i] - list_of_max[j]) > 10**-3: #if True, one of the two is outlier
                         num_of_differnces += 1
-                    if num_of_differences > 3:
-                      list_of_outliers_max.append(list_of_max[i])
-              num_of_outliers_min = 0
-              list_of_outliers_min=[]
+                    if num_of_differences < 3: #not 'if num_of_differences==0' b/c it will be diff. than an outlier; allow at most 2 outliers
+                      list_of_normals_max.append(list_of_max[i])
+              list_of_normals_min=[]
               for i in range(len(list_of_min)):
-                if list_of_min[i] not in list_of_outliers_min:
                     num_of_differnces = 0 #how many times is max[i] different than other max, max[j]?
                     for j in range(len(list_of_min)):
                       if abs(list_of_min[i] - list_of_min[j]) > 10**-3: #if True, one of the two is outlier
                         num_of_differnces += 1
-                    if num_of_differences > 3:
-                      list_of_outliers_min.append(list_of_min[i])
+                    if num_of_differences < 3:
+                      list_of_normals_min.append(list_of_min[i])
 
-              if len(list_of_outliers_max) < 2 and len(list_of_outliers_min) <2:
+              if len(list_of_max)-len(list_of_normals_max) < 2 and len(list_of_min)-len(list_of_normals_min) <2:
                 values=extrema_order_k.values()
                 global_max = max(values)
                 global_min = min(values)
                 if abs(global_max - global_min) > 10**-3: #second check: if True, function even more likely didn't go to a fixed point
                   numOfGenes+=1
                   for time in extrema_order_k:
-                    if extrema_order_k[time] not in list_of_outliers_max:
+                    if extrema_order_k[time] in list_of_normals_max:
                       time_of_extrema[time] = str(k)+' max' #if extrema close to global max, add it to outputs
-                    if extrema_order_k[time] not in list_of_outliers_min:
+                    if extrema_order_k[time] in list_of_normals_min:
                       time_of_extrema[time] = str(k)+' min'
         if numOfGenes == self.dim():      #Checks if all genes oscillated
           #rearrange all extrema of every gene according to where they are in time
