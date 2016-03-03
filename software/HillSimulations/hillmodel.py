@@ -81,29 +81,31 @@ class hillmodel(object):
         time_of_extrema={}
         numOfGenes=0 #records how many genes are oscillating
         for k in range(len(self.varnames)):
-          extrema_order_k={}
-          slope = ''
-          for i in range(999):
-            if slope == 'decreasing' and (timeseries[-1000+i][k] - timeseries[-1000+i+1][k])<0:
-              extrema_order_k[-1000+i] = timeseries[-1000+i][k]
-              slope = 'increasing'
-            elif slope == 'increasing' and (timeseries[-1000+i][k] - timeseries[-1000+i+1][k])>0:
-              extrema_order_k[-1000+i] = timeseries[-1000+i][k]
-              slope = 'decreasing'
-            elif (timeseries[-1000+i][k] - timeseries[-1000+i+1][k])>0 and slope == '':
-              slope = 'decreasing'
-            elif (timeseries[-1000+i][k] - timeseries[-1000+i+1][k])<0 and slope == '':
-              slope = 'increasing'
-          values=extrema_order_k.values()
-          global_max = max(values)
-          global_min = min(values)
-          if abs(global_max - global_min) > 10**-3: #if True, function didn't go to a fixed point
-            numOfGenes+=1
-            for time in extrema_order_k:
-                if abs(extrema_order_k[time]-global_max)<10**-3:
-                  time_of_extrema[time] = str(k)+' max'
-                if abs(extrema_order_k[time]-global_min)<10**-3:
-                  time_of_extrema[time] = str(k)+' min'
+          #the first check to make sure function didn't go to fixed point. If fails, avoid performing lengthy loop on end slice of gene's function  
+          if abs(timeseries[-1000:][time][k] - timeseries[-990:][time][k]) > 10**-3: 
+              extrema_order_k={}
+              slope = ''
+              for i in range(999):
+                if slope == 'decreasing' and (timeseries[-1000+i][k] - timeseries[-1000+i+1][k])<0:
+                  extrema_order_k[-1000+i] = timeseries[-1000+i][k]
+                  slope = 'increasing'
+                elif slope == 'increasing' and (timeseries[-1000+i][k] - timeseries[-1000+i+1][k])>0:
+                  extrema_order_k[-1000+i] = timeseries[-1000+i][k]
+                  slope = 'decreasing'
+                elif (timeseries[-1000+i][k] - timeseries[-1000+i+1][k])>0 and slope == '':
+                  slope = 'decreasing'
+                elif (timeseries[-1000+i][k] - timeseries[-1000+i+1][k])<0 and slope == '':
+                  slope = 'increasing'
+              values=extrema_order_k.values()
+              global_max = max(values)
+              global_min = min(values)
+              if abs(global_max - global_min) > 10**-3: #second check: if True, function even more likely didn't go to a fixed point
+                numOfGenes+=1
+                for time in extrema_order_k:
+                    if abs(extrema_order_k[time]-global_max)<10**-3:
+                      time_of_extrema[time] = str(k)+' max'
+                    if abs(extrema_order_k[time]-global_min)<10**-3:
+                      time_of_extrema[time] = str(k)+' min'
         if numOfGenes == self.dim():      #Checks if all genes oscillated
           ordered_extrema = collections.OrderedDict(sorted(time_of_extrema.items()))
           for time in ordered_extrema:
