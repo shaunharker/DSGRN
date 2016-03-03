@@ -82,7 +82,8 @@ class hillmodel(object):
         numOfGenes=0 #records how many genes are oscillating
         for k in range(len(self.varnames)):
           #the first check to make sure function didn't go to fixed point. If fails, avoid performing lengthy loop on end slice of gene's function  
-          if abs(timeseries[-1000:][time][k] - timeseries[-990:][time][k]) > 10**-3: 
+          #uses 'or' because the function's period may be at 10 timesteps; if so, it won't be at 15 timesteps. Prevents eval oscillations as fixed points
+          if abs(timeseries[-1000:][time][k] - timeseries[-990:][time][k]) > 10**-3 or abs(timeseries[-1000:][time][k] - timeseries[-985:][time][k]) > 10**-3: 
               extrema_order_k={} #records all extrema for gene k in time:value format
               slope = ''
               for i in range(999):
