@@ -78,12 +78,12 @@ class hillmodel(object):
         """
         output=[]
         output.append(parameterstring)
-        time_of_extrema={}
+        time_of_extrema={} #contains the extrema of every single gene, stored in the format time:k max or min. Repeated extrema are included.
         numOfGenes=0 #records how many genes are oscillating
         for k in range(len(self.varnames)):
           #the first check to make sure function didn't go to fixed point. If fails, avoid performing lengthy loop on end slice of gene's function  
           if abs(timeseries[-1000:][time][k] - timeseries[-990:][time][k]) > 10**-3: 
-              extrema_order_k={}
+              extrema_order_k={} #records all extrema for gene k in time:value format
               slope = ''
               for i in range(999):
                 if slope == 'decreasing' and (timeseries[-1000+i][k] - timeseries[-1000+i+1][k])<0:
@@ -103,15 +103,16 @@ class hillmodel(object):
                 numOfGenes+=1
                 for time in extrema_order_k:
                     if abs(extrema_order_k[time]-global_max)<10**-3:
-                      time_of_extrema[time] = str(k)+' max'
+                      time_of_extrema[time] = str(k)+' max' #if extrema close to global max, add it to outputs
                     if abs(extrema_order_k[time]-global_min)<10**-3:
                       time_of_extrema[time] = str(k)+' min'
         if numOfGenes == self.dim():      #Checks if all genes oscillated
-          ordered_extrema = collections.OrderedDict(sorted(time_of_extrema.items()))
+          #rearrange all extrema of every gene according to where they are in time
+          ordered_extrema = collections.OrderedDict(sorted(time_of_extrema.items())) 
           for time in ordered_extrema:
-            if ordered_extrema[time] not in output:
+            if ordered_extrema[time] not in output: #checks for the cyclic pattern. Repeated extrema not included.
               output.append(ordered_extrema[time])
-          for j in range(len(output)): #replace index number, used in timeseries, with varname
+          for j in range(len(output)): #replace index number, used in timeseries, with parameter's name
             extrema = output[j]
             extrema_list = extrema.split()
             for i in range(len(extrema_list)):
