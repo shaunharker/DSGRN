@@ -79,6 +79,7 @@ class hillmodel(object):
         output=[]
         output.append(parameterstring)
         time_of_extrema={}
+        numOfGenes=0 #records how many genes are oscillating
         for k in range(len(self.varnames)):
           extrema_order_k={}
           slope = ''
@@ -97,24 +98,25 @@ class hillmodel(object):
           global_max = max(values)
           global_min = min(values)
           if abs(global_max - global_min) > 10**-3: #if True, function didn't go to a fixed point
+          	numOfGenes+=1
             for time in extrema_order_k:
                 if abs(extrema_order_k[time]-global_max)<10**-3:
                   time_of_extrema[time] = str(k)+' max'
                 if abs(extrema_order_k[time]-global_min)<10**-3:
-                  time_of_extrema[time] = str(k)+' min'      
-        ordered_extrema = collections.OrderedDict(sorted(time_of_extrema.items()))
-        for time in ordered_extrema:
-          if ordered_extrema[time] not in output:
-            output.append(ordered_extrema[time])
-        for j in range(len(output)): #replace index number, used in timeseries, with varname
-          extrema = output[j]
-          extrema_list = extrema.split()
-          for i in range(len(extrema_list)):
-            for k,v in enumerate(self.varnames):
-              if extrema_list[i] == str(k):       
-                extrema_list[i] = v
-          output[j] = (' '.join(extrema_list))
-        if len(output) == (1+2*self.dim()): #Checks if all genes oscillated, and thus had their extrema recorded in output
+                  time_of_extrema[time] = str(k)+' min'
+        if numOfGenes == self.dim():      #Checks if all genes oscillated
+          ordered_extrema = collections.OrderedDict(sorted(time_of_extrema.items()))
+          for time in ordered_extrema:
+            if ordered_extrema[time] not in output:
+              output.append(ordered_extrema[time])
+          for j in range(len(output)): #replace index number, used in timeseries, with varname
+            extrema = output[j]
+            extrema_list = extrema.split()
+            for i in range(len(extrema_list)):
+              for k,v in enumerate(self.varnames):
+                if extrema_list[i] == str(k):       
+                  extrema_list[i] = v
+            output[j] = (' '.join(extrema_list))
           file = open(savein, 'a')
           file.write(str(output).replace('[','').replace(']','').replace("'","")+"\n")
           file.close()
