@@ -30,7 +30,6 @@ assign ( uint64_t n, uint64_t m, std::string const& hex ) {
   uint64_t N = (1 << data_ ->n_) * data_ ->m_;
   data_ -> comp_ . clear ();
   uint64_t L = hex . size ();
-  uint64_t count = 0;
   for ( int64_t i = L-1; i >= 0; -- i ) {
     char hex_digit = hex [ i ];
     hex_digit -= '0';

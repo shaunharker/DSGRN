@@ -1,0 +1,6 @@
+#!/Applications/Mathematica.app/Contents/MacOS/WolframScript -script
+(* This is a Mathematica script which executes its command line arguments.
+   It is meant as an interface to Mathematica from Bash or Python *)
+(* Print[$ScriptCommandLine]; Print["---"] *)
+exp = ToExpression[ToExpression[$ScriptCommandLine[[2]]]];
+Print[exp]
