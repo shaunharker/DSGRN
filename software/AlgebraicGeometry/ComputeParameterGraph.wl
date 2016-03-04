@@ -650,6 +650,8 @@ CadDatabaseCreation[ParameterGraph_, n_, m_]:=Block[
 		Output: 
 			The "solution" set (see Rules below) in interval notation represented as a list.
 			Ex. The solution 1<=x<2 would be {1,2}.
+
+    Note: behavior undefined if there is no solution
 *)
 SolveInequalities[Ineq_, P_]:=Block[
 {Rules, SolutionInterval},
@@ -662,19 +664,14 @@ SolveInequalities[Ineq_, P_]:=Block[
 		   Inequality[min_,Less,__,LessEqual,max_]->{min, max},Inequality[min_,LessEqual,__,LessEqual,max_]->{min, max},
 		   Greater[__,min_]->{min, Infinity},GreaterEqual[__,min_]->{min, Infinity}} ;
 	
-	(* Solve for the solution set if the set of inequalities evaluated at the (n-1) points does not return false. *)
-	If[ MemberQ[Ineq/.P, False],
-		Return[False];
-	,
-		SolutionInterval = Replace[Quiet@Reduce[Complement[Ineq/.P, {True}]/.List->And], Rules];
-	];
 
+	SolutionInterval = Replace[Quiet@Reduce[Complement[Ineq/.P, {True}]/.List->And], Rules];
 	Return[SolutionInterval] ;
 ];
 
 
 
-(* GibbsSample
+(* GibbsSamples
 		Inputs:
 			Ineq_       : A list of inequalities. 
 			Var_        : A list of variables.
@@ -683,7 +680,7 @@ SolveInequalities[Ineq_, P_]:=Block[
 			A list of sample points from the set of inequalities of the form:
 			{ {x_1->value_1,..,x_n->value_n}, {x_1->value_1,..,x_n->value_n},..}
 *)
-GibbsSample[Ineq_, Var_, SampleSize_]:=Block[
+GibbsSamples[Ineq_, Var_, SampleSize_]:=Block[
 {InitialP, BurnInPeriod, SamplePoints, NewP, a, b, RandUniform, RandExponential, NewVar, i, j},
 
 	InitialP = Flatten[FindInstance[Ineq, Var]];
@@ -695,14 +692,9 @@ GibbsSample[Ineq_, Var_, SampleSize_]:=Block[
 		(* Loops through the variables *)
 		Do[
 			NewP = Drop[InitialP, {j}] ;
-			a = SolveInequalities[Ineq, NewP][[1]] ;
-			b = SolveInequalities[Ineq, NewP][[2]] ;
+			{a, b} = SolveInequalities[Ineq, NewP];
 			RandUniform = RandomVariate[UniformDistribution[]];
-			If[b==Infinity, 
-				RandExponential = -Log[Exp[-a] - RandUniform*(Exp[-a])] ;
-			,
-				RandExponential = -Log[Exp[-a] - RandUniform*(Exp[-a]-Exp[-b])] ;
-			];
+      RandExponential = -Log[Exp[-a] - RandUniform*(Exp[-a]-Exp[-b])] ;
 			NewVar = Var[[j]]->RandExponential ;
 			NewP = Insert[ NewP, NewVar, j] ;
 			InitialP = NewP ;
@@ -719,3 +711,36 @@ GibbsSample[Ineq_, Var_, SampleSize_]:=Block[
 	
 	Return[SamplePoints];
 ];	
+
+(* GibbsSample
+    Inputs:
+      Ineq_       : A list of inequalities. 
+      Var_        : A list of variables.
+    Outputs: 
+      A sample point from the set of inequalities of the form:
+      {x_1->value_1,..,x_n->value_n}
+*)
+GibbsSample[Ineq_, Var_]:=Block[
+{P, BurnInPeriod, a, b, RandUniform, RandExponential, NewVar, i, j},
+
+  P = Flatten[FindInstance[Ineq, Var]];
+  BurnInPeriod = 10;
+
+  (* Loops through the BurnInPeriod *)
+  Do[
+    (* Loops through the variables *)
+    Do[
+      P = Drop[P, {j}] ;
+      {a, b} = SolveInequalities[Ineq, P];
+      RandUniform = RandomVariate[UniformDistribution[]];
+      RandExponential = -Log[Exp[-a] - RandUniform*(Exp[-a]-Exp[-b])] ;
+      P = Insert[ P, Var[[j]]->RandExponential, j] ;
+    ,
+    {j, Length[Var]}
+    ];
+  ,
+  {i, BurnInPeriod}]
+  ;
+
+  Return[P];
+];  

@@ -90,7 +90,10 @@ public:
   parse ( std::string const& str );
 
   /// inequalities
-  ///    Output a list of inequalities correspond to the parameter
+  ///    Output a list of inequalities corresponding to the parameter node.
+  ///    We output the list in a format which is compatible with Mathematica's syntax,
+  ///    encapsulated in a JSON string. In particular, the format is as follows:
+  ///    {"inequalities" : "mathematica-parsable-string", "variables" : "mathematica-parsable-string"}
   std::string
   inequalities ( void ) const;
 
