@@ -224,7 +224,7 @@ _parse ( std::vector<std::string> const& lines ) {
   }
   // Learn the logics
   // Trick: ignore everything but node names and +'s. 
-  // Example: a + ~ b c d + e  corresponds to (a+b)(b)(c)(d+e)
+  // Example: a + ~ b c d + e  corresponds to (a+~b)(c)(d+e)
   uint64_t target = 0;
   for ( auto const& logic_string : logic_strings ) {
     //std::cout << "Processing " << logic_string << "\n";
