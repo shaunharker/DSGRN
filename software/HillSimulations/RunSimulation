@@ -1,0 +1,55 @@
+#!/usr/bin/python
+#
+# RunSimulation
+#
+#  Description:
+#    This script performs a Hill Model simulation for a specified regulatory network
+#    and parameter node. The parameter used for the simulation is sampled from the parameter 
+#    node via a Gibbs sampling routine. The simulation results are written to standard output.    
+#
+#  Usage:
+#    ./RunSimulation <network_spec_file> <parameter_node_index>
+#
+#  Inputs: <network_spec_file>      -- a network specification file
+#          <parameter_node_index>   -- the integer index corresponding to some parameter node
+#
+#  Outputs: 
+#          The results of the simulation are written in JSON format to standard output
+#          For example: 
+#             TODO GIVE EXAMPLE OUTPUT
+#
+#  Example usage:
+#    ./RunSimulation network.txt 2748 > simulation_results.txt
+#
+
+import subprocess, json, sys, hillmodel
+
+# Read command line arguments
+network_spec_file = sys.argv[1]
+parameter_node_index = sys.argv[2]
+
+# Sample a parameter from the parameter node using the Gibbs Sampler 
+# in the AlgebraicGeometry package included with DSGRN
+parameter_json = subprocess.check_output( ["../AlgebraicGeometry/ParameterSample", network_spec_file, parameter_node_index ])
+print parameter_json
+parameter = json.loads(parameter_json)
+
+# Construct a Hill Model
+hillexp = 10  # Hill function exponent
+Model = hillmodel.hillmodel(network_spec_file,parameter,hillexp)
+
+print Model.dim()
+
+# Initial condition
+y0 = [1.0 for x in range( Model.dim() )] # initial condition
+t0 = 0  # start time
+t1 = 30 # end time
+dt = 0.01 # time step
+
+# Perform the integration
+times, timeseries = Model.simulateHillModel(y0,t0,t1,dt) 
+
+Model.plotResults(times,timeseries)
+#print times
+#print timeseries
+

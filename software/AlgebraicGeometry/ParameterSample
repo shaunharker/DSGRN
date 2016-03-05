@@ -23,8 +23,12 @@
 #
 import subprocess, json, sys, re
 
+# Read command line arguments
+network_spec_file = sys.argv[1]
+parameter_node_index = sys.argv[2]
+
 # Call DSGRN to obtain inequalities
-param_ineq_json = subprocess.check_output( ("dsgrn network " + sys.argv[1] + " parameter inequalities " + sys.argv[2]).split(' '))
+param_ineq_json = subprocess.check_output( ("dsgrn network " + network_spec_file + " parameter inequalities " + parameter_node_index).split(' '))
 # Example: param_ineq_json == { "inequalities" : "(L[X2,X1] + L[X3,X1]) < T[X1,X2] && (U[X2,X1] + L[X3,X1]) < T[X1,X2] && (L[X2,X1] + U[X3,X1]) < T[X1,X2] && (U[X2,X1] + U[X3,X1]) < T[X1,X2] && 0 < T[X1,X2] && 0 < L[X2,X1] < U[X2,X1] && 0 < L[X3,X1] < U[X3,X1] && T[X2,X1] < L[X1,X2] < T[X2,X3] && T[X2,X1] < U[X1,X2] < T[X2,X3] && 0 < T[X2,X1] < T[X2,X3] && 0 < L[X1,X2] < U[X1,X2] && L[X2,X3] < T[X3,X1] && U[X2,X3] < T[X3,X1] && 0 < T[X3,X1] && 0 < L[X2,X3] < U[X2,X3]", "variables" : "{L[X2,X1], L[X3,X1], U[X2,X1], U[X3,X1], T[X1,X2], L[X1,X2], U[X1,X2], T[X2,X1], T[X2,X3], L[X2,X3], U[X2,X3], T[X3,X1]}"}
 
 # Parse DSGRN output to obtain Mathematics strings
@@ -47,7 +51,7 @@ solution = subprocess.check_output ( [sys.path[0]+'/runMathematica', '"Import[\\
 #      (a) putting quotes around variable names
 #      (b) replacing "->"  with ":"
 
-json_solution = re.sub(r"([LUT]\[[^\]]*\])",r"\"\1\"", solution).replace("->",":");
+json_solution = re.sub(r"([LUT]\[[^\]]*\])",r'"\1"', solution).replace("->",":");
 
 # Output result
 print json_solution
