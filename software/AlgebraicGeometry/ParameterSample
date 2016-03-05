@@ -37,7 +37,7 @@ variables = param_ineq["variables"];
 # variables    == "{L[X2,X1], L[X3,X1], U[X2,X1], U[X3,X1], T[X1,X2], L[X1,X2], U[X1,X2], T[X2,X1], T[X2,X3], L[X2,X3], U[X2,X3], T[X3,X1]}"
 
 # Call a Mathematica script to use the Gibbs Sampling algorithm to sample from the solution set of "inequalities"
-solution = subprocess.check_output ( ['./runMathematica', '"Import[\\\"ComputeParameterGraph.wl\\\", \\\"ExpressionList\\\"]; GibbsSample[{' + inequalities + '}, ' + variables + ']"']);
+solution = subprocess.check_output ( [sys.path[0]+'/runMathematica', '"Import[\\\"ComputeParameterGraph.wl\\\", \\\"ExpressionList\\\"]; GibbsSample[{' + inequalities + '}, ' + variables + ']"']);
 
 # Example:
 # solution == '{L[mdm2, p53] -> 0.12021008055638345, L[p38MAPK, p53] -> 0.7203440431941638, U[mdm2, p53] -> 2.515798915942919, U[p38MAPK, p53] -> 1.4084200280763606, T[p53, mdm2] -> 1.2683961723214285, T[p53, ARF] -> 1.5746030189621016, T[p53, WIP1] -> 1.727133751267608, T[p53, PTEN] -> 2.57576389371754, T[p53, p21] -> 2.9288556919627045, T[p53, SIAH1] -> 3.665978391430803, T[p53, CyclinG] -> 3.826567498396828, L[p53, mdm2] -> 1.066497763389397, L[ARF, mdm2] -> 0.04136402644775138, L[AKT, mdm2] -> 0.5514225025144939, L[CDK2, mdm2] -> 0.6995501065764127, L[CyclinG, mdm2] -> 0.8336286528104255, U[p53, mdm2] -> 2.2587376286144742, U[ARF, mdm2] -> 0.5502491994922313, U[AKT, mdm2] -> 1.9835593484604377, U[CDK2, mdm2] -> 1.469082590113445, U[CyclinG, mdm2] -> 1.1990622895448746, T[mdm2, p53] -> 7.460605592792109, L[p53, ARF] -> 0.7210947220566563, L[betacatenin, ARF] -> 1.2239267751451819, U[p53, ARF] -> 2.56649937830497, U[betacatenin, ARF] -> 3.8744326877790343, T[ARF, mdm2] -> 5.600539767801453, L[WIP1, p38MAPK] -> 0.5087594709046923, U[WIP1, p38MAPK] -> 2.304376696252215, T[p38MAPK, p53] -> 1.3832298418506073, L[p53, WIP1] -> 0.6994601440431327, U[p53, WIP1] -> 2.5065982731023504, T[WIP1, p38MAPK] -> 1.1825717833229046, L[PIP3, AKT] -> 0.22188280958296433, U[PIP3, AKT] -> 1.8421053704591037, T[AKT, mdm2] -> 1.4103534619386542, L[PTEN, PIP3] -> 0.14450750944605498, U[PTEN, PIP3] -> 3.0170208661310394, T[PIP3, AKT] -> 0.8723931126104282, L[p53, PTEN] -> 0.09483968837383597, U[p53, PTEN] -> 1.943642769823634, T[PTEN, PIP3] -> 1.4394703040082262, L[p21, CDK2] -> 0.1008079304854996, U[p21, CDK2] -> 1.2340460347425926, T[CDK2, mdm2] -> 0.4486954618904921, L[p53, p21] -> 0.47545077325356444, U[p53, p21] -> 0.7317408679072979, T[p21, CDK2] -> 0.5364526983616505, L[SIAH1, betacatenin] -> 0.3094480626915529, U[SIAH1, betacatenin] -> 1.3873587757109949, T[betacatenin, ARF] -> 0.7309747586050026, L[p53, SIAH1] -> 0.5511368978937868, U[p53, SIAH1] -> 3.4673793638829467, T[SIAH1, betacatenin] -> 2.335557111322774, L[p53, CyclinG] -> 0.5815145809426037, U[p53, CyclinG] -> 1.7186688851121414, T[CyclinG, mdm2] -> 0.711561185289322}'
@@ -47,7 +47,7 @@ solution = subprocess.check_output ( ['./runMathematica', '"Import[\\\"ComputePa
 #      (a) putting quotes around variable names
 #      (b) replacing "->"  with ":"
 
-json_solution = re.sub(r"([LUT]\[[^\]]*\])",r"'\1'", solution).replace("->",":");
+json_solution = re.sub(r"([LUT]\[[^\]]*\])",r"\"\1\"", solution).replace("->",":");
 
 # Output result
 print json_solution
