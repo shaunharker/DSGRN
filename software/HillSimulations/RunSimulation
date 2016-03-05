@@ -22,34 +22,28 @@
 #    ./RunSimulation network.txt 2748 > simulation_results.txt
 #
 
-import subprocess, json, sys, hillmodel
+import subprocess, json, sys, hillmodel, numpy
 
-# Read command line arguments
-network_spec_file = sys.argv[1]
-parameter_node_index = sys.argv[2]
+def RunSimulation(network_spec_file,parameter_node_index):
+  # Sample a parameter from the parameter node using the Gibbs Sampler 
+  # in the AlgebraicGeometry package included with DSGRN
+  parameter_json = subprocess.check_output( ["../AlgebraicGeometry/ParameterSample", network_spec_file, parameter_node_index ])
+  print parameter_json
+  parameter = json.loads(parameter_json)
+  # Construct a Hill Model
+  hillexp = 10  # Hill function exponent
+  Model = hillmodel.hillmodel(network_spec_file,parameter,hillexp)
+  # Initial condition
+  y0 = numpy.array([1.0 for x in range( Model.dim() )]) # initial condition
+  t0 = 0  # start time
+  t1 = 30 # end time
+  dt = 0.01 # time step
+  # Perform the integration
+  times, timeseries = Model.simulateHillModel(y0,t0,t1,dt) 
+  # Return result
+  return { "network" : network_spec_file, "parameter_node_index" : parameter_node_index, 
+           "times" : times, "timeseries" : [ x.tolist() for x in timeseries] }
 
-# Sample a parameter from the parameter node using the Gibbs Sampler 
-# in the AlgebraicGeometry package included with DSGRN
-parameter_json = subprocess.check_output( ["../AlgebraicGeometry/ParameterSample", network_spec_file, parameter_node_index ])
-print parameter_json
-parameter = json.loads(parameter_json)
-
-# Construct a Hill Model
-hillexp = 10  # Hill function exponent
-Model = hillmodel.hillmodel(network_spec_file,parameter,hillexp)
-
-print Model.dim()
-
-# Initial condition
-y0 = [1.0 for x in range( Model.dim() )] # initial condition
-t0 = 0  # start time
-t1 = 30 # end time
-dt = 0.01 # time step
-
-# Perform the integration
-times, timeseries = Model.simulateHillModel(y0,t0,t1,dt) 
-
-Model.plotResults(times,timeseries)
-#print times
-#print timeseries
-
+if __name__ == "__main__":
+  RunSimulation(sys.argv[1], sys.argv[2])
+  #print json.dumps(RunSimulation(sys.argv[1], sys.argv[2]))

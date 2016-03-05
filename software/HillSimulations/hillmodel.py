@@ -20,6 +20,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+# -----
+# This file has been modified from its original version.
+# It contains changes to the parsing routines for use with the DSGRN project.
+# Michael Lan, Shaun Harker, 2016
+# -----
+
 import re
 import numpy as np
 from scipy.integrate import ode
@@ -78,7 +84,7 @@ class hillmodel(object):
 
     '''
     def RHS(t,x,eqns):
-      return np.array(eqns(x))
+      return eqns(x) #np.array(eqns(x))
     def integrate(r,y0,t0,t1,dt):
       times=[t0]
       timeseries=[y0]
