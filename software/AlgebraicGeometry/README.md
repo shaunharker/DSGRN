@@ -3,7 +3,7 @@
 Authors: Kafung Mok, Shaun Harker
 
 This subproject of DSGRN is made to handle algebraic geometry related 
-tasks arising in the analsis of parameter space.
+tasks arising in the analysis of parameter space.
 
 We refer to 
 
