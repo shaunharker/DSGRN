@@ -113,8 +113,8 @@ Formula[combo_, Logic_] := Module [
     (* Loop through terms in factors *)
     For [ termIndex=1, termIndex <= numTerms, ++ termIndex,
       term = Switch[combo[[variableIndex]],
-        0, Subscript[L, variableIndex] ,
-        1, Subscript[U, variableIndex],
+        0, L[variableIndex] ,
+        1, U[variableIndex],
         _, X];
       ++ variableIndex;
       factor = Plus[factor, term];
@@ -151,19 +151,19 @@ Inequalities[v_,Logic_] := Module[
       formula = Formula[combo, Logic];
       For[ thresIndex=1, thresIndex <= m, ++ thresIndex,
         ineq = Switch[thres < thresIndex, 
-          True, formula < Subscript[T, thresIndex], 
-          False, Subscript[T, thresIndex] < formula];
+          True, formula < T[thresIndex], 
+          False, T[thresIndex] < formula];
         Sow[ ineq ];
       ];
     ];
     (* Loop through variables *)
     For[i=1, i <= n, ++ i,
-      Sow[ 0 < Subscript[L, i] < Subscript[U, i] ];
+      Sow[ 0 < L[i] < U[i] ];
     ]; 
     (* Loop through thresholds *)
-    Sow [ 0 < Subscript[T, 1] ];
+    Sow [ 0 < T[1] ];
     For[i=1, i < m, ++ i,
-      Sow[ Subscript[T, i] < Subscript[T, i+1] ];
+      Sow[ T[i] < T[i+1] ];
     ];
   ][[2]][[1]]];
 ];
@@ -204,7 +204,7 @@ ThresholdComparisons[Logic_] := ThresholdComparisons[Logic] = Block [
   {m},
   m = Logic[[2]];
   If[m<=1, Return[{}]];
-  Return[Reap[For[i=1,i<=m,++i,For[j=i+1,j<=m,++j, Sow[Subscript[T,i] < Subscript[T,j]]]]][[2]][[1]]];
+  Return[Reap[For[i=1,i<=m,++i,For[j=i+1,j<=m,++j, Sow[T[i] < T[j]]]]][[2]][[1]]];
 ];
 
 (* EliminateInequalities 
@@ -280,19 +280,19 @@ VariableList[Logic_]:=Module[
   m = Logic[[2]];
   Return[Reap[
     For[i=1, i <= n, ++ i, 
-      Sow[Subscript[L, i]];
+      Sow[L[i]];
     ];
     For[i=1, i <= n, ++ i, 
-      Sow[Subscript[U, i]];
+      Sow[U[i]];
     ];    
     For[i=1, i <= m, ++ i, 
-      Sow[Subscript[T, i]];
+      Sow[T[i]];
     ];
   ][[2]][[1]]];
 ];
 
 (************************)
-(* Fancy CAD Algorithms *)
+(*    CAD Algorithms    *)
 (************************)
 
 MemoizedCylindricalDecomposition[Ineq_,Vars_]:= MemoizedCylindricalDecomposition[Ineq,Vars] = Module[
@@ -462,15 +462,18 @@ ComputeParameterGraph[Logic_] := Module[
     v = pop[pending];
     Ineq = Inequalities[v,Logic];
     CAD=EvaluateCAD[Ineq,Logic];
-    If[ CAD =!= {} && CAD =!= {False},
+    If[ CAD =!= {} && CAD =!= False && CAD =!= {False},
       (*****CHECK*****)
+      
       ++count;
       Print[Now];
       Print["Found parameter "];
       Print[count];
+      (*
       If[!CheckParameter[Ineq,Logic], Print["Failure."]; Return[False]];
       Print["Check passed!"]; 
       Print[Now];
+      *)
       (***************)
       Sow[{v,Ineq,CAD}];
       Adj = Adjacencies[v,Logic];   
@@ -483,163 +486,91 @@ ComputeParameterGraph[Logic_] := Module[
 ];
 
 
-(* ConvertToBase16
-	Input:
-		base2_ : A number in base 2. 
-	Output:
-		The number, base2_, in base 16.
-*)
-ConvertToBase16[base2_]:=Block[
-{IntegerInBase10, IntegerInBase16},
-
-	(* First convert to base 10, and then convert to base 16 *)
-	IntegerInBase10 = ToExpression[StringJoin["2^^", ToString[base2]]] ;
-	IntegerInBase16 = ToUpperCase[IntegerString[IntegerInBase10, 16, 4]];
-	
-	Return[IntegerInBase16];
-];
-
+(************************)
+(*     CAD Database     *)
+(************************)
 
 
 (* HexRepresentation
 		Inputs:
 			BinningVector_: The binning representation of a parameter node as a list. 
-			n_ : The number of inputs of the network.
-			m_ : The number of outputs of the network.
+			n_ : The number of inputs of the network node.
+			m_ : The number of outputs of the network node.
 		Output: 
 			The hex representation of the given binning representation. 
 *)
 HexRepresentation[BinningVector_, n_, m_]:=Block[
-{BinaryRep, item, HexRep},
+{BinaryRep, item, IntegerRep},
+	
+	(* Build a binary representation of the hex code from the binning representation *)
+  BinaryRep = Flatten[Map[Function[item,PadLeft[ConstantArray[1, item], m]], Reverse[BinningVector]]];
+	
+	(*Construct an integer from the binary representation *)
+	IntegerRep = FromDigits[BinaryRep,2];
 
-	BinaryRep = {};
-	
-	(*Convert a binning representation, BinningVector_, to its binary representation*)
-	Do[		
-		BinaryRep={BinaryRep, PadLeft[ConstantArray[1, item], m] };
-	,
-	{item, Reverse[BinningVector]}
-	];
-	
-	(*Construct an integer from the list, BinaryRep, and then convert it to its corresponding hex representation*)
-	BinaryRep = FromDigits[ Flatten[BinaryRep] ];
-	HexRep = ConvertToBase16[BinaryRep] ;
-	
-	Return[HexRep];
-
+  (* Construct and return the hex code  *)
+	Return[ToUpperCase[IntegerString[IntegerRep, 16, Ceiling[Length[BinaryRep]/4]]]];
 ];
 
-
-
-(* BinningVectors
-		Inputs:
-			ParameterGraph_: The parameter graph of a a particular logic. 
-		Outputs: 
-			The list of binning vectors of the parameter graph.  
+(* DecimalFormat
+   Inputs: A number
+   Outputs: A decimal string which shows the tenths place, and has no trailing zeros past the tenths place
+   Examples: 1.45, 1.01, 3.0
 *)
-BinningVectors[ParameterGraph_]:=Block[
-{BinningV},
-	BinningV = ParameterGraph[[All, 1]];
-	Return[ BinningV ];
-];
+DecimalFormat[x_]:=Block[
+{},
+  string = ToString[N[x,16]];
+  While[StringTake[string,-1] == "0", string=StringDrop[string,-1]]; (* Perhaps inefficient *)
+  If[StringTake[string,-1] == ".", string = string <> "0"];
+  Return[string]
+]
 
-
-
-(* ParameterInequalities
+(* ComputeCADDatabase
+      Writes a CAD database for the network node specified by "Logic" 
+      to the file specified by "filename"
 		Inputs:
-			ParameterGraph_: The parameter graph of a a particular logic. 
-		Outputs: 
-			The list of inequalities of the parameter graph.  
+      Logic_ : logic specification
+      filename_ : filename to write database into
+		Outputs: A string of the form:
+		  [{"Hex":"4CD0","Binning":[0,2,1, ...],"Inequalities":"mathematica-string-for-inequalities","CAD":"mathematica-cad-output",
+        "Instance":{ "L[1]" : 1.2373, ..., "U[1]" : 5.3821, ..., "T[1]" : 4.37387, ... }, { ... }, { ... }, ... ]
 *)
-ParameterInequalities[ParameterGraph_]:=Block[
-{CADIneqs},
-	CADIneqs = ParameterGraph[[All, 2]];
-	Return[ CADIneqs ];
+ComputeCADDatabase[Logic_, filename_]:=Block[
+{ParameterGraph, n, m, Variables, item, Ineqs, CAD, HexCode, BinningVector, Instance, var, num },
+  (* Compute the Parameter graph *)
+  ParameterGraph = ComputeParameterGraph[Logic];
+  Print["Parameter Graph computed."];
+  n = Logic[[1]];
+  m = Logic[[2]];
+  Variables = VariableList[Logic];
+
+  (* Constructs a string of the form  '{{"Hex":"4CD0","Binning": ...}, ...}' *)
+  ParsedString = StringJoin[Sort[Map[Function[item, 
+     BinningVector = item[[1]]; Ineqs = item[[2]]; CAD = item[[3]];
+     HexCode = HexRepresentation[BinningVector,n,m];
+     (* Make BinningVector into string containing JSON array *)
+     BinningVector = StringReplace[ToString[BinningVector], {"{"->"[", "}"->"]"}];
+     (* Make Instance into string containing JSON object *)
+     Instance = ReleaseHold[Flatten[Quiet[FindInstance[Ineqs,Variables]]] /. {Rule[var_,num_] -> Hold[Rule["\""<>ToString[var]<>"\"",DecimalFormat[num]]]}];
+     Instance = StringReplace[ToString[Instance], {"->" -> ":"}];
+     Print[HexCode];
+     "{\"Hex\":\""         <> HexCode <> "\"," <>
+     "\"Binning\":\""      <> BinningVector <> "\"," <>
+     "\"Instance\":"       <> Instance <> "," <>
+     "\"Inequalities\":\"" <> ToString[Ineqs /. { List -> And }, InputForm] <> "\"," <>
+     "\"CAD\":\""          <> TextString[CAD] <> "\"},\n"
+  ], ParameterGraph]]];
+
+  (* Remove last newline and comma, enclose in square brackets, and return *)
+  ParsedString = "[" <> StringDrop[ParsedString, -2] <> "]\n";
+  (* Save to file *)
+  WriteString[filename, ParsedString];
+  Return[ParsedString];
 ];
 
-
-
-(* CADOutput
-		Inputs:
-			ParameterGraph_: The parameter graph of a a particular logic. 
-		Outputs: 
-			The cylindrical algebraic decomposition as a list.  
-*)
-CADOutput[ParameterGraph_]:=Block[
-{CadDescription},
-	CadDescription = Map[LogicalExpand, ParameterGraph[[All, 3]]];
-	Return[ CadDescription ];
-];
-
-
-
-(* JSONParsing
-		Inputs:
-			HexRep_: The hex representations of a given parameter graph as a list of lists. 
-			BinningRep_ : The binning representations of a given parameter graph as a list of lists.
-			Ineqs_ : The inequalities of a given parameter graph as a list of lists.
-		Outputs: A lists of the form:
-		[{"Hex":"4CD0","Binning":[0,2,1, ...],"Inequalities":"mathematica-string-for-inequalities","CAD":"mathematica-cad-output" }, { ... }, { ... }, ... ]
-*)
-
-JSONParsing[HexRep_, BinningRep_, Ineqs_, CAD_]:=Block[
-{Base10Rep, ParsedString, i},
-
-	(* Constructs the base 10 representation of the given hex representation *)
-	Base10Rep = FromDigits[#, 16]&/@Map[ToString,HexRep];
-	
-	(* Constructs a list of lists of the form {{"Hex":"4cd0","Binning":...},{..}..} *)
-	ParsedString = Reap[
-		For[i=1, i<= Length[HexRep], i++, 
-			Sow[{"\"Hex\":"<>"\""<>ToUpperCase[IntegerString[Base10Rep[[i]], 16, 4]]<>"\""<>","<>"\"Binning\":"<>ToString[BinningRep[[i]]]<>
-			","<>"\"Inequalities\":"<>"\""<>ToString[InputForm[Ineqs[[i]]]]<>"\""<>","<>"\"CAD\":"<>"\""<>ToString[InputForm[CAD[[i]]]]<>"\""}];
-		];
-	][[2]][[1]];
-	
-	(* Sort the above list and then parses the list by converting it to a string, removing white spaces, etc *)
-	ParsedString = ToString[ SortBy[ParsedString,2]];
-	ParsedString = StringReplace[ParsedString, " "->""];
-	ParsedString = StringDrop[ParsedString, 1];
-	ParsedString = StringDrop[ParsedString, -1];
-	ParsedString = StringInsert[ParsedString, "[", 1];
-	ParsedString = StringInsert[ParsedString, "]", -1];
-	ParsedString = StringDelete[ParsedString, "\n"] ;
-	ParsedString = StringInsert[ParsedString,"\n",-1] ;
-	Return[ParsedString];
-];
-
-
-
-(* CadDatabaseCreation
-		Inputs:
-			ParameterGraph_: The parameter graph of a a particular logic. 
-			n_ : The number of inputs of the network.
-			m_ : The number of outputs of the network.
-		Outputs: A lists of the form:
-		[{"Hex":"4CD0","Binning":[0,2,1, ...],"Inequalities":"mathematica-string-for-inequalities","CAD":"mathematica-cad-output" }, { ... }, { ... }, ... ]
-*)
-CadDatabaseCreation[ParameterGraph_, n_, m_]:=Block[
-{Binning, CADDescription, CADIneqs, HexRep, CADInformation },
-
-	Binning = BinningVectors[ParameterGraph];
-	CADDescription = CADOutput[ParameterGraph];
-	CADIneqs = ParameterInequalities[ParameterGraph];
-	HexRep = {};
-
-	(* Constructs the hex representation *)
-	Do[
-		HexRep = {HexRepresentation[vector, n, m], HexRep};
-	,
-	{vector, Binning}
-	];
-
-	HexRep = Flatten[HexRep];
-	Binning = StringReplace[ Map[ToString, Binning], {"{"->"[", "}"->"]"}];
-	
-	(* Returns the lists of the form: [{"Hex":"4CD0",....]*)
-	Return[JSONParsing[HexRep, Binning, CADIneqs, CADDescription]];
-];
-
+(************************)
+(*    Gibbs Sampling    *)
+(************************)
 
 
 (* SolveInequalities
