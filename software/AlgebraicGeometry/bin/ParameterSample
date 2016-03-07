@@ -1,0 +1,59 @@
+#!/usr/bin/python
+#
+# Sample
+#
+#  Usage:  Sample <network_spec_file> <parameter_node_index>
+#
+#  Inputs: <network_spec_file>    : a network specification file
+#          <parameter_node_index> : An integer corresponding to a parameter node.
+#                                   See the DSGRN documentation for details on the parameter node indexing.
+#
+#  Output: A parameter sample associated with the given network and parameter node index.
+#          A parameter sample is a choice of numbers for each parameter taken from the exponential 
+#          distribution conditioned on being in the parameter region associated with the given
+#          parameter node.
+#
+#  Caveats: Error checking of inputs is not performed. TODO
+#
+#  Example:
+#      ./Sample ../../networks/13D_p53_strong.txt 12
+#    Outputs:
+#      {'L[mdm2, p53]' : 0.2692253542335458, 'L[p38MAPK, p53]' : 1.948056870552621, 'U[mdm2, p53]' : 1.9665330623546888, 'U[p38MAPK, p53]' : 2.172270045931054, 'T[p53, mdm2]' : 2.4243205163484545, 'T[p53, ARF]' : 2.6406424505462125, 'T[p53, WIP1]' : 2.660344200616985, 'T[p53, PTEN]' : 2.7270181503556783, 'T[p53, p21]' : 3.13356313680291, 'T[p53, SIAH1]' : 3.9611543651918026, 'T[p53, CyclinG]' : 4.093811004989318, 'L[p53, mdm2]' : 0.4423152677456581, 'L[ARF, mdm2]' : 1.1763033742983302, 'L[AKT, mdm2]' : 1.4703791549129976, 'L[CDK2, mdm2]' : 0.02396795845798325, 'L[CyclinG, mdm2]' : 0.844906462786066, 'U[p53, mdm2]' : 1.33655843085471, 'U[ARF, mdm2]' : 1.407055705343115, 'U[AKT, mdm2]' : 2.289126770159961, 'U[CDK2, mdm2]' : 1.4254741154321053, 'U[CyclinG, mdm2]' : 0.9594352083786752, 'T[mdm2, p53]' : 7.390225520217398, 'L[p53, ARF]' : 0.0831647034571967, 'L[betacatenin, ARF]' : 0.22474236441509868, 'U[p53, ARF]' : 2.1111501880973704, 'U[betacatenin, ARF]' : 2.06053491773366, 'T[ARF, mdm2]' : 2.587249286388334, 'L[WIP1, p38MAPK]' : 0.48392575618755235, 'U[WIP1, p38MAPK]' : 1.3492066825146083, 'T[p38MAPK, p53]' : 0.7192871992996719, 'L[p53, WIP1]' : 0.3124399948015362, 'U[p53, WIP1]' : 2.4436794509196837, 'T[WIP1, p38MAPK]' : 1.848942190645349, 'L[PIP3, AKT]' : 0.21863901177497108, 'U[PIP3, AKT]' : 0.6251074585302915, 'T[AKT, mdm2]' : 0.6022966908180581, 'L[PTEN, PIP3]' : 0.4552442260486725, 'U[PTEN, PIP3]' : 3.254741200918726, 'T[PIP3, AKT]' : 1.3888010701445659, 'L[p53, PTEN]' : 0.06590496942863844, 'U[p53, PTEN]' : 2.433815840510458, 'T[PTEN, PIP3]' : 1.138457430803833, 'L[p21, CDK2]' : 0.4557463504694759, 'U[p21, CDK2]' : 1.079441328412582, 'T[CDK2, mdm2]' : 0.7796156160473611, 'L[p53, p21]' : 0.33517565209878863, 'U[p53, p21]' : 1.177717479242056, 'T[p21, CDK2]' : 1.0388209824174282, 'L[SIAH1, betacatenin]' : 0.386055897937614, 'U[SIAH1, betacatenin]' : 1.478265449600192, 'T[betacatenin, ARF]' : 1.0118040313346868, 'L[p53, SIAH1]' : 0.11691573552886775, 'U[p53, SIAH1]' : 1.2848283183405185, 'T[SIAH1, betacatenin]' : 0.46858156551570174, 'L[p53, CyclinG]' : 0.051970487775656375, 'U[p53, CyclinG]' : 4.733211383196774, 'T[CyclinG, mdm2]' : 0.343592135598423}
+#    (Note this is a random sample so do not expect the same numbers every run.)
+#
+import subprocess, json, sys, re
+
+# Read command line arguments
+network_spec_file = sys.argv[1]
+parameter_node_index = sys.argv[2]
+
+# Call DSGRN to obtain inequalities
+param_ineq_json = subprocess.check_output( ("dsgrn network " + network_spec_file + " parameter inequalities " + parameter_node_index).split(' '))
+# Example: param_ineq_json == { "inequalities" : "(L[X2,X1] + L[X3,X1]) < T[X1,X2] && (U[X2,X1] + L[X3,X1]) < T[X1,X2] && (L[X2,X1] + U[X3,X1]) < T[X1,X2] && (U[X2,X1] + U[X3,X1]) < T[X1,X2] && 0 < T[X1,X2] && 0 < L[X2,X1] < U[X2,X1] && 0 < L[X3,X1] < U[X3,X1] && T[X2,X1] < L[X1,X2] < T[X2,X3] && T[X2,X1] < U[X1,X2] < T[X2,X3] && 0 < T[X2,X1] < T[X2,X3] && 0 < L[X1,X2] < U[X1,X2] && L[X2,X3] < T[X3,X1] && U[X2,X3] < T[X3,X1] && 0 < T[X3,X1] && 0 < L[X2,X3] < U[X2,X3]", "variables" : "{L[X2,X1], L[X3,X1], U[X2,X1], U[X3,X1], T[X1,X2], L[X1,X2], U[X1,X2], T[X2,X1], T[X2,X3], L[X2,X3], U[X2,X3], T[X3,X1]}"}
+
+# Parse DSGRN output to obtain Mathematics strings
+param_ineq = json.loads(param_ineq_json)
+inequalities = param_ineq["inequalities"];
+variables = param_ineq["variables"];
+
+# Example:
+# inequalities == "(L[X2,X1] + L[X3,X1]) < T[X1,X2] && (U[X2,X1] + L[X3,X1]) < T[X1,X2] && (L[X2,X1] + U[X3,X1]) < T[X1,X2] && (U[X2,X1] + U[X3,X1]) < T[X1,X2] && 0 < T[X1,X2] && 0 < L[X2,X1] < U[X2,X1] && 0 < L[X3,X1] < U[X3,X1] && T[X2,X1] < L[X1,X2] < T[X2,X3] && T[X2,X1] < U[X1,X2] < T[X2,X3] && 0 < T[X2,X1] < T[X2,X3] && 0 < L[X1,X2] < U[X1,X2] && L[X2,X3] < T[X3,X1] && U[X2,X3] < T[X3,X1] && 0 < T[X3,X1] && 0 < L[X2,X3] < U[X2,X3]"
+# variables    == "{L[X2,X1], L[X3,X1], U[X2,X1], U[X3,X1], T[X1,X2], L[X1,X2], U[X1,X2], T[X2,X1], T[X2,X3], L[X2,X3], U[X2,X3], T[X3,X1]}"
+
+# Call a Mathematica script to use the Gibbs Sampling algorithm to sample from the solution set of "inequalities"
+solution = subprocess.check_output ( [sys.path[0]+'/runMathematica', '"Import[\\\"ComputeParameterGraph.wl\\\", \\\"ExpressionList\\\"]; GibbsSample[{' + inequalities + '}, ' + variables + ']"']);
+
+# Example:
+# solution == '{L[mdm2, p53] -> 0.12021008055638345, L[p38MAPK, p53] -> 0.7203440431941638, U[mdm2, p53] -> 2.515798915942919, U[p38MAPK, p53] -> 1.4084200280763606, T[p53, mdm2] -> 1.2683961723214285, T[p53, ARF] -> 1.5746030189621016, T[p53, WIP1] -> 1.727133751267608, T[p53, PTEN] -> 2.57576389371754, T[p53, p21] -> 2.9288556919627045, T[p53, SIAH1] -> 3.665978391430803, T[p53, CyclinG] -> 3.826567498396828, L[p53, mdm2] -> 1.066497763389397, L[ARF, mdm2] -> 0.04136402644775138, L[AKT, mdm2] -> 0.5514225025144939, L[CDK2, mdm2] -> 0.6995501065764127, L[CyclinG, mdm2] -> 0.8336286528104255, U[p53, mdm2] -> 2.2587376286144742, U[ARF, mdm2] -> 0.5502491994922313, U[AKT, mdm2] -> 1.9835593484604377, U[CDK2, mdm2] -> 1.469082590113445, U[CyclinG, mdm2] -> 1.1990622895448746, T[mdm2, p53] -> 7.460605592792109, L[p53, ARF] -> 0.7210947220566563, L[betacatenin, ARF] -> 1.2239267751451819, U[p53, ARF] -> 2.56649937830497, U[betacatenin, ARF] -> 3.8744326877790343, T[ARF, mdm2] -> 5.600539767801453, L[WIP1, p38MAPK] -> 0.5087594709046923, U[WIP1, p38MAPK] -> 2.304376696252215, T[p38MAPK, p53] -> 1.3832298418506073, L[p53, WIP1] -> 0.6994601440431327, U[p53, WIP1] -> 2.5065982731023504, T[WIP1, p38MAPK] -> 1.1825717833229046, L[PIP3, AKT] -> 0.22188280958296433, U[PIP3, AKT] -> 1.8421053704591037, T[AKT, mdm2] -> 1.4103534619386542, L[PTEN, PIP3] -> 0.14450750944605498, U[PTEN, PIP3] -> 3.0170208661310394, T[PIP3, AKT] -> 0.8723931126104282, L[p53, PTEN] -> 0.09483968837383597, U[p53, PTEN] -> 1.943642769823634, T[PTEN, PIP3] -> 1.4394703040082262, L[p21, CDK2] -> 0.1008079304854996, U[p21, CDK2] -> 1.2340460347425926, T[CDK2, mdm2] -> 0.4486954618904921, L[p53, p21] -> 0.47545077325356444, U[p53, p21] -> 0.7317408679072979, T[p21, CDK2] -> 0.5364526983616505, L[SIAH1, betacatenin] -> 0.3094480626915529, U[SIAH1, betacatenin] -> 1.3873587757109949, T[betacatenin, ARF] -> 0.7309747586050026, L[p53, SIAH1] -> 0.5511368978937868, U[p53, SIAH1] -> 3.4673793638829467, T[SIAH1, betacatenin] -> 2.335557111322774, L[p53, CyclinG] -> 0.5815145809426037, U[p53, CyclinG] -> 1.7186688851121414, T[CyclinG, mdm2] -> 0.711561185289322}'
+
+# Convert "solution" into a JSON format for ease of use
+#   This involves
+#      (a) putting quotes around variable names
+#      (b) replacing "->"  with ":"
+
+json_solution = re.sub(r"([LUT]\[[^\]]*\])",r'"\1"', solution).replace("->",":");
+
+# Output result
+print json_solution
+
+

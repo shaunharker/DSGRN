@@ -7,7 +7,7 @@ tasks arising in the analsis of parameter space.
 
 We refer to 
 
-Cummins, Bree, Tomas Gedeon, Shaun Harker, Konstantin Mischaikow, and Kafung Mok. "Combinatorial Representation of Parameter Space for Switching Systems." arXiv preprint arXiv:1512.04131 (2015)
+Cummins, Bree, Tomas Gedeon, Shaun Harker, Konstantin Mischaikow, and Kafung Mok. "Combinatorial Representation of Parameter Space for Switching Systems." [arXiv preprint arXiv:1512.04131 (2015) ](http://arxiv.org/abs/1512.04131).
 
 for more details on the geometry of parameter space regions studied using DSGRN.
 
