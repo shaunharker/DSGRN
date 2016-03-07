@@ -532,8 +532,9 @@ DecimalFormat[x_]:=Block[
       Logic_ : logic specification
       filename_ : filename to write database into
 		Outputs: A string of the form:
-		  [{"Hex":"4CD0","Binning":[0,2,1, ...],"Inequalities":"mathematica-string-for-inequalities","CAD":"mathematica-cad-output",
-        "Instance":{ "L[1]" : 1.2373, ..., "U[1]" : 5.3821, ..., "T[1]" : 4.37387, ... }, { ... }, { ... }, ... ]
+		  [{"Hex":"4CD0","Binning":[0,2,1, ...],"Inequalities":"mathematica-string-for-inequalities",
+        "Instance":{ "L[1]" : 1.2373, ..., "U[1]" : 5.3821, ..., "T[1]" : 4.37387, ... },
+        "CAD":"mathematica-cad-output", { ... }, { ... }, ... ]
 *)
 ComputeCADDatabase[Logic_, filename_]:=Block[
 {ParameterGraph, n, m, Variables, item, Ineqs, CAD, HexCode, BinningVector, Instance, var, num },
