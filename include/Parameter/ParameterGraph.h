@@ -42,11 +42,12 @@ public:
 
   /// index
   ///   Return the index associated with a parameter
+  ///   If the parameter presented is invalid, return -1
   uint64_t
   index ( Parameter const& p ) const;
 
   /// adjacencies
-  ///   Return the adjacent parameters to a given parameter
+  ///   Return the adjacent parameter indices to a given parameter index
   std::vector<uint64_t>
   adjacencies ( uint64_t const index ) const;
 

@@ -91,11 +91,9 @@ parse ( std::string const& str ) {
   for ( char & c : s ) if ( not validcharacter ( c ) ) c = ' ';
   std::stringstream ss ( s );
   uint64_t val;
-  data_ -> permute_ . clear ();
-  while ( ss >> val ) data_ -> permute_ . push_back ( val );
-  data_ -> m_ = data_ -> permute_ . size ();
-  data_ -> inverse_ . resize ( data_ -> m_ );
-  for ( uint64_t i = 0; i < data_ -> m_; ++ i ) data_ -> inverse_[data_ -> permute_[i]]=i;
+  std::vector<uint64_t> permute;
+  while ( ss >> val ) permute . push_back ( val );
+  assign ( permute );
 }
 
 INLINE_IF_HEADER_ONLY std::vector<OrderParameter> OrderParameter::
