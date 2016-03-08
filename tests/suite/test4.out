@@ -2,15 +2,15 @@ digraph {
 0[label="XC {X, Z}"];
 1[label="XC {X, Z}"];
 2[label="XC {X, Z}"];
-3[label="XC {X, Y1, Y2}"];
-4[label="FP ON"];
+3[label="XC {X, Z}"];
+4[label="XC {X, Y1, Y2}"];
 5[label="FP"];
-6[label="XC {X, Z}"];
+6[label="FP ON"];
 0 -> 1;
 1 -> 2;
+2 -> 4;
 2 -> 3;
-2 -> 6;
-3 -> 4;
-3 -> 5;
+4 -> 6;
+4 -> 5;
 }
 
