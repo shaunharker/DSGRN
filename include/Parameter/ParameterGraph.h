@@ -20,14 +20,14 @@ public:
   /// ParameterGraph
   ///   Assign a network to the parameter graph
   ///   Search in path for logic .dat files
-  ParameterGraph ( Network const& network, 
+  ParameterGraph ( Network const& network,
                    std::string const& path = std::string(INSTALLPREFIX) + "/share/DSGRN/logic" );
 
   /// assign
   ///   Assign a network to the parameter graph
   ///   Search in path for logic .dat files
   void
-  assign ( Network const& network, 
+  assign ( Network const& network,
            std::string const& path = std::string(INSTALLPREFIX) + "/share/DSGRN/logic" );
 
   /// size
@@ -48,7 +48,7 @@ public:
   /// adjacencies
   ///   Return the adjacent parameters to a given parameter
   std::vector<uint64_t>
-  adjacencies ( uint64_t index ) const;
+  adjacencies ( uint64_t const index ) const;
 
   /// network
   ///   Return network
@@ -91,7 +91,10 @@ struct ParameterGraph_ {
   uint64_t fixedordersize_;
   std::vector<uint64_t> logic_place_values_;
   std::vector<uint64_t> order_place_values_;
-  std::vector<std::vector<std::string>> factors_;  
+  std::vector<std::vector<std::string>> factors_;
+  std::vector<std::unordered_map<std::string,uint64_t>> factors_inv_;
+  std::vector<uint64_t> logic_place_bases_;
+  std::vector<uint64_t> order_place_bases_;
   /// serialize
   ///   For use with BOOST Serialization library,
   ///   which is used by the cluster-delegator MPI package
@@ -105,6 +108,9 @@ struct ParameterGraph_ {
     ar & logic_place_values_;
     ar & order_place_values_;
     ar & factors_;
+    ar & factors_inv_;
+    ar & logic_place_bases_;
+    ar & order_place_bases_;
   }
 };
 

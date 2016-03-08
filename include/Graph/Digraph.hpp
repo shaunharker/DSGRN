@@ -12,8 +12,14 @@
 #include "Digraph.h"
 
 INLINE_IF_HEADER_ONLY Digraph::
-Digraph ( void ) { 
+Digraph ( void ) {
   data_ . reset ( new Digraph_ );
+}
+
+INLINE_IF_HEADER_ONLY Digraph::
+Digraph ( std::vector<std::vector<uint64_t>> & adjacencies ) {
+  data_ . reset ( new Digraph_ );
+  data_ -> adjacencies_ = adjacencies;
 }
 
 INLINE_IF_HEADER_ONLY std::vector<uint64_t> const& Digraph::
@@ -35,7 +41,7 @@ INLINE_IF_HEADER_ONLY void Digraph::
 resize ( uint64_t n ) {
   data_ -> adjacencies_ . resize ( n );
 }
-  
+
 INLINE_IF_HEADER_ONLY uint64_t Digraph::
 add_vertex ( void ) {
   data_ -> adjacencies_ . push_back ( std::vector<uint64_t> () );
@@ -92,6 +98,15 @@ INLINE_IF_HEADER_ONLY std::ostream& operator << ( std::ostream& stream, Digraph 
   }
   stream << "}\n";
   return stream;
+}
+
+
+INLINE_IF_HEADER_ONLY void Digraph::
+sortAdjacencies ( void ) {
+  // Sort the adjacency list in increasing order
+  for ( auto & u : data_ -> adjacencies_ ) {
+    sort ( u.begin(), u.end() );
+  }
 }
 
 
