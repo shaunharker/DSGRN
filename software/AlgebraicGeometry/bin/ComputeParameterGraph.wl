@@ -142,7 +142,7 @@ Inequalities[v_,Logic_] := Module[
   numFactors = Length[Logic] - 2;
   Return[Reap[
     (* Let Combinations be all n-tuples in {0,1}^n *)
-    Combinations=Tuples[{0,1}, n];
+    Combinations=Map[Reverse,Tuples[{0,1}, n]]; (* 0000, 1000, 0100, 1100, 0010, ... *)
     N = 2^n;
     (* Loop through combinations *)
     For[i=1, i <= N, ++ i, 
@@ -444,7 +444,6 @@ CheckParameter[Ineq_, Logic_] := Module[
       ineq is the collection of inequalities corresponding to the parameter node
       cad is the cylindrical algebraic decomposition of the parameter node
 *)
-
 ComputeParameterGraph[Logic_] := Module[
   {n,m,explored,pending,startparameter,v,Ineq,CAD,Adj,w, count},
   (* SetSharedFunction[EvaluateCAD]; *)
@@ -485,6 +484,106 @@ ComputeParameterGraph[Logic_] := Module[
   ][[2]][[1]]];
 ];
 
+(* CheapParameterGraph
+  Like ComputeParameterGraph, but use FindInstance instead of CylindricalDecomposition
+  and do not store CAD.
+  Inputs:
+    Logic_ : logic specification
+ 
+  Output:
+    A list of parameter nodes, each parameter node
+    represented as a length 3 list 
+      { v, ineq, instance }, where
+      v is the binning representation of the parameter node
+      ineq is the collection of inequalities corresponding to the parameter node
+      instance is the output of FindInstance
+*)
+CheapParameterGraph[Logic_] := Module[
+  {n,m,variables,explored,pending,startparameter,v,Ineq,Instance,Adj,w, count},
+  (* SetSharedFunction[EvaluateCAD]; *)
+  (* LaunchKernels[8]; *)
+  n = Logic[[1]];
+  m = Logic[[2]];
+  variables = VariableList[Logic];
+  explored = Association[{}];
+  pending = {};
+  count = 0;
+  startparameter = Table[0,{2^n}];
+  push[pending,startparameter];
+  InsertIntoSet[ explored, startparameter];
+  Return[Reap[
+  While[ pending != {},
+    v = pop[pending];
+    Ineq = Inequalities[v,Logic];
+    Instance=FindInstance[Ineq,variables];
+    If[ Instance =!= {},
+      (*****CHECK*****)
+      ++count;
+      Print[Now];
+      Print["Found parameter "];
+      Print[count];
+      (***************)
+      Sow[{v,Ineq,Instance}];
+      Adj = Adjacencies[v,Logic];   
+      Do [ If[ ! SetMembership[explored, w],
+          InsertIntoSet[explored, w];
+          push[pending,w]; ] , { w, Adj } ];
+    ];
+  ];
+  ][[2]][[1]]];
+];
+
+
+(* ProveCPGEqualsGPG
+  Inputs:
+    Logic_ : logic specification
+ 
+  Output:
+    Prints "Failure." if CPG=GPG is violated for specified network node.
+    Otherwise, returns a list of parameter nodes, each parameter node
+    represented as a length 3 list 
+      { v, ineq, cad }, where
+      v is the binning representation of the parameter node
+      ineq is the collection of inequalities corresponding to the parameter node
+      cad is the cylindrical algebraic decomposition of the parameter node
+*)
+
+ProveCPGEqualsGPG[Logic_] := Module[
+  {n,m,explored,pending,startparameter,v,Ineq,CAD,Adj,w, count},
+  (* SetSharedFunction[EvaluateCAD]; *)
+  (* LaunchKernels[8]; *)
+  n = Logic[[1]];
+  m = Logic[[2]];
+  explored = Association[{}];
+  pending = {};
+  count = 0;
+  startparameter = Table[0,{2^n}];
+  push[pending,startparameter];
+  InsertIntoSet[ explored, startparameter];
+  Return[Reap[
+  While[ pending != {},
+    v = pop[pending];
+    Ineq = Inequalities[v,Logic];
+    CAD=EvaluateCAD[Ineq,Logic];
+    If[ CAD =!= {} && CAD =!= False && CAD =!= {False},
+      (*****CHECK*****)
+      ++count;
+      Print[Now];
+      Print["Found parameter "];
+      Print[count];
+      If[!CheckParameter[Ineq,Logic], Print["Failure."]; Return[False]];
+      Print["Check passed!"]; 
+      Print[Now];
+      (***************)
+      Sow[{v,Ineq,CAD}];
+      Adj = Adjacencies[v,Logic];   
+      Do [ If[ ! SetMembership[explored, w],
+          InsertIntoSet[explored, w];
+          push[pending,w]; ] , { w, Adj } ];
+    ];
+  ];
+  ][[2]][[1]]];
+];
 
 (************************)
 (*     CAD Database     *)
@@ -537,13 +636,13 @@ DecimalFormat[x_]:=Block[
         "CAD":"mathematica-cad-output", { ... }, { ... }, ... ]
 *)
 ComputeCADDatabase[Logic_, filename_]:=Block[
-{ParameterGraph, n, m, Variables, item, Ineqs, CAD, HexCode, BinningVector, Instance, var, num },
+{ParameterGraph, n, m, variables, item, Ineqs, CAD, HexCode, BinningVector, Instance, var, num },
   (* Compute the Parameter graph *)
   ParameterGraph = ComputeParameterGraph[Logic];
   Print["Parameter Graph computed."];
   n = Logic[[1]];
   m = Logic[[2]];
-  Variables = VariableList[Logic];
+  variables = VariableList[Logic];
 
   (* Constructs a string of the form  '{{"Hex":"4CD0","Binning": ...}, ...}' *)
   ParsedString = StringJoin[Sort[Map[Function[item, 
@@ -552,7 +651,7 @@ ComputeCADDatabase[Logic_, filename_]:=Block[
      (* Make BinningVector into string containing JSON array *)
      BinningVector = StringReplace[ToString[BinningVector], {"{"->"[", "}"->"]"}];
      (* Make Instance into string containing JSON object *)
-     Instance = ReleaseHold[Flatten[Quiet[FindInstance[Ineqs,Variables]]] /. {Rule[var_,num_] -> Hold[Rule["\""<>ToString[var]<>"\"",DecimalFormat[num]]]}];
+     Instance = ReleaseHold[Flatten[Quiet[FindInstance[Ineqs,variables]]] /. {Rule[var_,num_] -> Hold[Rule["\""<>ToString[var]<>"\"",DecimalFormat[num]]]}];
      Instance = StringReplace[ToString[Instance], {"->" -> ":"}];
      Print[HexCode];
      "{\"Hex\":\""         <> HexCode <> "\"," <>
@@ -568,6 +667,52 @@ ComputeCADDatabase[Logic_, filename_]:=Block[
   WriteString[filename, ParsedString];
   Return[ParsedString];
 ];
+
+(* ComputeInstanceDatabase
+      Writes a database for the network node specified by "Logic" 
+      to the file specified by "filename". This version differs from ComputeCADDatabase
+      as it uses "CheapParameterGraph" instead of "ComputeParameterGraph", which checks
+      for instances instead of returning CAD descriptions.
+    Inputs:
+      Logic_ : logic specification
+      filename_ : filename to write database into
+    Outputs: A string of the form:
+      [{"Hex":"4CD0","Binning":[0,2,1, ...],"Inequalities":"mathematica-string-for-inequalities",
+        "Instance":{ "L[1]" : 1.2373, ..., "U[1]" : 5.3821, ..., "T[1]" : 4.37387, ... },
+        { ... }, { ... }, ... ]
+*)
+ComputeInstanceDatabase[Logic_, filename_]:=Block[
+{ParameterGraph, n, m, variables, item, Ineqs, Instance, HexCode, BinningVector, var, num },
+  (* Compute the Parameter graph *)
+  ParameterGraph = CheapParameterGraph[Logic];
+  Print["Parameter Graph computed."];
+  n = Logic[[1]];
+  m = Logic[[2]];
+  variables = VariableList[Logic];
+
+  (* Constructs a string of the form  '{{"Hex":"4CD0","Binning": ...}, ...}' *)
+  ParsedString = StringJoin[Sort[Map[Function[item, 
+     BinningVector = item[[1]]; Ineqs = item[[2]]; Instance = item[[3]];
+     HexCode = HexRepresentation[BinningVector,n,m];
+     (* Make BinningVector into string containing JSON array *)
+     BinningVector = StringReplace[ToString[BinningVector], {"{"->"[", "}"->"]"}];
+     (* Make Instance into string containing JSON object *)
+     Instance = ReleaseHold[Flatten[Instance] /. {Rule[var_,num_] -> Hold[Rule["\""<>ToString[var]<>"\"",DecimalFormat[num]]]}];
+     Instance = StringReplace[ToString[Instance], {"->" -> ":"}];
+     Print[HexCode];
+     "{\"Hex\":\""         <> HexCode <> "\"," <>
+     "\"Binning\":\""      <> BinningVector <> "\"," <>
+     "\"Instance\":"       <> Instance <> "," <>
+     "\"Inequalities\":\"" <> ToString[Ineqs /. { List -> And }, InputForm] <> "\"},\n"
+  ], ParameterGraph]]];
+
+  (* Remove last newline and comma, enclose in square brackets, and return *)
+  ParsedString = "[" <> StringDrop[ParsedString, -2] <> "]\n";
+  (* Save to file *)
+  WriteString[filename, ParsedString];
+  Return[ParsedString];
+];
+
 
 (************************)
 (*    Gibbs Sampling    *)
