@@ -35,9 +35,9 @@ def RunSimulation(network_spec_file,parameter_json):
   t1 = 30 # end time
   dt = 0.01 # time step
   # Perform the integration
-  times, timeseries = Model.simulateHillModel(y0,t0,t1,dt) 
+  times, timeseries, varnames = Model.simulateHillModel(y0,t0,t1,dt) 
   # Return result
-  return { "network" : network_spec_file, "parameter" : parameter, 
+  return { "network" : network_spec_file, "variables" : varnames, "parameter" : parameter, 
            "times" : times, "timeseries" : [ x.tolist() for x in timeseries] }
 
 if __name__ == "__main__":

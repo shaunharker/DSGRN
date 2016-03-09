@@ -26,12 +26,10 @@ function CreateTimeseriesChart ( div, content ) {
   //                  "times" : [ 0.0, 0.01, 0.02, ... ], 
   //                  "timeseries" : [ [1.0, 1.0], [1.1, 1.4], ...] }
 
-  // read variables names as keys in parameter object
-  var variables = [];
-  for(var k in data["parameter"]) variables.push(k); 
+
 
   // Create the ordinal scale corresponding to various plots
-  color.domain(d3.keys(variables));
+  color.domain(d3.keys(data["variables"]));
 
   // Juggle the data into a form we can plot
   // zip function, as in python
@@ -42,7 +40,7 @@ function CreateTimeseriesChart ( div, content ) {
   }
   zipped_data = zip([ data["times"], data["timeseries"] ]);
   //  Example: zipped_data = [ [time1, [val1, val2, val2, ... ]] , [time2, [ ... ]], ... ]
-  var components = variables.map( function(name, index) {
+  var components = data["variables"].map( function(name, index) {
     return {
       name: name,
       values: zipped_data.map(function(d) {

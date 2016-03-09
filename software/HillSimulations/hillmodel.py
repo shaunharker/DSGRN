@@ -97,7 +97,7 @@ class hillmodel(object):
     r = ode(RHS).set_integrator('vode', method='bdf')
     r.set_initial_value(initialconditions,initialtime).set_f_params(self.eqns)
     times,timeseries = integrate(r,initialconditions,initialtime,finaltime,timestep)
-    return times,timeseries
+    return times,timeseries,varnames
 
   def plotResults(self,times,timeseries,plotoptions={},legendoptions={},figuresize=()):
     '''
