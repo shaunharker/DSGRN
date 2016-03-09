@@ -51,7 +51,7 @@ function CreateTimeseriesChart ( div, content ) {
     };
   });
 
-  x.domain(d3.extent(data[times], function(d) { return d; }));
+  x.domain(d3.extent(data["times"], function(d) { return d; }));
 
   y.domain([
     d3.min(components, function(c) { return d3.min(c.values, function(v) { return v.value; }); }),
