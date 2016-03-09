@@ -176,9 +176,6 @@ class hillmodel(object):
       e = e.replace(' ','').replace(')(',')*(')
       # Add parsed equation to eqnstr output list
       eqnstr.append(e)
-    print eqnstr
-    print varnames
-    print varindex
     return eqnstr,varnames,varindex
       
   def _parseParameter(self,parameter):
@@ -253,5 +250,4 @@ class hillmodel(object):
       # Include the formula into the expression
       expression += (',' if len(expression) > 1 else '') + "-X["+K+"]+" + re.sub('([0-9]*)([np])', replaceWithHillFunction, e)
     expression += ']'
-    print expression
     return eval('lambda X :' + expression)

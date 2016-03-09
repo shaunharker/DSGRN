@@ -4,31 +4,27 @@
 #
 #  Description:
 #    This script performs a Hill Model simulation for a specified regulatory network
-#    and parameter node. The parameter used for the simulation is sampled from the parameter 
+#    and parameter. The parameter used for the simulation is sampled from the parameter 
 #    node via a Gibbs sampling routine. The simulation results are written to standard output.    
 #
 #  Usage:
 #    ./RunSimulation <network_spec_file> <parameter_node_index>
 #
 #  Inputs: <network_spec_file>      -- a network specification file
-#          <parameter_node_index>   -- the integer index corresponding to some parameter node
+#          <parameter>              -- a JSON string indicating the parameter
+#                                      e.g. '{ "L[X, Y]" : 2.34848, "U[X, Y]" : 1.23888, ... }'
 #
 #  Outputs: 
 #          The results of the simulation are written in JSON format to standard output
-#          For example: 
-#             TODO GIVE EXAMPLE OUTPUT
 #
 #  Example usage:
-#    ./RunSimulation network.txt 2748 > simulation_results.txt
+#    ./RunSimulation network.txt "`../AlgebraicGeometry/bin/ParameterSampler network.txt 12`" > simulation_results.txt
 #
 
 import subprocess, json, sys, hillmodel, numpy
 
-def RunSimulation(network_spec_file,parameter_node_index):
-  # Sample a parameter from the parameter node using the Gibbs Sampler 
-  # in the AlgebraicGeometry package included with DSGRN
-  parameter_json = subprocess.check_output( ["../AlgebraicGeometry/ParameterSample", network_spec_file, parameter_node_index ])
-  print parameter_json
+def RunSimulation(network_spec_file,parameter_json):
+  # Parse the JSON format for the parameter
   parameter = json.loads(parameter_json)
   # Construct a Hill Model
   hillexp = 10  # Hill function exponent
@@ -41,9 +37,8 @@ def RunSimulation(network_spec_file,parameter_node_index):
   # Perform the integration
   times, timeseries = Model.simulateHillModel(y0,t0,t1,dt) 
   # Return result
-  return { "network" : network_spec_file, "parameter_node_index" : parameter_node_index, 
+  return { "network" : network_spec_file, "parameter" : parameter, 
            "times" : times, "timeseries" : [ x.tolist() for x in timeseries] }
 
 if __name__ == "__main__":
-  RunSimulation(sys.argv[1], sys.argv[2])
-  #print json.dumps(RunSimulation(sys.argv[1], sys.argv[2]))
+  print json.dumps(RunSimulation(sys.argv[1], sys.argv[2]))

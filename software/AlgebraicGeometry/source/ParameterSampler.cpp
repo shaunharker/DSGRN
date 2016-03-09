@@ -8,13 +8,19 @@
 #include "DSGRN.h"
 
 std::string help_message = 
-  "ParameterSampler                                                  \n"
-  "    Reads parameter node indices from standard input and outputs  \n"
-  "    Gibbs sampled parameters to standard output.                  \n"
-  "  Usage:                                                          \n"
-  "    ParameterSampler <networkspace_file>                         \n"
-  "  Example:                                                        \n"
-  "    cat parameter_index_list.txt | ./bin/ParameterSampler ../../networks/13D_p53.txt \n";
+  "ParameterSampler                                                         \n"
+  "    Perform Gibbs sampling to extract a parameter sample corresponding to\n"
+  "    a regulatory network and a parameter index.                          \n"
+  "  Usage:                                                                 \n"
+  "  (1) ParameterSampler <networkspace_file>                               \n"
+  "      Reads parameter node indices from standard input and output corresponding samples.\n"
+  "  (2) ParameterSampler <networkspace_file> <parameter_index_1> [<parameter_index_2> ...]\n"
+  "      Read one or more parameter node indices from command line \n"
+  "      and output corresponding samples.                         \n"
+  "  Examplez:                                                     \n"
+  "    cat parameter_index_list.txt | ./bin/ParameterSampler ../../networks/13D_p53.txt \n"
+  "    ./bin/ParameterSampler ../../networks/13D_p53.txt 145 \n"
+  "    ./bin/ParameterSampler ../../networks/13D_p53.txt 145 2788\n";
 
 
 typedef std::string HexCode;
@@ -347,6 +353,36 @@ Name_Parameters ( Network const& network,
 }
 
 
+std::string
+GetSample ( Network const& network, 
+            ParameterGraph const& pg,
+            std::vector<InstanceLookup> const& Instance_Lookups, 
+            uint64_t pi ) {
+  uint64_t D = network . size ();
+  // Compute the parameter associated with the parameter index pi
+  Parameter p = pg . parameter ( pi );
+  std::vector<LogicParameter> const& logic = p . logic ();
+  // Loop through network nodes and extract a sample
+  std::vector<Instance> instances;
+  for ( uint64_t d = 0; d < D; ++ d ) {
+    // Obtain hex code
+    HexCode const& hex = logic[d].hex();
+    // Obtain initial instance to seed Gibbs sampling with
+    Instance const& instance = Instance_Lookups[d].at(hex);
+    // Perform Gibbs sampling
+    Instance sampled = Gibbs_Sampler ( hex, 
+                                       network.inputs(d).size(), 
+                                       network.outputs(d).size(), 
+                                       network.logic(d),
+                                       instance );
+    // Record parameters for network node
+    instances . push_back ( sampled );
+  }
+  // Combine instances into single instance with named parameters
+  Instance named_parameters = Name_Parameters ( network, p, instances );
+  // Output to standard output
+  return InstanceToString(named_parameters);
+}
 /// main
 ///   Entry point for program
 ///   Does the following:
@@ -355,13 +391,12 @@ Name_Parameters ( Network const& network,
 
 int main ( int argc, char * argv [] ) {
   // Check arguments
-  if ( argc != 2 ) {
+  if ( argc == 1 ) {
     std::cout << "Received " << argc - 1 << " command line arguments, expected 1. Displaying help message.\n";
     std::cout << help_message << "\n";
     return 1;
   }
   Network network ( argv[1] );
-  uint64_t D = network . size ();
   ParameterGraph pg ( network );
   // Load the CAD Databases
   std::vector<json> CAD_Databases = 
@@ -369,36 +404,22 @@ int main ( int argc, char * argv [] ) {
   // Build Instance Lookup tables from the CAD Databases
   std::vector<InstanceLookup> Instance_Lookups = 
     Construct_Instance_Lookups ( network, CAD_Databases );
-  // Main loop
-  while ( 1 ) {
-    // Read from standard input
-    uint64_t pi;
-    std::cin >> pi;
-    // If no standard input to read, break loop
-    if ( not std::cin . good () ) break;
-    // Compute the parameter associated with the parameter index pi
-    Parameter p = pg . parameter ( pi );
-    std::vector<LogicParameter> const& logic = p . logic ();
-    // Loop through network nodes and extract a sample
-    std::vector<Instance> instances;
-    for ( uint64_t d = 0; d < D; ++ d ) {
-      // Obtain hex code
-      HexCode const& hex = logic[d].hex();
-      // Obtain initial instance to seed Gibbs sampling with
-      Instance const& instance = Instance_Lookups[d][hex];
-      // Perform Gibbs sampling
-      Instance sampled = Gibbs_Sampler ( hex, 
-                                         network.inputs(d).size(), 
-                                         network.outputs(d).size(), 
-                                         network.logic(d),
-                                         instance );
-      // Record parameters for network node
-      instances . push_back ( sampled );
+  // Read parameter indices from command else if they are there
+  // else read from standard input
+  if ( argc > 2 ) {
+    for ( uint64_t i = 2; i < argc; ++ i ) {
+      uint64_t pi = std::stoll(argv[i]);
+      std::cout << GetSample ( network, pg, Instance_Lookups, pi ) << "\n"; 
     }
-    // Combine instances into single instance with named parameters
-    Instance named_parameters = Name_Parameters ( network, p, instances );
-    // Output to standard output
-    std::cout << InstanceToString(named_parameters) << "\n";
+  } else {
+    while ( 1 ) {
+      // Read from standard input
+      uint64_t pi;
+      std::cin >> pi;
+      // If no standard input to read, break loop
+      if ( not std::cin . good () ) break;
+      std::cout << GetSample ( network, pg, Instance_Lookups, pi ) << "\n"; 
+    }
   }
   return 0;
 }
