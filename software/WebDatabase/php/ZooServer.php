@@ -12,7 +12,7 @@ $vroot = realpath($vroot);
 if(substr(realpath($dbpath), 0, strlen($vroot)) != $vroot ) die ();
 
 // Sanitize $cmd
-$cmd_whitelist = array("zoocohort", "parameters", "annotationcohort", "inequalities", "domaingraph", "networks" );
+$cmd_whitelist = array("zoocohort", "parameters", "annotationcohort", "inequalities", "domaingraph", "networks", "timeseries" );
 if ( ! in_array($cmd, $cmd_whitelist) ) die ();
 
 // Parse command
@@ -111,8 +111,7 @@ if ( $cmd === "zoocohort" ) {
   // Sanitize pi
   if ( ! isset($pi) ) die ();
   if ( ! is_numeric($pi) ) die ();
-  $invoke = 'RunSimulations ' . escapeshellarg($dbpath) . ' "`ParameterSampler ' 
-            . escapeshellarg($dbpath) . ' ' . intval($pi) .'`"';
+  $invoke = './bin/RunSimulation ' . escapeshellarg($dbpath) . ' "`./bin/ParameterSampler ' . escapeshellarg($dbpath) . ' ' . intval($pi) .'`"';
 }
 
 /// Dispatch to required behavior "sqlite" or "dsgrn"
