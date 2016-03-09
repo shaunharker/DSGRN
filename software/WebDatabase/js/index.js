@@ -104,6 +104,14 @@ function displayContent ( content ) {
                         div.innerHTML = '<p> Domain Graph (' + s["ParameterIndex"] + ')</p> <p> (Too large to display) </p>';
                       }
                      });
+            phpQuery("http://chomp.rutgers.edu/Projects/DSGRN/DB/php/ZooServer.php", 
+                     "db=" + window.database + "&cmd=timeseries&pi=" + p.innerHTML,
+                     function ( content ) {
+                      var div = document.createElement('div');
+                      insertAfter( div, p.parentNode);
+                      div.className = 'timeseries';
+                      CreateTimeseriesChart(div, content);
+                     });   
           };
         });
         result.className = 'parameterlist';

@@ -110,6 +110,17 @@ th, td {
   overflow: auto;
 }
 
+.timeseries {
+  background-color: lightsteelblue; 
+  margin: 10px;
+  padding: 10px;
+  max-height: 300px;
+  border-style: solid;
+  border-width: 1px;
+  border-color: grey;
+  overflow: auto;
+}
+
 #filterbox {
   width: 285px;
 }

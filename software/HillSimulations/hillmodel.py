@@ -27,6 +27,7 @@
 # -----
 
 import re
+import sqlite3
 import numpy as np
 from scipy.integrate import ode
 import matplotlib.pyplot as plt
@@ -125,7 +126,7 @@ class hillmodel(object):
   def _parseEqns(self,fname='equations.txt'):
     """
     Parse a network specification file to obtain data structures representing ODEs
-      Input: "fname" is a path to a network specification file.
+      Input: "fname" is a path to a network specification file or a sqlite database (which containts a network spec)
       Output: The function outputs 
                 eqnstr, varnames, varindex 
               where
@@ -152,11 +153,19 @@ class hillmodel(object):
             (c) We may write "X*Y" "X(Y)" "(X)Y" "X Y" which are equivalent and refer to the product, 
               but "XY" can only refer to a single variable "XY", and not the product of "X" and "Y".
     """
-    file = open(fname,'r')
+    if fname.lower().endswith('.db'):
+      conn = sqlite3.connect(fname);
+      c = conn.cursor();
+      c . execute ( "select Specification from Network;");
+      text = c.fetchone()[0];
+      netspec = text.splitlines();
+    else:
+      with open(fname) as f:
+        netspec = f.readlines()
     eqns=[]
     varnames = []
     varindex = {}
-    for line in file:
+    for line in netspec:
       parsed = line.split(':')
       varname = parsed[0].strip() # e.g. "X"
       formula = parsed[1].strip() # e.g. "(~X + Y)U Z"
@@ -165,7 +174,6 @@ class hillmodel(object):
       varnames.append(varname)
       varindex[varname]=str(len(varindex))
       eqns.append(formula)
-    file.close()
     eqnstr=[]
     for e in eqns:
       # Replace occurences of variables with variable indices followed by p if occurring with ~ prefix and followed by n otherwise
