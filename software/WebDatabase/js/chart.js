@@ -1,4 +1,5 @@
 // chart.js
+// adapted from http://bl.ocks.org/ZJONSSON/3918369
 function CreateTimeseriesChart ( div, content ) {
   var margin = {top: 20, right: 80, bottom: 30, left: 50},
   width = 600 - margin.left - margin.right,
@@ -25,8 +26,6 @@ function CreateTimeseriesChart ( div, content ) {
   // Example: data = {"variables" : ["var1", "var2"], 
   //                  "times" : [ 0.0, 0.01, 0.02, ... ], 
   //                  "timeseries" : [ [1.0, 1.0], [1.1, 1.4], ...] }
-
-
 
   // Create the ordinal scale corresponding to various plots
   color.domain(d3.keys(data["variables"]));
@@ -88,7 +87,6 @@ function CreateTimeseriesChart ( div, content ) {
   .attr("x", 3)
   .attr("dy", ".35em")
   .text(function(d) { return d.name; });
-
 
   legend = svg.append("g")
   .attr("class","legend")

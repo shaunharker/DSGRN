@@ -4,11 +4,10 @@
 #
 #  Description:
 #    This script performs a Hill Model simulation for a specified regulatory network
-#    and parameter. The parameter used for the simulation is sampled from the parameter 
-#    node via a Gibbs sampling routine. The simulation results are written to standard output.    
+#    and parameter. The simulation results are written to standard output.    
 #
 #  Usage:
-#    ./RunSimulation <network_spec_file> <parameter_node_index>
+#    ./RunSimulation <network_spec_file> <parameter>
 #
 #  Inputs: <network_spec_file>      -- a network specification file
 #          <parameter>              -- a JSON string indicating the parameter
