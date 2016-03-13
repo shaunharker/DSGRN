@@ -167,10 +167,10 @@ class hillmodel(object):
     varindex = {}
     for line in netspec:
       parsed = line.split(':')
+      if len(parsed) < 2: continue   # Ignore blank lines
       varname = parsed[0].strip() # e.g. "X"
       formula = parsed[1].strip() # e.g. "(~X + Y)U Z"
-      # Disregard network spec comment lines
-      if varname[0] == '.' or varname[0] == '@': continue
+      if varname[0] == '.' or varname[0] == '@': continue  # Ignore comment lines
       varnames.append(varname)
       varindex[varname]=str(len(varindex))
       eqns.append(formula)
