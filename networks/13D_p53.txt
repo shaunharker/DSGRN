@@ -1,0 +1,13 @@
+p53 : p38MAPK + ~mdm2
+mdm2 : ~CDK2 + AKT + CyclinG + ~ARF + p53
+ARF : p53 + betacatenin
+p38MAPK : ~WIP1
+WIP1 : p53
+AKT : PIP3
+PIP3 : ~PTEN
+PTEN : p53
+CDK2 : ~p21
+p21 : p53
+betacatenin : ~SIAH1
+SIAH1 : p53
+CyclinG : p53
