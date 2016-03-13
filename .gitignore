@@ -1,5 +1,9 @@
 # Executables
-NetworkComponents
+bin
+
+# Build directories
+build*
+software/WebCLI/libs
 
 # Session files
 dsgrn.session

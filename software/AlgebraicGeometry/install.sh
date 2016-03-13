@@ -26,3 +26,6 @@ source $SRC_ROOT/../../.install/parse.sh
 # Build project
 cd ${SRC_ROOT}
 $build --prefix=$PREFIX --searchpath=$SEARCHPATH --build=$BUILDTYPE --test $MASS || exit 1
+
+# Copy scripts to bin directory
+cp ./scripts/* ./bin/
