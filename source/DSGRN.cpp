@@ -372,7 +372,8 @@ int main ( int argc, char * argv [] ) {
     }
     std::cout << "Unrecognized command \"" << command << "\"\n";
     return 1;
-  } catch ( ... ) {
+  } catch ( std::exception & e ) {
+    std::cout << "Aborting. " << e.what() << "\n";
     return 1;
   }
 }
