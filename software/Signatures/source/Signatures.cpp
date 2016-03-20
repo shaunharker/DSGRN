@@ -149,7 +149,7 @@ insertMorseGraph ( MorseGraph const& mg ) {
   //std::cout << "Inserting into MorseGraphEdges\n";
   prepped = db_ . prepare ( "insert into MorseGraphEdges (MorseGraphIndex, Source, Target) values (?, ?, ?);" );
   for ( uint64_t source = 0; source < N; ++ source ) { 
-    for ( uint64_t target : mg . poset () . adjacencies ( source ) ) {
+    for ( uint64_t target : mg . poset () . children ( source ) ) {
       prepped . bind ( mgi, source, target ) . exec ();
     }
   }

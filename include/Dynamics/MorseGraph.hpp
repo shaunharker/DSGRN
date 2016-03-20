@@ -63,7 +63,6 @@ parse ( std::string const& str ) {
   }
 }
 
-
 INLINE_IF_HEADER_ONLY std::ostream& operator << ( std::ostream& stream, MorseGraph const& md ) {
   Poset const poset = md . poset ();
   stream << "digraph {\n";
@@ -78,7 +77,7 @@ INLINE_IF_HEADER_ONLY std::ostream& operator << ( std::ostream& stream, MorseGra
     stream << "\"];\n";
   }
   for ( uint64_t source = 0; source < poset . size (); ++ source ) {
-    for ( uint64_t target : poset . adjacencies ( source ) ) {
+    for ( uint64_t target : poset . children ( source ) ) {
       stream << source << " -> " << target << ";\n";
     }
   }
@@ -95,91 +94,73 @@ SHA256 ( void ) const {
 
 INLINE_IF_HEADER_ONLY void MorseGraph::
 _canonicalize ( void ) {
-  ///
-  /// create the original poset numbering : 0 ... N-1
-  std::vector<uint64_t> posetOrder;
-  for ( uint64_t i=0; i<data_ -> poset_ .size(); ++i ) {
-    posetOrder . push_back ( i );
-  }
-  ///
-  /// Create the sort function
+  // Comparison function
+  //   The comparison is lexicographical on the following 8-tuple:
+  //     1) order in poset (continue if incomparable)
+  //     2) number of parents (continue if same)
+  //     3) number of ancestors (continue if same)
+  //     4) number of descendants (continue if same)
+  //     5) number of children (continue if same)
+  //     6) number of annotations (continue if same)
+  //     7) lexicographical sort of annotations (continue if same)
+  //     8) vertex index number
   auto compare = [this](const int & i, const int & j) {
-
-    /// 0) if there is an edge i -> j, we ensure i < j
-    if ( data_ -> poset_ . reachable( i, j ) ) {
-      return true;
+    if ( i == j ) return false;
+    // Order in poset
+    auto & poset = data_ -> poset_;
+    if ( poset . compare ( i, j ) ) return true;
+    if ( poset . compare ( j, i ) ) return false;
+    // Parent count
+    uint64_t A, B;
+    A = poset . parents(i) . size();
+    B = poset . parents(j) . size();
+    if ( A != B ) return A < B;
+    // Ancestor count
+    A = poset . ancestors(i) . size();
+    B = poset . ancestors(j) . size();
+    if ( A != B ) return A < B;
+    // Descendant count
+    A = poset . descendants(i) . size();
+    B = poset . descendants(j) . size();
+    if ( A != B ) return A < B;
+    // Children count
+    A = poset . children(i) . size();
+    B = poset . children(j) . size();
+    if ( A != B ) return A < B;
+    // Annotation count
+    Annotation const& annotations_i = data_ -> annotations_ . find ( i ) -> second;
+    Annotation const& annotations_j = data_ -> annotations_ . find ( j ) -> second;
+    A = annotations_i. size ();
+    B = annotations_j. size ();
+    if ( A != B ) return A < B;
+    // Annotation lexicographical ordering
+    uint64_t num_labels = A;
+    for ( uint64_t k = 0; k < num_labels; ++ k ) {
+      std::string const& label_i = annotations_i[k];
+      std::string const& label_j = annotations_j[k];
+      if ( label_i != label_j ) return label_i < label_j;
     }
-    /// 1) try to sort according to parents
-    if ( data_ -> poset_ . numberOfParents(i) < data_ -> poset_ . numberOfParents(j) ) {
-      return true;
-    }
-    if ( data_ -> poset_ . numberOfParents(i) > data_ -> poset_ . numberOfParents(j) ) {
-      return false;
-    }
-    /// 2) try to sort according to ancestors
-    if ( data_ -> poset_ . numberOfAncestors(i) < data_ -> poset_ . numberOfAncestors(j) ) {
-      return true;
-    }
-    if ( data_ -> poset_ . numberOfAncestors(i) > data_ -> poset_ . numberOfAncestors(j) ) {
-      return false;
-    }
-    /// 3) Try to sort according to descendants
-    if ( data_ -> poset_ . numberOfDescendants(i) < data_ -> poset_ . numberOfDescendants(j) ) {
-      return true;
-    }
-    if ( data_ -> poset_ . numberOfDescendants(i) > data_ -> poset_ . numberOfDescendants(j) ) {
-      return false;
-    }
-    /// 4) Try to sort according to children
-    if ( data_ -> poset_ . numberOfChildren(i) < data_ -> poset_ . numberOfChildren(j) ) {
-      return true;
-    }
-    if ( data_ -> poset_ . numberOfChildren(i) > data_ -> poset_ . numberOfChildren(j) ) {
-      return false;
-    }
-    /// 5) Sort according to annotations
-    if ( data_ -> annotations_ . find ( i ) -> second . size ( ) <
-         data_ -> annotations_ . find ( j ) -> second . size ( ) ) {
-      return true;
-    }
-    if ( data_ -> annotations_ . find ( i ) -> second . size ( ) >
-         data_ -> annotations_ . find ( j ) -> second . size ( ) ) {
-      return false;
-    }
-    if ( data_ -> annotations_ . find ( i ) -> second . size ( ) ==
-         data_ -> annotations_ . find ( j ) -> second . size ( ) ) {
-      uint64_t annotationSize = data_ -> annotations_ . find ( i ) -> second . size ( );
-      for ( uint64_t k = 0; k<annotationSize; ++k ) {
-        if ( data_ -> annotations_ . find ( i ) -> second[k] <
-        data_ -> annotations_ . find ( j ) -> second[k] ) { return true; }
-      }
-    }
-    /// if in case we cannot separate them, use the original node number
-    return i < j ;
+    // Vertex index ordering
+    return i < j;
   };
 
-  /// posetOrder[i] represent the original numbering of the node i
-  /// after sort, posetOrder[1] = 7 means the node 7 should be 1
-  sort ( posetOrder.begin(), posetOrder.end(), compare );
-  ///
-  /// construct the vector ordering to have
-  /// ordering[2] = 9 means node 2 should be relabelled 9
-  std::vector<uint64_t> ordering;
-  uint64_t N = data_ -> poset_ . size();
-  ordering . resize( N );
-  for ( uint64_t i=0; i<N; ++i ) {
-    ordering [ posetOrder[i] ] = i;
+  uint64_t N = data_ -> poset_ . size ();
+
+  // Construct "permutation" such that permutation[i] holds the 
+  // new vertex index we would like to give to vertex i
+  std::vector<uint64_t> permutation ( N );
+  std::vector<uint64_t> inverse_permutation ( N );
+  for ( uint64_t i = 0; i < N; ++ i ) inverse_permutation[i]=i;
+  std::sort ( inverse_permutation.begin(), inverse_permutation.end(), compare );
+  for ( uint64_t i = 0; i < N; ++ i ) permutation[inverse_permutation[i]] = i;
+
+  // Update the MorseGraph
+  data_ -> poset_ = data_ -> poset_ . permute ( permutation );
+  std::unordered_map<uint64_t, Annotation> annotations;
+  for ( uint64_t i = 0; i < N; ++ i ) {
+    annotations[permutation[i]] = data_ -> annotations_ [ i ];
   }
-  ///
-  Poset newPoset = data_ -> poset_ . reorder ( ordering );
-  data_ -> poset_ = newPoset;
-  ///
-  /// update the Annotation
-  std::unordered_map<uint64_t, Annotation> newAnnotations;
-  for ( uint64_t i=0; i<N; ++i ) {
-    newAnnotations [ ordering[i] ] = data_ -> annotations_ [ i ];
-  }
-  data_ -> annotations_ = newAnnotations;
+  data_ -> annotations_ = annotations;
 }
 
 #endif

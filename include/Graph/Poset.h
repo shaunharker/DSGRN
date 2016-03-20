@@ -12,87 +12,112 @@
 struct Poset_;
 
 /// class Poset
-class Poset : public Digraph {
+class Poset {
 public:
-
+  /// Poset
+  ///   Default constructor
   Poset ( void );
 
+  /// Poset
+  ///   Construct from adjacency lists
   Poset ( std::vector<std::vector<uint64_t>> & adjacencies );
 
-  /// reduction
-  ///   Perform a transitive reduction
-  ///   (i.e. use Hasse diagram representation)
+  /// Poset
+  ///   Construct from digraph
+  Poset ( Digraph const& digraph );
+
+  /// assign
+  ///   Construct from adjacency lists
   void
-  reduction ( void );
+  assign ( std::vector<std::vector<uint64_t>> & adjacencies );
 
-  /// Return the number of ancestors of node i
-  uint64_t
-  numberOfAncestors( const uint64_t & i ) const;
-  /// Return the number of descendants of node i
-  uint64_t
-  numberOfDescendants( const uint64_t & i ) const;
-  /// Return the number of parents of node i
-  uint64_t
-  numberOfParents ( const uint64_t & i ) const;
-  /// Return the number of children of node i
-  uint64_t
-  numberOfChildren ( const uint64_t & i ) const;
+  /// assign
+  ///   Construct from digraph
+  void
+  assign ( Digraph const& digraph );
 
-  /// Check if we have the reachability n -> m
-  /// Assume we have a topologically sorted digraph ( n < m )
+  /// size
+  ///   Return number of vertices
+  uint64_t
+  size ( void ) const;
+
+  /// parents
+  ///   Return vector of vertices which are the parents of v
+  ///   in the Hasse diagram of the poset
+  std::vector<uint64_t> const&
+  parents ( uint64_t v ) const;
+
+  /// children
+  ///   Return vector of vertices which are the children of v
+  ///   in the Hasse diagram of the poset
+  std::vector<uint64_t> const&
+  children ( uint64_t v ) const;
+
+  /// ancestors
+  ///   Return vector of vertices which are the ancestors of v
+  std::vector<uint64_t> const&
+  ancestors ( uint64_t v ) const;
+
+  /// descendants
+  ///   Return vector of vertices which are the descendants of v
+  std::vector<uint64_t> const&
+  descendants ( uint64_t v ) const;
+
+  /// compare
+  ///   Check if vertex u < vertex v in poset
   bool
-  reachable ( const uint64_t & n, const uint64_t & m ) const;
+  compare ( const uint64_t & u, const uint64_t & v ) const;
 
-  /// Perform the transitive closure using Warshall Algorithm
-  void
-  transitiveClosure ( void );
-
-  /// Reorder the poset according to the vector ordering
-  /// ordering[2] = 7 means the node numbered 2 should be numbered now 7
+  /// permute
+  ///   Reorder the digraph according to the provided permutation
+  ///   The convention on the permutation is that vertex v in the input 
+  ///   corresponds to vertex permutation[v] in the output
   Poset
-  reorder ( const std::vector<uint64_t> & ordering ) const;
+  permute ( const std::vector<uint64_t> & permutation ) const;
+
+  /// stringify
+  ///   Return a JSON description
+  std::string
+  stringify ( void ) const;
+
+  /// parse
+  ///   Initialize from a JSON description
+  void
+  parse ( std::string const& str );
+
+  /// operator <<
+  ///   Emit data to stream in graphviz format
+  friend std::ostream& operator << ( std::ostream& stream, Poset const& poset );
 
 private:
-  std::shared_ptr<Poset_> dataPoset_;
-  //
-  void
-  _computeNumberOfParents ( void) const;
-  void
-  _computeNumberOfChildren ( void ) const;
-  void
-  _computeNumberOfAncestors ( void ) const;
-  void
-  _computeNumberOfDescendants ( void ) const;
-  //
+  std::shared_ptr<Poset_> data_;
   /// serialize
   ///   For use with BOOST Serialization library,
   ///   which is used by the cluster-delegator MPI package
   friend class boost::serialization::access;
   template<class Archive>
   void serialize(Archive & ar, const unsigned int version) {
-    ar & boost::serialization::base_object<Digraph>(*this);
-    ar & dataPoset_;
+    ar & data_;
   }
 };
 
 struct Poset_ {
-
-  std::vector<std::vector<uint64_t>> reachability_;
-
-  std::vector<uint64_t> parentsCount_, childrenCount_;
-  std::vector<uint64_t> ancestorsCount_, descendantsCount_;
-
+  Digraph transitive_closure;
+  Digraph transitive_reduction;
+  Digraph transpose_transitive_closure;
+  Digraph transpose_transitive_reduction;
+  std::vector<std::unordered_set<uint64_t>> relation;
   /// serialize
   ///   For use with BOOST Serialization library,
   ///   which is used by the cluster-delegator MPI package
   friend class boost::serialization::access;
   template<class Archive>
   void serialize(Archive & ar, const unsigned int version) {
-    ar & reachability_;
-    ar & parentsCount_;
-    ar & childrenCount_;
-    ar & ancestorsCount_;
-    ar & descendantsCount_;
+    ar & transitive_closure;
+    ar & transitive_reduction;
+    ar & transpose_transitive_closure;
+    ar & transpose_transitive_reduction;
+    ar & relation;
   }
 };
 

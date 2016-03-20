@@ -12,6 +12,10 @@ struct Digraph_;
 /// class Digraph
 ///   This class handles storage of edges between
 ///   vertices in the form of adjacency lists.
+///  NOTE: the adjacency lists will be sorted if the Digraph(adjacencies) or parse
+///        constructor is used. However if the default constructor is used followed by
+///        add_vertex and add_edge operations there is no guarantee that the adjacency
+///        lists are sorted. 
 class Digraph {
 public:
   /// constructor
@@ -54,6 +58,31 @@ public:
   void
   add_edge ( uint64_t source, uint64_t target );
 
+  /// transpose
+  ///   Return the transpose graph (https://en.wikipedia.org/wiki/Transpose_graph)
+  Digraph
+  transpose ( void ) const;
+
+  /// transitive_reduction
+  ///   Return the transitive reduction
+  ///   Note: requires the graph be a transitively closed DAG
+  ///         or else a transitively closed DAG with extra self-edges
+  Digraph
+  transitive_reduction ( void ) const;
+
+  /// transitive_closure
+  ///   Compute the transitive closure.
+  ///   Note: self-edges are not in the result even if they are in the input
+  Digraph
+  transitive_closure ( void ) const;
+
+  /// permute
+  ///   Reorder the digraph according to the provided permutation
+  ///   The convention on the permutation is that vertex v in the input 
+  ///   corresponds to vertex permutation[v] in the output
+  Digraph
+  permute ( const std::vector<uint64_t> & permutation ) const;
+
   /// stringify
   ///   Return a JSON description
   std::string
@@ -70,10 +99,12 @@ public:
 
 protected:
   std::shared_ptr<Digraph_> data_;
-  //
+
+  /// _sortAdjacencies
+  ///   sort the adjacency lists in ascending order
   void
-  sortAdjacencies ( void );
-  //
+  _sortAdjacencies ( void );
+  
   /// serialize
   ///   For use with BOOST Serialization library,
   ///   which is used by the cluster-delegator MPI package
