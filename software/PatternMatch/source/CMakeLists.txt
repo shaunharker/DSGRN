@@ -4,7 +4,7 @@ set ( LIBS      ${LIBS}
                 ${Boost_LIBRARIES}
                 sqlite3 )
 
-set ( LIBRARYSOURCEFILES LabelWalls.cpp PatternMatch.cpp)
+set ( LIBRARYSOURCEFILES SearchGraph.cpp PatternGraph.cpp MatchingGraph.cpp PatternMatch.cpp)
 add_library ( libpatternmatch STATIC ${LIBRARYSOURCEFILES} )
 set_target_properties( libpatternmatch PROPERTIES OUTPUT_NAME dsgrnpatternmatch )
 

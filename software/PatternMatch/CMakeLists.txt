@@ -79,9 +79,7 @@ add_subdirectory (tests)
 #########
 
 enable_testing()
-add_test( test1 ${CMAKE_SOURCE_DIR}/tests/testDataStructures )
-add_test( test2 ${CMAKE_SOURCE_DIR}/tests/testPatternMatch )
-
-
-
-
+add_test( test1 ${CMAKE_SOURCE_DIR}/tests/TestSearchGraph )
+add_test( test2 ${CMAKE_SOURCE_DIR}/tests/TestPatternGraph )
+add_test( test3 ${CMAKE_SOURCE_DIR}/tests/TestMatchinGraph )
+add_test( test4 ${CMAKE_SOURCE_DIR}/tests/TestPatternMatch )

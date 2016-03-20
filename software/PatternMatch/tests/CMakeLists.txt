@@ -13,6 +13,3 @@ foreach ( TARGET ${TARGETS} )
   add_executable ( ${TARGET} ${TARGET}.cpp )
   target_link_libraries ( ${TARGET} ${LIBS} )
 endforeach ( TARGET ) 
-
-#install(TARGETS ${TARGETS} 
-#        RUNTIME DESTINATION ${CMAKE_SOURCE_DIR}/tests )

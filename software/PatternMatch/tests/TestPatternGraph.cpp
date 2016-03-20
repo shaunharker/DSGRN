@@ -1,5 +1,5 @@
 #include <iostream>
-#include "PatternMatch.h"
+#include "PatternGraph.h"
 
 int main ( int argc, char * argv [] ) {
   return 0;
