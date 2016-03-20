@@ -12,13 +12,13 @@
 #include "Parameter.h"
 
 INLINE_IF_HEADER_ONLY Parameter::
-Parameter ( void ) { 
+Parameter ( void ) {
   data_ . reset ( new Parameter_ );
 }
 
 INLINE_IF_HEADER_ONLY Parameter::
 Parameter ( std::vector<LogicParameter> const& logic,
-            std::vector<OrderParameter> const& order, 
+            std::vector<OrderParameter> const& order,
             Network const& network ) {
   assign ( logic, order, network );
 }
@@ -30,7 +30,7 @@ Parameter ( Network const& network ) {
 
 INLINE_IF_HEADER_ONLY void Parameter::
 assign ( std::vector<LogicParameter> const& logic,
-         std::vector<OrderParameter> const& order, 
+         std::vector<OrderParameter> const& order,
          Network const& network ) {
   data_ . reset ( new Parameter_ );
   data_ -> logic_ = logic;
@@ -44,7 +44,7 @@ assign ( Network const& network ) {
   data_ -> network_ = network;
 }
 
-  
+
 INLINE_IF_HEADER_ONLY bool Parameter::
 attracting ( Domain const& dom ) const {
   int D = data_ -> network_ . size ();
@@ -77,9 +77,9 @@ absorbing ( Domain const& dom, int collapse_dim, int direction ) const {
     //std::cout << "      Hence, the input combination digit is " << (result ? "1" : "0") << "\n";
   }
   //std::cout << "  Input combination formed. Big-endian representation = ";
-  //for ( int i = input_combination . size () - 1; i >= 0; -- i ){ 
+  //for ( int i = input_combination . size () - 1; i >= 0; -- i ){
   // std::cout << (input_combination[i] ? "1" : "0");
-  //} 
+  //}
   //std::cout << "\n";
   //std::cout << "  Consulting parameter " <<  data_ -> logic_ [ collapse_dim ] . stringify () << ".\n";
   bool flow_direction = data_ -> logic_ [ collapse_dim ] ( input_combination, thres );
@@ -112,7 +112,7 @@ labelling ( void ) const {
     N *= limits [ d ];
   }
   // N is now number of domains
-  // Domains are implicitly indexed. 
+  // Domains are implicitly indexed.
   // "jump" is an array telling us how much to change the index
   //   to move +1 in each dimension
   result . resize ( N, 0 );
@@ -142,23 +142,23 @@ labelling ( void ) const {
         if ( activating ^ side ) {
           //std::cout << "Case A.\n";
           lower_limits[source] = 0;
-          upper_limits[source] = thres;  
+          upper_limits[source] = thres;
         } else {
           //std::cout << "Case B.\n";
           lower_limits[source] = thres;
-          upper_limits[source] = limits [ source ]; 
+          upper_limits[source] = limits [ source ];
         }
       }
       /// Iterate through two zones:
       ///   Zone 1. domain left of bin
       ///   Zone 2. domain right of bin
-      ///   Note. domains matching bin do not 
+      ///   Note. domains matching bin do not
       ///         require anything to be done
       auto apply_mask = [&] ( uint64_t mask ) {
         // Iterate between lower and upper limits applying mask
         uint64_t dom_index = 0;
         dom = lower_limits;
-        for ( uint64_t k = 0; k < D; ++ k ) { 
+        for ( uint64_t k = 0; k < D; ++ k ) {
           width[k] = upper_limits[k] - lower_limits[k];
           dom_index += jump[k] * lower_limits[k];
           if ( width[k] == 0 ) return;
@@ -187,10 +187,10 @@ labelling ( void ) const {
       uint64_t right = upper_limits [ d ];
 
       // Zone 1. (Flows to right.)
-      if ( bin > left ) { 
+      if ( bin > left ) {
         lower_limits [ d ] = left;
         upper_limits [ d ] = bin;
-        apply_mask (1LL << (D+d)); 
+        apply_mask (1LL << (D+d));
       }
       // Zone 2. (Flows to left.)
       if ( bin+1 < right ) {
@@ -215,7 +215,7 @@ stringify ( void ) const {
   ss << "[";
   for ( uint64_t d = 0; d < D; ++ d ) {
     if ( d > 0 ) ss << ",";
-    ss << "[\"" << network() . name ( d ) << "\"," 
+    ss << "[\"" << network() . name ( d ) << "\","
        << data_ -> logic_[d] << "," << data_ -> order_[d] << "]";
   }
   ss << "]";
@@ -238,74 +238,136 @@ parse ( std::string const& str ) {
 
 INLINE_IF_HEADER_ONLY std::string Parameter::
 inequalities ( void ) const {
+  // input_string
+  //   Given an input edge i of a node d output the L/U indexing associated
+  auto input_string = [&](uint64_t i, uint64_t d ) {
+    uint64_t source = network() . inputs ( d ) [ i ];
+    std::string const& node_name = network() . name ( d );
+    std::string source_name = network() . name(source);
+    std::stringstream input_ss;
+    input_ss << "[" << source_name << "," << node_name << "]";
+    return input_ss . str ();
+  };
+  // output_string
+  //   Given an output edge j, output the THETA variable associated with it
+  auto output_string = [&](uint64_t j, uint64_t d ) {
+    uint64_t target = network() . outputs ( d ) [ data_ -> order_[d](j) ];
+    std::string const& node_name = network() . name ( d );
+    std::string target_name = network() . name(target);
+    std::stringstream output_ss;
+    output_ss << "T[" << node_name << "," << target_name << "]";
+    return output_ss . str ();
+  };
+  // input_combo_string
+  //   Given an input combination i, return the algebraic formula
+  //   of U's and L's associated with that input combination.
+  auto input_combo_string = [&](uint64_t i, uint64_t d) {
+    std::stringstream input_ss;
+    std::vector<std::vector<uint64_t>> logic = 
+      network () . logic ( d );
+    std::string const& node_name = network() . name ( d );
+    uint64_t n = network() . inputs ( d ) . size ();
+    uint64_t bit = 1;
+    uint64_t k = 0;
+    for ( auto const& factor : logic ) {
+      if ( factor . size () > 1 ) input_ss << "(";
+      bool inner_first = true;
+      for ( uint64_t source : factor ) {
+        if ( inner_first ) inner_first = false; else input_ss << " + ";
+        std::string source_name = network() . name(source);
+        if ( i & bit ) {
+          input_ss << "U[" << source_name <<"," << node_name << "]";
+        } else {
+          input_ss << "L[" << source_name <<"," << node_name << "]";
+        }
+        bit <<= 1;
+        ++ k;
+      }
+      if ( factor . size () > 1 ) input_ss << ")"; 
+      else if ( k < n ) input_ss << " ";
+    }
+    return input_ss . str ();
+  };
+
+
   std::stringstream ss;
   uint64_t D = data_ -> network_ . size ();
-  ss << "[";
+  ss << "{ \"inequalities\" : \"";
+
   bool outerfirst = true;
   for ( uint64_t d = 0; d < D; ++ d ) {
-    if ( outerfirst ) outerfirst = false; else ss << ",\n";
-    std::string node_name = network() . name ( d );
+    if ( outerfirst ) outerfirst = false; else ss << " && ";
     uint64_t n = network() . inputs ( d ) . size ();
     uint64_t m = network() . outputs ( d ) . size ();
     uint64_t N = ( 1LL << n );
-    auto input_combo_string = [&](uint64_t i) {
-      std::stringstream input_ss;
-      std::vector<std::vector<uint64_t>> logic = 
-        network () . logic ( d );
-      uint64_t bit = 1;
-      uint64_t k = 0;
-      for ( auto const& factor : logic ) {
-        if ( factor . size () > 1 ) input_ss << "(";
-        bool inner_first = true;
-        for ( uint64_t source : factor ) {
-          if ( inner_first ) inner_first = false; else input_ss << " + ";
-          std::string source_name = network() . name(source);
-          if ( i & bit ) {
-            input_ss << "U(" << source_name <<"," << node_name << ")";
-          } else {
-            input_ss << "L(" << source_name <<"," << node_name << ")";
-          }
-          bit <<= 1;
-          ++ k;
-        }
-        if ( factor . size () > 1 ) input_ss << ")"; 
-        else if ( k < n ) input_ss << " ";
-      }
-      return input_ss . str ();
-    };
-    auto output_string = [&](uint64_t j) {
-      uint64_t target = network() . outputs ( d ) [ data_ -> order_[d](j) ];
-      std::string target_name = network() . name(target);
-      std::stringstream output_ss;
-      output_ss << "THETA(" << node_name << "," << target_name << ")";
-      return output_ss . str ();
-    };
-    ss << "\"{\n";
+    // Output all inequalities comparing input formulas to thresholds
     bool first = true;
     for ( uint64_t i = 0; i < N; ++ i ) {
-      if ( first ) first = false; else ss << ",\n";
+      if ( first ) first = false; else ss << " && ";
       uint64_t j = 0;
       while ( j < m && data_ -> logic_[d] ( m*i + j ) ) ++ j;
       if ( j == 0 ) {
-        ss << input_combo_string ( i ) << " < " << output_string (0);
+        ss << input_combo_string ( i, d ) << " < " << output_string ( 0, d );
       } else if ( j == m ) {
-        ss << output_string (m-1) << " < " << input_combo_string ( i );
+        ss << output_string ( m-1, d ) << " < " << input_combo_string ( i, d );
       } else {
-        ss << output_string (j-1) << " < " 
-           << input_combo_string ( i ) << " < " 
-           << output_string (j);
+        ss << output_string ( j-1, d ) << " < " 
+           << input_combo_string ( i, d ) << " < " 
+           << output_string ( j, d );
       }
     }
-    ss << "\n},{\n";
+    ss << " && ";
+    // Output all inequalities comparing thresholds
     first = true;
     for ( uint64_t j = 0; j < m; ++ j ) {
-      if ( first ) first = false; else ss << " < ";
-      ss << output_string ( j );
+      if ( first ) { 
+        first = false;
+        ss << "0 < ";
+      } else { 
+        ss << " < ";
+      }
+      ss << output_string ( j, d );
     }
-    ss << "\n}\"";
+    ss << " && ";
+    // Output 0 < L < U  constraints
+    first = true;
+    for ( uint64_t i = 0; i < n; ++ i ) {
+      if ( first ) first = false; else ss << " && ";
+      ss << "0 < L" << input_string ( i, d ) << " < U" << input_string ( i, d );
+    }
+
   }
-  ss << "]";
+  ss << "\", \"variables\" : \"{";
+  // Output variable list
+  outerfirst = true;
+  for ( uint64_t d = 0; d < D; ++ d ) {
+    uint64_t n = network() . inputs ( d ) . size ();
+    uint64_t m = network() . outputs ( d ) . size ();
+    if ( outerfirst ) outerfirst = false; else ss << ", ";
+    for ( uint64_t i = 0; i < n; ++ i ) {
+      ss << "L" << input_string ( i, d ) << ", ";
+    }
+    for ( uint64_t i = 0; i < n; ++ i ) {
+      ss << "U" << input_string ( i, d ) << ", ";
+    }
+    bool first = true;
+    for ( uint64_t j = 0; j < m; ++ j ) {
+      if ( first ) first = false; else ss << ", ";
+      ss << output_string ( j, d );
+    }
+  }
+  ss << "}\"}";
   return ss . str ();
+}
+
+INLINE_IF_HEADER_ONLY std::vector<LogicParameter> const & Parameter::
+logic ( void ) const {
+    return data_ -> logic_;
+}
+
+INLINE_IF_HEADER_ONLY std::vector<OrderParameter> const & Parameter::
+order ( void ) const {
+    return data_ -> order_;
 }
 
 INLINE_IF_HEADER_ONLY std::ostream& operator << ( std::ostream& stream, Parameter const& p ) {

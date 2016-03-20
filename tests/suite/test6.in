@@ -1,0 +1,2 @@
+#!/bin/bash
+$1 network networks/network9.txt parameter index '[["X1",[3,3,"FF9E00"],[0,1,2]],["X2",[1,2,"4"],[0,1]],["X3",[2,1,"8"],[0]]]'

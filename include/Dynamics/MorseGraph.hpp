@@ -12,8 +12,17 @@
 #include "MorseGraph.h"
 
 INLINE_IF_HEADER_ONLY MorseGraph::
-MorseGraph ( void ) { 
+MorseGraph ( void ) {
   data_ . reset ( new MorseGraph_ );
+}
+
+INLINE_IF_HEADER_ONLY MorseGraph::
+MorseGraph ( Poset const & ps,
+             std::unordered_map<uint64_t, Annotation> const & annotations ) {
+  data_ . reset ( new MorseGraph_ );
+  data_ -> poset_ = ps;
+  data_ -> annotations_ = annotations;
+  _canonicalize();
 }
 
 INLINE_IF_HEADER_ONLY Poset const MorseGraph::
@@ -51,7 +60,7 @@ parse ( std::string const& str ) {
   uint64_t N = annotation_array . size ();
   for ( uint64_t v = 0; v < N; ++ v ) {
     data_ -> annotations_ [ v ] . parse ( json::stringify ( annotation_array[v] )); //TODO: inefficient
-  } 
+  }
 }
 
 
@@ -83,9 +92,94 @@ SHA256 ( void ) const {
   ss << *this;
   return sha256 ( ss . str () );
 }
-  
+
 INLINE_IF_HEADER_ONLY void MorseGraph::
 _canonicalize ( void ) {
+  ///
+  /// create the original poset numbering : 0 ... N-1
+  std::vector<uint64_t> posetOrder;
+  for ( uint64_t i=0; i<data_ -> poset_ .size(); ++i ) {
+    posetOrder . push_back ( i );
+  }
+  ///
+  /// Create the sort function
+  auto compare = [this](const int & i, const int & j) {
+
+    /// 0) if there is an edge i -> j, we ensure i < j
+    if ( data_ -> poset_ . reachable( i, j ) ) {
+      return true;
+    }
+    /// 1) try to sort according to parents
+    if ( data_ -> poset_ . numberOfParents(i) < data_ -> poset_ . numberOfParents(j) ) {
+      return true;
+    }
+    if ( data_ -> poset_ . numberOfParents(i) > data_ -> poset_ . numberOfParents(j) ) {
+      return false;
+    }
+    /// 2) try to sort according to ancestors
+    if ( data_ -> poset_ . numberOfAncestors(i) < data_ -> poset_ . numberOfAncestors(j) ) {
+      return true;
+    }
+    if ( data_ -> poset_ . numberOfAncestors(i) > data_ -> poset_ . numberOfAncestors(j) ) {
+      return false;
+    }
+    /// 3) Try to sort according to descendants
+    if ( data_ -> poset_ . numberOfDescendants(i) < data_ -> poset_ . numberOfDescendants(j) ) {
+      return true;
+    }
+    if ( data_ -> poset_ . numberOfDescendants(i) > data_ -> poset_ . numberOfDescendants(j) ) {
+      return false;
+    }
+    /// 4) Try to sort according to children
+    if ( data_ -> poset_ . numberOfChildren(i) < data_ -> poset_ . numberOfChildren(j) ) {
+      return true;
+    }
+    if ( data_ -> poset_ . numberOfChildren(i) > data_ -> poset_ . numberOfChildren(j) ) {
+      return false;
+    }
+    /// 5) Sort according to annotations
+    if ( data_ -> annotations_ . find ( i ) -> second . size ( ) <
+         data_ -> annotations_ . find ( j ) -> second . size ( ) ) {
+      return true;
+    }
+    if ( data_ -> annotations_ . find ( i ) -> second . size ( ) >
+         data_ -> annotations_ . find ( j ) -> second . size ( ) ) {
+      return false;
+    }
+    if ( data_ -> annotations_ . find ( i ) -> second . size ( ) ==
+         data_ -> annotations_ . find ( j ) -> second . size ( ) ) {
+      uint64_t annotationSize = data_ -> annotations_ . find ( i ) -> second . size ( );
+      for ( uint64_t k = 0; k<annotationSize; ++k ) {
+        if ( data_ -> annotations_ . find ( i ) -> second[k] <
+        data_ -> annotations_ . find ( j ) -> second[k] ) { return true; }
+      }
+    }
+    /// if in case we cannot separate them, use the original node number
+    return i < j ;
+  };
+
+  /// posetOrder[i] represent the original numbering of the node i
+  /// after sort, posetOrder[1] = 7 means the node 7 should be 1
+  sort ( posetOrder.begin(), posetOrder.end(), compare );
+  ///
+  /// construct the vector ordering to have
+  /// ordering[2] = 9 means node 2 should be relabelled 9
+  std::vector<uint64_t> ordering;
+  uint64_t N = data_ -> poset_ . size();
+  ordering . resize( N );
+  for ( uint64_t i=0; i<N; ++i ) {
+    ordering [ posetOrder[i] ] = i;
+  }
+  ///
+  Poset newPoset = data_ -> poset_ . reorder ( ordering );
+  data_ -> poset_ = newPoset;
+  ///
+  /// update the Annotation
+  std::unordered_map<uint64_t, Annotation> newAnnotations;
+  for ( uint64_t i=0; i<N; ++i ) {
+    newAnnotations [ ordering[i] ] = data_ -> annotations_ [ i ];
+  }
+  data_ -> annotations_ = newAnnotations;
 }
 
 #endif

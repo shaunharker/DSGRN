@@ -38,7 +38,7 @@ load ( std::string const& filename ) {
   if ( extension == ".txt" ) {
     std::ifstream infile ( filename );
     if ( not infile . good () ) { 
-      throw std::runtime_error ( "Problem loading network file " + filename + "\n");
+      throw std::runtime_error ( "Problem loading network specification file " + filename );
     }
     std::string line;
     while ( std::getline ( infile, line ) ) {
@@ -202,7 +202,7 @@ _parse ( std::vector<std::string> const& lines ) {
     data_ ->  name_by_index_ . push_back ( splitline[0] );
     // This is a network node description line, so it should have a logic:
     if ( splitline . size () < 2 ) {
-      throw std::runtime_error ( "Problem with network file specification: missing logic.\n");
+      throw std::runtime_error ( "Problem parsing network specification file: missing logic");
     }
     logic_strings . push_back ( splitline[1] );
     //std::cout << line << " has " << splitline.size() << " parts.\n";
@@ -224,7 +224,7 @@ _parse ( std::vector<std::string> const& lines ) {
   }
   // Learn the logics
   // Trick: ignore everything but node names and +'s. 
-  // Example: a + ~ b c d + e  corresponds to (a+b)(b)(c)(d+e)
+  // Example: a + ~ b c d + e  corresponds to (a+~b)(c)(d+e)
   uint64_t target = 0;
   for ( auto const& logic_string : logic_strings ) {
     //std::cout << "Processing " << logic_string << "\n";
@@ -248,6 +248,10 @@ _parse ( std::vector<std::string> const& lines ) {
       if ( token . empty () ) return;
       if ( not appending ) flush_factor ();
       //std::cout << "  Flushing token " << token << "\n";
+      if ( data_ -> index_by_name_ . count ( token ) == 0 ) {
+        throw std::runtime_error ( "Problem parsing network specification file: " 
+                                   " Invalid input variable " + token );
+      }
       uint64_t source = data_ ->  index_by_name_ [ token ];
       factor . push_back ( source );
       data_ ->  edge_type_[std::make_pair( source, target )] = parity;
@@ -279,7 +283,7 @@ _parse ( std::vector<std::string> const& lines ) {
       for ( auto i : factor ) {
         //std::cout << i << " ";
         if ( inputs . count ( i ) ) {
-          throw std::runtime_error ( "Problem with network spec: Repeated inputs in logic.\n" );
+          throw std::runtime_error ( "Problem parsing network specification file: Repeated inputs in logic" );
         }
         inputs . insert ( i );
       }

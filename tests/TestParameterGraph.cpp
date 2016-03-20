@@ -23,24 +23,40 @@ int main ( int argc, char * argv [] ) {
       q . parse ( s );
       std::cout << q << "\n";
     }
+
     if ( pg . size () != 120 ) throw std::runtime_error ( "ParameterGraph::size bug");
     if ( pg . fixedordersize () != 60 ) throw std::runtime_error ( "ParameterGraph::fixedordersize bug");
     if ( pg . reorderings () != 2 ) throw std::runtime_error ( "ParameterGraph::reorderings bug");
 
-    // Missing Features (currently they throw):
+    std::cout << network.graphviz() << "\n\n";
+
     Parameter z = pg . parameter ( 0 );
-    try { 
-      uint64_t i = pg . index ( z );
-    } catch ( ... ) {}
-    try { 
-      auto adj = pg . adjacencies ( 0 );
-    } catch ( ... ) {}
+
+    // Test ParameterGraph::index
+    for ( uint64_t i = 0; i < N; ++i ) {
+      uint64_t j = pg . index ( pg . parameter(i) );
+      if ( i != j ) {
+        throw std::runtime_error("ParameterGraph::index bug");
+      }
+    }
+
+    // Test ParameterGraph::adjacencies
+    std::cout << "Testing adjacencies.\n";
+    auto adj = pg . adjacencies ( 57 );
+    for ( auto j : adj ) {
+      std::cout << pg. parameter (j) . stringify () << "\n";
+    }
+
+    // Test loading an unsupported network (should throw)
     try {
       Network net ( "networks/network4.txt" );
       ParameterGraph pg1 ( net );
     } catch ( ... ) {}
+
+    // Test serialization
     boost::archive::text_oarchive oa(std::cout);
     oa << pg;
+
   } catch ( std::exception & e ) {
     std::cout << e . what () << "\n";
     return 1;

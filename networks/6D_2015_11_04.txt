@@ -1,0 +1,7 @@
+p53 : (Chk2 + ATM + ~Mdm2 + ~miRNA)
+ATM : ~Wip1
+Chk2 : ATM (~Wip1)
+Wip1 : p53
+Mdm2 : p53 (~ATM)
+miRNA : ~ATM
+

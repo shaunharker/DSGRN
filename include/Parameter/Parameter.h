@@ -22,7 +22,7 @@ public:
   /// Parameter
   ///   Assign data to parameter
   Parameter ( std::vector<LogicParameter> const& logic,
-              std::vector<OrderParameter> const& order, 
+              std::vector<OrderParameter> const& order,
               Network const& network );
 
   /// Parameter (network-only)
@@ -34,7 +34,7 @@ public:
   ///   Assign data to parameter
   void
   assign ( std::vector<LogicParameter> const& logic,
-           std::vector<OrderParameter> const& order, 
+           std::vector<OrderParameter> const& order,
            Network const& network );
 
   /// assign (network-only)
@@ -47,15 +47,15 @@ public:
   ///   Return true if domain is attracting.
   ///   This is true iff none of the walls of
   ///   are absorbing.
-  bool 
+  bool
   attracting ( Domain const& dom ) const;
 
   /// absorbing
   ///   Return true if wall is absorbing
   ///   The wall is described by a domain dom,
-  ///   a dimension collapse_dim, and a direction. 
+  ///   a dimension collapse_dim, and a direction.
   ///   The direction is either -1 or +1, signifying
-  ///   the left wall or the right wall with 
+  ///   the left wall or the right wall with
   ///   collapse dimension collapse_dim.
   bool
   absorbing ( Domain const& dom, int collapse_dim, int direction ) const;
@@ -65,10 +65,10 @@ public:
   ///   entrance or absorbing. The data structure is
   ///   currently limited to handling networks with at most 32 nodes.
   ///   The result is a vector of uint64_t. The vector is indexed by
-  ///   domain index. For domain indexing, see Domain.h. 
+  ///   domain index. For domain indexing, see Domain.h.
   ///   Each uint64_t entry has bits corresponding to each of the
   ///   2*d walls in the following pattern:
-  ///     left-0, left-1, left-2, ..., left-(d-1), 
+  ///     left-0, left-1, left-2, ..., left-(d-1),
   ///     right-0, right-1, ... right(d-1)
   ///   A bit of 0 means entrance and 1 means absorbing.
   std::vector<uint64_t>
@@ -90,9 +90,22 @@ public:
   parse ( std::string const& str );
 
   /// inequalities
-  ///    Output a list of inequalities correspond to the parameter
+  ///    Output a list of inequalities corresponding to the parameter node.
+  ///    We output the list in a format which is compatible with Mathematica's syntax,
+  ///    encapsulated in a JSON string. In particular, the format is as follows:
+  ///    {"inequalities" : "mathematica-parsable-string", "variables" : "mathematica-parsable-string"}
   std::string
   inequalities ( void ) const;
+
+  /// logic ()
+  ///   Return the logic of the parameter
+  std::vector<LogicParameter> const &
+  logic ( void ) const;
+
+  /// order ()
+  ///   Return the order of the parameter
+  std::vector<OrderParameter> const &
+  order ( void ) const;
 
   /// operator <<
   ///   Output debug data to stream
