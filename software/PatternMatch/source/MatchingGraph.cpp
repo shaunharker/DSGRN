@@ -23,35 +23,34 @@ assign ( PatternGraph const& pg, SearchGraph const& sg ) {
 }
 
 PatternGraph const& MatchingGraph::
-PatternGraph ( void ) const {
+patterngraph ( void ) const {
   return data_ -> pg_;
 }
 
 SearchGraph const& MatchingGraph::
-SearchGraph ( void ) const {
+searchgraph ( void ) const {
   return data_ ->  sg_;
 }
 
-std::vector<uint64_t> const& MatchingGraph::
-adjacencies ( uint64_t v ) const {
-/*
-def matching_graph_adjacencies(vertex, domaingraph, patterngraph):
-  # Empty list to store results
-  result = [];
-  # A matching graph vertex is a (domain, position) pair
-  domain = vertex[0]; position = vertex[1];
-  for nextdomain in domaingraph.adjacencies(domain):
-    switching_variable = domaingraph.switching(domain, nextdomain)
-    # Handle "intermediate" matches:
-    current_symbol = patterngraph.label(position)[switching_variable]
-    next_symbol = domaingraph.label(nextdomain)[switching_variable]
-    if match(current_symbol, next_symbol): result . append ( [ nextdomain, position ] )
-    # Handle "extremal" matches:
-    next_position = patterngraph.switch(position, switching_variable)
-    if next_position: result . append ( [ nextdomain, nextposition] )
-  return result
-*/
-  return data_ -> digraph_ . adjacencies ( v );
+std::vector<MatchingGraph::Vertex> MatchingGraph::
+adjacencies ( Vertex const& v ) const {
+  std::vector<Vertex> result;
+  uint64_t const& domain = v . first;
+  uint64_t const& position = v . second;
+  for ( auto nextdomain : searchgraph() . adjacencies(domain) ) {
+    // Check for intermediate match
+    if ( _match ( searchgraph().label(nextdomain), patterngraph().label(position) ) {
+      result . push_back ( Vertex(nextdomain, position) );
+    }
+    // Check for extremal match
+    // Determine what variable can have a min/max event 
+    uint64_t variable = searchgraph() . event ( domain, nextdomain );
+    if ( variable == -1 ) continue;
+    uint64_t nextposition = patterngraph() . consume ( position, variable );
+    if ( nextposition == -1 ) continue;
+    result . push_back ( Vertex(nextdomain, nextposition) );
+  }
+  return result;
 }
 
 uint64_t MatchingGraph::

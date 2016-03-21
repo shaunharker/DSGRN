@@ -30,12 +30,12 @@ public:
   /// PatternGraph
   ///    Return associated pattern graph
   PatternGraph const&
-  PatternGraph ( void ) const;
+  patterngraph ( void ) const;
 
   /// SearchGraph
   ///   Return associated search graph
   SearchGraph const&
-  SearchGraph ( void ) const;
+  searchgraph ( void ) const;
 
   /// Vertex
   ///   vertex data type. The first entry correspond to a vertex
@@ -47,8 +47,8 @@ public:
   /// adjacencies
   ///   Given a vertex v, return vector of vertices which 
   ///   are out-edge adjacencies of input v
-  std::vector<Vertex> const&
-  adjacencies ( uint64_t v ) const;
+  std::vector<Vertex>
+  adjacencies ( Vertex const& v ) const;
 
   /// domain
   ///   Given a vertex v, return the associated domain (i.e. vertex in search graph)
