@@ -78,7 +78,7 @@ maximal ( std::set<uint64_t> const& elements ) {
   auto is_maximal = [&](uint64_t u){
     for ( uint64_t v : elements ) if ( compare (u, v) ) return false;
     return true;
-  }
+  };
   for ( uint64_t u : elements ) if ( is_maximal(u) ) result . insert ( u );
   return result;
 }
