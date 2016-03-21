@@ -4,40 +4,41 @@
 
 PatternGraph::
 PatternGraph ( void ) {
-  // TODO
+  data_ . reset ( new PatternGraph );
 }
 
 PatternGraph::
 PatternGraph ( Poset const& poset ) {
-  // TODO
+  assign ( poset );
 }
 
 void PatternGraph::
 assign ( Poset const& poset ) {
+  data_ . reset ( new PatternGraph );
   // TODO
 }
 
 uint64_t PatternGraph::
 root ( void ) const {
-  // TODO
+  return data_ -> root_;
 }
 
 uint64_t PatternGraph::
 leaf ( void ) const {
-  // TODO
+  return data_ -> leaf_;
 }
 
 uint64_t PatternGraph::
 size ( void ) const {
-  // TODO
+  return data_ -> size_;
 }
 
 std::vector<uint8_t> PatternGraph::
 label ( uint64_t v ) const {
-  // TODO
+  return data_ -> labels_ [ v ];
 }
 
 uint64_t PatternGraph::
 consume ( uint64_t vertex, uint64_t variable ) const {
-  // TODO
+  return data_ -> consume_ [ vertex ] [ variable ];
 }

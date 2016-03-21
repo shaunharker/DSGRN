@@ -5,6 +5,8 @@
 #ifndef MATCHINGGRAPH_H
 #define MATCHINGGRAPH_H
 
+#include <boost/functional/hash.hpp>
+
 #include "PatternGraph.h"
 #include "SearchGraph.h"
 
@@ -74,16 +76,24 @@ private:
 };
 
 struct MatchingGraph_ {
-  
-  // TODO: determine data required.
-
+  PatternGraph pg_;
+  SearchGraph sg_;
+  Digraph digraph_;
+  std::vector<uint64_t> domain_;
+  std::vector<uint64_t> position_;
+  std::unordered_map<std::pair<uint64_t,uint64_t>,uint64_t,boost::hash<std::pair<uint64_t, uint64_t>>> vertex_;
   /// serialize
   ///   For use with BOOST Serialization library,
   ///   which is used by the cluster-delegator MPI package
   friend class boost::serialization::access;
   template<class Archive>
   void serialize(Archive & ar, const unsigned int version) {
-    ar & adjacencies_;
+    ar & pg_;
+    ar & sg_;
+    ar & digraph_;
+    ar & domain_;
+    ar & position_;
+    ar & vertex_;
   }
 };
 

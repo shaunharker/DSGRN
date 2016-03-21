@@ -27,7 +27,7 @@ size ( void ) const {
 
 std::vector<uint8_t> SearchGraph::
 label ( uint64_t v ) const {
-  return labels_ [ v ];
+  return data_ -> labels_ [ v ];
 }
 
 std::vector<uint64_t> const& SearchGraph::
@@ -37,5 +37,5 @@ adjacencies ( uint64_t v ) const {
 
 uint64_t SearchGraph::
 switching ( uint64_t source, uint64_t target ) const {
-  return switching_ [ source ] [ target ];
+  return data_ -> switching_ [ source ] [ target ];
 }

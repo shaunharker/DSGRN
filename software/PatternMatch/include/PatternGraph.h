@@ -62,16 +62,22 @@ private:
 };
 
 struct PatternGraph_ {
-  
-  // TODO: determine data required.
-
+  uint64_t root_;
+  uint64_t leaf_;
+  uint64_t size_;
+  std::vector<std::vector<uint8_t>> labels_;
+  std::vector<std::unordered_map<uint64_t, uint64_t>> consume_;
   /// serialize
   ///   For use with BOOST Serialization library,
   ///   which is used by the cluster-delegator MPI package
   friend class boost::serialization::access;
   template<class Archive>
   void serialize(Archive & ar, const unsigned int version) {
-    ar & adjacencies_;
+    ar & root_;
+    ar & leaf_;
+    ar & size_;
+    ar & labels_;
+    ar & consume_;
   }
 };
 
