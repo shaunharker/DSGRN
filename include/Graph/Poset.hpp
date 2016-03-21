@@ -72,7 +72,7 @@ descendants ( uint64_t v ) const {
   return data_ -> transitive_closure . adjacencies ( v );
 }
 
-INLINE_IF_HEADER_ONLY std::set<uint64_t>
+INLINE_IF_HEADER_ONLY std::set<uint64_t> Poset::
 maximal ( std::set<uint64_t> const& elements ) {
   std::set<uint64_t> result;
   auto is_maximal = [&](uint64_t u){

@@ -37,30 +37,34 @@ public:
   SearchGraph const&
   SearchGraph ( void ) const;
 
-  /// size
-  ///   Return the number of vertices in the matching graph
-  uint64_t
-  size ( void ) const;
+  /// Vertex
+  ///   vertex data type. The first entry correspond to a vertex
+  ///   in the search graph (which we call a domain), and the
+  ///   second entry is the pattern graph index, which we call
+  ///   position 
+  typedef std::pair<uint64_t,uint64_t> Vertex;
 
   /// adjacencies
   ///   Given a vertex v, return vector of vertices which 
   ///   are out-edge adjacencies of input v
-  std::vector<uint64_t> const&
+  std::vector<Vertex> const&
   adjacencies ( uint64_t v ) const;
 
   /// domain
   ///   Given a vertex v, return the associated domain (i.e. vertex in search graph)
+  ///   Note this domain index may not be consistent with the indexing in the domain graph
+  ///   since we have taken a subgraph
   uint64_t
-  domain ( uint64_t v ) const;
+  domain ( Vertex const& v ) const;
 
   /// position
   ///   Given a vertex v, return the associated position (i.e. vertex in the pattern graph)
   uint64_t 
-  position ( uint64_t v ) const;
+  position ( Vertex const& v ) const;
 
   /// vertex
   ///   Given a domain and position, return the associated vertex in the matching graph
-  uint64_t
+  Vertex
   vertex ( uint64_t domain, uint64_t position ) const;
 
 private:
@@ -78,10 +82,6 @@ private:
 struct MatchingGraph_ {
   PatternGraph pg_;
   SearchGraph sg_;
-  Digraph digraph_;
-  std::vector<uint64_t> domain_;
-  std::vector<uint64_t> position_;
-  std::unordered_map<std::pair<uint64_t,uint64_t>,uint64_t,boost::hash<std::pair<uint64_t, uint64_t>>> vertex_;
   /// serialize
   ///   For use with BOOST Serialization library,
   ///   which is used by the cluster-delegator MPI package
@@ -90,10 +90,6 @@ struct MatchingGraph_ {
   void serialize(Archive & ar, const unsigned int version) {
     ar & pg_;
     ar & sg_;
-    ar & digraph_;
-    ar & domain_;
-    ar & position_;
-    ar & vertex_;
   }
 };
 
