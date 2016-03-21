@@ -63,6 +63,12 @@ public:
   std::vector<uint64_t> const&
   descendants ( uint64_t v ) const;
 
+  /// maximal
+  ///   Given a collection of elements, return the subset of those elements
+  ///   which are maximal in the set
+  std::set<uint64_t>
+  maximal ( std::set<uint64_t> const& elements );
+
   /// compare
   ///   Check if vertex u < vertex v in poset
   bool

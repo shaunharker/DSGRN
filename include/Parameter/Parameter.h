@@ -68,6 +68,7 @@ public:
   ///   domain index. For domain indexing, see Domain.h.
   ///   Each uint64_t entry has bits corresponding to each of the
   ///   2*d walls in the following pattern:
+  ///     (from least significant to most significant bits)
   ///     left-0, left-1, left-2, ..., left-(d-1),
   ///     right-0, right-1, ... right(d-1)
   ///   A bit of 0 means entrance and 1 means absorbing.

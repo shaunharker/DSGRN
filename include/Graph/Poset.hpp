@@ -72,6 +72,17 @@ descendants ( uint64_t v ) const {
   return data_ -> transitive_closure . adjacencies ( v );
 }
 
+INLINE_IF_HEADER_ONLY std::set<uint64_t>
+maximal ( std::set<uint64_t> const& elements ) {
+  std::set<uint64_t> result;
+  auto is_maximal = [&](uint64_t u){
+    for ( uint64_t v : elements ) if ( compare (u, v) ) return false;
+    return true;
+  }
+  for ( uint64_t u : elements ) if ( is_maximal(u) ) result . insert ( u );
+  return result;
+}
+
 INLINE_IF_HEADER_ONLY bool Poset::
 compare ( const uint64_t & u, const uint64_t & v ) const {
   return data_ -> relation[u] . count (v);

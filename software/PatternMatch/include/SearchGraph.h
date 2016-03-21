@@ -36,8 +36,8 @@ public:
   ///   Given a vertex, return the associated label
   ///   The label is a 64 bit word with bits interpreted as follows:
   ///    bit i+D     bit i   interpretation
-  ///         0        1    ith variable increasing  
-  ///         1        0    ith variable decreasing
+  ///         0        1    ith variable decreasing  
+  ///         1        0    ith variable increasing
   ///         0        0    ith variable can either increase or decrease
   ///   Note the limitation to 32 dimensions. Here D is the number of
   ///   dimensions.

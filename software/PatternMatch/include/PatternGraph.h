@@ -14,13 +14,13 @@ public:
   PatternGraph ( void );
 
   /// PatternGraph
-  ///   Create a pattern graph from a poset
-  PatternGraph ( Poset const& poset );
+  ///   Create a pattern graph from a pattern
+  PatternGraph ( Pattern const& pattern );
 
   /// assign
   ///   Create a pattern graph from a poset
   void
-  assign ( Poset const& poset );
+  assign ( Pattern const& pattern );
 
   /// root
   ///   Return the index of the root vertex
@@ -41,8 +41,8 @@ public:
   ///   Given a vertex, return the associated label
   ///   The label is a 64 bit word with bits interpreted as follows:
   ///    bit i+D     bit i   interpretation
-  ///         0        1    ith variable increasing  
-  ///         1        0    ith variable decreasing
+  ///         0        1    ith variable decreasing  
+  ///         1        0    ith variable increasing
   ///         0        0    ith variable can either increase or decrease
   ///   Note the limitation to 32 dimensions. Here D is the number of
   ///   dimensions.

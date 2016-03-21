@@ -42,6 +42,7 @@ public:
   ///   which indicates whether each wall is an entrance
   ///   wall or an absorbing wall. The information is
   ///   encoded bitwise for the 2*d walls in the following pattern:
+  ///     (from least significant to most significant bits)
   ///     left-0, left-1, left-2, ..., left-(d-1),
   ///     right-0, right-1, ... right(d-1)
   ///   A bit of 0 means entrance and 1 means absorbing.

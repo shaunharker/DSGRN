@@ -75,7 +75,7 @@ dimension ( void ) const {
 
 INLINE_IF_HEADER_ONLY uint64_t DomainGraph::
 label ( uint64_t domain ) const {
-  return data_ -> labelling [ domain ];
+  return data_ -> labelling_ [ domain ];
 }
 
 INLINE_IF_HEADER_ONLY uint64_t DomainGraph::
