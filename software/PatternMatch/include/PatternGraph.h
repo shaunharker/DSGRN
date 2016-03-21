@@ -39,7 +39,14 @@ public:
 
   /// label
   ///   Given a vertex, return the associated label
-  std::vector<uint8_t>
+  ///   The label is a 64 bit word with bits interpreted as follows:
+  ///    bit i+D     bit i   interpretation
+  ///         0        1    ith variable increasing  
+  ///         1        0    ith variable decreasing
+  ///         0        0    ith variable can either increase or decrease
+  ///   Note the limitation to 32 dimensions. Here D is the number of
+  ///   dimensions.
+  uint64_t
   label ( uint64_t v ) const;
   
   /// consume
@@ -65,7 +72,7 @@ struct PatternGraph_ {
   uint64_t root_;
   uint64_t leaf_;
   uint64_t size_;
-  std::vector<std::vector<uint8_t>> labels_;
+  std::vector<uint64_t> labels_;
   std::vector<std::unordered_map<uint64_t, uint64_t>> consume_;
   /// serialize
   ///   For use with BOOST Serialization library,

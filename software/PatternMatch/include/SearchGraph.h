@@ -27,9 +27,21 @@ public:
   uint64_t
   size ( void ) const;
 
+  /// dimension
+  ///   Return the number of variables
+  uint64_t
+  dimension ( void ) const;
+
   /// label
   ///   Given a vertex, return the associated label
-  std::vector<uint8_t>
+  ///   The label is a 64 bit word with bits interpreted as follows:
+  ///    bit i+D     bit i   interpretation
+  ///         0        1    ith variable increasing  
+  ///         1        0    ith variable decreasing
+  ///         0        0    ith variable can either increase or decrease
+  ///   Note the limitation to 32 dimensions. Here D is the number of
+  ///   dimensions.
+  uint64_t
   label ( uint64_t v ) const;
 
   /// adjacencies
@@ -38,14 +50,22 @@ public:
   std::vector<uint64_t> const&
   adjacencies ( uint64_t v ) const;
 
-  /// switching
-  ///   Given a source and target domain give the switching 
-  ///   variable associated with the wall between them
+  /// event
+  ///   Given a source and target domain give the variable
+  ///   associated with the extremal event which may occur
+  ///   on that wall. If no event is possible, return -1
   uint64_t 
-  switching ( uint64_t source, uint64_t target ) const;
+  event ( uint64_t source, uint64_t target ) const;
 
 private:
   std::shared_ptr<SearchGraph_> data_;
+  /// _label_event
+  ///   Given source and target labels, the direction, and dimension
+  ///   determine which variable could experience an event between 
+  ///   source and target. If there is no such event return -1
+  uint64_t
+  _label_event ( uint64_t source_label, uint64_t target_label, 
+                 uint64_t direction, uint64_t dimension ) const;
   /// serialize
   ///   For use with BOOST Serialization library,
   ///   which is used by the cluster-delegator MPI package
@@ -58,8 +78,9 @@ private:
 
 struct SearchGraph_ {
   Digraph digraph_;
-  std::vector<std::vector<uint8_t>> labels_;
-  std::vector<std::unordered_map<uint64_t, uint64_t>> switching_;
+  std::vector<uint64_t> labels_;
+  std::vector<std::unordered_map<uint64_t, uint64_t>> event_;
+  uint64_t dimension_;
   /// serialize
   ///   For use with BOOST Serialization library,
   ///   which is used by the cluster-delegator MPI package
@@ -68,7 +89,8 @@ struct SearchGraph_ {
   void serialize(Archive & ar, const unsigned int version) {
     ar & digraph_;
     ar & labels_;
-    ar & switching_;
+    ar & event_;
+    ar & dimension_;
   }
 };
 
