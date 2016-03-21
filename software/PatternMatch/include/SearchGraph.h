@@ -57,16 +57,18 @@ private:
 };
 
 struct SearchGraph_ {
-  
-  // TODO: determine data required.
-
+  Digraph digraph_;
+  std::vector<std::vector<uint8_t>> labels_;
+  std::vector<std::unordered_map<uint64_t, uint64_t>> switching_;
   /// serialize
   ///   For use with BOOST Serialization library,
   ///   which is used by the cluster-delegator MPI package
   friend class boost::serialization::access;
   template<class Archive>
   void serialize(Archive & ar, const unsigned int version) {
-    ar & adjacencies_;
+    ar & digraph_;
+    ar & labels_;
+    ar & switching_;
   }
 };
 

@@ -6,35 +6,36 @@
 
 SearchGraph::
 SearchGraph ( void ) {
-  // TODO
+  data_ . reset ( new SearchGraph_ );
 }
 
 SearchGraph::
 SearchGraph ( DomainGraph const& dg, uint64_t morse_set_index ) {
-  // TODO
+  assign ( dg, morse_set_index );
 }
 
 void SearchGraph::
 assign ( DomainGraph const& dg, uint64_t morse_set_index ) {
+  data_ . reset ( new SearchGraph_ );
   // TODO
 }
 
 uint64_t SearchGraph::
 size ( void ) const {
-  // TODO
+  return data_ -> digraph_ . size ();
 }
 
 std::vector<uint8_t> SearchGraph::
 label ( uint64_t v ) const {
-  // TODO
+  return labels_ [ v ];
 }
 
 std::vector<uint64_t> const& SearchGraph::
 adjacencies ( uint64_t v ) const {
-  // TODO
+  return data_ -> digraph_ . adjacencies ( v );
 }
 
 uint64_t SearchGraph::
 switching ( uint64_t source, uint64_t target ) const {
-  // TODO
+  return switching_ [ source ] [ target ];
 }
