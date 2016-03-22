@@ -9,8 +9,8 @@ int main ( int argc, char * argv [] ) {
     digraph . add_edge ( 0, 2 );
     digraph . add_edge ( 1, 3 );
     std::unordered_map<uint64_t,uint64_t> events;
-    events[0] = 0; events[2] = 1;
-    events[1] = 1; events[3] = 0;
+    events[0] = 0; events[2] = 0;
+    events[1] = 1; events[3] = 1;
     uint64_t label = 3;
     Poset poset ( digraph );
     Pattern pattern ( poset, events, label, 2);
@@ -18,7 +18,7 @@ int main ( int argc, char * argv [] ) {
     if ( pattern . label() != label ) fail ( "pattern::label failed" );
     if ( pattern . dimension() != 2 ) fail ( "pattern::dimension failed");
     if ( pattern . poset() . size() != 4 ) fail ( "pattern::poset failed");
-    if ( pattern . event(2) != 1 ) fail ( "pattern::event failed");
+    if ( pattern . event(2) != 0 ) fail ( "pattern::event failed");
   } catch ( std::exception & e ) {
     std::cout << e . what () << "\n";
     return 1;
