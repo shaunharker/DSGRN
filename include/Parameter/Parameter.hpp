@@ -93,6 +93,11 @@ absorbing ( Domain const& dom, int collapse_dim, int direction ) const {
   }
 }
 
+INLINE_IF_HEADER_ONLY uint64_t Parameter::
+regulator ( uint64_t variable, uint64_t threshold ) const {
+  return network() . outputs ( variable ) [ threshold ];  
+}
+
 INLINE_IF_HEADER_ONLY std::vector<uint64_t> Parameter::
 labelling ( void ) const {
   std::vector<uint64_t> result;

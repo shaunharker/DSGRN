@@ -60,15 +60,21 @@ public:
   uint64_t 
   event ( uint64_t source, uint64_t target ) const;
 
+  /// graphviz
+  ///   Return a graphviz representation of the search graph
+  std::string
+  graphviz ( void ) const;
+
 private:
   std::shared_ptr<SearchGraph_> data_;
   /// _label_event
-  ///   Given source and target labels, the direction, and dimension
-  ///   determine which variable could experience an event between 
-  ///   source and target. If there is no such event return -1
+  ///   Given source and target labels, the direction, the variable
+  ///   being regulated, and the dimension, determine which variable 
+  ///   could experience an event between source and target. 
+  ///   If there is no such event return -1
   uint64_t
   _label_event ( uint64_t source_label, uint64_t target_label, 
-                 uint64_t direction, uint64_t dimension ) const;
+                 uint64_t direction, uint64_t regulator, uint64_t dimension ) const;
   /// serialize
   ///   For use with BOOST Serialization library,
   ///   which is used by the cluster-delegator MPI package

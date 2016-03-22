@@ -26,6 +26,7 @@ assign ( DomainGraph const& dg, uint64_t morse_set_index ) {
   for ( uint64_t domain : morse_set ) {
     domain_to_vertex [ domain ] = N ++;
     data_ -> labels_ . push_back ( dg . label ( domain ) );
+    //std::cout << "Domain " << domain << " is vertex " << domain_to_vertex [ domain ] << "\n";
   }
   digraph . resize ( N );
   data_ -> event_ . resize ( N );
@@ -35,8 +36,13 @@ assign ( DomainGraph const& dg, uint64_t morse_set_index ) {
       if ( domain_to_vertex . count ( target ) ) {
         uint64_t v = domain_to_vertex[target];
         digraph . add_edge ( u, v );
+        //std::cout << " domain " << source << " leads to domain " << target << "\n";
+        //std::cout << " making an edge from " << u << " to " << v << "\n";
         uint64_t direction = dg . direction ( source, target );
-        data_ -> event_ [ u ] [ v ] = _label_event ( label(u), label(v), direction, data_ -> dimension_ );
+        uint64_t regulator = dg . regulator ( source, target );
+        //std::cout << " this edge is in the " << direction << " direction\n";
+        data_ -> event_ [ u ] [ v ] = _label_event ( label(u), label(v), direction, regulator, data_ -> dimension_ );
+        //std::cout << " the edge can support an event on variable " << data_ -> event_ [ u ] [ v ] << "\n";
       }
     }
   }
@@ -67,26 +73,42 @@ event ( uint64_t source, uint64_t target ) const {
   return data_ -> event_ [ source ] [ target ];
 }
 
+std::string SearchGraph::
+graphviz ( void ) const {
+  auto labelstring = [&](uint64_t L) {
+    std::string result;
+    for ( uint64_t d = 0; d < dimension(); ++ d ){
+      if ( L & ( 1 << d ) ) { 
+        result.push_back('D');
+      } else if ( L & ( 1 << (d + dimension() ) ) ) { 
+        result.push_back('I');
+      } else {
+        result.push_back('?');
+      }
+    }
+    return result;
+  };
+  std::stringstream ss;
+  ss << "digraph {\n";
+  for ( uint64_t vertex = 0; vertex < size (); ++ vertex ) {
+    ss << vertex << "[label=\"" << labelstring(label(vertex)) << "\"];\n";
+  }
+  for ( uint64_t source = 0; source < size (); ++ source ) {
+    for ( uint64_t target : adjacencies(source) ) {
+      ss << source << " -> " << target << " [label=\"" << (int64_t) event(source,target) << "\"];\n";
+    }
+  }
+  ss << "}\n";
+  return ss . str ();
+}
 
 uint64_t SearchGraph::
 _label_event ( uint64_t source_label, uint64_t target_label, 
-              uint64_t direction, uint64_t dimension ) const {
-  // lookup[2^i] == i for 0 <= i < 32, lookup[0] = -1
-  static std::unordered_map<uint64_t,uint64_t> lookup = 
-    { {1, 0}, {2, 1}, {4, 2}, {8, 3}, 
-      {16, 4}, {32, 5}, {64, 6}, {128, 7}, 
-      {256, 8}, {512, 9}, {1024, 10}, {2048, 11}, 
-      {4096, 12}, {8192, 13}, {16384, 14}, {32768, 15}, 
-      {65536, 16}, {131072, 17}, {262144, 18}, {524288, 19}, 
-      {1048576, 20}, {2097152, 21}, {4194304, 22}, {8388608, 23}, 
-      {16777216, 24}, {33554432, 25}, {67108864, 26}, {134217728, 27}, 
-      {268435456, 28}, {536870912, 29}, {1073741824, 30}, {2147483648, 31},
-      {0, -1}
-    };
-  // Mask first D bits, apart from direction variable
-  uint64_t mask = ((1 << dimension) - 1) ^ (1 << direction);
-  // Apply mask to determine 
-  uint64_t one_hot = (source_label ^ target_label) & mask;
-  return lookup [ one_hot ];
+              uint64_t direction, uint64_t regulator, uint64_t dimension ) const {
+  if ( direction == regulator ) return -1;
+  uint64_t mask = (1 << regulator) | ( 1 << (regulator + dimension) );
+  uint64_t x = source_label & mask;
+  uint64_t y = target_label & mask;
+  return ( (x != y) || ( x == 0 ) ) ? regulator : -1; 
 }
 

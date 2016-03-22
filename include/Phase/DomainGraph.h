@@ -56,7 +56,16 @@ public:
   uint64_t
   direction ( uint64_t source, uint64_t target ) const;
 
+  /// regulator
+  ///   Given adjacent domains, return the variable
+  ///   being regulated between them. Undefined behavior for 
+  ///   non-adjacent domains
+  uint64_t
+  regulator ( uint64_t source, uint64_t target ) const;
+
   /// annotate
+  ///   Given a collection of vertices, return an
+  ///   annotation describing them
   Annotation const
   annotate ( Component const& vertices ) const;
 

@@ -1,10 +1,35 @@
 #include <iostream>
 #include "PatternGraph.h"
 
+std::string expected_output = 
+  "digraph {\n"
+  "0[label=\"DD(leaf)\"];\n"
+  "1[label=\"ID\"];\n"
+  "2[label=\"DI\"];\n"
+  "3[label=\"DD\"];\n"
+  "4[label=\"II\"];\n"
+  "5[label=\"DI\"];\n"
+  "6[label=\"ID\"];\n"
+  "7[label=\"DD(root)\"];\n"
+  "8[label=\"DD\"];\n"
+  "1 -> 0 [label=\"0\"];\n"
+  "2 -> 0 [label=\"1\"];\n"
+  "3 -> 2 [label=\"1\"];\n"
+  "4 -> 2 [label=\"0\"];\n"
+  "4 -> 1 [label=\"1\"];\n"
+  "5 -> 4 [label=\"0\"];\n"
+  "5 -> 8 [label=\"1\"];\n"
+  "6 -> 3 [label=\"0\"];\n"
+  "6 -> 4 [label=\"1\"];\n"
+  "7 -> 6 [label=\"0\"];\n"
+  "7 -> 5 [label=\"1\"];\n"
+  "8 -> 1 [label=\"0\"];\n"
+  "}\n";
+
 int main ( int argc, char * argv [] ) {
   try {
+    PatternGraph default_patterngraph_test;
     // Build pattern
-    Pattern default_pattern;
     Digraph digraph;
     digraph . resize ( 4 );
     digraph . add_edge ( 0, 2 );
@@ -17,7 +42,11 @@ int main ( int argc, char * argv [] ) {
     Pattern pattern ( poset, events, label, 2);
     // Build pattern graph
     PatternGraph pg ( pattern );
-    std::cout << pg . graphviz () << "\n";
+    std::string output = pg . graphviz ();
+    std::cout << output;
+    if ( output != expected_output ) {
+      throw std::logic_error("Did not get expected output");
+    }
   } catch ( std::exception & e ) {
     std::cout << e . what () << "\n";
     return 1;

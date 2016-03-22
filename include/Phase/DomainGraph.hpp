@@ -83,6 +83,16 @@ direction ( uint64_t source, uint64_t target ) const {
   return data_ -> direction_ [ std::abs((int64_t)source-(int64_t)target) ];
 }
 
+INLINE_IF_HEADER_ONLY uint64_t DomainGraph::
+regulator ( uint64_t source, uint64_t target ) const {
+  std::vector<uint64_t> limits = data_ -> parameter_ . network() . domains ();
+  uint64_t variable = direction ( source, target );
+  uint64_t domain = std::min(source,target);
+  for ( int d = 0; d < variable; ++ d ) domain = domain / limits[d];
+  uint64_t threshold = domain % limits[variable];
+  return data_ -> parameter_ . regulator ( variable, threshold );
+}
+
 INLINE_IF_HEADER_ONLY Annotation const DomainGraph::
 annotate ( Component const& vertices ) const {
   uint64_t D = data_ ->parameter_ . network() . size ();

@@ -60,6 +60,14 @@ public:
   bool
   absorbing ( Domain const& dom, int collapse_dim, int direction ) const;
 
+  /// regulator
+  ///   Return the variable being regulated on the threshold
+  ///   indicated, where "variable" is the normal to the threshold
+  ///   and "threshold" indicates which threshold, counting from
+  ///   lower to highest, starting from 0.
+  uint64_t
+  regulator ( uint64_t variable, uint64_t threshold ) const;
+
   /// labelling
   ///   Returns a data structure representing if each wall is an
   ///   entrance or absorbing. The data structure is

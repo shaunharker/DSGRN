@@ -59,6 +59,13 @@ load ( std::string const& filename ) {
   _parse ( _lines () );
 }
 
+INLINE_IF_HEADER_ONLY void Network::
+assign ( std::string const& spec ) {
+  data_ . reset ( new Network_ );
+  data_ -> specification_ = spec;
+  _parse ( _lines () );
+}
+
 INLINE_IF_HEADER_ONLY uint64_t Network::
 size ( void ) const {
   return data_ ->  name_by_index_ . size ();

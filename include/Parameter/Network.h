@@ -28,6 +28,11 @@ public:
   void 
   load ( std::string const& filename );
 
+  /// assign
+  ///   Directly assign a network specification string
+  void
+  assign ( std::string const& spec );
+  
   /// size
   ///   Return the number of nodes in the network
   uint64_t
