@@ -11,25 +11,24 @@ MatchingGraph ( void ) {
 }
 
 MatchingGraph::
-MatchingGraph ( PatternGraph const& pg, SearchGraph const& sg ) {
-  assign ( pg, sg );
+MatchingGraph ( SearchGraph const& sg, PatternGraph const& pg ) {
+  assign ( sg, pg );
 }
 
 void MatchingGraph::
-assign ( PatternGraph const& pg, SearchGraph const& sg ) {
+assign ( SearchGraph const& sg, PatternGraph const& pg ) {
   data_ . reset ( new MatchingGraph_ );
-  data_ -> pg_ = pg;
   data_ -> sg_ = sg;
-}
-
-PatternGraph const& MatchingGraph::
-patterngraph ( void ) const {
-  return data_ -> pg_;
+  data_ -> pg_ = pg;
 }
 
 SearchGraph const& MatchingGraph::
 searchgraph ( void ) const {
   return data_ ->  sg_;
+}
+PatternGraph const& MatchingGraph::
+patterngraph ( void ) const {
+  return data_ -> pg_;
 }
 
 std::vector<MatchingGraph::Vertex> MatchingGraph::
@@ -49,7 +48,21 @@ adjacencies ( Vertex const& v ) const {
     // Find successor in pattern graph which consumes event
     uint64_t nextposition = patterngraph() . consume ( position, variable );
     if ( nextposition == -1 ) continue;
-    result . push_back ( Vertex(nextdomain, nextposition) );
+    if ( _match ( searchgraph().label(nextdomain), patterngraph().label(nextposition) ) ) {
+      result . push_back ( Vertex(nextdomain, nextposition) );
+    }
+  }
+  return result;
+}
+
+std::vector<MatchingGraph::Vertex> MatchingGraph::
+roots ( void ) const {
+  std::vector<Vertex> result;
+  uint64_t root = patterngraph().root();
+  for ( uint64_t domain = 0; domain < searchgraph().size(); ++ domain ) {
+    if ( _match(searchgraph().label(domain), patterngraph().label(root)) ) {
+      result . push_back ( vertex(domain, root) );
+    }
   }
   return result;
 }
@@ -69,7 +82,55 @@ vertex ( uint64_t domain, uint64_t position ) const {
   return Vertex ( {domain, position} );
 }
 
+std::string MatchingGraph::
+graphviz ( void ) const {
+  std::stringstream ss;
+  std::unordered_map<Vertex, uint64_t, boost::hash<Vertex>> vertices;
+  std::stack<Vertex> dfs;
+  for ( Vertex const& v : roots () ) dfs . push ( v );
+  while ( not dfs . empty () ) {
+    Vertex v = dfs . top ();
+    dfs . pop ();
+    if ( vertices . count ( v ) ) continue;
+    uint64_t index = vertices . size ();
+    vertices[v] = index;
+    for ( Vertex const& u : adjacencies ( v ) ) {
+      if ( vertices . count ( u ) ) continue;
+      dfs . push(u);
+    }
+  }
+  ss << "digraph {\n";
+  for ( auto const& pair : vertices ) {
+    ss << pair.second << "[label=\"(" << domain(pair.first) << "," << position(pair.first) << ")\"];\n";
+  }
+  for ( auto const& pair : vertices ) {
+    Vertex const& source = pair.first;
+    for ( Vertex const& target : adjacencies(source) ) {
+      ss << vertices[source] << " -> " << vertices[target] << "\n";
+    }
+  }
+  ss << "}\n";
+  return ss . str ();
+}
+
 bool MatchingGraph::
 _match ( uint64_t search_label, uint64_t pattern_label ) const {
-  return (pattern_label & search_label) == pattern_label;
+  // auto labelstring = [&](uint64_t L) {
+  //   std::string result;
+  //   for ( uint64_t d = 0; d < searchgraph().dimension(); ++ d ){
+  //     if ( L & ( 1 << d ) ) {
+  //       result.push_back('D');
+  //     } else if ( L & ( 1 << (d + searchgraph().dimension() ) ) ) {
+  //       result.push_back('I');
+  //     } else {
+  //       result.push_back('?');
+  //     }
+  //   }
+  //   return result;
+  // };
+  // std::cout << "search_label = " << labelstring(search_label) << " pattern_label = " << labelstring(pattern_label) << "\n";
+  // std::cout << "search_label = " << (search_label) << " pattern_label = " << (pattern_label) << "\n";
+  // std::cout << (pattern_label & search_label) << "\n";
+  // std::cout << (((pattern_label & search_label) == search_label) ? "match\n" : "no match\n");
+  return (pattern_label & search_label) == search_label;
 }

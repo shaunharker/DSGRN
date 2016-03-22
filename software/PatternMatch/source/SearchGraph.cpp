@@ -91,7 +91,7 @@ graphviz ( void ) const {
   std::stringstream ss;
   ss << "digraph {\n";
   for ( uint64_t vertex = 0; vertex < size (); ++ vertex ) {
-    ss << vertex << "[label=\"" << labelstring(label(vertex)) << "\"];\n";
+    ss << vertex << "[label=\"" << vertex << ":" << labelstring(label(vertex)) << "\"];\n";
   }
   for ( uint64_t source = 0; source < size (); ++ source ) {
     for ( uint64_t target : adjacencies(source) ) {

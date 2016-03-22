@@ -3,10 +3,10 @@
 
 std::string expected_output = 
   "digraph {\n"
-  "0[label=\"I?\"];\n"
-  "1[label=\"?D\"];\n"
-  "2[label=\"D?\"];\n"
-  "3[label=\"?I\"];\n"
+  "0[label=\"0:I?\"];\n"
+  "1[label=\"1:?D\"];\n"
+  "2[label=\"2:D?\"];\n"
+  "3[label=\"3:?I\"];\n"
   "0 -> 1 [label=\"1\"];\n"
   "1 -> 2 [label=\"0\"];\n"
   "2 -> 3 [label=\"1\"];\n"

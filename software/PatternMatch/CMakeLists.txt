@@ -80,3 +80,5 @@ enable_testing()
 add_test ( TestPattern ${CMAKE_BINARY_DIR}/bin/TestPattern )
 add_test ( TestPatternGraph ${CMAKE_BINARY_DIR}/bin/TestPatternGraph )
 add_test ( TestSearchGraph ${CMAKE_BINARY_DIR}/bin/TestSearchGraph )
+add_test ( TestMatchingGraph ${CMAKE_BINARY_DIR}/bin/TestMatchingGraph )
+

@@ -126,7 +126,7 @@ graphviz ( void ) const {
   std::stringstream ss;
   ss << "digraph {\n";
   for ( uint64_t vertex = 0; vertex < size (); ++ vertex ) {
-    ss << vertex << "[label=\"" << labelstring(label ( vertex ));
+    ss << vertex << "[label=\"" << vertex << ":" << labelstring(label ( vertex ));
     if ( vertex == root() ) ss << "(root)";
     if ( vertex == leaf() ) ss << "(leaf)";
     ss << "\"];\n";

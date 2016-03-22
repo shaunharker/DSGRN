@@ -20,23 +20,23 @@ public:
   MatchingGraph ( void );
 
   /// MatchingGraph
-  ///   Create a matching graph from a pattern graph and a search graph
-  MatchingGraph ( PatternGraph const& pg, SearchGraph const& sg );
+  ///   Create a matching graph from a search graph and a pattern graph
+  MatchingGraph ( SearchGraph const& sg, PatternGraph const& pg );
 
   /// assign
-  ///   Create a matching graph from a pattern graph and a search graph
+  ///   Create a matching graph from a search graph and a pattern graph
   void
-  assign ( PatternGraph const& pg, SearchGraph const& sg );
-
-  /// PatternGraph
-  ///    Return associated pattern graph
-  PatternGraph const&
-  patterngraph ( void ) const;
+  assign ( SearchGraph const& sg, PatternGraph const& pg );
 
   /// SearchGraph
   ///   Return associated search graph
   SearchGraph const&
   searchgraph ( void ) const;
+
+  /// PatternGraph
+  ///   Return associated pattern graph
+  PatternGraph const&
+  patterngraph ( void ) const;
 
   /// Vertex
   ///   vertex data type. The first entry correspond to a vertex
@@ -51,6 +51,12 @@ public:
   std::vector<Vertex>
   adjacencies ( Vertex const& v ) const;
 
+  /// roots
+  ///   Give the elements of the form (domain, root)
+  ///   in the matching graph
+  std::vector<Vertex>
+  roots ( void ) const;
+  
   /// domain
   ///   Given a vertex v, return the associated domain (i.e. vertex in search graph)
   ///   Note this domain index may not be consistent with the indexing in the domain graph
@@ -67,6 +73,11 @@ public:
   ///   Given a domain and position, return the associated vertex in the matching graph
   Vertex
   vertex ( uint64_t domain, uint64_t position ) const;
+
+  /// graphviz
+  ///   Return a graphviz representation of the matching graph
+  std::string
+  graphviz ( void ) const;
 
 private:
   /// _match
