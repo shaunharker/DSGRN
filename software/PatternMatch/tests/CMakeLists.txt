@@ -1,13 +1,16 @@
 
 set ( LIBS ${LIBS}
            ${Boost_LIBRARIES}
-           libdsgrn
+           dsgrn
            libdsgrnpatternmatch
            sqlite3 )
 
 set( TARGETS 
-        testDataStructures
-        testPatternMatch )
+        TestPattern
+        TestPatternGraph
+        TestSearchGraph
+        TestMatchingGraph 
+        TestPatternMatch )
 
 foreach ( TARGET ${TARGETS} ) 
   add_executable ( ${TARGET} ${TARGET}.cpp )

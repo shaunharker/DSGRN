@@ -13,7 +13,9 @@
 #include <vector>
 #include <string>
 #include <cstdint>
+#include <cstdlib>
 #include <algorithm>
+#include <stack>
 #include <functional>
 #include <utility>
 #include <cctype>

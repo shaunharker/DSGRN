@@ -73,7 +73,7 @@ descendants ( uint64_t v ) const {
 }
 
 INLINE_IF_HEADER_ONLY std::set<uint64_t> Poset::
-maximal ( std::set<uint64_t> const& elements ) {
+maximal ( std::set<uint64_t> const& elements ) const {
   std::set<uint64_t> result;
   auto is_maximal = [&](uint64_t u){
     for ( uint64_t v : elements ) if ( compare (u, v) ) return false;

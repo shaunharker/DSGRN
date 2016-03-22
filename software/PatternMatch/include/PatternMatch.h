@@ -5,7 +5,9 @@
 #ifndef PATTERNMATCH_H
 #define PATTERNMATCH_H
 
-#include "PatternGraph.h"
+#include "DSGRN.h"
+#include "common.h"
+#include "MatchingGraph.h"
 
 /// QueryCycleMatch
 ///   Determine if there is a cycle match

@@ -5,6 +5,11 @@
 #ifndef PATTERN_H
 #define PATTERN_H
 
+#include "DSGRN.h"
+#include "common.h"
+
+struct Pattern_;
+
 class Pattern {
 public:
   /// Pattern
@@ -24,7 +29,6 @@ public:
   ///    bit i+D     bit i   interpretation
   ///         0        1    ith variable decreasing  
   ///         1        0    ith variable increasing
-  ///         0        0    ith variable can either increase or decrease
   ///   Note the limitation to 32 dimensions. Here D is the number of
   ///   variables.
   Pattern ( Poset const& poset, 
@@ -68,7 +72,7 @@ public:
   event ( uint64_t v ) const;
 
 private:
-  std::shared_ptr<PatternGraph_> data_;
+  std::shared_ptr<Pattern_> data_;
   /// serialize
   ///   For use with BOOST Serialization library,
   ///   which is used by the cluster-delegator MPI package

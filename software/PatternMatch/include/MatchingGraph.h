@@ -5,8 +5,9 @@
 #ifndef MATCHINGGRAPH_H
 #define MATCHINGGRAPH_H
 
+#include "DSGRN.h"
+#include "common.h"
 #include <boost/functional/hash.hpp>
-
 #include "PatternGraph.h"
 #include "SearchGraph.h"
 
@@ -68,6 +69,11 @@ public:
   vertex ( uint64_t domain, uint64_t position ) const;
 
 private:
+  /// _match
+  ///   Return true if search graph label and pattern graph label match
+  bool
+  _match ( uint64_t search_label, uint64_t pattern_label ) const;
+
   std::shared_ptr<MatchingGraph_> data_;
   /// serialize
   ///   For use with BOOST Serialization library,

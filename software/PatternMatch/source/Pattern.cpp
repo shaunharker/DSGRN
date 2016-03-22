@@ -6,7 +6,7 @@
 
 Pattern::
 Pattern ( void ) {
-  data_ . reset ( new Pattern );
+  data_ . reset ( new Pattern_ );
 }
 
 Pattern::
@@ -22,6 +22,7 @@ assign ( Poset const& poset,
          std::unordered_map<uint64_t,uint64_t> const& events, 
          uint64_t initial_label,
          uint64_t dimension ) {
+  data_ . reset ( new Pattern_ );
   data_ -> poset_ = poset;
   data_ -> events_ = events;
   data_ -> label_ = initial_label;

@@ -5,6 +5,10 @@
 #ifndef PATTERNGRAPH_H
 #define PATTERNGRAPH_H
 
+#include "DSGRN.h"
+#include "common.h"
+#include "Pattern.h"
+
 struct PatternGraph_;
 
 class PatternGraph {

@@ -19,7 +19,7 @@ assign ( DomainGraph const& dg, uint64_t morse_set_index ) {
   data_ . reset ( new SearchGraph_ );
   data_ -> dimension_ = dg . dimension ();
   MorseDecomposition md ( dg . digraph () );
-  auto & morse_set = md . recurrent () [ morse_set_index ];
+  auto const& morse_set = md . recurrent () [ morse_set_index ];
   Digraph & digraph = data_ -> digraph_;
   std::unordered_map<uint64_t, uint64_t> domain_to_vertex;
   uint64_t N = 0;
@@ -28,10 +28,10 @@ assign ( DomainGraph const& dg, uint64_t morse_set_index ) {
     data_ -> labels_ . push_back ( dg . label ( domain ) );
   }
   digraph . resize ( N );
-  data_ -> switching_ . resize ( N );
+  data_ -> event_ . resize ( N );
   for ( uint64_t source : morse_set ) {
     uint64_t u = domain_to_vertex[source];
-    for ( uint64_t target : dg . adjacencies ( domain ) ) {
+    for ( uint64_t target : dg . digraph() . adjacencies ( source ) ) {
       if ( domain_to_vertex . count ( target ) ) {
         uint64_t v = domain_to_vertex[target];
         digraph . add_edge ( u, v );
@@ -72,7 +72,7 @@ uint64_t SearchGraph::
 _label_event ( uint64_t source_label, uint64_t target_label, 
               uint64_t direction, uint64_t dimension ) const {
   // lookup[2^i] == i for 0 <= i < 32, lookup[0] = -1
-  static const std::unordered_map<uint64_t,uint64_t> lookup = 
+  static std::unordered_map<uint64_t,uint64_t> lookup = 
     { {1, 0}, {2, 1}, {4, 2}, {8, 3}, 
       {16, 4}, {32, 5}, {64, 6}, {128, 7}, 
       {256, 8}, {512, 9}, {1024, 10}, {2048, 11}, 
@@ -84,7 +84,7 @@ _label_event ( uint64_t source_label, uint64_t target_label,
       {0, -1}
     };
   // Mask first D bits, apart from direction variable
-  uint64_t mask = (1 << dimension - 1) ^ (1 << direction);
+  uint64_t mask = ((1 << dimension) - 1) ^ (1 << direction);
   // Apply mask to determine 
   uint64_t one_hot = (source_label ^ target_label) & mask;
   return lookup [ one_hot ];

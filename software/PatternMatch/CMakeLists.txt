@@ -46,7 +46,6 @@ include_directories (
   ./include
   ../../include
   /usr/local/include 
-  /opt/local/include 
   ${Boost_INCLUDE_DIRS} 
   ${USER_INCLUDE_PATH} )
 
@@ -56,8 +55,7 @@ include_directories (
 
 link_directories ( 
   ${USER_LIBRARY_PATH} 
-  /usr/local/lib 
-  /opt/local/lib )
+  /usr/local/lib )
 
 ###########
 # Outputs #

@@ -5,6 +5,9 @@
 #ifndef SEARCHGRAPH_H
 #define SEARCHGRAPH_H
 
+#include "DSGRN.h"
+#include "common.h"
+
 struct SearchGraph_;
 
 class SearchGraph {

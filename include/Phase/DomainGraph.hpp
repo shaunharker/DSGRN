@@ -80,7 +80,7 @@ label ( uint64_t domain ) const {
 
 INLINE_IF_HEADER_ONLY uint64_t DomainGraph::
 direction ( uint64_t source, uint64_t target ) const {
-  return data_ -> direction_ [ std::abs(source-target) ];
+  return data_ -> direction_ [ std::abs((int64_t)source-(int64_t)target) ];
 }
 
 INLINE_IF_HEADER_ONLY Annotation const DomainGraph::

@@ -8,20 +8,20 @@
 
 PatternGraph::
 PatternGraph ( void ) {
-  data_ . reset ( new PatternGraph );
+  data_ . reset ( new PatternGraph_ );
 }
 
 PatternGraph::
 PatternGraph ( Pattern const& pattern ) {
-  assign ( poset );
+  assign ( pattern );
 }
 
 void PatternGraph::
 assign ( Pattern const& pattern ) {
-  data_ . reset ( new PatternGraph );
+  data_ . reset ( new PatternGraph_ );
   // Initialize data structures
   Digraph digraph;
-  Poset & poset = pattern . poset ();
+  Poset const& poset = pattern . poset ();
   typedef std::set<uint64_t> Clique;
   std::unordered_map<Clique, uint64_t, boost::hash<Clique>> vertices;
   // Add the leaf vertex to the pattern graph, which corresponds to
