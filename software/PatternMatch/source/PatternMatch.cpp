@@ -10,9 +10,9 @@ QueryCycleMatch ( MatchingGraph const& mg ) {
   typedef MatchingGraph::Vertex Vertex;
   uint64_t N = mg . searchgraph() . size ();
   for ( uint64_t domain = 0; domain < N; ++ domain ) {
-    Vertex start = mg . vertex ( domain, mg . patterngraph() . root () );
-    Vertex end = mg . vertex ( domain, mg . patterngraph() . leaf () );
-    // TODO MAKE SURE start/end exist
+    Vertex start = {domain, mg . patterngraph() . root () };
+    Vertex end = {domain, mg . patterngraph() . leaf () };
+    if ( not ( mg . query ( start ) && mg . query ( end ) ) ) continue;
     std::unordered_set<Vertex, boost::hash<Vertex>> explored; 
     std::stack<Vertex> dfs_stack;
     dfs_stack . push ( start );
@@ -31,24 +31,25 @@ QueryCycleMatch ( MatchingGraph const& mg ) {
   return false;
 }
 
-/*
+
 bool
 QueryPathMatch ( MatchingGraph const& mg ) {
+  typedef MatchingGraph::Vertex Vertex;
   uint64_t N = mg . searchgraph() . size ();
   for ( uint64_t domain = 0; domain < N; ++ domain ) {
-    uint64_t start = mg . vertex ( domain, mg . patterngraph() . root () );
+    Vertex start = {domain, mg . patterngraph() . root () };
     uint64_t end = mg . patterngraph() . leaf ();
-    // TODO MAKE SURE start/end exist
-    std::unordered_set<uint64_t> explored; 
-    std::stack<uint64_t> dfs_stack;
+    if ( not mg . query ( start ) ) continue;
+    std::unordered_set<Vertex, boost::hash<Vertex>> explored; 
+    std::stack<Vertex> dfs_stack;
     dfs_stack . push ( start );
     while ( not dfs_stack . empty () ) {
-      uint64_t vertex = dfs_stack . top ();
+      Vertex vertex = dfs_stack . top ();
       dfs_stack . pop ();
       if ( mg.position(vertex) == end ) return true;
       explored . insert ( vertex );
-      for ( uint64_t next_vertex : mg . adjacencies ( vertex ) ) {
-        if ( explored [ vertex ] . count () == 0 ) { 
+      for ( Vertex const& next_vertex : mg . adjacencies ( vertex ) ) {
+        if ( explored . count ( next_vertex ) == 0 ) { 
           dfs_stack . push ( next_vertex );
         }
       }
@@ -57,6 +58,7 @@ QueryPathMatch ( MatchingGraph const& mg ) {
   return false;
 }
 
+/*
 
 uint64_t
 CountCycleMatches ( MatchingGraph const& mg ) {

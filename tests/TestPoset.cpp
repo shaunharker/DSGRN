@@ -29,6 +29,7 @@ int main ( int argc, char * argv [] ) {
     digraph1 . add_edge ( n1, n3 );
     digraph1 . add_edge ( n3, n4 );
     digraph1 . add_edge ( n3, n5 );
+    digraph1 . finalize ();
     // Define the annotations
     for ( uint64_t i=0; i<digraph1.size(); ++i ) {
       std::stringstream ss;
@@ -51,6 +52,7 @@ int main ( int argc, char * argv [] ) {
     digraph2 . add_edge ( nn1, nn2 );
     digraph2 . add_edge ( nn2, nn4 );
     digraph2 . add_edge ( nn2, nn5 );
+    digraph2 . finalize ();
     annotations2 = annotations1;
     // Fix 3 nodes, because we swapped 3 nodes numbers from digraph1
     Annotation an2, an3, an6;
@@ -95,7 +97,7 @@ int main ( int argc, char * argv [] ) {
     std::cout << "Poset1 Digraph\n";
     std::cout << mg1 . poset ();
     std::cout << "Poset1 Annotations\n";
-    for ( uint64_t i=0; i<poset1.size(); ++i ) {
+    for ( uint64_t i = 0; i < poset1.size(); ++i ) {
       for ( auto u : mg1.annotation(i) ) {
         std::cout << u << " ";
       }
@@ -104,7 +106,7 @@ int main ( int argc, char * argv [] ) {
     std::cout << "Poset2 Digraph\n";
     std::cout << mg2 . poset();
     std::cout << "Poset2 Annotations\n";
-    for ( uint64_t i=0; i<poset2.size(); ++i ) {
+    for ( uint64_t i = 0; i < poset2.size(); ++i ) {
       for ( auto u : mg2.annotation(i) ) {
         std::cout << u << " ";
       }

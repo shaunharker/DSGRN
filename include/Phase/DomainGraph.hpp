@@ -61,6 +61,7 @@ assign ( Parameter const parameter ) {
       }
     }
   }
+  digraph . finalize ();
 }
 
 INLINE_IF_HEADER_ONLY Digraph const DomainGraph::

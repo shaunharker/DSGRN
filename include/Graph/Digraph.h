@@ -18,11 +18,18 @@ struct Digraph_;
 ///        lists are sorted. 
 class Digraph {
 public:
-  /// constructor
+  /// Digraph
+  ///   default constructor
   Digraph ( void );
 
-  /// construct a Diagraph from an adjacency list
+  /// Digraph
+  ///   construct a Digraph from an adjacency list
   Digraph ( std::vector<std::vector<uint64_t>> & adjacencies );
+
+  /// assign
+  ///   construct a Digraph from an adjacency list
+  void
+  assign ( std::vector<std::vector<uint64_t>> & adjacencies );
 
   /// adjacencies (getter)
   ///   Return vector of Vertices which are out-edge adjacencies of input v
@@ -57,6 +64,11 @@ public:
   ///   Warning: does not check if edge already exists
   void
   add_edge ( uint64_t source, uint64_t target );
+
+  /// finalize
+  ///   sort the adjacency lists in ascending order
+  void
+  finalize ( void );
 
   /// transpose
   ///   Return the transpose graph (https://en.wikipedia.org/wiki/Transpose_graph)
@@ -99,11 +111,6 @@ public:
 
 protected:
   std::shared_ptr<Digraph_> data_;
-
-  /// _sortAdjacencies
-  ///   sort the adjacency lists in ascending order
-  void
-  _sortAdjacencies ( void );
   
   /// serialize
   ///   For use with BOOST Serialization library,

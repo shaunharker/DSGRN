@@ -26,9 +26,17 @@ SearchGraph const& MatchingGraph::
 searchgraph ( void ) const {
   return data_ ->  sg_;
 }
+
 PatternGraph const& MatchingGraph::
 patterngraph ( void ) const {
   return data_ -> pg_;
+}
+
+bool MatchingGraph::
+query ( Vertex const& v ) const {
+  uint64_t search_label = searchgraph().label(v.first);
+  uint64_t pattern_label = patterngraph().label(v.second);
+  return (pattern_label & search_label) == search_label;
 }
 
 std::vector<MatchingGraph::Vertex> MatchingGraph::
@@ -38,9 +46,7 @@ adjacencies ( Vertex const& v ) const {
   uint64_t const& position = v . second;
   for ( auto nextdomain : searchgraph() . adjacencies(domain) ) {
     // Check for intermediate match
-    if ( _match ( searchgraph().label(nextdomain), patterngraph().label(position) ) ) {
-      result . push_back ( Vertex(nextdomain, position) );
-    }
+    if ( query ( {nextdomain, position} ) ) result . push_back ( {nextdomain, position} );
     // Check for extremal match
     // Determine what variable can have a min/max event 
     uint64_t variable = searchgraph() . event ( domain, nextdomain );
@@ -48,10 +54,9 @@ adjacencies ( Vertex const& v ) const {
     // Find successor in pattern graph which consumes event
     uint64_t nextposition = patterngraph() . consume ( position, variable );
     if ( nextposition == -1 ) continue;
-    if ( _match ( searchgraph().label(nextdomain), patterngraph().label(nextposition) ) ) {
-      result . push_back ( Vertex(nextdomain, nextposition) );
-    }
+    if ( query ( {nextdomain, nextposition} ) ) result . push_back ( {nextdomain, nextposition} );
   }
+  std::sort ( result.begin(), result.end() );
   return result;
 }
 
@@ -60,9 +65,7 @@ roots ( void ) const {
   std::vector<Vertex> result;
   uint64_t root = patterngraph().root();
   for ( uint64_t domain = 0; domain < searchgraph().size(); ++ domain ) {
-    if ( _match(searchgraph().label(domain), patterngraph().label(root)) ) {
-      result . push_back ( vertex(domain, root) );
-    }
+    if ( query ( {domain, root} ) ) result . push_back ( {domain, root} );
   }
   return result;
 }
@@ -85,28 +88,29 @@ vertex ( uint64_t domain, uint64_t position ) const {
 std::string MatchingGraph::
 graphviz ( void ) const {
   std::stringstream ss;
-  std::unordered_map<Vertex, uint64_t, boost::hash<Vertex>> vertices;
+  std::set<Vertex> vertices;
   std::stack<Vertex> dfs;
   for ( Vertex const& v : roots () ) dfs . push ( v );
   while ( not dfs . empty () ) {
     Vertex v = dfs . top ();
     dfs . pop ();
     if ( vertices . count ( v ) ) continue;
-    uint64_t index = vertices . size ();
-    vertices[v] = index;
+    vertices . insert ( v );
     for ( Vertex const& u : adjacencies ( v ) ) {
       if ( vertices . count ( u ) ) continue;
       dfs . push(u);
     }
   }
+  std::unordered_map<Vertex,uint64_t,boost::hash<Vertex>> indexing;
   ss << "digraph {\n";
-  for ( auto const& pair : vertices ) {
-    ss << pair.second << "[label=\"(" << domain(pair.first) << "," << position(pair.first) << ")\"];\n";
+  for ( Vertex const& v : vertices ) {
+    uint64_t index = indexing . size ();
+    indexing[v] = index;
+    ss << index << "[label=\"(" << domain(v) << "," << position(v) << ")\"];\n";
   }
-  for ( auto const& pair : vertices ) {
-    Vertex const& source = pair.first;
+  for ( Vertex const& source : vertices ) {
     for ( Vertex const& target : adjacencies(source) ) {
-      ss << vertices[source] << " -> " << vertices[target] << "\n";
+      ss << indexing[source] << " -> " << indexing[target] << ";\n";
     }
   }
   ss << "}\n";

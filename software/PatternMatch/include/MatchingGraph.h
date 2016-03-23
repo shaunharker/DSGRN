@@ -45,6 +45,12 @@ public:
   ///   position 
   typedef std::pair<uint64_t,uint64_t> Vertex;
 
+  /// query
+  ///   Given a (domain, position) pair, determine if it is
+  ///   a vertex in the matching graph
+  bool
+  query ( Vertex const& v ) const;
+  
   /// adjacencies
   ///   Given a vertex v, return vector of vertices which 
   ///   are out-edge adjacencies of input v
@@ -71,6 +77,7 @@ public:
 
   /// vertex
   ///   Given a domain and position, return the associated vertex in the matching graph
+  ///   Note: will 
   Vertex
   vertex ( uint64_t domain, uint64_t position ) const;
 

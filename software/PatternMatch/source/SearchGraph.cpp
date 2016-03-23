@@ -46,6 +46,7 @@ assign ( DomainGraph const& dg, uint64_t morse_set_index ) {
       }
     }
   }
+  digraph . finalize ();
 }
 
 uint64_t SearchGraph::

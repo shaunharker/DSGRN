@@ -1,6 +1,21 @@
 #include <iostream>
 #include "MatchingGraph.h"
 
+std::string expected_output =
+  "digraph {\n"
+  "0[label=\"(0,4)\"];\n"
+  "1[label=\"(1,1)\"];\n"
+  "2[label=\"(1,7)\"];\n"
+  "3[label=\"(2,0)\"];\n"
+  "4[label=\"(2,7)\"];\n"
+  "5[label=\"(3,5)\"];\n"
+  "0 -> 1;\n"
+  "1 -> 3;\n"
+  "2 -> 4;\n"
+  "4 -> 5;\n"
+  "5 -> 0;\n"
+  "}\n";
+
 int main ( int argc, char * argv [] ) {
   try {
     // Build pattern
@@ -31,12 +46,12 @@ int main ( int argc, char * argv [] ) {
     SearchGraph sg ( dg, 0 );
     // Construct matching graph
     MatchingGraph mg ( sg, pg );
-    // Print search graph
+    // Print matching graph
     std::string output = mg . graphviz ();
     std::cout << output;
-    // if ( output != expected_output ) {
-    //   throw std::logic_error("Did not get expected output");
-    // }
+    if ( output != expected_output ) {
+      throw std::logic_error("Did not get expected output");
+    }
   } catch ( std::exception & e ) {
     std::cout << "Failed: " << e . what () << "\n";
     return 1;

@@ -21,14 +21,14 @@ assign ( Pattern const& pattern ) {
   // std::cout << "DEBUG PatternGraph::assign " << __LINE__ << "\n";
   data_ . reset ( new PatternGraph_ );
   data_ -> dimension_ = pattern . dimension ();
+  data_ -> size_ = 0;
   // Initialize data structures
-  Digraph digraph;
   Poset const& poset = pattern . poset ();
   typedef std::set<uint64_t> Clique;
   std::unordered_map<Clique, uint64_t, boost::hash<Clique>> vertices;
   // Add the leaf vertex to the pattern graph, which corresponds to
   // the set of maximal elements in the pattern poset.
-  data_ -> leaf_ = digraph . add_vertex ();
+  data_ -> leaf_ = data_ -> size_ ++;
   data_ -> labels_ . push_back ( pattern . label () );
   data_ -> consume_ . push_back ( std::unordered_map<uint64_t, uint64_t> () );
   Clique maximal = poset . maximal ( std::set<uint64_t> ( 
@@ -58,7 +58,7 @@ assign ( Pattern const& pattern ) {
       // If newly discovered, add it to pattern graph
       if ( vertices . count ( parent_clique ) == 0 ) {
         //std::cout << "Newly discovered.\n";
-        vertices[parent_clique] = digraph . add_vertex ();
+        vertices[parent_clique] = data_ -> size_ ++;
         //std::cout << "  Assigning index " << vertices[parent_clique] << "\n";
         recursion_stack.push(parent_clique);
         data_ -> labels_ . push_back ( 0 );
@@ -66,7 +66,6 @@ assign ( Pattern const& pattern ) {
       }
       // Add the edge to the pattern graph
       uint64_t source = vertices[parent_clique];
-      digraph . add_edge ( source, target );
       //std::cout << "Adding edge from " << source << " to " << target << "\n";
       // Use event variable to set consume_ and labels_ data
       auto const& variable = pattern . event ( v );
@@ -79,7 +78,6 @@ assign ( Pattern const& pattern ) {
     }
   }
   data_ -> root_ = vertices [ std::set<uint64_t> () ];
-  data_ -> size_ = vertices . size ();
 }
 
 uint64_t PatternGraph::

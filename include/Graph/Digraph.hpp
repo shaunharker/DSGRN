@@ -18,9 +18,14 @@ Digraph ( void ) {
 
 INLINE_IF_HEADER_ONLY Digraph::
 Digraph ( std::vector<std::vector<uint64_t>> & adjacencies ) {
+  assign ( adjacencies );
+}
+
+INLINE_IF_HEADER_ONLY void Digraph::
+assign ( std::vector<std::vector<uint64_t>> & adjacencies ) {
   data_ . reset ( new Digraph_ );
   data_ -> adjacencies_ = adjacencies;
-  _sortAdjacencies ();
+  finalize ();
 }
 
 INLINE_IF_HEADER_ONLY std::vector<uint64_t> const& Digraph::
@@ -52,6 +57,11 @@ add_vertex ( void ) {
 INLINE_IF_HEADER_ONLY void Digraph::
 add_edge ( uint64_t source, uint64_t target ) {
   data_ -> adjacencies_[source].push_back(target);
+}
+
+INLINE_IF_HEADER_ONLY void Digraph::
+finalize ( void ) {
+  for ( auto & adj_list : data_ -> adjacencies_ ) sort ( adj_list.begin(), adj_list.end() );
 }
 
 INLINE_IF_HEADER_ONLY Digraph Digraph::
@@ -176,7 +186,7 @@ parse ( std::string const& str ) {
       data_ -> adjacencies_[source] . push_back ( target );
     }
   }
-  _sortAdjacencies ();
+  finalize ();
 }
 
 INLINE_IF_HEADER_ONLY std::ostream& operator << ( std::ostream& stream, Digraph const& dg ) {
@@ -192,12 +202,5 @@ INLINE_IF_HEADER_ONLY std::ostream& operator << ( std::ostream& stream, Digraph 
   stream << "}\n";
   return stream;
 }
-
-
-INLINE_IF_HEADER_ONLY void Digraph::
-_sortAdjacencies ( void ) {
-  for ( auto & adj_list : data_ -> adjacencies_ ) sort ( adj_list.begin(), adj_list.end() );
-}
-
 
 #endif
