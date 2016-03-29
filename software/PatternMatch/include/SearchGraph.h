@@ -25,6 +25,11 @@ public:
   void
   assign ( DomainGraph const& dg, uint64_t morse_set_index );
 
+  /// domaingraph
+  ///   Access underlying domaingraph object
+  DomainGraph const&
+  domaingraph ( void ) const;
+
   /// size
   ///   Return the number of vertices in the search graph
   uint64_t
@@ -34,6 +39,13 @@ public:
   ///   Return the number of variables
   uint64_t
   dimension ( void ) const;
+
+  /// domain
+  ///   Given a search graph vertex, return the 
+  ///   associated domain vertex from the original
+  ///   domain graph
+  uint64_t
+  domain ( uint64_t v ) const;
 
   /// label
   ///   Given a vertex, return the associated label
@@ -86,8 +98,10 @@ private:
 };
 
 struct SearchGraph_ {
+  DomainGraph domaingraph_;
   Digraph digraph_;
   std::vector<uint64_t> labels_;
+  std::vector<uint64_t> domain_;
   std::vector<std::unordered_map<uint64_t, uint64_t>> event_;
   uint64_t dimension_;
   /// serialize
@@ -96,8 +110,10 @@ struct SearchGraph_ {
   friend class boost::serialization::access;
   template<class Archive>
   void serialize(Archive & ar, const unsigned int version) {
+    ar & domaingraph_;
     ar & digraph_;
     ar & labels_;
+    ar & domain_;
     ar & event_;
     ar & dimension_;
   }

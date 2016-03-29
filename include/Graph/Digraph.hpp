@@ -189,18 +189,25 @@ parse ( std::string const& str ) {
   finalize ();
 }
 
-INLINE_IF_HEADER_ONLY std::ostream& operator << ( std::ostream& stream, Digraph const& dg ) {
+
+INLINE_IF_HEADER_ONLY std::string Digraph::
+graphviz ( void ) const {
+  std::stringstream stream;
   stream << "digraph {\n";
-  for ( uint64_t v = 0; v < dg . size (); ++ v ) {
+  for ( uint64_t v = 0; v < size (); ++ v ) {
     stream << v << ";\n";
   }
-  for ( uint64_t source = 0; source < dg . size (); ++ source ) {
-    for ( uint64_t target : dg . adjacencies ( source ) ) {
+  for ( uint64_t source = 0; source < size (); ++ source ) {
+    for ( uint64_t target : adjacencies ( source ) ) {
       stream << source << " -> " << target << ";\n";
     }
   }
   stream << "}\n";
-  return stream;
+  return stream . str ();
+}
+
+INLINE_IF_HEADER_ONLY std::ostream& operator << ( std::ostream& stream, Digraph const& dg ) {
+  return stream << dg . graphviz ();
 }
 
 #endif

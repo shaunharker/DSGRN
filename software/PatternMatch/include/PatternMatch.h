@@ -29,4 +29,12 @@ CountCycleMatches ( MatchingGraph const& mg );
 uint64_t
 CountPathMatches ( MatchingGraph const& mg );
 
+/// Debugging
+
+/// ExplainCycleMatch
+///   Return a path through the MatchingGraph corresponding 
+///   to a cycle match
+std::string
+ExplainCycleMatch ( MatchingGraph const& mg );
+
 #endif

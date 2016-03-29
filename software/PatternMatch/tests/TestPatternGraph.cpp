@@ -34,7 +34,7 @@ int main ( int argc, char * argv [] ) {
     digraph . resize ( 4 );
     digraph . add_edge ( 0, 2 );
     digraph . add_edge ( 1, 3 );
-    std::unordered_map<uint64_t,uint64_t> events;
+    std::vector<uint64_t> events ( 4 );
     events[0] = 0; events[2] = 0;
     events[1] = 1; events[3] = 1;
     uint64_t label = 3;

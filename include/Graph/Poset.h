@@ -88,6 +88,9 @@ public:
 
   /// parse
   ///   Initialize from a JSON description
+  ///   Format: A JSON description of a Digraph object
+  ///           The digraph is one suitable for use in
+  ///           the constructor method.
   void
   parse ( std::string const& str );
 

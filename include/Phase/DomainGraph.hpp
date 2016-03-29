@@ -74,6 +74,17 @@ dimension ( void ) const {
   return data_ -> dimension_;
 }
 
+INLINE_IF_HEADER_ONLY std::vector<uint64_t> DomainGraph::
+coordinates ( uint64_t domain ) const {
+  std::vector<uint64_t> result ( dimension () );
+  std::vector<uint64_t> limits = data_ -> parameter_ . network() . domains ();
+  for ( int d = 0; d < dimension(); ++ d ) { 
+    result[d] = domain % limits[d];
+    domain = domain / limits[d];
+  }
+  return result;
+}
+
 INLINE_IF_HEADER_ONLY uint64_t DomainGraph::
 label ( uint64_t domain ) const {
   return data_ -> labelling_ [ domain ];
@@ -146,10 +157,14 @@ annotate ( Component const& vertices ) const {
   return a;
 }
 
+INLINE_IF_HEADER_ONLY std::string DomainGraph::
+graphviz ( void ) const {
+  return digraph () . graphviz (); 
+}
+
 INLINE_IF_HEADER_ONLY std::ostream& operator << ( std::ostream& stream, DomainGraph const& dg ) {
   stream << dg . digraph ();
   return stream;
 }
-
 
 #endif

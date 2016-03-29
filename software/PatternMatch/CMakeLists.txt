@@ -1,6 +1,6 @@
 
 cmake_minimum_required (VERSION 2.6) 
-project (DSGRN) 
+project (DSGRN-PatternMatch) 
 
 #########
 # rpath #
@@ -36,6 +36,7 @@ message( STATUS "Chose the following prefix: " ${CMAKE_INSTALL_PREFIX} )
 ############
 
 find_package(Boost 1.58.0 REQUIRED COMPONENTS serialization)
+find_package(MPI REQUIRED)
 
 #######################
 # Include Directories #
@@ -43,6 +44,7 @@ find_package(Boost 1.58.0 REQUIRED COMPONENTS serialization)
 
 include_directories ( 
   ${CMAKE_SOURCE_DIR}/include
+  ${MPI_INCLUDE_PATH}
   ./include
   ../../include
   /usr/local/include 

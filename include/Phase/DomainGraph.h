@@ -37,6 +37,14 @@ public:
   uint64_t
   dimension ( void ) const;
 
+  /// coordinates
+  ///   Given a domain vertex, express the domain
+  ///   in coordinates (n1, n2, ..., nd), where
+  ///   ni is the number of thresholds the domain 
+  ///   is above in the ith dimension
+  std::vector<uint64_t>
+  coordinates ( uint64_t domain ) const;
+  
   /// label
   ///   Given a domain, return a 64-bit integer 
   ///   which indicates whether each wall is an entrance
@@ -68,6 +76,11 @@ public:
   ///   annotation describing them
   Annotation const
   annotate ( Component const& vertices ) const;
+
+  /// graphviz
+  ///   Return a graphviz representation of the domain graph
+  std::string
+  graphviz ( void ) const;
 
   /// operator <<
   ///   Emit data to stream in graphviz format

@@ -102,8 +102,17 @@ public:
 
   /// parse
   ///   Initialize from a JSON description
+  ///   Format: an array of arrays of integers.
+  ///           The inner arrays are adjacency lists.
+  ///           Vertices are numbered 0...N-1
+  ///           The outer array has length N
   void
   parse ( std::string const& str );
+
+  /// graphviz
+  ///   Return a graphviz representation of the digraph
+  std::string
+  graphviz ( void ) const;
 
   /// operator <<
   ///   Emit data to stream in graphviz format

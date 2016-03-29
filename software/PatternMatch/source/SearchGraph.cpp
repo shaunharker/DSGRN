@@ -17,6 +17,7 @@ SearchGraph ( DomainGraph const& dg, uint64_t morse_set_index ) {
 void SearchGraph::
 assign ( DomainGraph const& dg, uint64_t morse_set_index ) {
   data_ . reset ( new SearchGraph_ );
+  data_ -> domaingraph_ = dg;
   data_ -> dimension_ = dg . dimension ();
   MorseDecomposition md ( dg . digraph () );
   auto const& morse_set = md . recurrent () [ morse_set_index ];
@@ -30,8 +31,10 @@ assign ( DomainGraph const& dg, uint64_t morse_set_index ) {
   }
   digraph . resize ( N );
   data_ -> event_ . resize ( N );
+  data_ -> domain_ . resize ( N );
   for ( uint64_t source : morse_set ) {
     uint64_t u = domain_to_vertex[source];
+    data_ -> domain_ [ u ] = source;
     for ( uint64_t target : dg . digraph() . adjacencies ( source ) ) {
       if ( domain_to_vertex . count ( target ) ) {
         uint64_t v = domain_to_vertex[target];
@@ -49,6 +52,11 @@ assign ( DomainGraph const& dg, uint64_t morse_set_index ) {
   digraph . finalize ();
 }
 
+DomainGraph const& SearchGraph::
+domaingraph ( void ) const {
+  return data_ -> domaingraph_;
+}
+
 uint64_t SearchGraph::
 size ( void ) const {
   return data_ -> digraph_ . size ();
@@ -57,6 +65,11 @@ size ( void ) const {
 uint64_t SearchGraph::
 dimension ( void ) const {
   return data_ -> dimension_;
+}
+
+uint64_t SearchGraph::
+domain ( uint64_t v ) const {
+  return data_ -> domain_ [ v ];
 }
 
 uint64_t SearchGraph::

@@ -2,6 +2,26 @@
 #include "PatternMatch.h"
 
 int main ( int argc, char * argv [] ) {
+  if ( argc == 5 ) {
+    Network network; network . load ( argv[1] );
+    Pattern pattern; pattern . load ( argv[2] );
+    uint64_t parameter_index = std::stoll(argv[3]);
+    uint64_t morse_set_index = std::stoll(argv[4]);
+    ParameterGraph parametergraph ( network );
+    Parameter parameter = parametergraph . parameter ( parameter_index );
+    DomainGraph domaingraph ( parameter );
+    SearchGraph searchgraph ( domaingraph, morse_set_index );
+    PatternGraph patterngraph ( pattern );
+    MatchingGraph matchinggraph ( searchgraph, patterngraph );
+    std::cout << ExplainCycleMatch ( matchinggraph ) << "\n";
+    std::ofstream dg ( "domaingraph.gv" );
+    dg << domaingraph . graphviz () << "\n";
+    std::ofstream sg ( "searchgraph.gv" );
+    sg << searchgraph . graphviz () << "\n";
+    std::ofstream pg ( "patterngraph.gv");
+    pg << patterngraph . graphviz () << "\n";
+    return 0;
+  }
   try {
     // Construct network
     Network network;
@@ -24,7 +44,7 @@ int main ( int argc, char * argv [] ) {
       digraph . resize ( 4 );
       digraph . add_edge ( 0, 2 );
       digraph . add_edge ( 1, 3 );
-      std::unordered_map<uint64_t,uint64_t> events;
+      std::vector<uint64_t> events ( 4 );
       events[0] = 0; events[2] = 0;
       events[1] = 1; events[3] = 1;
       uint64_t label = 3; // DD
@@ -50,7 +70,7 @@ int main ( int argc, char * argv [] ) {
       digraph . add_edge ( 0, 1 );
       digraph . add_edge ( 1, 2 );
       digraph . add_edge ( 2, 3 );
-      std::unordered_map<uint64_t,uint64_t> events;
+      std::vector<uint64_t> events ( 4 );
       events[0] = 0; events[1] = 0;
       events[2] = 1; events[3] = 1;
       uint64_t label = 3; // DD

@@ -19,10 +19,10 @@ public:
   /// Pattern
   ///   Construct from a poset and event data
   ///   Inputs: "poset" is the poset of min/max events
-  ///           "events" is a map from poset elements to event
-  ///                    variable indexing. (Note: it does have
-  ///                    min/max data.)
-  ///           "initial_label" gives the initial state before
+  ///           "events" gives the map from poset elements to event
+  ///                    variable indexing. (Note: it does not
+  ///                    have min/max data.)
+  ///           "initial_label" gives the final state after
   ///                    any events. Further details below.
   ///           "dimension" is the number of variables
   ///   The label is a 64 bit word with bits interpreted as follows:
@@ -32,17 +32,22 @@ public:
   ///   Note the limitation to 32 dimensions. Here D is the number of
   ///   variables.
   Pattern ( Poset const& poset, 
-            std::unordered_map<uint64_t,uint64_t> const& events,
-            uint64_t initial_label,
+            std::vector<uint64_t> const& events,
+            uint64_t final_label,
             uint64_t dimension );
 
   /// assign
   ///   Construct from a poset and event data
   void
   assign ( Poset const& poset, 
-           std::unordered_map<uint64_t,uint64_t> const& events,
-           uint64_t initial_label, 
+           std::vector<uint64_t> const& events,
+           uint64_t final_label, 
            uint64_t dimension );
+
+  /// load
+  ///   Load from a file containing a JSON string (see parse method)
+  void
+  load ( std::string const& filename );
 
   /// label
   ///   Return the label corresponding to the initial state
@@ -71,6 +76,23 @@ public:
   uint64_t
   event ( uint64_t v ) const;
 
+  /// stringify
+  ///   Return a JSON description
+  std::string
+  stringify ( void ) const;
+
+  /// parse
+  ///   Initialize from a JSON description
+  ///   Format: a JSON object of the form
+  ///     { "poset" : <poset-JSON>, "events" : <events-JSON>, 
+  ///       "label" : <label-JSON>, "dimension" : <dimension-JSON> }
+  ///   Here, <poset-JSON> is a JSON representation the Poset class can parse
+  ///         <events-JSON> is an array of variable indices correspond to poset elements in order
+  ///         <label-JSON> is an integer label represent the final state after the last match (see label method)
+  ///         <dimension-JSON> is an integer giving the number of variables
+  void
+  parse ( std::string const& str );
+
 private:
   std::shared_ptr<Pattern_> data_;
   /// serialize
@@ -85,7 +107,7 @@ private:
 
 struct Pattern_ {
   Poset poset_;
-  std::unordered_map<uint64_t,uint64_t> events_;
+  std::vector<uint64_t> events_;
   uint64_t label_;
   uint64_t dimension_;
   /// serialize
