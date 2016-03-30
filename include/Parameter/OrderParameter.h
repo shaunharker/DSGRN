@@ -47,7 +47,7 @@ public:
   operator () ( uint64_t i ) const;
 
   /// inverse
-  ///   Apply the inverse permuation to input
+  ///   Apply the inverse permutation to input
   uint64_t
   inverse ( uint64_t i ) const;
 

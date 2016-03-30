@@ -65,12 +65,18 @@ ExplainCycleMatch ( MatchingGraph const& mg ) {
         // Found a path
         //std::cout << "FOUND A PATH.\n";
         std::stringstream ss;
-        bool first = true;
+        bool first;
         DomainGraph const& dg = mg . searchgraph() . domaingraph();
         PatternGraph const& pg = mg . patterngraph();
         auto vec_to_string = [](std::vector<uint64_t> const& vec ) {
           std::stringstream ss;
-          for ( auto const& v : vec ) ss << v << " ";
+          ss << "(";
+          bool first = true;
+          for ( auto const& v : vec ) { 
+            if ( first ) first = false; else ss << ", ";
+            ss << .5 + (float) v;
+          }
+          ss << ")";
           return ss . str ();
         };
         auto labelstring = [&](uint64_t L) {
@@ -80,38 +86,59 @@ ExplainCycleMatch ( MatchingGraph const& mg ) {
           }
           return result;
         };
+        auto domainlabel = [&](uint64_t L) {
+          std::string result;
+          for ( uint64_t d = 0; d < pg . dimension(); ++ d ){
+            if ( L & ( 1 << d ) ) { 
+              result.push_back('D');
+            } else if ( L & ( 1 << (d + pg . dimension() ) ) ) { 
+              result.push_back('I');
+            } else {
+              result.push_back('?');
+            }
+          }
+          return result;
+        };
+        first = true;
         for ( Vertex const& v : history ) {
           if ( first ) first = false; else ss << " -> ";
           ss << "(" << v.first <<", " << v.second << ";\t [" << vec_to_string(dg.coordinates(mg . searchgraph () . domain (v.first))) << "], " << labelstring(pg.label(v.second)) << ")\n";
         }
         ss << "\n";
-        // for ( uint64_t i = 0; i < history . size () - 1; ++ i ) {
-        //   uint64_t u = history[i].first;
-        //   uint64_t v = history[i+1].first;
-        //   uint64_t source = mg . searchgraph () . domain ( u );
-        //   uint64_t target = mg . searchgraph () . domain ( v );
-        //   std::cout << "\n";
-        //   std::cout << "Transition from " << u << " to " << v << " in searchgraph.\n";
+        ss << "[";
+        first = true;
+        for ( Vertex const& v : history ) {
+          if ( first ) first = false; else ss << ", ";
+          ss << vec_to_string(dg.coordinates(mg . searchgraph () . domain (v.first)));
+        }
+        ss << "]\n";
+        for ( uint64_t i = 0; i < history . size () - 1; ++ i ) {
+          uint64_t u = history[i].first;
+          uint64_t v = history[i+1].first;
+          uint64_t source = mg . searchgraph () . domain ( u );
+          uint64_t target = mg . searchgraph () . domain ( v );
+          std::cout << "\n";
+          std::cout << "Transition from " << u << " to " << v << " in searchgraph.\n";
 
-        //   std::cout << u << " is domain " << source << " with coordinates " << vec_to_string(dg . coordinates ( source )) << "\n";
-        //   std::cout << "  and label " << dg.label(source) << "\n";
-        //   std::cout << v << " is domain " << target << " with coordinates " << vec_to_string(dg . coordinates ( target )) << "\n";
-        //   std::cout << "  and label " << dg.label(target) << "\n";
-        //   std::cout << "The direction variable is " << dg . direction ( source, target ) << "\n";
-        //   std::cout << "The regulator variable is " << dg . regulator ( source, target ) << "\n";
+          std::cout << u << " is domain " << source << " with coordinates " << vec_to_string(dg . coordinates ( source )) << "\n";
+          std::cout << "  and label " << domainlabel(dg.label(source)) << "\n";
+          std::cout << v << " is domain " << target << " with coordinates " << vec_to_string(dg . coordinates ( target )) << "\n";
+          std::cout << "  and label " << domainlabel(dg.label(target)) << "\n";
+          std::cout << "The direction variable is " << dg . direction ( source, target ) << "\n";
+          std::cout << "The regulator variable is " << dg . regulator ( source, target ) << "\n";
 
-        //   uint64_t pg_u = history[i].second;
-        //   uint64_t pg_v = history[i+1].second;
-        //   if ( pg_u == pg_v ) {
-        //     std::cout << "Intermediate match on pattern graph vertex " << pg_u << " with label " << pg . label ( pg_u ) << "\n";
-        //   } else {
-        //     std::cout << "Extremal match, consuming pattern graph vertex " << pg_u << " and moving to " << pg_v << "\n";
-        //     if ( pg . consume ( pg_u, dg . regulator ( source, target ) ) != pg_v ) {
-        //       std::cout << "ERROR DETECTED!\n";
-        //       abort ();
-        //     }
-        //   }
-        // }
+          uint64_t pg_u = history[i].second;
+          uint64_t pg_v = history[i+1].second;
+          if ( pg_u == pg_v ) {
+            std::cout << "Intermediate match on pattern graph vertex " << pg_u << " with label " << labelstring(pg . label ( pg_u )) << "\n";
+          } else {
+            std::cout << "Extremal match, consuming pattern graph vertex " << pg_u << " with label " << labelstring(pg . label ( pg_u )) << " and moving to " << pg_v << " with label " << labelstring(pg . label ( pg_v )) <<"\n";
+            if ( pg . consume ( pg_u, dg . regulator ( source, target ) ) != pg_v ) {
+              std::cout << "ERROR DETECTED!\n";
+              abort ();
+            }
+          }
+        }
         return ss . str ();
       }
       for ( Vertex const& next_vertex : mg . adjacencies ( vertex ) ) {

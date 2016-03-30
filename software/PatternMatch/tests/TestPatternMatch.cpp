@@ -20,6 +20,8 @@ int main ( int argc, char * argv [] ) {
     sg << searchgraph . graphviz () << "\n";
     std::ofstream pg ( "patterngraph.gv");
     pg << patterngraph . graphviz () << "\n";
+    std::ofstream mg ( "matchingraph.gv");
+    mg << matchinggraph . graphviz () << "\n";
     return 0;
   }
   try {
