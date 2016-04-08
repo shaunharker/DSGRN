@@ -1,0 +1,7 @@
+Cdc20 : Clb2 
+Clb2 : (SFF + Clb2)(~Cdc20) 
+Nrm1 : (SBFa)(~Clb2)
+SFF : SBFa
+SBFa : ~Nrm1
+SBFb : (~Nrm1)(~Clb2)
+SBFc : ~Clb2 
