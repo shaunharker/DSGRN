@@ -47,8 +47,8 @@ command_line ( int argc, char * argv [] ) {
 void PatternMatchDatabase::
 initialize ( void ) {
   // Initialize input and output streams
-  input_file_ = std::ifstream ( input_filename_ );
-  output_file_ = std::ofstream ( output_filename_ );
+  input_file_ . open ( input_filename_ );
+  output_file_ . open ( output_filename_ );
   jobs_submitted_ = 0;
 }
 
