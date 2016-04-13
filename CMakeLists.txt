@@ -44,7 +44,6 @@ find_package(Boost 1.58.0 REQUIRED COMPONENTS serialization)
 include_directories ( 
   ${CMAKE_SOURCE_DIR}/include
   /usr/local/include 
-  /opt/local/include 
   ${Boost_INCLUDE_DIRS} 
   ${USER_INCLUDE_PATH} )
 
@@ -54,8 +53,7 @@ include_directories (
 
 link_directories ( 
   ${USER_LIBRARY_PATH} 
-  /usr/local/lib 
-  /opt/local/lib )
+  /usr/local/lib )
 
 ###########
 # Outputs #
@@ -82,7 +80,5 @@ add_test( test2 ${CMAKE_SOURCE_DIR}/tests/test.sh test2 )
 add_test( test3 ${CMAKE_SOURCE_DIR}/tests/test.sh test3 )
 add_test( test4 ${CMAKE_SOURCE_DIR}/tests/test.sh test4 )
 add_test( test5 ${CMAKE_SOURCE_DIR}/tests/test.sh test5 )
+add_test( test6 ${CMAKE_SOURCE_DIR}/tests/test.sh test6 )
 add_test( unittests ${CMAKE_SOURCE_DIR}/tests/unittests.sh )
-
-
-

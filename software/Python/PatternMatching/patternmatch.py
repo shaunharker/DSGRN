@@ -21,13 +21,16 @@
 # THE SOFTWARE.
 
 import preprocess as pp
+import sys
 
-def callPatternMatch(fname_morseset='dsgrn_output.json',fname_domgraph='dsgrn_domaingraph.json',fname_domcells='dsgrn_domaincells.json',fname_patterns='patterns.txt',fname_results='results.txt',cyclic=1,findallmatches=1, printtoscreen=0,writetofile=1,returnmatches=0,numberofmatchesonly=1): # pragma: no cover
+def callPatternMatch(morseset_jsonstr,domgraph_jsonstr,domcells_jsonstr,patternstr,fname_results='results.txt',cyclic=1,findallmatches=1, printtoscreen=0,writetofile=1,returnmatches=0,numberofmatchesonly=1): # pragma: no cover
     if printtoscreen:
         print "Preprocessing..."
-    patternlist,originalpatterns,wallinfo=pp.preprocess(fname_morseset,fname_domgraph,fname_domcells,fname_patterns,cyclic) 
+        sys.stdout.flush()
+    patternlist,originalpatterns,wallinfo=pp.preprocess(morseset_jsonstr,domgraph_jsonstr,domcells_jsonstr,patternstr,cyclic) 
     if printtoscreen:
         print "Searching..."
+        sys.stdout.flush()
     if writetofile: 
         f=open(fname_results,'w',0)
     if returnmatches:
@@ -46,6 +49,7 @@ def callPatternMatch(fname_morseset='dsgrn_output.json',fname_domgraph='dsgrn_do
             print "Pattern: {}".format(origpat)
             print "Results: {}".format(matches)
             print '-'*25
+            sys.stdout.flush()
         if writetofile and matches:
             if numberofmatchesonly and findallmatches:
                 f.write("Pattern: {}".format(origpat)+'\n')
@@ -62,6 +66,8 @@ def callPatternMatch(fname_morseset='dsgrn_output.json',fname_domgraph='dsgrn_do
             else:
                 matches_result.append(matches)
                 patterns_result.append(origpat)
+        # if onlyonepattern and matches:
+        #     break
     if writetofile: 
         f.close()
     if returnmatches:

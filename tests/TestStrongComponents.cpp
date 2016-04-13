@@ -16,6 +16,7 @@ int main ( int argc, char * argv [] ) {
         dg . add_edge ( v, u );
       }
     }
+    dg . finalize ();
     auto sccs = StrongComponents ( dg );
   } catch ( std::exception & e ) {
     std::cout << e . what () << "\n";

@@ -2,8 +2,8 @@
 /// Shaun Harker
 /// 2015-05-20
 
-#ifndef DSGRB_PARAMETERSIGNATUREPROCESS_H
-#define DSGRB_PARAMETERSIGNATUREPROCESS_H
+#ifndef DSGRN_PARAMETERSIGNATUREPROCESS_H
+#define DSGRN_PARAMETERSIGNATUREPROCESS_H
 
 #include "common.h"
 #include "cluster-delegator.hpp"

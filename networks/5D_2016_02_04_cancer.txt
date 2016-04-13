@@ -1,4 +1,4 @@
-MD : S + EE1
+MD : EE1
 RP : (EE1)(~MD)(~EE2)
 miR : MD
 EE1 : (MD)(~miR)(~RP)

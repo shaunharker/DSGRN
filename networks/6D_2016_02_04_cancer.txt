@@ -1,0 +1,6 @@
+M : S + EE1
+CD : M + EE1
+RP : (EE1)(~CD)(~EE2)
+miR : M
+EE1 : (M)(~miR)(~RP)
+EE2 : (M + EE1)(~RP)

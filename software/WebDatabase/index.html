@@ -74,8 +74,23 @@
       document.body.appendChild(element1);
       element1.onload = function () {
         var element2 = document.createElement("script");
-        element2.src = "js/index.js";
+        element2.src = "js/d3.min.js";
         document.body.appendChild(element2);
+        element2.onload = function () {
+          var element3 = document.createElement("script");
+          element3.src = "js/d3.legend.js";
+          document.body.appendChild(element3);
+          element3.onload = function () {
+            var element4 = document.createElement("script");
+            element4.src = "js/chart.js";
+            document.body.appendChild(element4);
+            element4.onload = function () {
+              var element5 = document.createElement("script");
+              element5.src = "js/index.js"; 
+              document.body.appendChild(element5);
+            }
+          }
+        }
       }
     }
   </script>
