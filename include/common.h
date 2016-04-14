@@ -13,7 +13,9 @@
 #include <vector>
 #include <string>
 #include <cstdint>
+#include <cstdlib>
 #include <algorithm>
+#include <stack>
 #include <functional>
 #include <utility>
 #include <cctype>
@@ -28,6 +30,7 @@
 #include "boost/serialization/vector.hpp"
 #include "boost/serialization/string.hpp"
 #include "boost/serialization/shared_ptr.hpp"
+#include "boost/serialization/unordered_set.hpp"
 #include "boost/serialization/unordered_map.hpp"
 #include "boost/serialization/split_member.hpp"
 #include "boost/archive/text_iarchive.hpp"

@@ -1,12 +1,12 @@
-X : (X + Y3) ~Z ~W1 : X Y1 Z
-Y1 : X : Y2 
-Y2 : (Y1 + W1) : Y3 W1
-Y3 : Y2(~W1) : X
+X : (X + Y3) ~Z ~W1
+Y1 : X
+Y2 : (Y1 + W1)
+Y3 : Y2(~W1)
 . this is a comment
-Z : X(~W2) : X
+Z : X(~W2)
 @ this is a comment
-W1 : Y2(~W2) : X Y2 Y3 W2
-W2 : W1 : Z W1
+W1 : Y2(~W2)
+W2 : W1
 . hello
 
 . why not have a blank space?

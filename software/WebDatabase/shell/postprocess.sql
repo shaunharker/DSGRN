@@ -1,4 +1,4 @@
-PRAGMA temp_store_directory = '/share/data/CHomP/Projects/DSGRN/data/tmp';
+-- PRAGMA temp_store_directory = '/share/data/CHomP/Projects/DSGRN/data/tmp';
 CREATE INDEX IF NOT EXISTS MorseGraphAnnotations1 on MorseGraphAnnotations (MorseGraphIndex);
 CREATE INDEX IF NOT EXISTS MorseGraphAnnotations3 on MorseGraphAnnotations (Label, MorseGraphIndex);
 CREATE INDEX IF NOT EXISTS MorseGraphEdges1 on MorseGraphEdges (MorseGraphIndex);

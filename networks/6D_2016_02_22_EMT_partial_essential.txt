@@ -1,4 +1,4 @@
-TGF : (~miR200)(~Ovol2) 
+TGF : (~miR200)(~Ovol2)
 Zeb1 : (~miR200)(~Ovol2)(Snail1) : E
 Snail1 : (~miR34)(TGF) : E
 Ovol2 : ~Zeb1 : E

@@ -19,6 +19,11 @@ public:
   /// constructor
   MorseGraph ( void );
 
+  /// constructor from a poset and annotations
+  /// Used for TestPoset only
+  MorseGraph ( Poset const & ps,
+               std::unordered_map<uint64_t, Annotation> const & annotations );
+
   /// assign (Morse Decomposition)
   ///   Assign data to Morse Graph
   template < class SwitchingGraph>

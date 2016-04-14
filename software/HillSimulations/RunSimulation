@@ -1,0 +1,43 @@
+#!/usr/bin/python
+#
+# RunSimulation
+#
+#  Description:
+#    This script performs a Hill Model simulation for a specified regulatory network
+#    and parameter. The simulation results are written to standard output.    
+#
+#  Usage:
+#    ./RunSimulation <network_spec_file> <parameter>
+#
+#  Inputs: <network_spec_file>      -- a network specification file
+#          <parameter>              -- a JSON string indicating the parameter
+#                                      e.g. '{ "L[X, Y]" : 2.34848, "U[X, Y]" : 1.23888, ... }'
+#
+#  Outputs: 
+#          The results of the simulation are written in JSON format to standard output
+#
+#  Example usage:
+#    ./RunSimulation network.txt "`../AlgebraicGeometry/bin/ParameterSampler network.txt 12`" > simulation_results.txt
+#
+
+import subprocess, json, sys, hillmodel, numpy
+
+def RunSimulation(network_spec_file,parameter_json):
+  # Parse the JSON format for the parameter
+  parameter = json.loads(parameter_json)
+  # Construct a Hill Model
+  hillexp = 10  # Hill function exponent
+  Model = hillmodel.hillmodel(network_spec_file,parameter,hillexp)
+  # Initial condition
+  y0 = numpy.array([1.0 for x in range( Model.dim() )]) # initial condition
+  t0 = 0  # start time
+  t1 = 30 # end time
+  dt = 0.01 # time step
+  # Perform the integration
+  times, timeseries, varnames = Model.simulateHillModel(y0,t0,t1,dt) 
+  # Return result
+  return { "network" : network_spec_file, "variables" : varnames, "parameter" : parameter, 
+           "times" : times, "timeseries" : [ x.tolist() for x in timeseries] }
+
+if __name__ == "__main__":
+  print json.dumps(RunSimulation(sys.argv[1], sys.argv[2]))

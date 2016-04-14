@@ -1,0 +1,7 @@
+M : E1 : essential
+C : M+E1 : essential 
+R : (E1)(~C)(~E2) : essential
+m : M : essential
+A : E1 : essential 
+E1 : (M)(~A)(~m)(~R) : essential 
+E2 : (M)(E1)(~R) : essential

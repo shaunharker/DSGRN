@@ -12,7 +12,7 @@
 #include "LogicParameter.h"
 
 INLINE_IF_HEADER_ONLY LogicParameter::
-LogicParameter ( void ) { 
+LogicParameter ( void ) {
   data_ . reset ( new LogicParameter_ );
 }
 
@@ -30,15 +30,14 @@ assign ( uint64_t n, uint64_t m, std::string const& hex ) {
   uint64_t N = (1 << data_ ->n_) * data_ ->m_;
   data_ -> comp_ . clear ();
   uint64_t L = hex . size ();
-  uint64_t count = 0;
   for ( int64_t i = L-1; i >= 0; -- i ) {
     char hex_digit = hex [ i ];
     hex_digit -= '0';
     if ( hex_digit >= 10 ) hex_digit += ('0'-'A'+10);
-    data_ -> comp_ . push_back ( hex_digit & 1 ); 
-    data_ -> comp_ . push_back ( hex_digit & 2 ); 
-    data_ -> comp_ . push_back ( hex_digit & 4 ); 
-    data_ -> comp_ . push_back ( hex_digit & 8 ); 
+    data_ -> comp_ . push_back ( hex_digit & 1 );
+    data_ -> comp_ . push_back ( hex_digit & 2 );
+    data_ -> comp_ . push_back ( hex_digit & 4 );
+    data_ -> comp_ . push_back ( hex_digit & 8 );
   }
   data_ -> comp_ . resize ( N );
 }
@@ -75,7 +74,7 @@ stringify ( void ) const {
   std::stringstream ss;
   ss << "[" << data_ ->n_ << "," << data_ ->m_ << ",\"" << data_ ->hex_ << "\"]";
   return ss . str ();
-} 
+}
 
 INLINE_IF_HEADER_ONLY void LogicParameter::
 parse ( std::string const& str ) {
@@ -97,6 +96,75 @@ parse ( std::string const& str ) {
   assign ( n, m, hex );
 }
 
+INLINE_IF_HEADER_ONLY std::string const & LogicParameter::
+hex ( void ) const {
+    return data_ -> hex_;
+}
+
+INLINE_IF_HEADER_ONLY std::vector<LogicParameter> LogicParameter::
+adjacencies ( void ) const {
+  std::vector<LogicParameter> output;
+  //
+  typedef bool bitType;
+  typedef std::vector<bitType> BitContainer;
+  // Convert an hex char into a vector of bits (length 4)
+  // standard order (right to left)
+  static std::unordered_map<char, BitContainer> hex_lookup =
+    { { '0', {0,0,0,0} }, { '1', {0,0,0,1} }, { '2', {0,0,1,0} },
+      { '3', {0,0,1,1} }, { '4', {0,1,0,0} }, { '5', {0,1,0,1} },
+      { '6', {0,1,1,0} }, { '7', {0,1,1,1} }, { '8', {1,0,0,0} },
+      { '9', {1,0,0,1} }, { 'A', {1,0,1,0} }, { 'B', {1,0,1,1} },
+      { 'C', {1,1,0,0} }, { 'D', {1,1,0,1} }, { 'E', {1,1,1,0} },
+      { 'F', {1,1,1,1} }
+    };
+  auto Hex2Bin = [&](char c) {
+    return hex_lookup[c];
+  };
+  //
+  // convert a string of hex code into vector of bits.
+  auto Hex2BinCode = [&Hex2Bin] ( const std::string & str ) -> BitContainer {
+    BitContainer output;
+    for ( const char & c : str ) {
+      // Need to reverse the order
+      BitContainer nybble = Hex2Bin ( c );
+      for ( bool b : nybble ) output . push_back ( b );
+    }
+    return output;
+  };
+  //
+  static const std::vector<char> hex_digit =
+  {'0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'};
+  auto Bin2HexCode = [&] ( const BitContainer & bin ) -> std::string {
+    std::string result;
+    for ( uint64_t i = 0; i < bin . size (); i += 4 ) {
+      short digit = ( (short) bin[i] << 3 ) + ( (short) bin[i+1] << 2 )
+                   + ( (short) bin[i+2] << 1 ) + ( (short) bin [i+3] );
+      result . push_back ( hex_digit [ digit ] );
+    }
+    return result;
+  };
+  //
+  /// DEBUG hex/bin conversion
+  // std::string testString = "0F9ABD12146C";
+  // BitContainer testBool = Hex2BinCode ( testString );
+  // for ( bitType b : testBool ) std::cout << b << " ";
+  // std::cout << "\n";
+  // std::string s = Bin2HexCode ( Hex2BinCode ( testString ) );
+  // std::cout << testString << "\n";
+  // std::cout << s << "\n";
+  /// END DEBUG
+  /// Convert the hexCode into binary code
+  BitContainer binCode ( Hex2BinCode ( data_ -> hex_ ) );
+  /// Flip one bit at a time, construct a new adjacent hex code
+  /// and retrieve its index
+  uint64_t N = binCode . size ( );
+  for ( uint64_t i = 0; i < N; ++i ) {
+    binCode[i] = ~binCode[i];
+    output . push_back ( LogicParameter ( data_ -> n_, data_ -> m_ , Bin2HexCode ( binCode ) ) );
+    binCode[i] = ~binCode[i];
+  }
+  return output;
+}
 
 INLINE_IF_HEADER_ONLY std::ostream& operator << ( std::ostream& stream, LogicParameter const& p ) {
   stream << p.stringify ();

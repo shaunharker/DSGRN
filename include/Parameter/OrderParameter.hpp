@@ -12,7 +12,7 @@
 #include "OrderParameter.h"
 
 INLINE_IF_HEADER_ONLY OrderParameter::
-OrderParameter ( void ) { 
+OrderParameter ( void ) {
   data_ . reset ( new OrderParameter_ );
 }
 
@@ -78,7 +78,7 @@ stringify ( void ) const {
   std::stringstream ss;
   ss << *this;
   return ss . str ();
-} 
+}
 
 INLINE_IF_HEADER_ONLY void OrderParameter::
 parse ( std::string const& str ) {
@@ -91,11 +91,25 @@ parse ( std::string const& str ) {
   for ( char & c : s ) if ( not validcharacter ( c ) ) c = ' ';
   std::stringstream ss ( s );
   uint64_t val;
-  data_ -> permute_ . clear ();
-  while ( ss >> val ) data_ -> permute_ . push_back ( val );
-  data_ -> m_ = data_ -> permute_ . size ();
-  data_ -> inverse_ . resize ( data_ -> m_ );
-  for ( uint64_t i = 0; i < data_ -> m_; ++ i ) data_ -> inverse_[data_ -> permute_[i]]=i;
+  std::vector<uint64_t> permute;
+  while ( ss >> val ) permute . push_back ( val );
+  assign ( permute );
+}
+
+INLINE_IF_HEADER_ONLY std::vector<OrderParameter> OrderParameter::
+adjacencies ( void ) const {
+  std::vector<OrderParameter> output;
+  // Retrieve the permutation
+  std::vector<uint64_t> perm = data_ -> permute_;
+  uint64_t N = perm . size ( );
+  //
+  for ( uint64_t i = 0; i<N-1; ++i ) {
+    std::swap( perm[i], perm[i+1] );
+    output . push_back ( OrderParameter(perm) );
+    std::swap( perm[i], perm[i+1] );
+  }
+  //
+  return output;
 }
 
 INLINE_IF_HEADER_ONLY std::ostream& operator << ( std::ostream& stream, OrderParameter const& p ) {
@@ -123,7 +137,7 @@ _index_to_tail_rep ( uint64_t index ) {
 INLINE_IF_HEADER_ONLY std::vector<uint64_t> OrderParameter::
 _tail_rep_to_perm ( std::vector<uint64_t> const& tail_rep ) {
   // Note: This algorithm is suboptimal. It requires O(n^2) time
-  //       but there is an O(n log n) algorithm. An optimal 
+  //       but there is an O(n log n) algorithm. An optimal
   //       algorithm requires a counter tree (Red-Black tree which
   //       keeps counts of descendant elements and allows for rank
   //       based queries and insertions)
@@ -138,10 +152,10 @@ _tail_rep_to_perm ( std::vector<uint64_t> const& tail_rep ) {
   return perm;
 }
 
-INLINE_IF_HEADER_ONLY std::vector<uint64_t> OrderParameter:: 
+INLINE_IF_HEADER_ONLY std::vector<uint64_t> OrderParameter::
 _perm_to_tail_rep ( std::vector<uint64_t> const& perm ) {
   // Note: This algorithm is suboptimal. It requires O(n^2) time
-  //       but there is an O(n log n) algorithm. An optimal 
+  //       but there is an O(n log n) algorithm. An optimal
   //       algorithm requires a counter tree (Red-Black tree which
   //       keeps counts of descendant elements and allows for rank
   //       based queries and insertions)
@@ -155,7 +169,7 @@ _perm_to_tail_rep ( std::vector<uint64_t> const& perm ) {
   return tail_rep;
 }
 
-INLINE_IF_HEADER_ONLY uint64_t OrderParameter:: 
+INLINE_IF_HEADER_ONLY uint64_t OrderParameter::
 _tail_rep_to_index ( std::vector<uint64_t> const& tail_rep ) {
   uint64_t result = 0;
   uint64_t factorial = 1;

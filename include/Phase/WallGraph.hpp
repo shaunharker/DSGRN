@@ -93,6 +93,7 @@ assign ( Parameter const parameter ) {
       }
     }
   }
+  data_ -> digraph_ . finalize ();
 }
 
 INLINE_IF_HEADER_ONLY Digraph const WallGraph::
@@ -104,20 +105,46 @@ INLINE_IF_HEADER_ONLY Annotation const WallGraph::
 annotate ( Component const& vertices ) const {
   uint64_t D = data_ -> parameter_ . network() . size ();
   std::set<uint64_t> signature;
-  bool all_on = true;
-  bool all_off = true;
+  // bool all_on = true;
+  // bool all_off = true;
   for ( uint64_t v : vertices ) {
     uint64_t d = data_ -> vertex_to_dimension_ [ v ];
     if ( d < D ) signature . insert ( d );
-    if ( d > D ) all_off = false;
-    if ( d < 2*D ) all_on = false;
+    // if ( d > D ) all_off = false;
+    // if ( d < 2*D ) all_on = false;
   }
   Annotation a;
   std::stringstream ss;
   if ( signature . size () == 0 ) {
-    ss << "FP";
-    if ( all_on ) ss << " ON";
-    if ( all_off) ss << " OFF";
+    ss << "FP { ";
+
+    // Because signature . size () == 0, we just need to retreive min_pos
+    std::vector<uint64_t> limits = data_ -> parameter_ . network() . domains ();
+    std::vector<uint64_t> domain_indices ( vertices.begin(), vertices.end() );
+    std::vector<uint64_t> min_pos(D);
+    std::vector<uint64_t> max_pos(D);
+    for ( int d = 0; d < D; ++ d ) {
+      min_pos[d] = limits[d];
+      // max_pos[d] = 0;
+    }
+    for ( int d = 0; d < D; ++ d ) {
+      for ( uint64_t & v : domain_indices ) {
+        uint64_t pos = v % limits[d];
+        v = v / limits[d];
+        min_pos[d] = std::min(min_pos[d], pos);
+        // max_pos[d] = std::max(max_pos[d], pos);
+      }
+    }
+
+    bool first_term = true;
+    for ( int d = 0; d < D; ++ d ) {
+      if ( first_term ) first_term = false; else ss << ", ";
+      ss << min_pos[d];
+    }
+    ss << " }";
+
+    // if ( all_on ) ss << " ON";
+    // if ( all_off) ss << " OFF";
   } else if ( signature . size () == D ) {
     ss << "FC";
   } else {

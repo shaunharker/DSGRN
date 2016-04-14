@@ -1,6 +1,6 @@
 
 cmake_minimum_required (VERSION 2.6) 
-project (DSGRN) 
+project (DSGRN-PatternMatch) 
 
 #########
 # rpath #
@@ -36,6 +36,7 @@ message( STATUS "Chose the following prefix: " ${CMAKE_INSTALL_PREFIX} )
 ############
 
 find_package(Boost 1.58.0 REQUIRED COMPONENTS serialization)
+find_package(MPI REQUIRED)
 
 #######################
 # Include Directories #
@@ -43,10 +44,10 @@ find_package(Boost 1.58.0 REQUIRED COMPONENTS serialization)
 
 include_directories ( 
   ${CMAKE_SOURCE_DIR}/include
+  ${MPI_INCLUDE_PATH}
   ./include
   ../../include
   /usr/local/include 
-  /opt/local/include 
   ${Boost_INCLUDE_DIRS} 
   ${USER_INCLUDE_PATH} )
 
@@ -56,8 +57,7 @@ include_directories (
 
 link_directories ( 
   ${USER_LIBRARY_PATH} 
-  /usr/local/lib 
-  /opt/local/lib )
+  /usr/local/lib )
 
 ###########
 # Outputs #
@@ -79,9 +79,8 @@ add_subdirectory (tests)
 #########
 
 enable_testing()
-add_test( test1 ${CMAKE_SOURCE_DIR}/tests/testDataStructures )
-add_test( test2 ${CMAKE_SOURCE_DIR}/tests/testPatternMatch )
-
-
-
-
+add_test ( TestPattern ${CMAKE_BINARY_DIR}/bin/TestPattern )
+add_test ( TestPatternGraph ${CMAKE_BINARY_DIR}/bin/TestPatternGraph )
+add_test ( TestSearchGraph ${CMAKE_BINARY_DIR}/bin/TestSearchGraph )
+add_test ( TestMatchingGraph ${CMAKE_BINARY_DIR}/bin/TestMatchingGraph )
+add_test ( TestPatternMatch ${CMAKE_BINARY_DIR}/bin/TestPatternMatch )

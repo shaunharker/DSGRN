@@ -11,7 +11,9 @@ if [ ! $? -eq 0 ]; then
   echo FAIL: $1
   echo   EXPECTED: `cat $outfile`
   echo   GOT: `cat $txtfile`
+  rm $txtfile
   exit 1
 else
+  rm $txtfile
   exit 0
 fi
