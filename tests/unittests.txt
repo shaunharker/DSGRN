@@ -14,25 +14,28 @@
 ../build/bin/TestParameterGraph 
 ../build/bin/dsgrn 
 ../build/bin/dsgrn help
-../build/bin/dsgrn network ../networks/3D_Cycle_H.txt 
+../build/bin/dsgrn network networks/network9.txt 
 ../build/bin/dsgrn network draw 
-../build/bin/dsgrn network ../networks/3D_Cycle_H.txt graphviz
-../build/bin/dsgrn network ../networks/3D_Cycle_H.txt domaingraph graphviz '[["X1",[3,3,"FF9E00"],[0,1,2]],["X2",[1,2,"4"],[0,1]],["X3",[2,1,"8"],[0]]]' 
-../build/bin/dsgrn network ../networks/3D_Cycle_H.txt wallgraph graphviz '[["X1",[3,3,"FF9E00"],[0,1,2]],["X2",[1,2,"4"],[0,1]],["X3",[2,1,"8"],[0]]]' 
-../build/bin/dsgrn network ../networks/3D_Cycle_H.txt morsedecomposition graphviz '[["X1",[3,3,"FF9E00"],[0,1,2]],["X2",[1,2,"4"],[0,1]],["X3",[2,1,"8"],[0]]]' 
-../build/bin/dsgrn network ../networks/3D_Cycle_H.txt morsegraph graphviz '[["X1",[3,3,"FF9E00"],[0,1,2]],["X2",[1,2,"4"],[0,1]],["X3",[2,1,"8"],[0]]]' 
-../build/bin/dsgrn network ../networks/3D_Cycle_H.txt domaingraph json '[["X1",[3,3,"FF9E00"],[0,1,2]],["X2",[1,2,"4"],[0,1]],["X3",[2,1,"8"],[0]]]' 
-../build/bin/dsgrn network ../networks/3D_Cycle_H.txt wallgraph json '[["X1",[3,3,"FF9E00"],[0,1,2]],["X2",[1,2,"4"],[0,1]],["X3",[2,1,"8"],[0]]]' 
-../build/bin/dsgrn network ../networks/3D_Cycle_H.txt morsedecomposition json '[["X1",[3,3,"FF9E00"],[0,1,2]],["X2",[1,2,"4"],[0,1]],["X3",[2,1,"8"],[0]]]' 
-../build/bin/dsgrn network ../networks/3D_Cycle_H.txt morsegraph json '[["X1",[3,3,"FF9E00"],[0,1,2]],["X2",[1,2,"4"],[0,1]],["X3",[2,1,"8"],[0]]]' 
-../build/bin/dsgrn network ../networks/3D_Cycle_H.txt domaingraph graphviz 234 
-../build/bin/dsgrn network ../networks/3D_Cycle_H.txt wallgraph graphviz 234 
-../build/bin/dsgrn network ../networks/3D_Cycle_H.txt morsedecomposition graphviz 234 
-../build/bin/dsgrn network ../networks/3D_Cycle_H.txt morsegraph graphviz 234 
-../build/bin/dsgrn network ../networks/3D_Cycle_H.txt domaingraph json 234 
-../build/bin/dsgrn network ../networks/3D_Cycle_H.txt wallgraph json 234 
-../build/bin/dsgrn network ../networks/3D_Cycle_H.txt morsedecomposition json 234 
-../build/bin/dsgrn network ../networks/3D_Cycle_H.txt morsegraph json 234 
+../build/bin/dsgrn network networks/network9.txt graphviz
+../build/bin/dsgrn network networks/network9.txt domaingraph graphviz '[["X1",[3,3,"FF9E00"],[0,1,2]],["X2",[1,2,"4"],[0,1]],["X3",[2,1,"8"],[0]]]' 
+../build/bin/dsgrn network networks/network9.txt wallgraph graphviz '[["X1",[3,3,"FF9E00"],[0,1,2]],["X2",[1,2,"4"],[0,1]],["X3",[2,1,"8"],[0]]]' 
+../build/bin/dsgrn network networks/network9.txt morsedecomposition graphviz '[["X1",[3,3,"FF9E00"],[0,1,2]],["X2",[1,2,"4"],[0,1]],["X3",[2,1,"8"],[0]]]' 
+../build/bin/dsgrn network networks/network9.txt morsegraph graphviz '[["X1",[3,3,"FF9E00"],[0,1,2]],["X2",[1,2,"4"],[0,1]],["X3",[2,1,"8"],[0]]]' 
+../build/bin/dsgrn network networks/network9.txt domaingraph json '[["X1",[3,3,"FF9E00"],[0,1,2]],["X2",[1,2,"4"],[0,1]],["X3",[2,1,"8"],[0]]]' 
+../build/bin/dsgrn network networks/network9.txt wallgraph json '[["X1",[3,3,"FF9E00"],[0,1,2]],["X2",[1,2,"4"],[0,1]],["X3",[2,1,"8"],[0]]]' 
+../build/bin/dsgrn network networks/network9.txt morsedecomposition json '[["X1",[3,3,"FF9E00"],[0,1,2]],["X2",[1,2,"4"],[0,1]],["X3",[2,1,"8"],[0]]]' 
+../build/bin/dsgrn network networks/network9.txt morsegraph json '[["X1",[3,3,"FF9E00"],[0,1,2]],["X2",[1,2,"4"],[0,1]],["X3",[2,1,"8"],[0]]]' 
+../build/bin/dsgrn network networks/network9.txt domaingraph graphviz 234 
+../build/bin/dsgrn network networks/network9.txt wallgraph graphviz 234 
+../build/bin/dsgrn network networks/network9.txt morsedecomposition graphviz 234 
+../build/bin/dsgrn network networks/network9.txt morsegraph graphviz 234 
+../build/bin/dsgrn network networks/network9.txt domaingraph json 234 
+../build/bin/dsgrn network networks/network9.txt wallgraph json 234 
+../build/bin/dsgrn network networks/network9.txt morsedecomposition json 234 
+../build/bin/dsgrn network networks/network9.txt morsegraph json 234 
+../build/bin/dsgrn network networks/network9.txt parameter index 0
+../build/bin/dsgrn network networks/network9.txt parameter index '[["X1",[3,3,"FF9E00"],[0,1,2]],["X2",[1,2,"4"],[0,1]],["X3",[2,1,"8"],[0]]]'
+
 ../build/bin/dsgrn parameter 
 ../build/bin/dsgrn parameter list 
 ../build/bin/dsgrn parameter json '[["X1",[3,3,"FF9E00"],[0,1,2]],["X2",[1,2,"4"],[0,1]],["X3",[2,1,"8"],[0]]]' 
@@ -47,7 +50,6 @@
 ! ../build/bin/dsgrn parameter fail fail
 ! ../build/bin/dsgrn parameter fail 0
 ! ../build/bin/dsgrn parameter inequalities
-! ../build/bin/dsgrn parameter index 0
 ! ../build/bin/dsgrn wallgraph 
 ! ../build/bin/dsgrn morsedecomposition
 ! ../build/bin/dsgrn morsegraph

@@ -113,7 +113,7 @@ void Signatures::mainloop ( void ) {
         InsertIntoMorseGraphVertices . bind ( mgi, v ) . exec ();
       }
       for ( uint64_t source = 0; source < N; ++ source ) { 
-        for ( uint64_t target : mg . poset () . adjacencies ( source ) ) {
+        for ( uint64_t target : mg . poset () . children ( source ) ) {
           InsertIntoMorseGraphEdges . bind ( mgi, source, target ) . exec ();
         }
       }

@@ -93,6 +93,7 @@ assign ( Parameter const parameter ) {
       }
     }
   }
+  data_ -> digraph_ . finalize ();
 }
 
 INLINE_IF_HEADER_ONLY Digraph const WallGraph::

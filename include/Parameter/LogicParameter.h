@@ -36,7 +36,7 @@ public:
   /// bin
   ///   Return bin number corresponding to input combination
   ///   (uses uint64_t, assumes there are 64 or fewer inputs)
-  uint64_t 
+  uint64_t
   bin ( uint64_t input_combination ) const;
 
   /// stringify
@@ -49,6 +49,16 @@ public:
   ///   Initialize from a JSON-style string
   void
   parse ( std::string const& str );
+
+  /// hex ()
+  ///   Return the hex code of the LogicParameter
+  std::string const &
+  hex ( void ) const;
+
+  /// adjacencies ()
+  ///   Return the adjacent LogicParameters
+  std::vector<LogicParameter>
+  adjacencies ( void ) const;
 
   /// operator <<
   ///   Output debug data to stream

@@ -11,6 +11,7 @@ int main ( int argc, char * argv [] ) {
     uint64_t u = dg . add_vertex ();
     uint64_t v = dg . add_vertex ();
     dg . add_edge ( u, v );
+    dg . finalize ();
     if ( dg . adjacencies ( u ) [ 0 ] != v ) throw std::runtime_error ( "Digraph::adjacencies bug" );
     Digraph const& cdg = dg;
     if ( cdg . adjacencies ( u ) [ 0 ] != v ) throw std::runtime_error ( "Digraph::adjacencies bug" );
