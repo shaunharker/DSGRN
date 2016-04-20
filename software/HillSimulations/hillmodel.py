@@ -49,7 +49,7 @@ class hillmodel(object):
   The first method generates a time series for a given set of initial conditions,
   and the second method plots the results. 
   '''
-  def __init__(self,network_file_or_string,parameter_file_or_dict,hillexp):
+  def __init__(self,network_spec_file_or_string,parameter_spec_file_or_dict,hillexp):
     '''
     Construct the Hill model for a given network and parameter sample.
     Inputs:
@@ -63,11 +63,11 @@ class hillmodel(object):
       for a dictionary object giving a key-value mapping from parameters to numbers, e.g.
       { "L[X, Y]" : 2.34848, "U[X, Y]" : 1.23888, ... }
     '''
-    eqnstr, self.varnames, self.varindex = self._parseEqns(network_file_or_string)
-    if isinstance(parameter_file_or_dict, dict):
-      parameter = self._parseParameter(parameter_file_or_dict)
+    eqnstr, self.varnames, self.varindex = self._parseEqns(network_spec_file_or_string)
+    if isinstance(parameter_spec_file_or_dict, dict):
+      parameter = self._parseParameter(parameter_spec_file_or_dict)
     else:
-      parameter = self._parseSamples(parameter_file_or_dict)
+      parameter = self._parseSamples(parameter_spec_file_or_dict)
     self.eqns=self._makeHillEqns(eqnstr,parameter,hillexp)
     self.d=len(eqnstr)
 
@@ -76,6 +76,12 @@ class hillmodel(object):
     Return number of variables in model
     """
     return self.d
+
+  def network(self):
+    """
+    Return the associated network specification string
+    """
+    return self.network_spec_string
 
   def simulateHillModel(self,initialconditions,initialtime,finaltime,timestep):
     '''
@@ -124,7 +130,7 @@ class hillmodel(object):
 
 # The remainder of the file consists of private methods implementing various parsing voodoo.
 
-  def _parseEqns(self,network_file_or_string):
+  def _parseEqns(self,network_spec_file_or_string):
     """
     Parse a network specification file to obtain data structures representing ODEs
       Input: "network_file_or_string" is either (a) the filename of a network specification file or DSGRN database
@@ -155,21 +161,20 @@ class hillmodel(object):
             (c) We may write "X*Y" "X(Y)" "(X)Y" "X Y" which are equivalent and refer to the product, 
               but "XY" can only refer to a single variable "XY", and not the product of "X" and "Y".
     """
-    if '\n' in network_file_or_string:
-      netspec = network_file_or_string
-    else if network_file_or_string.lower().endswith('.db'):
-      conn = sqlite3.connect(network_file_or_string);
-      c = conn.cursor();
-      c . execute ( "select Specification from Network;");
-      text = c.fetchone()[0];
-      netspec = text.splitlines();
+    if '\n' in network_spec_file_or_string:
+      self.network_spec_string = network_spec_file_or_string
+    elif network_spec_file_or_string.lower().endswith('.db'):
+      conn = sqlite3.connect(network_spec_file_or_string)
+      c = conn.cursor()
+      c . execute ( "select Specification from Network;" )
+      self.network_spec_string = c.fetchone()[0]
     else:
-      with open(network_file_or_string) as f:
-        netspec = f.readlines()
+      with open(network_spec_file_or_string) as f:
+        self.network_spec_string = f.read()
     eqns=[]
     varnames = []
     varindex = {}
-    for line in netspec:
+    for line in self.network_spec_string.splitlines():
       parsed = line.split(':')
       if len(parsed) < 2: continue   # Ignore blank lines
       varname = parsed[0].strip() # e.g. "X"

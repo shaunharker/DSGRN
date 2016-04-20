@@ -22,7 +22,7 @@
 # THE SOFTWARE.
 
 from hillmodel import *
-import itertools
+import itertools, sys, numpy, json
 
 # Analyze
 # "simulation_results" is an object of the form
@@ -51,17 +51,17 @@ def Simulation(model,parameter,settings=[0.0,30.0,.01]):
   # Integrate
   times, timeseries, varnames = model.simulateHillModel(y0,t0,t1,dt) 
   # Return result
-  return { "network" : network_spec_file, "variables" : varnames, "parameter" : parameter, 
+  return { "variables" : varnames, "parameter" : parameter, 
            "times" : times, "timeseries" : [ x.tolist() for x in timeseries] }
 
-def SimulationDatabase(network_spec_file,parameter_file,output_file):
+def SimulationDatabase(network_spec_file,parameter_file,simulation_database_file):
   # Hill function exponent
   hillexp = 10
   # Read Network Specification File
   with open(network_spec_file) as f:
-    network_spec_string = f.readlines()
+    network_spec_string = f.read()
   # Open output file for writing
-  out = open('output_file','w')
+  simulation_database = open(simulation_database_file,'w')
   # Iterate through parameters in input file
   with open(parameter_file) as f:
     for line in f:
@@ -76,10 +76,10 @@ def SimulationDatabase(network_spec_file,parameter_file,output_file):
       # Product a qualitative summary of the numerical solution
       simulation_summary = Analyze(simulation_result)
       # Write the results to the output file
-      out.write(json.dumps({"ParameterIndex":parameter_index,"SimulationSummary":simulation_summary}) + '\n' )
+      simulation_database.write(json.dumps({"ParameterIndex":parameter_index,"SimulationSummary":simulation_summary}) + '\n' )
   # Close the output file and return
-  out . close ()
+  simulation_database . close ()
 
 if __name__ == "__main__":
-  SimulationDatabase(sys.argv[1], sys.argv[2])
+  SimulationDatabase(sys.argv[1], sys.argv[2], sys.argv[3])
 
