@@ -119,7 +119,7 @@ graphviz ( void ) const {
 uint64_t SearchGraph::
 _label_event ( uint64_t source_label, uint64_t target_label, 
               uint64_t direction, uint64_t regulator, uint64_t dimension ) const {
-  if ( direction == regulator ) return -1;
+  if ( direction == dimension || regulator == dimension || direction == regulator ) return -1;
   uint64_t mask = (1 << regulator) | ( 1 << (regulator + dimension) );
   uint64_t x = source_label & mask;
   uint64_t y = target_label & mask;
