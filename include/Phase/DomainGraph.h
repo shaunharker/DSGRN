@@ -59,15 +59,17 @@ public:
 
   /// direction
   ///   Given adjacent domains, return the variable
-  ///   in which they differ. Undefined behavior for 
-  ///   non-adjacent domains
+  ///   in which they differ. Given the same domain 
+  ///   as both source and target, return dimension().
+  ///   Undefined behavior for non-adjacent domains.
   uint64_t
   direction ( uint64_t source, uint64_t target ) const;
 
   /// regulator
   ///   Given adjacent domains, return the variable
-  ///   being regulated between them. Undefined behavior for 
-  ///   non-adjacent domains
+  ///   being regulated between them. Given the same domain 
+  ///   as both source and target, return dimension().
+  ///   Undefined behavior for non-adjacent domains.
   uint64_t
   regulator ( uint64_t source, uint64_t target ) const;
 
