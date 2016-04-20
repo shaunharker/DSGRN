@@ -100,6 +100,7 @@ assign ( std::vector<uint64_t> const& labels, uint64_t dim ) {
   data_ -> labels_ = labels;
   uint64_t N = labels . size ();
   data_ -> digraph_ . resize ( N );
+  data_ -> event_ . resize ( N );
   for ( uint64_t v = 0; v < N-1; ++ v ) {
     data_ -> digraph_ . add_edge ( v, v+1 );
     uint64_t xor_label = label(v) ^ label(v+1);
