@@ -79,4 +79,4 @@ add_subdirectory (source)
 #########
 
 enable_testing()
-#add_test( test1 ${CMAKE_SOURCE_DIR}/tests/test1.sh )
+add_test( test1 ${CMAKE_SOURCE_DIR}/tests/test1.sh )
