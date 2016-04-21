@@ -17,11 +17,11 @@ This software does the following, beginning with a file containing information a
 ```bash
 ./NumericalPipeline.sh /path/to/data/folder
 ```
-where `/path/to/data/folder` is a path to a data directory containing a file named "NetworkAndPattern.txt" with contents as described in the "Input file" section below.
+where `/path/to/data/folder` is a path to a data folder containing a file named "NetworkAndPattern.txt" with contents as described in the "Input file" section below.
 
 ## Input file
 
-As an input, we begin with a folder (named anything we like) containing a file named "NetworkAndPattern.txt" with contents of the following form.
+As an input, we begin with a folder (named anything we like) which we call the _data folder_ containing a file named "NetworkAndPattern.txt" with contents of the following form.
 ```javascript
 {"MultistableParameterCount": 1, "StableFCMatchesParameterCount": 7020, "Network": "PF3D7_0611200 : (PF3D7_1337100) : E\nPF3D7_1139300 : (~PF3D7_0611200) : E\nPF3D7_1146600 : (~PF3D7_1139300)(~PF3D7_1408200) : E\nPF3D7_1222600 : (PF3D7_1146600)(~PF3D7_1317200) : E\nPF3D7_1317200 : (PF3D7_1408200)(~PF3D7_1356900) : E\nPF3D7_1337100 : (PF3D7_1139300 + PF3D7_1317200) : E\nPF3D7_1356900 : (~PF3D7_1222600) : E\nPF3D7_1408200 : (~PF3D7_0611200)(~PF3D7_1356900) : E\n", "StableFCParameterCount": 8400, "ParameterCount": 12544, "Pattern": {"dimension": 8, "poset": [[9, 12], [14], [7], [9, 12], [9, 12], [7], [14], [], [7], [11], [7], [1, 6, 13], [11], [14], [8, 2, 10, 5], [9, 12]], "events": [0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7], "label": 45645}}
 ```
