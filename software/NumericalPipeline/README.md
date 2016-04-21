@@ -17,6 +17,7 @@ For backwards compatibility reasons the code also accepts the input format
 
 
 The pipeline does the following:
+
 1. Extracts network_spec and pattern_spec from the input
 2. Constructs the DSGRN database for the network (unless a file database.db is already present in the input folder)
 3. Queries for Stable FC and obtains the associated parameter nodes
