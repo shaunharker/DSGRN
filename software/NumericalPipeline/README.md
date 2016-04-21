@@ -1,22 +1,8 @@
 # NumericalPipeline
 
-This subproject performs the following function.
-
 ## Overview
 
-As an input, we begin with a folder containing a file named "NetworkAndPattern.txt" with contents of the following form.
-```javascript
-{"MultistableParameterCount": 1, "StableFCMatchesParameterCount": 7020, "Network": "PF3D7_0611200 : (PF3D7_1337100) : E\nPF3D7_1139300 : (~PF3D7_0611200) : E\nPF3D7_1146600 : (~PF3D7_1139300)(~PF3D7_1408200) : E\nPF3D7_1222600 : (PF3D7_1146600)(~PF3D7_1317200) : E\nPF3D7_1317200 : (PF3D7_1408200)(~PF3D7_1356900) : E\nPF3D7_1337100 : (PF3D7_1139300 + PF3D7_1317200) : E\nPF3D7_1356900 : (~PF3D7_1222600) : E\nPF3D7_1408200 : (~PF3D7_0611200)(~PF3D7_1356900) : E\n", "StableFCParameterCount": 8400, "ParameterCount": 12544, "Pattern": {"dimension": 8, "poset": [[9, 12], [14], [7], [9, 12], [9, 12], [7], [14], [], [7], [11], [7], [1, 6, 13], [11], [14], [8, 2, 10, 5], [9, 12]], "events": [0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7], "label": 45645}}
-```
-Note the only required fields are "Network" and "Pattern"; all other fields will be ignored.
-
-For backwards compatibility reasons the code also accepts the input format
-```python
-{u'MultistableParameterCount': 1, u'StableFCMatchesParameterCount': 7020, u'Network': u'PF3D7_0611200 : (PF3D7_1337100) : E\nPF3D7_1139300 : (~PF3D7_0611200) : E\nPF3D7_1146600 : (~PF3D7_1139300)(~PF3D7_1408200) : E\nPF3D7_1222600 : (PF3D7_1146600)(~PF3D7_1317200) : E\nPF3D7_1317200 : (PF3D7_1408200)(~PF3D7_1356900) : E\nPF3D7_1337100 : (PF3D7_1139300 + PF3D7_1317200) : E\nPF3D7_1356900 : (~PF3D7_1222600) : E\nPF3D7_1408200 : (~PF3D7_0611200)(~PF3D7_1356900) : E\n', u'StableFCParameterCount': 8400, u'ParameterCount': 12544, u'PartialOrder': u'{"dimension": 8, "poset": [[9, 12], [14], [7], [9, 12], [9, 12], [7], [14], [], [7], [11], [7], [1, 6, 13], [11], [14], [8, 2, 10, 5], [9, 12]], "events": [0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7], "label": 45645}'}
-```
-
-
-The pipeline does the following:
+This software does the following, beginning with a file containing information about a network and a pattern to search for:
 
 1. Extracts network_spec and pattern_spec from the input
 2. Constructs the DSGRN database for the network (unless a file database.db is already present in the input folder)
@@ -31,9 +17,24 @@ The pipeline does the following:
 ```bash
 ./NumericalPipeline.sh /path/to/data/folder
 ```
-where `/path/to/data/folder` is a path to a data directory containing a file named "NetworkAndPattern.txt" with contents as described above.
+where `/path/to/data/folder` is a path to a data directory containing a file named "NetworkAndPattern.txt" with contents as described in the "Input file" section below.
+
+## Input file
+
+As an input, we begin with a folder (named anything we like) containing a file named "NetworkAndPattern.txt" with contents of the following form.
+```javascript
+{"MultistableParameterCount": 1, "StableFCMatchesParameterCount": 7020, "Network": "PF3D7_0611200 : (PF3D7_1337100) : E\nPF3D7_1139300 : (~PF3D7_0611200) : E\nPF3D7_1146600 : (~PF3D7_1139300)(~PF3D7_1408200) : E\nPF3D7_1222600 : (PF3D7_1146600)(~PF3D7_1317200) : E\nPF3D7_1317200 : (PF3D7_1408200)(~PF3D7_1356900) : E\nPF3D7_1337100 : (PF3D7_1139300 + PF3D7_1317200) : E\nPF3D7_1356900 : (~PF3D7_1222600) : E\nPF3D7_1408200 : (~PF3D7_0611200)(~PF3D7_1356900) : E\n", "StableFCParameterCount": 8400, "ParameterCount": 12544, "Pattern": {"dimension": 8, "poset": [[9, 12], [14], [7], [9, 12], [9, 12], [7], [14], [], [7], [11], [7], [1, 6, 13], [11], [14], [8, 2, 10, 5], [9, 12]], "events": [0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7], "label": 45645}}
+```
+Note the only required fields are "Network" and "Pattern"; all other fields will be ignored.
+
+For backwards compatibility reasons the code also accepts the input format
+```python
+{u'MultistableParameterCount': 1, u'StableFCMatchesParameterCount': 7020, u'Network': u'PF3D7_0611200 : (PF3D7_1337100) : E\nPF3D7_1139300 : (~PF3D7_0611200) : E\nPF3D7_1146600 : (~PF3D7_1139300)(~PF3D7_1408200) : E\nPF3D7_1222600 : (PF3D7_1146600)(~PF3D7_1317200) : E\nPF3D7_1317200 : (PF3D7_1408200)(~PF3D7_1356900) : E\nPF3D7_1337100 : (PF3D7_1139300 + PF3D7_1317200) : E\nPF3D7_1356900 : (~PF3D7_1222600) : E\nPF3D7_1408200 : (~PF3D7_0611200)(~PF3D7_1356900) : E\n', u'StableFCParameterCount': 8400, u'ParameterCount': 12544, u'PartialOrder': u'{"dimension": 8, "poset": [[9, 12], [14], [7], [9, 12], [9, 12], [7], [14], [], [7], [11], [7], [1, 6, 13], [11], [14], [8, 2, 10, 5], [9, 12]], "events": [0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7], "label": 45645}'}
+```
 
 ## Output files
+
+Note: All output files are stored in the data folder alongside the initial `NetworkAndPattern.txt` file.
 
 ### NetworkAndPattern JSON file
 
@@ -75,6 +76,8 @@ Each line contains a JSON string representing the result of a simulation. It con
 ### Matched Simulation Database
 
 The "NumericalSimulationPatternMatch" program takes teh `simulation_database.json` file as input and produces the output file `matched_simulation_database.json` which contains a subset of the lines of `simulation_database.json` corresponding to the records which matched the pattern specified in the original file.
+
+## Analysis of Results
 
 In order to see how many matches were found, we can type
 
