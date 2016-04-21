@@ -76,6 +76,7 @@ work ( Message & result, const Message & job ) const {
   // Loop through (parameter_index, morse_set_index) pairs and 
   // filter out those for which there is no match
   for ( auto const& line : job_cohort ) {
+    //std::cout << "Processing " << line << "\n";
     json j = json::parse(line);
     std::vector<uint64_t> labels;
     for ( uint64_t label : j["SimulationSummary"] ) labels . push_back ( label );

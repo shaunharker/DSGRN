@@ -4,41 +4,37 @@
 #
 #  Description:
 #    This script performs a Hill Model simulation for a specified regulatory network
-#    and parameter index. The parameter used for the simulation is sampled from the parameter 
-#    node via a Gibbs sampling routine. The simulation results are plotted.    
+#    and parameter.   
 #
 #  Usage:
-#    ./RunSimulation <network_spec_file> <parameter_node_index>
+#    ./RunSimulation <network_spec_file> <parameter>
 #
 #  Inputs: <network_spec_file>      -- a network specification file
 #          <parameter>              -- a JSON string indicating the parameter
 #                                      e.g. '{ "L[X, Y]" : 2.34848, "U[X, Y]" : 1.23888, ... }'
 #
 #  Outputs: 
-#          The results of the simulation are written in JSON format to standard output
+#          The plot of the simulation results is displayed
 #
 #  Example usage:
-#    ./RunSimulation network.txt "`../AlgebraicGeometry/bin/ParameterSampler network.txt 12`" > simulation_results.txt
+#    ./PlotSimulation network.txt "`../AlgebraicGeometry/bin/ParameterSampler network.txt 12`"
 #
 
 import subprocess, json, sys, hillmodel, numpy
+from hillmodel import *
 
-def RunSimulation(network_spec_file,parameter_index):
-  # Obtain the parameter
-  parameter_json = subprocess.check_output(['../AlgebraicGeometry/bin/ParameterSampler', network_spec_file, parameter_index])
-  # Parse the JSON format for the parameter
-  parameter = json.loads(parameter_json)
+def PlotSimulation(network_spec_file,parameter,settings=[0.0,30.0,.01]):
   # Construct a Hill Model
   hillexp = 10  # Hill function exponent
-  Model = hillmodel.hillmodel(network_spec_file,parameter,hillexp)
+  model = hillmodel(network_spec_file,parameter,hillexp)
   # Initial condition
-  y0 = numpy.array([1.0 for x in range( Model.dim() )]) # initial condition
-  t0 = 0  # start time
-  t1 = 30 # end time
-  dt = 0.01 # time step
-  # Perform the integration
-  times, timeseries, varnames = Model.simulateHillModel(y0,t0,t1,dt) 
-  Model.plotResults(times,timeseries);
+  y0 = numpy.array([1.0 for x in range( model.dim() )]) # initial condition
+  # Settings variables (start, end, step)
+  t0, t1, dt = settings
+  # Integrate
+  times, timeseries, varnames = model.simulateHillModel(y0,t0,t1,dt)
+  # Plot
+  model.plotResults(times,timeseries);
 
 if __name__ == "__main__":
-  RunSimulation(sys.argv[1], sys.argv[2])
+  PlotSimulation(sys.argv[1], json.loads(sys.argv[2]))
