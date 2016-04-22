@@ -320,9 +320,13 @@ int main ( int argc, char * argv [] ) {
         std::cout << network . graphviz () << "\n";
         return 0;
       }
-      network . load ( filename );
+      network . assign ( filename );
       argc -= 2; argv += 2;
       if ( argc == 1 ) {
+        if ( filename.find('\n') != std::string::npos ) {
+          std::cout << "Session saving feature not implemented for network specification strings.\n";
+          return 1;
+        }
         std::ofstream outfile ( "dsgrn.session" );
         outfile << filename << "\n";
         outfile . close ();
