@@ -92,11 +92,13 @@ label ( uint64_t domain ) const {
 
 INLINE_IF_HEADER_ONLY uint64_t DomainGraph::
 direction ( uint64_t source, uint64_t target ) const {
+  if ( source == target ) return dimension ();
   return data_ -> direction_ [ std::abs((int64_t)source-(int64_t)target) ];
 }
 
 INLINE_IF_HEADER_ONLY uint64_t DomainGraph::
 regulator ( uint64_t source, uint64_t target ) const {
+  if ( source == target ) return dimension ();
   std::vector<uint64_t> limits = data_ -> parameter_ . network() . domains ();
   uint64_t variable = direction ( source, target );
   uint64_t domain = std::min(source,target);

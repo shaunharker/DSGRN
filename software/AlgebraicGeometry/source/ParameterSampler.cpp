@@ -17,7 +17,7 @@ std::string help_message =
   "  (2) ParameterSampler <networkspace_file> <parameter_index_1> [<parameter_index_2> ...]\n"
   "      Read one or more parameter node indices from command line \n"
   "      and output corresponding samples.                         \n"
-  "  Examplez:                                                     \n"
+  "  Examples:                                                     \n"
   "    cat parameter_index_list.txt | ./bin/ParameterSampler ../../networks/13D_p53.txt \n"
   "    ./bin/ParameterSampler ../../networks/13D_p53.txt 145 \n"
   "    ./bin/ParameterSampler ../../networks/13D_p53.txt 145 2788\n";
@@ -381,7 +381,9 @@ GetSample ( Network const& network,
   // Combine instances into single instance with named parameters
   Instance named_parameters = Name_Parameters ( network, p, instances );
   // Output to standard output
-  return InstanceToString(named_parameters);
+  std::stringstream ss;
+  ss << "{\"ParameterIndex\":" << pi << ",\"Parameter\":" << InstanceToString(named_parameters) << "}";
+  return ss . str ();
 }
 /// main
 ///   Entry point for program

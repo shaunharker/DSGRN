@@ -48,3 +48,9 @@ $build --prefix=$PREFIX --searchpath=$SEARCHPATH --build=$BUILDTYPE --test $MASS
 # Build and Test "PatternMatch"
 cd $SRC_ROOT/software/PatternMatch
 ./install.sh --prefix=$PREFIX --searchpath=$SEARCHPATH --build=$BUILDTYPE $MASS || exit 1
+
+# Build and Test "ParameterSampler"
+# TODO: problem, requires Mathematics computed databases so this will fail the Travis build
+# cd $SRC_ROOT/software/AlgebraicGeometry
+# ./install.sh --prefix=$PREFIX --searchpath=$SEARCHPATH --build=$BUILDTYPE $MASS || exit 1
+

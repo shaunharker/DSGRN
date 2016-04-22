@@ -18,17 +18,23 @@ public:
 
   /// SearchGraph
   ///   Create search graph from a domain graph and a morse set index
-  SearchGraph ( DomainGraph const& dg, uint64_t morse_set_index );
+  SearchGraph ( DomainGraph dg, uint64_t morse_set_index );
+
+  /// SearchGraph
+  ///   Create search graph from a sequence of labels
+  ///   (This is used for checking for a pattern in a time series)
+  SearchGraph ( std::vector<uint64_t> const& labels, uint64_t dim );
 
   /// assign
   ///   Create search graph from a domain graph and a morse set index
   void
-  assign ( DomainGraph const& dg, uint64_t morse_set_index );
+  assign ( DomainGraph dg, uint64_t morse_set_index );
 
-  /// domaingraph
-  ///   Access underlying domaingraph object
-  DomainGraph const&
-  domaingraph ( void ) const;
+  /// assign
+  ///   Create search graph from a sequence of labels
+  ///   (This is used for checking for a pattern in a time series)
+  void
+  assign ( std::vector<uint64_t> const& labels, uint64_t dim );
 
   /// size
   ///   Return the number of vertices in the search graph
@@ -39,13 +45,6 @@ public:
   ///   Return the number of variables
   uint64_t
   dimension ( void ) const;
-
-  /// domain
-  ///   Given a search graph vertex, return the 
-  ///   associated domain vertex from the original
-  ///   domain graph
-  uint64_t
-  domain ( uint64_t v ) const;
 
   /// label
   ///   Given a vertex, return the associated label
@@ -77,6 +76,18 @@ public:
   std::string
   graphviz ( void ) const;
 
+  /// vertexInformation
+  ///   Return information about a search graph vertex
+  ///   This method is intended for debug purposes
+  std::string
+  vertexInformation ( uint64_t v ) const;
+
+  /// edgeInformation
+  ///   Return information about a search graph edge
+  ///   This method is intended for debug purposes
+  std::string
+  edgeInformation ( uint64_t source, uint64_t target ) const;
+
 private:
   std::shared_ptr<SearchGraph_> data_;
   /// _label_event
@@ -98,22 +109,20 @@ private:
 };
 
 struct SearchGraph_ {
-  DomainGraph domaingraph_;
   Digraph digraph_;
   std::vector<uint64_t> labels_;
-  std::vector<uint64_t> domain_;
   std::vector<std::unordered_map<uint64_t, uint64_t>> event_;
   uint64_t dimension_;
+  std::function<std::string(uint64_t)> vertex_information_;
+  std::function<std::string(uint64_t,uint64_t)> edge_information_;
   /// serialize
   ///   For use with BOOST Serialization library,
   ///   which is used by the cluster-delegator MPI package
   friend class boost::serialization::access;
   template<class Archive>
   void serialize(Archive & ar, const unsigned int version) {
-    ar & domaingraph_;
     ar & digraph_;
     ar & labels_;
-    ar & domain_;
     ar & event_;
     ar & dimension_;
   }

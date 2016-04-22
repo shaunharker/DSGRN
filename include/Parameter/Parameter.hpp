@@ -95,9 +95,6 @@ absorbing ( Domain const& dom, int collapse_dim, int direction ) const {
 
 INLINE_IF_HEADER_ONLY uint64_t Parameter::
 regulator ( uint64_t variable, uint64_t threshold ) const {
-  // std::cout << "Parameter::regulator\n";
-  // std::cout << "  variable = " << variable << " and threshold = " << threshold << "\n";
-  // std::cout << "  returning " << network() . outputs ( variable ) [ threshold ] << "\n";
   int inedge = order()[variable](threshold);
   return network() . outputs ( variable ) [ inedge ];
 }
