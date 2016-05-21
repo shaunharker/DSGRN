@@ -101,7 +101,7 @@ logic ( uint64_t index ) const {
   return data_ ->  logic_by_index_ [ index ];
 }
 
-INLINE_IF_HEADER_ONLY bool Network::
+INLINE_IF_HEADER_ONLY std::string Network::
 essential ( uint64_t index ) const {
   return data_ -> essential_ [ index ];
 }
@@ -211,7 +211,8 @@ INLINE_IF_HEADER_ONLY void Network::
 _parse ( std::vector<std::string> const& lines ) {
   using namespace DSGRN_parse_tools;
   std::vector<std::string> logic_strings;
-  std::map<std::string, bool> essential_nodes;
+  std::set<std::string> essential_nodes;
+  std::map<std::string, std::string> essential_edges;
   //std::vector<std::string> constraint_strings;
   // Learn the node names
   for ( auto const& line : lines ) {
@@ -228,19 +229,24 @@ _parse ( std::vector<std::string> const& lines ) {
     logic_strings . push_back ( splitline[1] );
     //std::cout << line << " has " << splitline.size() << " parts.\n";
     if ( splitline . size () >= 3 ) {
-      // TODO: make it check for keyword "essential"
-      essential_nodes [ splitline[0] ] = true;
+      // Any non-empty string is OK to mark the node as essential
+      std::string essential_string = splitline[2];
+      removeSpace(essential_string);
+      if ( essential_string . size () > 0 ) essential_nodes.insert(splitline[0]);
       //std::cout << "Marking " << splitline[0] << " as essential \n";
+    } 
+    if ( splitline . size () >= 4 ) {
+      std::string essential_string = splitline[2];
+      removeSpace(essential_string);
+      essential_edges [ splitline[0] ] = essential_string;
     } else {
-      essential_nodes [ splitline[0] ] = false;
+      essential_edges [ splitline[0] ] = "";
     }
   }
   // Index the node names
   uint64_t loop_index = 0;
-  data_ -> essential_ . resize ( essential_nodes . size () );
   for ( auto const& name : data_ ->  name_by_index_ ) { 
-    data_ ->  index_by_name_ [ name ] = loop_index; 
-    data_ -> essential_ [ loop_index ] = essential_nodes [ name ];
+    data_ ->  index_by_name_ [ name ] = loop_index;
     ++ loop_index;
   }
   // Learn the logics
@@ -336,6 +342,39 @@ _parse ( std::vector<std::string> const& lines ) {
         data_ ->  outputs_[source] . push_back ( target );
         data_ ->  order_[std::make_pair(source,target)] = data_ ->  outputs_[source].size()-1;
       }
+    }
+  }
+  // Initialize the essential edge structure
+  // First we copy any explicit data we have been given
+  for ( auto const& pair : essential_edges ) {
+    std::string const& target_name = pair.first;
+    std::string essential_string = pair.second;
+    uint64_t target = index ( target_name );
+    uint64_t number_of_inputs = inputs(target).size();
+    // Handle default case (nothing provided, equivalent to all F's)
+    if ( essential_string . size () == 0 ) {
+      essential_string . resize ( number_of_inputs, 'F' );
+    }
+    if ( essential_string . size () != number_of_inputs ) {
+      throw std::runtime_error("Network::parse Essential edge specification for node " 
+        + target_name + " has incorrect length.\n");
+    }
+    for ( int i = 0; i < number_of_inputs; ++ i ) {
+      uint64_t source = inputs(targets)[i];
+      char c = essential_string[i];
+      if ( c >= 'a' && c <= 'f' ) c = c - 'a' + 'A'; // uppercase it
+      if ( c >= '0' && c <= '9' ) c = c - '0'; else c = c - 'A' + 10;
+      data_ -> essential_ [ {source,target} ] = c;
+    }
+  }
+  for ( std::string const& node_name : essential_nodes ) {
+    // Mark all input edges as necessarily input-essential
+    uint64_t node_index = index ( node_name );
+    for ( uint64_t source : inputs ( node_index ) ) {
+      data_ -> essential_ [ {source,node_index} ] &= (char) 0x0A;
+    }
+    for ( uint64_t target : outputs ( node_index ) ) {
+      data_ -> essential_ [ {node_index,target} ] &= (char) 0x0C;
     }
   }
   //std::cout << "_parse complete.\n";

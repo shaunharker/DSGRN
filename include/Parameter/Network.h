@@ -64,9 +64,19 @@ public:
   logic ( uint64_t index ) const;
 
   /// essential
-  ///   Return whether or not to use only essential logic parameters
-  bool
-  essential ( uint64_t index ) const;
+  ///   Return a 4 bit digit for corresponding to the 
+  ///   source -> target edge. 
+  ///   A digit of x, converted to a 4-bit integer, means:
+  ///     x | 1 == true  --> inessential edges are allowed
+  ///     x | 2 == true  --> input-essential but not output-essential is allowed
+  ///     x | 4 == true  --> output-essential but not input-essential is allowed
+  ///     x | 8 == true  --> essential (both input and output) edges are allowed
+  ///   For example, F means the network supports all parameters regardless of
+  ///   whether the parameter makes the edge input-essential or output-essential,
+  ///   while A indicates the network supports only those parameters for which the 
+  ///   associated edge is input-essential.
+  char
+  essential ( uint64_t source, uint64_t target ) const;
 
   /// interaction
   ///   Return the interaction type of an edge:
@@ -127,7 +137,7 @@ struct Network_ {
   std::unordered_map<std::pair<uint64_t,uint64_t>, bool, boost::hash<std::pair<uint64_t,uint64_t>>> edge_type_;
   std::unordered_map<std::pair<uint64_t,uint64_t>, uint64_t, boost::hash<std::pair<uint64_t,uint64_t>>> order_;
   std::vector<std::vector<std::vector<uint64_t>>> logic_by_index_;
-  std::vector<bool> essential_;
+  std::unordered_map<std::pair<uint64_t,uint64_t>, char, boost::hash<std::pair<uint64_t,uint64_t>>> essential_;
   std::string specification_;
   /// serialize
   ///   For use with BOOST Serialization library,
