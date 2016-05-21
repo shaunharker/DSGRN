@@ -6,7 +6,7 @@
 
 #include <vector>
 
-/// Wrapping code for Network.h
+// Network wrapping incidentals
 
 // IntList 
 typedef std::vector<uint64_t> IntList;
@@ -40,6 +40,23 @@ printIntListList ( IntListList const* self ) {
 
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(network_overloads, graphviz, 0, 1)
 
+// LogicParameter wrapping incidentals
+
+//BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(LogicParameter_overloads, operator(), 0, 2)
+
+typedef std::vector<LogicParameter> LogicParameterList;
+std::string
+printLogicParameterList( LogicParameterList const* self ) {
+  std::stringstream ss;
+  bool first = true;
+  ss << "[";
+  for ( auto const& item : *self ) {
+    if ( first ) first = false; else ss << ", ";
+    ss << item.stringify();
+  }
+  ss << "]";
+  return ss.str();
+}
 
 BOOST_PYTHON_MODULE(libpyDSGRN)
 {
@@ -77,4 +94,28 @@ BOOST_PYTHON_MODULE(libpyDSGRN)
       .def("graphviz", &Network::graphviz, network_overloads()) 
       .def("__str__", &Network::specification)
     ;
+
+    class_<LogicParameterList>("LogicParameterList")
+      .def(vector_indexing_suite<LogicParameterList>() )
+      .def("__str__", &printLogicParameterList)
+      .def("__repr__", &printLogicParameterList)
+    ; // Note: to get this to work I needed to make LogicParameter == comparable in C++ code
+
+    class_<LogicParameter>("LogicParameter", init<uint64_t, uint64_t, std::string>())
+      .def(init<>())
+      .def("assign", &LogicParameter::assign)  
+      .def("__call__",static_cast<bool (LogicParameter::*)( std::vector<bool> const&, uint64_t ) const>
+         (&LogicParameter::operator()) ) // How is python user going to get hands on vector<bool> ?
+      .def("__call__",static_cast<bool (LogicParameter::*)( uint64_t ) const>
+         (&LogicParameter::operator()) )
+      .def("bin", &LogicParameter::bin)
+      .def("stringify", &LogicParameter::stringify)
+      .def("parse", &LogicParameter::parse)
+      .def("hex", &LogicParameter::hex, return_value_policy<copy_const_reference>())
+      .def("adjacencies", &LogicParameter::adjacencies)
+      .def("__str__", &LogicParameter::stringify)
+    ;
+
+
+
 }

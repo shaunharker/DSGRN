@@ -166,6 +166,14 @@ adjacencies ( void ) const {
   return output;
 }
 
+INLINE_IF_HEADER_ONLY bool LogicParameter::
+operator == ( LogicParameter const& rhs ) const {
+  if ( data_ -> hex_ != rhs . data_ -> hex_ ) return false;
+  if ( data_ -> n_ != rhs . data_ -> n_ ) return false;
+  if ( data_ -> m_ != rhs . data_ -> m_ ) return false;
+  return true;
+}
+
 INLINE_IF_HEADER_ONLY std::ostream& operator << ( std::ostream& stream, LogicParameter const& p ) {
   stream << p.stringify ();
   return stream;
