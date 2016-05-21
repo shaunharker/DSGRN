@@ -7,19 +7,33 @@ Here we have implemented python wrappers to allow DSGRN types and algorithms to 
 
 This is currently a work in progress and only contains a test program. The main accomplishment so far is an installer.
 
+An experimental wrapper for the "Network" class of DSGRN has been created.
+
 It has been tested on Mac OS X and is expected to work on Linux. It is not expected to work on Windows systems.
 
 ## Dependencies
 
 This project requires that DSGRN be built, and also requires boost python to run. Note that boost python might not be built even if boost is built on Mac OS X; to remedy this type
 
+### Boost
 ```bash
 brew install boost
 brew install boost-python
 ```
 
 
-To use the iPython Notebook feature we recommend a python distribution such as Anaconda. This has a simple GUI installer on Mac OS X. Also required is graphviz; on Mac OS X this may be obtained with: 
+### Anaconda
+To use the iPython Notebook feature we recommend a python distribution such as Anaconda. This has a simple GUI installer on Mac OS X. However, there appears to be a problem on Mac OS X with the libpython2.7.dylib file produced which causes a linking issue. To fix it, type
+
+```bash
+install_name_tool -id @rpath/libpython2.7.dylib anaconda/lib/libpython2.7.dylib
+```
+
+See http://stackoverflow.com/questions/23771608/trouble-installing-galsim-on-osx-with-anaconda for details.
+
+### Graphviz
+
+Also required is graphviz; on Mac OS X this may be obtained with: 
 
 ```bash
 brew install graphviz --with-app --with-bindings
@@ -79,6 +93,15 @@ Type `python` to start the python interpreter, and then:
 
 ```python
 import DSGRN
-print DSGRN.yay()
+network = DSGRN.Network()
+network.assign('X : (X)(Y+~Z)\nY : X\nZ : (X)(~Y)\n')
+print network.size()
+print network.inputs(0)
+print network.name(0)
+print network.index("X")
+print network.logic(0)
+print network.graphviz()
+print network.interaction(2,0)
 ```
+
 
