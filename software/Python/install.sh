@@ -25,4 +25,8 @@ source $SRC_ROOT/../../.install/parse.sh
 
 # Build "DSGRN"
 cd ${SRC_ROOT}
-$build --prefix=$PREFIX --searchpath=$SEARCHPATH --build=$BUILDTYPE --test $MASS || exit 1
+$build --prefix=$PREFIX --searchpath=$SEARCHPATH --build=$BUILDTYPE $MASS || exit 1
+
+# Deploy module to python installation
+cd modules
+python setup.py install

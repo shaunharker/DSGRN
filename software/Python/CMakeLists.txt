@@ -39,6 +39,7 @@ find_package(Boost 1.58.0 REQUIRED COMPONENTS python)
 find_package(PythonInterp 2.7 REQUIRED)
 find_package(PythonLibs 2.7 REQUIRED)
 
+message ( STATUS "Python install directory: " ${PYTHON_MODULE_PREFIX})
 #######################
 # Include Directories #
 #######################
