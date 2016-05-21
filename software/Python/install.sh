@@ -29,13 +29,13 @@ $build --prefix=$PREFIX --searchpath=$SEARCHPATH --build=$BUILDTYPE $MASS || exi
 
 # Install pyDSGRN
 mkdir -p $PREFIX/share/DSGRN/modules         || exit 1
-cp -rf modules/pyDSGRN $PREFIX/share/DSGRN/modules || exit 1
+cp -rf modules/DSGRN $PREFIX/share/DSGRN/modules || exit 1
 
 # Give information about how to integrate with python
 echo "===================================="
 echo "$(tput setaf 5)Important information$(tput sgr0)"
-echo "The python module \"pyDSGRN\" has been built and saved in "
-echo "  $(tput setaf 1)$PREFIX/share/DSGRN/modules/pyDSGRN$(tput sgr0)"
+echo "The python module \"DSGRN\" has been built and saved in "
+echo "  $(tput setaf 1)$PREFIX/share/DSGRN/modules/DSGRN$(tput sgr0)"
 echo "To be able to use the module with python, you must either "
 echo "(1) Copy the module into your python distribution by typing "
 echo "  $(tput setaf 6)cd modules$(tput sgr0)"

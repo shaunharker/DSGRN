@@ -45,9 +45,9 @@ If it complains about administrator rights, you can give it an alternative insta
 
 Here you should use whichever installation prefix you used to install DSGRN. Note that if the installation prefix is not given it defaults to `/usr/local`.
 
-The installer will create a python module named `pyDSGRN` and store a copy of it in
+The installer will create a python module named `DSGRN` and store a copy of it in
 ```bash
-/your/installation/prefix/share/DSGRN/modules/pyDSGRN
+/your/installation/prefix/share/DSGRN/modules/DSGRN
 ```
 
 In order for this module to be usable by Python you have two options:
@@ -78,7 +78,7 @@ NOTE: If you used the `--prefix` for the installation, use your installation pre
 Type `python` to start the python interpreter, and then:
 
 ```python
-import pyDSGRN
-print pyDSGRN.yay()
+import DSGRN
+print DSGRN.yay()
 ```
 
