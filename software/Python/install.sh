@@ -23,10 +23,26 @@ build="$SRC_ROOT/../../.install/build.sh"
 # Parse command line arguments
 source $SRC_ROOT/../../.install/parse.sh
 
-# Build "DSGRN"
+# Build "pyDSGRN"
 cd ${SRC_ROOT}
 $build --prefix=$PREFIX --searchpath=$SEARCHPATH --build=$BUILDTYPE $MASS || exit 1
 
-# Deploy module to python installation
-cd modules
-python setup.py install
+# Install pyDSGRN
+mkdir -p $PREFIX/share/DSGRN/modules         || exit 1
+cp -rf modules/pyDSGRN $PREFIX/share/DSGRN/modules || exit 1
+
+# Give information about how to integrate with python
+echo "===================================="
+echo "$(tput setaf 5)Important information$(tput sgr0)"
+echo "The python module \"pyDSGRN\" has been built and saved in "
+echo "  $(tput setaf 1)$PREFIX/share/DSGRN/modules/pyDSGRN$(tput sgr0)"
+echo "To be able to use the module with python, you must either "
+echo "(1) Copy the module into your python distribution by typing "
+echo "  $(tput setaf 6)cd modules$(tput sgr0)"
+echo "  $(tput setaf 6)python setup.py install$(tput sgr0)"
+echo "or else"
+echo "(2) Add the line  "
+echo "  $(tput setaf 6)export PYTHONPATH=$PREFIX/share/DSGRN/modules:""$""PYTHONPATH$(tput sgr0) "
+echo "to your $(tput setaf 1)~/.bashrc$(tput sgr0) file. See the $(tput setaf 1)README.md$(tput sgr0) file for more details."
+echo "===================================="
+
