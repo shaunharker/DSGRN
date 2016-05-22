@@ -73,6 +73,17 @@ printOrderParameterList( OrderParameterList const* self ) {
   return ss.str();
 }
 
+// Domain wrapping incidentals
+std::string
+printDomain ( Domain const* domain ) {
+  std::stringstream ss;
+  ss << *domain;
+  return ss . str ();
+}
+
+// Poset wrapping incidentals
+typedef std::set<uint64_t> IntSet;
+
 BOOST_PYTHON_MODULE(libpyDSGRN)
 {
     using namespace boost::python;
@@ -191,4 +202,80 @@ BOOST_PYTHON_MODULE(libpyDSGRN)
       .def("reorderings", &ParameterGraph::reorderings)
     ;
 
+    // Digraph
+
+    class_<Digraph>("Digraph", init<>())
+      .def(init<std::vector<std::vector<uint64_t>>&>())
+      .def("assign", &Digraph::assign)
+      .def("adjacencies", static_cast<std::vector<uint64_t> const& (Digraph::*)(uint64_t)const>(&Digraph::adjacencies), return_value_policy<copy_const_reference>())
+      .def("size", &Digraph::size)
+      .def("resize", &Digraph::resize)
+      .def("add_vertex", &Digraph::add_vertex)
+      .def("add_edge", &Digraph::add_edge)
+      .def("finalize", &Digraph::finalize)
+      .def("transpose", &Digraph::transpose)
+      .def("transitive_reduction", &Digraph::transitive_reduction)
+      .def("transitive_closure", &Digraph::transitive_closure)
+      .def("permute", &Digraph::permute)
+      .def("stringify", &Digraph::stringify)
+      .def("parse", &Digraph::parse)
+      .def("graphviz", &Digraph::graphviz)
+      .def("__str__", &Digraph::graphviz)
+    ;
+
+    // Poset
+
+    class_<IntSet>("IntSet")  // return type, argument type of "Poset::maximal"
+      .def(init<>() )
+    ;
+
+    class_<Poset>("Poset", init<>())
+      .def(init<std::vector<std::vector<uint64_t>>&>())
+      .def(init<Digraph const&>())
+      .def("assign", static_cast<void(Poset::*)(std::vector<std::vector<uint64_t>> &)>(&Poset::assign))
+      .def("assign", static_cast<void(Poset::*)(Digraph const&)>(&Poset::assign))
+      .def("size", &Poset::size)
+      .def("parents", &Poset::parents, return_value_policy<copy_const_reference>())
+      .def("children", &Poset::children, return_value_policy<copy_const_reference>())
+      .def("ancestors", &Poset::ancestors, return_value_policy<copy_const_reference>())
+      .def("descendants", &Poset::descendants, return_value_policy<copy_const_reference>())
+      .def("maximal", &Poset::maximal)
+      .def("compare", &Poset::compare)
+      .def("permute", &Poset::permute)
+      .def("stringify", &Poset::stringify)
+      .def("parse", &Poset::parse)
+      .def("__str__", &Poset::stringify)
+    ;
+
+    // Domain
+    // TODO: document interface differences between python/C++ this wrapper entails
+    class_<Domain>("Domain", init<>())
+      .def(init<std::vector<uint64_t> const&>())
+      .def("assign", &Domain::assign)
+      .def("__getitem__", &Domain::operator[])
+      .def("__len__", &Domain::size)
+      .def("size", &Domain::size)
+      .def("next", static_cast<Domain& (Domain::*)(void)>(&Domain::operator++), return_value_policy<reference_existing_object>() )
+      .def("index", &Domain::index)
+      .def("setIndex", &Domain::setIndex)
+      .def("left", &Domain::left)
+      .def("right", &Domain::right)
+      .def("isMin", &Domain::isMin)
+      .def("isMax", &Domain::isMax)
+      .def("isValid", &Domain::isValid)
+      .def("__str__", &printDomain)
+    ;
+
+    // DomainGraph
+    class_<DomainGraph>("DomainGraph", init<>())
+      .def(init<Parameter const>())
+      .def("digraph", &DomainGraph::digraph)
+      .def("dimension", &DomainGraph::dimension)
+      .def("coordinates", &DomainGraph::coordinates)
+      .def("label", &DomainGraph::label)
+      .def("direction", &DomainGraph::direction)
+      .def("regulator", &DomainGraph::regulator)
+      .def("annotate", &DomainGraph::annotate)
+      .def("graphviz", &DomainGraph::graphviz)
+    ;
 }
