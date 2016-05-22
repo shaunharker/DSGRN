@@ -78,6 +78,7 @@ BOOST_PYTHON_MODULE(libpyDSGRN)
     using namespace boost::python;
 
     // Network
+
     class_<IntList>("IntList")
       .def(vector_indexing_suite<IntList>() )
       .def("__str__", &printIntList)
@@ -157,6 +158,37 @@ BOOST_PYTHON_MODULE(libpyDSGRN)
     ;
 
     // Parameter
-    
+
+    class_<Parameter>("Parameter", init<>())
+      .def(init<std::vector<LogicParameter> const&, std::vector<OrderParameter> const&, Network const& >())
+      .def(init<Network const&>())
+      .def("assign", static_cast<void (Parameter::*)(std::vector<LogicParameter> const&, std::vector<OrderParameter> const&, Network const& network)>(&Parameter::assign) )
+      .def("assign", static_cast<void (Parameter::*)(Network const& )>(&Parameter::assign) )
+      .def("attracting", &Parameter::attracting)
+      .def("asborbing", &Parameter::absorbing)
+      .def("regulator", &Parameter::regulator)
+      .def("labelling", &Parameter::labelling)
+      .def("network", &Parameter::network)
+      .def("stringify", &Parameter::stringify)
+      .def("parse", &Parameter::parse)
+      .def("inequalities", &Parameter::parse)
+      .def("logic", &Parameter::logic, return_value_policy<copy_const_reference>())
+      .def("order", &Parameter::order, return_value_policy<copy_const_reference>())
+      .def("__str__", &Parameter::stringify)
+    ;
+
+    // ParameterGraph
+
+    class_<ParameterGraph>("ParameterGraph", init<>())
+      .def(init<Network const&>())
+      .def("assign", &ParameterGraph::assign)
+      .def("size", &ParameterGraph::size)
+      .def("parameter", &ParameterGraph::parameter)
+      .def("index", &ParameterGraph::index)
+      .def("adjacencies", &ParameterGraph::adjacencies)
+      .def("network", &ParameterGraph::network)
+      .def("fixedordersize", &ParameterGraph::fixedordersize)
+      .def("reorderings", &ParameterGraph::reorderings)
+    ;
 
 }
