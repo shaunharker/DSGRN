@@ -58,12 +58,26 @@ printLogicParameterList( LogicParameterList const* self ) {
   return ss.str();
 }
 
+// OrderParameter wrapping incidentals
+typedef std::vector<OrderParameter> OrderParameterList;
+std::string
+printOrderParameterList( OrderParameterList const* self ) {
+  std::stringstream ss;
+  bool first = true;
+  ss << "[";
+  for ( auto const& item : *self ) {
+    if ( first ) first = false; else ss << ", ";
+    ss << item.stringify();
+  }
+  ss << "]";
+  return ss.str();
+}
+
 BOOST_PYTHON_MODULE(libpyDSGRN)
 {
     using namespace boost::python;
 
-    // Create the Python type object for our extension class and define __init__ function.
-
+    // Network
     class_<IntList>("IntList")
       .def(vector_indexing_suite<IntList>() )
       .def("__str__", &printIntList)
@@ -95,6 +109,8 @@ BOOST_PYTHON_MODULE(libpyDSGRN)
       .def("__str__", &Network::specification)
     ;
 
+    // LogicParameter
+
     class_<LogicParameterList>("LogicParameterList")
       .def(vector_indexing_suite<LogicParameterList>() )
       .def("__str__", &printLogicParameterList)
@@ -105,7 +121,7 @@ BOOST_PYTHON_MODULE(libpyDSGRN)
       .def(init<>())
       .def("assign", &LogicParameter::assign)  
       .def("__call__",static_cast<bool (LogicParameter::*)( std::vector<bool> const&, uint64_t ) const>
-         (&LogicParameter::operator()) ) // How is python user going to get hands on vector<bool> ?
+         (&LogicParameter::operator()) ) // How is python user going to get hands on vector<bool> ? TODO
       .def("__call__",static_cast<bool (LogicParameter::*)( uint64_t ) const>
          (&LogicParameter::operator()) )
       .def("bin", &LogicParameter::bin)
@@ -116,6 +132,31 @@ BOOST_PYTHON_MODULE(libpyDSGRN)
       .def("__str__", &LogicParameter::stringify)
     ;
 
+    // OrderParameter
 
+    class_<OrderParameterList>("OrderParameterList")
+      .def(vector_indexing_suite<OrderParameterList>() )
+      .def("__str__", &printOrderParameterList)
+      .def("__repr__", &printOrderParameterList)
+    ; // Note: to get this to work I needed to make OrderParameter == comparable in C++ code
+
+    class_<OrderParameter>("OrderParameter", init<>())
+      .def(init<uint64_t,uint64_t>())
+      .def(init<std::vector<uint64_t>const&>()) // TODO
+      .def("assign", static_cast<void (OrderParameter::*)( uint64_t, uint64_t )>(&OrderParameter::assign) )
+      .def("assign", static_cast<void (OrderParameter::*)( std::vector<uint64_t> const&)>(&OrderParameter::assign) )
+      .def("__call__", &OrderParameter::operator() )
+      .def("inverse", &OrderParameter::inverse )
+      .def("permutation", &OrderParameter::permutation, return_value_policy<copy_const_reference>())
+      .def("index", &OrderParameter::index)
+      .def("size", &OrderParameter::size)
+      .def("stringify", &OrderParameter::stringify)
+      .def("parse", &OrderParameter::parse)
+      .def("adjacencies", &OrderParameter::adjacencies)
+      .def("__str__", &OrderParameter::stringify)
+    ;
+
+    // Parameter
+    
 
 }
