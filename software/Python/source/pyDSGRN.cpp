@@ -84,6 +84,14 @@ printDomain ( Domain const* domain ) {
 // Poset wrapping incidentals
 typedef std::set<uint64_t> IntSet;
 
+// MorseDecomposition wrapping incidentals
+std::string
+printMorseDecomposition ( MorseDecomposition const* md ) {
+  std::stringstream ss;
+  ss << *md;
+  return ss . str ();
+}
+
 BOOST_PYTHON_MODULE(libpyDSGRN)
 {
     using namespace boost::python;
@@ -244,6 +252,7 @@ BOOST_PYTHON_MODULE(libpyDSGRN)
       .def("permute", &Poset::permute)
       .def("stringify", &Poset::stringify)
       .def("parse", &Poset::parse)
+      .def("graphviz", &Poset::graphviz)
       .def("__str__", &Poset::stringify)
     ;
 
@@ -278,4 +287,30 @@ BOOST_PYTHON_MODULE(libpyDSGRN)
       .def("annotate", &DomainGraph::annotate)
       .def("graphviz", &DomainGraph::graphviz)
     ;
+
+    // MorseDecomposition
+    class_<MorseDecomposition>("MorseDecomposition", init<>())
+      .def(init<Digraph const&>())
+      .def(init<Digraph const&, Components const&>())
+      .def("assign", static_cast<void(MorseDecomposition::*)(Digraph const&)>(&MorseDecomposition::assign))
+      .def("assign", static_cast<void(MorseDecomposition::*)(Digraph const&, Components const&)>(&MorseDecomposition::assign))
+      .def("poset", &MorseDecomposition::poset)
+      .def("components", &MorseDecomposition::components)
+      .def("recurrent", &MorseDecomposition::recurrent)
+      .def("graphviz", &MorseDecomposition::graphviz)
+      .def("__str__", &printMorseDecomposition)
+    ;
+
+    // MorseGraph
+    class_<MorseGraph>("MorseGraph", init<>())
+      .def("assign", &MorseGraph::assign<DomainGraph>)
+      .def("poset", &MorseGraph::poset)
+      //.def("annotation", &MorseGraph::annotation)
+      .def("SHA256", &MorseGraph::SHA256)
+      .def("stringify", &MorseGraph::stringify)
+      .def("parse", &MorseGraph::parse)
+      .def("graphviz", &MorseGraph::graphviz)
+      .def("__str__", &MorseGraph::stringify)
+    ;
+
 }

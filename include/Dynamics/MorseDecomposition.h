@@ -65,6 +65,11 @@ public:
   Components::ComponentContainer const
   recurrent ( void ) const;
 
+  /// graphviz
+  ///   Return a graphviz representation
+  std::string
+  graphviz ( void ) const;
+
   /// operator <<
   ///   Stream information to graphviz format
   friend std::ostream& operator << ( std::ostream& stream, MorseDecomposition const& md );

@@ -103,9 +103,16 @@ recurrent ( void ) const {
   return data_ -> components_ . recurrentComponents ();
 }
 
+INLINE_IF_HEADER_ONLY std::string MorseDecomposition::
+graphviz ( void ) const {
+  std::stringstream ss;
+  ss << *this;
+  return ss . str ();
+}
+
 INLINE_IF_HEADER_ONLY std::ostream& operator << ( std::ostream& stream, MorseDecomposition const& md ) {
   Poset const poset = md . poset ();
-  stream << "digraph g {\n";
+  stream << "digraph {\n";
   for ( uint64_t v = 0; v < poset . size (); ++ v ) {
     stream << v;
     stream << "[label=\"";

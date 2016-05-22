@@ -102,6 +102,13 @@ print network.index("X")
 print network.logic(0)
 print network.graphviz()
 print network.interaction(2,0)
+# etc...
 ```
 
+For iPython notebook documentation, type
+
+```bash
+jupyter notebook
+```
+and view the `DSGRN_Python_GettingStarted.ipynb` notebook in the `doc` folder. Note this can be viewed on Github's website as well.
 

@@ -61,6 +61,11 @@ public:
   void
   parse ( std::string const& str );
 
+  /// graphviz
+  ///   Return a graphviz representation of the Morse graph
+  std::string
+  graphviz ( void ) const;
+
   /// operator <<
   ///   Stream information to graphviz format
   friend std::ostream& operator << ( std::ostream& stream, MorseGraph const& md );

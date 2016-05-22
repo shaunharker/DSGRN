@@ -63,14 +63,22 @@ parse ( std::string const& str ) {
   }
 }
 
-INLINE_IF_HEADER_ONLY std::ostream& operator << ( std::ostream& stream, MorseGraph const& md ) {
-  Poset const poset = md . poset ();
+
+INLINE_IF_HEADER_ONLY std::string MorseGraph::
+graphviz ( void ) const {
+  std::stringstream ss;
+  ss << *this;
+  return ss . str ();
+}
+
+INLINE_IF_HEADER_ONLY std::ostream& operator << ( std::ostream& stream, MorseGraph const& mg ) {
+  Poset const poset = mg . poset ();
   stream << "digraph {\n";
   for ( uint64_t v = 0; v < poset . size (); ++ v ) {
     stream << v;
     stream << "[label=\"";
     bool first_item = true;
-    for ( auto s : md . annotation ( v ) ) {
+    for ( auto s : mg . annotation ( v ) ) {
       if ( first_item ) first_item = false; else stream << ", ";
       stream << s;
     }
@@ -87,9 +95,7 @@ INLINE_IF_HEADER_ONLY std::ostream& operator << ( std::ostream& stream, MorseGra
 
 INLINE_IF_HEADER_ONLY std::string MorseGraph::
 SHA256 ( void ) const {
-  std::stringstream ss;
-  ss << *this;
-  return sha256 ( ss . str () );
+  return sha256 ( graphviz () );
 }
 
 INLINE_IF_HEADER_ONLY void MorseGraph::
