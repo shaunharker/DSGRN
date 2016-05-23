@@ -5,11 +5,7 @@ Here we have implemented python wrappers to allow DSGRN types and algorithms to 
 
 ## Development Status
 
-This is currently a work in progress and only contains a test program. The main accomplishment so far is an installer.
-
-An experimental wrapper for the "Network" class of DSGRN has been created.
-
-It has been tested on Mac OS X and is expected to work on Linux. It is not expected to work on Windows systems.
+This remains in development. A web deployment is available in the `web` subfolder.
 
 ## Dependencies
 
