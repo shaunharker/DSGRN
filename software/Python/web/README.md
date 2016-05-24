@@ -13,11 +13,30 @@ We also use node.js in order to forward the port from HTTP requests to the port 
 
 ## Dependencies
 
-* Docker
-* node.js
+### Docker
 
 Install docker using their online instructions.
+
+Then:
+
+Create the Docker VM:
+```bash
+docker-machine create --driver virtualbox default
+```
+
+If the Docker VM has already been created but is not running:
+```bash
+docker-machine start default
+```
+
+Connect shell to default machine
+```bash
+eval "$(docker-machine env default)"
+```
+### Node.js
 Install node.js (e.g. `brew install nodejs` on Mac OS X)
+
+### Forever
 Install "forever" for node.js: `npm install forever -g`
 
 ## Build the docker image
@@ -25,6 +44,8 @@ Install "forever" for node.js: `npm install forever -g`
 ```bash
 docker build -t sharker/jupyter-dsgrn jupyter-dsgrn
 ```
+
+For more information on Docker visit their website. (e.g. for Mac OS X: https://docs.docker.com/engine/installation/mac/ )
 
 ## Start the notebook server
 
