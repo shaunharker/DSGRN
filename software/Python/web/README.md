@@ -78,5 +78,3 @@ and identify the id of your proxy server. Then:
 ```bash
 forever stop <id>
 ```
-
-If the server 
