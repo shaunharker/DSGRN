@@ -12,6 +12,8 @@
 #include "Parameter/LogicParameter.h"
 #include "Phase/Domain.h"
 #include "Phase/DomainGraph.h"
+#include "Phase/Cell.h"
+#include "Phase/TileGraph.h"
 #include "Phase/Wall.h"
 #include "Phase/WallGraph.h"
 #include "Dynamics/Annotation.h"

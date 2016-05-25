@@ -385,9 +385,10 @@ snoussi ( Cell const& cell ) const {
   uint64_t bit = 1;
   std::vector<uint64_t> thresholds;
   std::vector<uint64_t> regulateds;
-  for ( uint64_t d = 0, uint64_t bit = 1; d < D; ++ d, bit <<= 1 ) {
-    if ( shape & bit == 0 ) {
+  for ( uint64_t d = 0, bit = 1; d < D; ++ d, bit <<= 1 ) {
+    if ( (shape & bit) == 0 ) {
       uint64_t threshold = cell . domain () [ d ] - 1;
+      if ( threshold == -1 ) return false; // Boundary cells
       uint64_t regulated = regulator (d, thres);
       thresholds . push_back ( threshold );
       regulateds . push_back ( regulated );
@@ -402,8 +403,8 @@ INLINE_IF_HEADER_ONLY std::unordered_map<uint64_t, std::pair<uint64_t, bool>> Pa
 hyperoctahedral ( Cell const& cell ) const {
   uint64_t D = network () . size ();
   std::unordered_map<uint64_t, std::pair<uint64_t, bool>> result;
-  for ( uint64_t d = 0, uint64_t bit = 1; d < D; ++ d, bit <<= 1 ) {
-    if ( shape & bit == 0 ) {
+  for ( uint64_t d = 0, bit = 1; d < D; ++ d, bit <<= 1 ) {
+    if ( (shape & bit) == 0 ) {
       Cell left = cell . expand ( { { d, false } } );
       Cell right = cell . expand ( { { d, true } } );
       uint64_t threshold = cell . domain () [ d ] - 1;

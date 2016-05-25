@@ -32,6 +32,16 @@ assign ( Parameter const parameter ) {
   Digraph & digraph = data_ -> digraph_;
   // Enumerate tiles
   std::unordered_map<Cell, uint64_t> tile_index;
+  // Construct all cells
+  // Note: this creates some spurious boundary cells, 
+  //       but the "snoussi" method will discard them anyway
+  std::vector<Cell> cells;
+  uint64_t N = 1 << D;
+  for ( Domain domain = Domain  ( parameter . network () . limits () ); isValid ( domain ); ++ domain ) {
+    for ( int shape = 0; shape < N; ++ shape ) {
+      cells . push_back ( Cell ( domain, shape ) );
+    }
+  }
   for ( auto const& cell : cells ) {
     // Check if cell is a tile; if not a tile, skip the cell
     if ( not parameter . snoussi ( cell ) ) continue;

@@ -21,6 +21,8 @@
 #include "Parameter/ParameterGraph.hpp"
 #include "Phase/Domain.hpp"
 #include "Phase/DomainGraph.hpp"
+#include "Phase/Cell.hpp"
+#include "Phase/TileGraph.hpp"
 #include "Phase/Wall.hpp"
 #include "Phase/WallGraph.hpp"
 
