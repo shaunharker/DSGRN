@@ -27,7 +27,7 @@ collapse ( std::vector<std::pair<int,bool>> const& collapses ) const {
     bool collapse_direction = collapse.second;
     uint64_t collapse_bit = 1 << collapse_dimension;
     // Make sure this is valid
-    if ( result . shape_ & collapse_bit == 0 ) {
+    if ( (result . shape_ & collapse_bit) == 0 ) {
       // Throw if attempting impossible collapse
       throw std::runtime_error("Cell::collapse. Impossible collapse.");
     }
@@ -52,7 +52,7 @@ expand ( std::vector<std::pair<int,bool>> const& expansions ) const {
     bool expansion_direction = expansion.second;
     uint64_t expansion_bit = 1 << expansion_dimension;
     // Make sure this is valid
-    if ( result . shape_ & collapse_bit ) {
+    if ( result . shape_ & expansion_bit ) {
       // Throw if attempting impossible expansion
       throw std::runtime_error("Cell::expand. Impossible expansion.");
     }
@@ -60,10 +60,10 @@ expand ( std::vector<std::pair<int,bool>> const& expansions ) const {
     // If expanding left, move domain
     if ( expansion_direction == false ) { 
       // Return default constructed cell if attempting to expand beyond lower bound
-      if ( result . domain . isMin ( collapse_dimension ) ) {
+      if ( result . domain_ . isMin ( expansion_dimension ) ) {
         return Cell (); 
       }
-      result . domain_ . setIndex ( result . domain_ . left ( collapse_dimension ) );
+      result . domain_ . setIndex ( result . domain_ . left ( expansion_dimension ) );
     }
   }
   return result;
@@ -81,7 +81,7 @@ shape ( void ) const {
 
 INLINE_IF_HEADER_ONLY uint64_t Cell::
 index ( void ) const {
-  return domain_ . index() << domain_ . size () + shape_;
+  return (domain_ . index() << domain_ . size ()) + shape_;
 }
 
 INLINE_IF_HEADER_ONLY Cell::
@@ -99,10 +99,10 @@ INLINE_IF_HEADER_ONLY std::ostream&
 operator << ( std::ostream& stream, Cell const& cell ) {
   uint64_t D = cell . domain_ . size ();
   for ( uint64_t d = 0; d < D; ++ d ) {
-    uint64_t left = cell . domain_ [ d ];
-    if ( d > 0 ) stream << "x"
-    if ( shape_ & (1 << i) ) {
-      // Has extend
+    uint64_t left = cell . domain () [ d ];
+    if ( d > 0 ) stream << "x";
+    if ( cell . shape () & (1 << d) ) {
+      // Has extent
       stream << "[" << left << ", " << left+1 << "]";
     } else {
       stream << "[" << left << ", " << left << "]";

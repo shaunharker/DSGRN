@@ -23,21 +23,23 @@ TileGraph ( Parameter const parameter ) {
 
 INLINE_IF_HEADER_ONLY void TileGraph::
 assign ( Parameter const parameter ) {
-  int const Up = 1;
-  int const Down = -1;
+  data_ . reset ( new TileGraph_ );
+  bool const Up = true;
+  bool const Down = false;
   data_ -> digraph_ = Digraph ();
   data_ -> parameter_ = parameter;
   uint64_t D = parameter . network () . size ();
   data_ -> dimension_ = D;
   Digraph & digraph = data_ -> digraph_;
   // Enumerate tiles
-  std::unordered_map<Cell, uint64_t> tile_index;
+  std::unordered_map<Cell, uint64_t, boost::hash<Cell>> tile_index;
   // Construct all cells
   // Note: this creates some spurious boundary cells, 
   //       but the "snoussi" method will discard them anyway
+  //std::cout << "TileGraph::assign Generating cells.\n";
   std::vector<Cell> cells;
   uint64_t N = 1 << D;
-  for ( Domain domain = Domain  ( parameter . network () . limits () ); isValid ( domain ); ++ domain ) {
+  for ( Domain domain = Domain  ( parameter . network () . domains () ); domain . isValid (); ++ domain ) {
     for ( int shape = 0; shape < N; ++ shape ) {
       cells . push_back ( Cell ( domain, shape ) );
     }
@@ -53,7 +55,7 @@ assign ( Parameter const parameter ) {
       uint64_t y = pair . second . first;
       bool sign = pair . second . second;
       if ( x == y ) continue;
-      if ( y == -1 || signed_permutation [ y ] != { x, sign } ) {
+      if ( y == -1 || signed_permutation [ y ] != std::make_pair(x, sign) ) {
         is_involution = false;
         break;
       }
@@ -64,13 +66,23 @@ assign ( Parameter const parameter ) {
     }
   }  
 
-
+  //std::cout << "TileGraph::assign Loop through tiles and create adjacencies.\n";
   // Loop through tiles and create adjacencies
   for ( auto const& cell_and_index : tile_index ) {
     Cell const& cell = cell_and_index . first;
     uint64_t const& index = cell_and_index . second;
+    auto signed_permutation = parameter . hyperoctahedral ( cell );
+    //std::cout << "Cell = " << cell << "  (index = " << index << ")\n";
+    // std::cout << " cell . shape () == " << cell . shape () << "\n";
+    // for ( auto const& pair : signed_permutation ) {
+    //   std::cout << "  " << pair . first << " -> (" << pair.second.first << ", " << (pair.second.second ? "Up" : "Down") << ")\n";
+    // }
+    if ( parameter . attracting ( cell ) ) {
+      digraph . add_edge ( index, index );
+      // std::cout << "  (f) Adding edge from " << cell << " to " << cell << "\n";
+    }
     for ( uint64_t x = 0; x < D; ++ x ) {
-      auto handle_boundary_adjacency = [&] ( int direction ) {
+      auto handle_boundary_adjacency = [&] ( bool direction ) {
         // If no flow in this direction, do not build an adjacency
         if ( not parameter . absorbing ( cell, x, direction ? 1 : -1 ) ) return;
         //  Collapse in the direction of the flow onto a boundary cell
@@ -86,7 +98,8 @@ assign ( Parameter const parameter ) {
         //  We create the edge.
         uint64_t adjacent_index = tile_index [ adjacent_cell ];
         digraph . add_edge ( index, adjacent_index );
-      }
+        //std::cout << "  (a) Adding edge from " << cell << " to " << adjacent_cell << "\n";
+      };
       if ( signed_permutation . count ( x ) == 0 ) {
         // Handle boundary adjacencies:
         handle_boundary_adjacency ( Down );
@@ -112,9 +125,13 @@ assign ( Parameter const parameter ) {
           if ( sign ) {
             digraph . add_edge ( index, left_index );
             digraph . add_edge ( index, right_index );
+            // std::cout << "  (b) Adding edge from " << cell << " to " << left_cell << "\n";
+            // std::cout << "  (b) Adding edge from " << cell << " to " << right_cell << "\n";
           } else {
             digraph . add_edge ( left_index, index );
             digraph . add_edge ( right_index, index ); 
+            // std::cout << "  (c) Adding edge from " << left_cell << " to " << cell << "\n";
+            // std::cout << "  (c) Adding edge from " << right_cell << " to " << cell << "\n";
           }
         } else {
           // 2D case
@@ -131,11 +148,19 @@ assign ( Parameter const parameter ) {
             digraph . add_edge ( se_index, index );
             digraph . add_edge ( index, ne_index );
             digraph . add_edge ( index, sw_index );
+            // std::cout << "  (d) Adding edge from " << nw_cell << " to " << cell << "\n";
+            // std::cout << "  (d) Adding edge from " << se_cell << " to " << cell << "\n";
+            // std::cout << "  (d) Adding edge from " << cell << " to " << ne_cell << "\n";
+            // std::cout << "  (d) Adding edge from " << cell << " to " << sw_cell << "\n";
           } else {
             digraph . add_edge ( index, nw_index );
             digraph . add_edge ( index, se_index );
             digraph . add_edge ( ne_index, index );
             digraph . add_edge ( sw_index, index );
+            // std::cout << "  (e) Adding edge from " << cell << " to " << nw_cell << "\n";
+            // std::cout << "  (e) Adding edge from " << cell << " to " << se_cell << "\n";
+            // std::cout << "  (e) Adding edge from " << ne_cell << " to " << cell << "\n";
+            // std::cout << "  (e) Adding edge from " << sw_cell << " to " << cell << "\n";
           }
         }
       }

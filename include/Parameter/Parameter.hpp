@@ -60,6 +60,9 @@ absorbing ( Domain const& dom, uint64_t collapse_dim, int direction ) const {
   //std::cout << "Absorbing (" << dom . index () << ", " << collapse_dim << ", " << direction << ")\n";
   uint64_t thres = dom [ collapse_dim ];
   if ( direction == -1 ) thres -= 1;
+  // If thres == -1 this implies we are collapsing to the boundary
+  // of the positive orthant; these walls are not absorbing (the positive orthant is a trapping region)
+  if ( thres == -1 ) return false;
   //std::cout << "  Threshold # = " << thres << "\n";
   std::vector<bool> input_combination;
   //std::cout << "  Forming input combination by analyzing inputs of node " << collapse_dim << ".\n";
@@ -378,41 +381,59 @@ order ( void ) const {
 
 INLINE_IF_HEADER_ONLY bool Parameter::
 snoussi ( Cell const& cell ) const {
-  uint64_t shape = cell . shape ();
+  //std::cout << "Parameter::snoussi(" << cell << ")\n";
+  uint64_t const& shape = cell . shape ();
   uint64_t D = network () . size ();
   // Check if threshold -> regulated mapping is a permutation
   // Loop through normals to cell (thresholds)
-  uint64_t bit = 1;
-  std::vector<uint64_t> thresholds;
+  std::vector<uint64_t> normals;
   std::vector<uint64_t> regulateds;
-  for ( uint64_t d = 0, bit = 1; d < D; ++ d, bit <<= 1 ) {
+  for ( uint64_t x = 0, bit = 1; x < D; ++ x, bit <<= 1 ) {
     if ( (shape & bit) == 0 ) {
-      uint64_t threshold = cell . domain () [ d ] - 1;
-      if ( threshold == -1 ) return false; // Boundary cells
-      uint64_t regulated = regulator (d, thres);
-      thresholds . push_back ( threshold );
-      regulateds . push_back ( regulated );
+      uint64_t threshold = cell . domain () [ x ] - 1;
+      if ( threshold == -1 ) { 
+        //std::cout << "Cell is not Snoussi.\n";
+        return false; // Boundary cells
+      }
+      uint64_t y = regulator (x, threshold);
+      normals . push_back ( x );
+      regulateds . push_back ( y );
+      //std::cout << "  " << d << " -> " << regulated << "\n";
     }
   }
-  std::sort ( thresholds.begin(), thresholds.end() );
+  std::sort ( normals.begin(), normals.end() );
   std::sort ( regulateds.begin(), regulateds.end() );
-  return thresholds == regulateds;
+  bool result = (normals == regulateds);
+  //std::cout << "Cell " << (result? "is" : "is not") << " Snoussi.\n";
+  return result;
 }
 
 INLINE_IF_HEADER_ONLY std::unordered_map<uint64_t, std::pair<uint64_t, bool>> Parameter::
 hyperoctahedral ( Cell const& cell ) const {
+  //std::cout << "Parameter::hyperoctahedral(" << cell << ")\n";
+  uint64_t const& shape = cell . shape ();
   uint64_t D = network () . size ();
   std::unordered_map<uint64_t, std::pair<uint64_t, bool>> result;
-  for ( uint64_t d = 0, bit = 1; d < D; ++ d, bit <<= 1 ) {
+  for ( uint64_t x = 0, bit = 1; x < D; ++ x, bit <<= 1 ) {
+    // std::cout << "  x = " << x << "\n";
+    // std::cout << "  bit = " << bit << "\n";
+    // std::cout << "  shape = " << shape << "\n";
     if ( (shape & bit) == 0 ) {
-      Cell left = cell . expand ( { { d, false } } );
-      Cell right = cell . expand ( { { d, true } } );
-      uint64_t threshold = cell . domain () [ d ] - 1;
-      uint64_t regulated = regulator (d, thres);
-      bool left_direction =  absorbing ( left, regulated, (threshold == regulated ) ? 1 : -1 );
-      bool right_direction = absorbing ( right, regulated, -1 );
+      Cell left = cell . expand ( { { x, false } } );
+      Cell right = cell . expand ( { { x, true } } );
+      uint64_t threshold = cell . domain () [ x ] - 1;
+      if ( threshold == -1 ) {
+        throw std::runtime_error("Parameter::hyperoctahedral : Invalid cell");
+      }
+      uint64_t y = regulator (x, threshold);
+      //std::cout << "  threshold = " << threshold << "\n";
+      //std::cout << "  regulated = " << y << "\n";
+      bool left_direction =  absorbing ( left, y, (x == y ) ? 1 : -1 );
+      bool right_direction = absorbing ( right, y, -1 );
       if ( left_direction == right_direction ) {
-        result [ threshold ] = { regulated, not left_direction };
+        result [ x ] = { y, not left_direction };
+      } else {
+        result [ x ] = { -1, false };
       }
     }
   }
@@ -421,7 +442,22 @@ hyperoctahedral ( Cell const& cell ) const {
 
 INLINE_IF_HEADER_ONLY bool Parameter::
 absorbing ( Cell const& cell, uint64_t collapse_dim, int direction ) const {
+  //std::cout << "Parameter::asborbing(" << cell << ", " << collapse_dim << ", " << direction << ")\n";
   return absorbing ( cell.domain(), collapse_dim, direction );
+}
+
+INLINE_IF_HEADER_ONLY bool Parameter::
+attracting ( Cell const& cell ) const {
+  int D = data_ -> network_ . size ();
+  Domain const& dom = cell . domain ();
+  uint64_t const& shape = cell . shape ();
+  for ( uint64_t d = 0, bit = 1; d < D; ++ d, bit <<= 1 ) {
+    if ( ( shape & bit ) ) {
+      if ( not dom . isMin(d) && absorbing ( dom, d, -1 ) ) return false;
+      if ( not dom . isMax(d) && absorbing ( dom, d, 1 ) ) return false;
+    }
+  }
+  return true;
 }
 
 INLINE_IF_HEADER_ONLY std::ostream& operator << ( std::ostream& stream, Parameter const& p ) {

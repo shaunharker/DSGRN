@@ -170,6 +170,27 @@ int wallgraph ( int argc, char * argv [] ) {
   return 1;
 }
 
+int tilegraph ( int argc, char * argv [] ) {
+  if ( argc <= 3 ) {
+    std::cout << "Not enough arguments.\n";
+    return 1;
+  }
+  std::string command = argv[2];
+  std::string s = argv[3];
+  Parameter p = parse_parameter ( s );
+  TileGraph tg ( p );
+  if ( command == "json" ) {
+    std::cout << tg . digraph() . stringify () << "\n";
+    return 0;
+  } 
+  if ( command == "graphviz" ) {
+    std::cout << tg << "\n";
+    return 0;
+  } 
+  std::cout << "Unrecognized command: " + command + "\n";
+  return 1;
+}
+
 
 int morsedecomposition ( int argc, char * argv [] ) {
   if ( argc <= 3 ) {
@@ -358,6 +379,12 @@ int main ( int argc, char * argv [] ) {
         (command == "WallGraph") ||
         (command == "wallgraph") ) {
       return wallgraph ( argc, argv );
+    }
+    if ((command == "TG") ||
+        (command == "tg") ||
+        (command == "TileGraph") ||
+        (command == "tilegraph") ) {
+      return tilegraph ( argc, argv );
     }
     if ((command == "MD") ||
         (command == "md") ||

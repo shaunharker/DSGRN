@@ -183,8 +183,8 @@ BOOST_PYTHON_MODULE(libpyDSGRN)
       .def(init<Network const&>())
       .def("assign", static_cast<void (Parameter::*)(std::vector<LogicParameter> const&, std::vector<OrderParameter> const&, Network const& network)>(&Parameter::assign) )
       .def("assign", static_cast<void (Parameter::*)(Network const& )>(&Parameter::assign) )
-      .def("attracting", &Parameter::attracting)
-      .def("asborbing", &Parameter::absorbing)
+      .def("attracting", static_cast<bool (Parameter::*)(Domain const&)const>(&Parameter::attracting))
+      .def("asborbing", static_cast<bool (Parameter::*)(Domain const&, uint64_t, int)const>(&Parameter::absorbing))
       .def("regulator", &Parameter::regulator)
       .def("labelling", &Parameter::labelling)
       .def("network", &Parameter::network)
@@ -194,6 +194,7 @@ BOOST_PYTHON_MODULE(libpyDSGRN)
       .def("logic", &Parameter::logic, return_value_policy<copy_const_reference>())
       .def("order", &Parameter::order, return_value_policy<copy_const_reference>())
       .def("__str__", &Parameter::stringify)
+      // snoussi, hyperoctahedral, absorbing(new)
     ;
 
     // ParameterGraph
@@ -288,6 +289,16 @@ BOOST_PYTHON_MODULE(libpyDSGRN)
       .def("graphviz", &DomainGraph::graphviz)
     ;
 
+    // TileGraph
+    class_<TileGraph>("TileGraph", init<>())
+      .def(init<Parameter const>())
+      .def("digraph", &TileGraph::digraph)
+      .def("dimension", &TileGraph::dimension)
+      .def("annotate", &TileGraph::annotate)
+      .def("graphviz", &TileGraph::graphviz)
+    ;
+
+
     // MorseDecomposition
     class_<MorseDecomposition>("MorseDecomposition", init<>())
       .def(init<Digraph const&>())
@@ -304,6 +315,7 @@ BOOST_PYTHON_MODULE(libpyDSGRN)
     // MorseGraph
     class_<MorseGraph>("MorseGraph", init<>())
       .def("assign", &MorseGraph::assign<DomainGraph>)
+      .def("assign", &MorseGraph::assign<TileGraph>)
       .def("poset", &MorseGraph::poset)
       //.def("annotation", &MorseGraph::annotation)
       .def("SHA256", &MorseGraph::SHA256)

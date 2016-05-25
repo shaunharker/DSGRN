@@ -155,6 +155,13 @@ public:
   bool
   absorbing ( Cell const& cell, uint64_t collapse_dim, int direction ) const;
 
+  /// attracting
+  ///   Return true if cell is attracting.
+  ///   This is true iff none of the walls of
+  ///   are absorbing. (If not well-defined, undef. behavior)
+  bool
+  attracting ( Cell const& cell ) const;
+
   /// operator <<
   ///   Output debug data to stream
   friend std::ostream& operator << ( std::ostream& stream, Parameter const& p );
