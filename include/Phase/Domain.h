@@ -19,11 +19,11 @@
 ///   invalid domain (and isValid stops returning true).
 class Domain {
 public:
-  /// Domain_
+  /// Domain
   ///   Default constructor
   Domain ( void );
 
-  /// Domain_
+  /// Domain
   ///   Construct domain object as
   ///   (0,0,...,0) in 
   ///   {0,1,..,limits[0]-1}x...x{0,1,..,limits[D]-1}
