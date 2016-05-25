@@ -23,8 +23,8 @@ TileGraph ( Parameter const parameter ) {
 
 INLINE_IF_HEADER_ONLY void TileGraph::
 assign ( Parameter const parameter ) {
-  bool const Up = true;
-  bool const Down = false;
+  int const Up = 1;
+  int const Down = -1;
   data_ -> digraph_ = Digraph ();
   data_ -> parameter_ = parameter;
   uint64_t D = parameter . network () . size ();
@@ -39,11 +39,11 @@ assign ( Parameter const parameter ) {
     // Check if signed_permutation is an involution
     bool is_involution = true;
     for ( auto const& pair : signed_permutation ) {
-      int x = pair . first;
-      int y = pair . second . first;
+      uint64_t x = pair . first;
+      uint64_t y = pair . second . first;
       bool sign = pair . second . second;
       if ( x == y ) continue;
-      if ( signed_permutation [ y ] != { x, sign } ) {
+      if ( y == -1 || signed_permutation [ y ] != { x, sign } ) {
         is_involution = false;
         break;
       }
@@ -53,28 +53,34 @@ assign ( Parameter const parameter ) {
       digraph . add_vertex ();
     }
   }  
+
+
   // Loop through tiles and create adjacencies
   for ( auto const& cell_and_index : tile_index ) {
     Cell const& cell = cell_and_index . first;
     uint64_t const& index = cell_and_index . second;
-    for ( int x = 0; x < D; ++ x ) {
-      if ( signed_permutation . count ( x ) == 0 ) {
-        // Handle boundary adjacencies:
-        //  We find the direction of the flow in the cell (in the variable x)
-        auto direction = parameter . flow ( cell, x ) ? Up : Down;
-        //  We collapse in the direction of the flow onto a boundary cell
+    for ( uint64_t x = 0; x < D; ++ x ) {
+      auto handle_boundary_adjacency = [&] ( int direction ) {
+        // If no flow in this direction, do not build an adjacency
+        if ( not parameter . absorbing ( cell, x, direction ? 1 : -1 ) ) return;
+        //  Collapse in the direction of the flow onto a boundary cell
         Cell boundary_cell = cell . collapse ( { {x, direction} } );
         //  This might fail if the original cell was unbounded, so we check that.
-        if ( not boundary_cell ) continue;
+        if ( not boundary_cell ) return;
         //  If the boundary cell is a tile, there is no need to make an adjacency.
-        if ( tile_index . count ( boundary_cell ) ) continue;
+        if ( tile_index . count ( boundary_cell ) ) return;
         //  We compute the adjacent cell on the other side of the boundary.
         Cell adjacent_cell = boundary_cell . expand ( { {x, direction} } );
         //  If we jumped across the 0th threshold, there is no adjacent cell, so we check that.
-        if ( not adjacent_cell ) continue;
+        if ( not adjacent_cell ) return;
         //  We create the edge.
         uint64_t adjacent_index = tile_index [ adjacent_cell ];
         digraph . add_edge ( index, adjacent_index );
+      }
+      if ( signed_permutation . count ( x ) == 0 ) {
+        // Handle boundary adjacencies:
+        handle_boundary_adjacency ( Down );
+        handle_boundary_adjacency ( Up );
       } else {
         // Handle coboundary adjacencies
         //   Since the signed permutation is an involution (x^2 = id)
@@ -84,7 +90,7 @@ assign ( Parameter const parameter ) {
         //   x -> y +  and y -> x +
         //   x -> y -  and y -> x -
         // We create adjacencies according to this decomposition
-        int y = signed_permutation[x].first;
+        uint64_t y = signed_permutation[x].first;
         bool sign = signed_permutation[x].second;
         if ( y < x ) continue; // Don't add edges twice
         if ( signed_permutation[x].first == x ) {

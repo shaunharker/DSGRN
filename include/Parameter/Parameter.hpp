@@ -56,22 +56,22 @@ attracting ( Domain const& dom ) const {
 }
 
 INLINE_IF_HEADER_ONLY bool Parameter::
-absorbing ( Domain const& dom, int collapse_dim, int direction ) const {
+absorbing ( Domain const& dom, uint64_t collapse_dim, int direction ) const {
   //std::cout << "Absorbing (" << dom . index () << ", " << collapse_dim << ", " << direction << ")\n";
-  int thres = dom [ collapse_dim ];
+  uint64_t thres = dom [ collapse_dim ];
   if ( direction == -1 ) thres -= 1;
   //std::cout << "  Threshold # = " << thres << "\n";
   std::vector<bool> input_combination;
   //std::cout << "  Forming input combination by analyzing inputs of node " << collapse_dim << ".\n";
-  for ( int source : data_ -> network_ . inputs ( collapse_dim ) ) {
+  for ( uint64_t source : data_ -> network_ . inputs ( collapse_dim ) ) {
     //std::cout << "    Analyze source edge " << source << "\n";
     bool activating = data_ -> network_ . interaction ( source, collapse_dim );
     //std::cout << "      This edge is " << (activating ? "activating" : "repressing" ) << ".\n";
-    int inedge = data_ -> network_ . order ( source, collapse_dim );
+    uint64_t inedge = data_ -> network_ . order ( source, collapse_dim );
     //std::cout << "      This edge is the " << inedge << "th ordered outedge of " << source << ".\n";
-    int thres = data_ -> order_ [ source ] . inverse ( inedge );
+    uint64_t in_thres = data_ -> order_ [ source ] . inverse ( inedge );
     //std::cout << "      The input combination digit depends on which side of threshold " << thres << " on dimension " << source << " we are at.\n";
-    bool result = not ( dom [ source ] > thres ) ^ activating;
+    bool result = not ( dom [ source ] > in_thres ) ^ activating;
     //std::cout << "      The domain is on the " << ( ( dom [ source ] > thres ) ? "right" : "left" ) << " side of this threshold.\n";
     input_combination . push_back ( result );
     //std::cout << "      Hence, the input combination digit is " << (result ? "1" : "0") << "\n";
@@ -374,6 +374,53 @@ logic ( void ) const {
 INLINE_IF_HEADER_ONLY std::vector<OrderParameter> const & Parameter::
 order ( void ) const {
     return data_ -> order_;
+}
+
+INLINE_IF_HEADER_ONLY bool Parameter::
+snoussi ( Cell const& cell ) const {
+  uint64_t shape = cell . shape ();
+  uint64_t D = network () . size ();
+  // Check if threshold -> regulated mapping is a permutation
+  // Loop through normals to cell (thresholds)
+  uint64_t bit = 1;
+  std::vector<uint64_t> thresholds;
+  std::vector<uint64_t> regulateds;
+  for ( uint64_t d = 0, uint64_t bit = 1; d < D; ++ d, bit <<= 1 ) {
+    if ( shape & bit == 0 ) {
+      uint64_t threshold = cell . domain () [ d ] - 1;
+      uint64_t regulated = regulator (d, thres);
+      thresholds . push_back ( threshold );
+      regulateds . push_back ( regulated );
+    }
+  }
+  std::sort ( thresholds.begin(), thresholds.end() );
+  std::sort ( regulateds.begin(), regulateds.end() );
+  return thresholds == regulateds;
+}
+
+INLINE_IF_HEADER_ONLY std::unordered_map<uint64_t, std::pair<uint64_t, bool>> Parameter::
+hyperoctahedral ( Cell const& cell ) const {
+  uint64_t D = network () . size ();
+  std::unordered_map<uint64_t, std::pair<uint64_t, bool>> result;
+  for ( uint64_t d = 0, uint64_t bit = 1; d < D; ++ d, bit <<= 1 ) {
+    if ( shape & bit == 0 ) {
+      Cell left = cell . expand ( { { d, false } } );
+      Cell right = cell . expand ( { { d, true } } );
+      uint64_t threshold = cell . domain () [ d ] - 1;
+      uint64_t regulated = regulator (d, thres);
+      bool left_direction =  absorbing ( left, regulated, (threshold == regulated ) ? 1 : -1 );
+      bool right_direction = absorbing ( right, regulated, -1 );
+      if ( left_direction == right_direction ) {
+        result [ threshold ] = { regulated, not left_direction };
+      }
+    }
+  }
+  return result;
+}
+
+INLINE_IF_HEADER_ONLY bool Parameter::
+absorbing ( Cell const& cell, uint64_t collapse_dim, int direction ) const {
+  return absorbing ( cell.domain(), collapse_dim, direction );
 }
 
 INLINE_IF_HEADER_ONLY std::ostream& operator << ( std::ostream& stream, Parameter const& p ) {

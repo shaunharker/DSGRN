@@ -5,6 +5,8 @@
 #ifndef DSGRN_CELL_H
 #define DSGRN_CELL_H
 
+#include "Phase/Domain.h"
+
 // class Cell
 class Cell {
 public:
@@ -51,6 +53,20 @@ public:
   ///   If we attempt to expand out of the positive orthant, return the default Cell
   Cell
   expand ( std::vector<std::pair<int,bool>> const& expansions ) const;
+
+  /// domain
+  ///   Return associated domain it is collapsed to the left from
+  Domain const&
+  domain ( void ) const;
+
+  /// shape
+  ///  Return the shape of the cell.
+  ///    The ith bit of shape is 0 if the cell is 
+  ///      collapsed in the ith dimension
+  ///    The ith bit of shape is 1 if i is
+  ///      a tangential direction of the cell
+  uint64_t
+  shape ( void ) const;
 
   /// index
   ///   Return an index defined by the formula

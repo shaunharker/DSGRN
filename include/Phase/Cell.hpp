@@ -5,7 +5,6 @@
 #ifndef DSGRN_CELL_HPP
 #define DSGRN_CELL_HPP
 
-
 INLINE_IF_HEADER_ONLY Cell::
 Cell ( void ) {}
 
@@ -70,12 +69,20 @@ expand ( std::vector<std::pair<int,bool>> const& expansions ) const {
   return result;
 }
 
+INLINE_IF_HEADER_ONLY Domain const& Cell::
+domain ( void ) const {
+  return domain_;
+}
+
+INLINE_IF_HEADER_ONLY uint64_t Cell::
+shape ( void ) const {
+  return shape_;
+}
 
 INLINE_IF_HEADER_ONLY uint64_t Cell::
 index ( void ) const {
   return domain_ . index() << domain_ . size () + shape_;
 }
-
 
 INLINE_IF_HEADER_ONLY Cell::
 operator bool () const {
@@ -87,7 +94,6 @@ INLINE_IF_HEADER_ONLY bool Cell::
 operator == ( Cell const& rhs ) const {
   return index() == rhs . index();
 }
-
 
 INLINE_IF_HEADER_ONLY std::ostream& 
 operator << ( std::ostream& stream, Cell const& cell ) {

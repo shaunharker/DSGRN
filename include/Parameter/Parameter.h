@@ -8,6 +8,7 @@
 #include "common.h"
 
 #include "Phase/Domain.h"
+#include "Phase/Cell.h"
 #include "Parameter/Network.h"
 #include "Parameter/LogicParameter.h"
 #include "Parameter/OrderParameter.h"
@@ -58,7 +59,7 @@ public:
   ///   the left wall or the right wall with
   ///   collapse dimension collapse_dim.
   bool
-  absorbing ( Domain const& dom, int collapse_dim, int direction ) const;
+  absorbing ( Domain const& dom, uint64_t collapse_dim, int direction ) const;
 
   /// regulator
   ///   Return the variable being regulated on the threshold
@@ -115,6 +116,44 @@ public:
   ///   Return the order of the parameter
   std::vector<OrderParameter> const &
   order ( void ) const;
+
+  ////////////////////////////////
+  // Routines used by TileGraph //
+  ////////////////////////////////
+
+  /// snoussi
+  ///   Return true if a given cell is a snoussi cell
+  ///   A Snoussi cell is one for which the mapping between 
+  ///   threshold normals and threshold regulated variables
+  ///   is a bijection
+  bool
+  snoussi ( Cell const& cell ) const;
+
+  /// hyperoctahedral
+  ///   Given: a Snoussi cell (otherwise undefined behavior)
+  ///   Output: A map from each normal direction x to "cell" to
+  ///           a pair (int, bool) such that
+  ///           For each normal direction x:
+  ///             Let y be the variable regulated by x     
+  ///             If the flow in dimension y switches from
+  ///               negative to positive as we pass threshold x, 
+  ///                   result[x] = (y, true)
+  ///             If the flow in dimension y switches from
+  ///               positive to negative as we pass threshold x,
+  ///                   result[x] = (y, false)
+  ///             If the flow in dimension y does not switch 
+  ///               as we pass threshold x,
+  ///                   result[x] = (-1, false)
+  std::unordered_map<uint64_t, std::pair<uint64_t, bool>>
+  hyperoctahedral ( Cell const& cell ) const;
+
+  /// absorbing 
+  ///   Given a cell and a tangential dimension
+  ///   for which the flow direction is well defined, 
+  ///   return the flow direction. (If not well-defined, 
+  //    undefined behavior.)
+  bool
+  absorbing ( Cell const& cell, uint64_t collapse_dim, int direction ) const;
 
   /// operator <<
   ///   Output debug data to stream
