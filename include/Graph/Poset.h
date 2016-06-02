@@ -94,6 +94,11 @@ public:
   void
   parse ( std::string const& str );
 
+  /// graphviz
+  ///   Return a graphviz representation of the poset (as Hasse diagram)
+  std::string
+  graphviz ( void ) const;
+  
   /// operator <<
   ///   Emit data to stream in graphviz format
   friend std::ostream& operator << ( std::ostream& stream, Poset const& poset );

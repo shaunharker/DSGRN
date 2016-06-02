@@ -31,7 +31,7 @@ public:
   OrderParameter ( std::vector<uint64_t> const& perm );
 
   /// assign (by index)
-  ///   Initialize to the kth permutation of n items
+  ///   Initialize to the kth permutation of m items
   ///   The permutations are ordered lexicographically
   void
   assign ( uint64_t m, uint64_t k );
@@ -82,6 +82,11 @@ public:
   std::vector<OrderParameter>
   adjacencies ( void ) const;
 
+  /// operator ==
+  ///   Equality comparison
+  bool
+  operator == ( OrderParameter const& rhs ) const;
+  
   /// operator <<
   ///   Output debug data to stream
   friend std::ostream& operator << ( std::ostream& stream, OrderParameter const& p );

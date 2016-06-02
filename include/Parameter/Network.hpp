@@ -283,7 +283,7 @@ _parse ( std::vector<std::string> const& lines ) {
     };
     for ( char c : logic_string ) {
       //std::cout << "Reading character " << c << "\n";
-      if ( (c == ' ') || (c == '(') || (c == ')') || (c == '+') || (c == '~') ) {
+      if ( ( c == '\t' ) || (c == ' ') || (c == '(') || (c == ')') || (c == '+') || (c == '~') ) {
         flush_token ();
       } else {
         token . push_back ( c );

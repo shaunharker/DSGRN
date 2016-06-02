@@ -1,0 +1,15 @@
+# proxy.js 
+
+To forward from localhost:9001 => localhost:80
+
+```bash
+$ node proxy.js 9001 80
+```
+
+Or localhost:9001 => otherhost:80
+
+```bash
+$ node proxy.js 9001 otherhost:80
+```
+
+See http://stackoverflow.com/questions/6490898/node-js-forward-all-traffic-from-port-a-to-port-b

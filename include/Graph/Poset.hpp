@@ -117,6 +117,11 @@ parse ( std::string const& str ) {
   assign ( digraph );
 }
 
+INLINE_IF_HEADER_ONLY std::string Poset::
+graphviz ( void ) const {
+  return data_ -> transitive_reduction . graphviz ();
+}
+
 INLINE_IF_HEADER_ONLY std::ostream& operator << ( std::ostream& stream, Poset const& poset ) {
   return stream << poset . data_ -> transitive_reduction;
 }
