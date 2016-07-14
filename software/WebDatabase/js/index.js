@@ -1,5 +1,5 @@
 
-var queryURL = "http://chomp.rutgers.edu/Projects/DSGRN/DB/php/ZooServer.php";
+var queryURL = "php/ZooServer.php";
 
 function insertAfter(newNode, referenceNode) {
     referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
