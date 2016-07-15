@@ -31,9 +31,9 @@ RUN \
 # sqlite3 #
 ###########
 RUN \
-  cp /opt/conda/pkgs/sqlite-3.11.1-0/include/sqlite3.h /home/jovyan/software/include && \
-  cp /opt/conda/pkgs/sqlite-3.11.1-0/include/sqlite3ext.h /home/jovyan/software/include && \
-  cp /opt/conda/pkgs/sqlite-3.11.1-0/lib/libsqlite3.so /home/jovyan/software/lib
+  cp /opt/conda/pkgs/sqlite-3.13.0-0/include/sqlite3.h /home/jovyan/software/include && \
+  cp /opt/conda/pkgs/sqlite-3.13.0-0/include/sqlite3ext.h /home/jovyan/software/include && \
+  cp /opt/conda/pkgs/sqlite-3.13.0-0/lib/libsqlite3.so /home/jovyan/software/lib
 
 ENV PATH=/home/jovyan/software/bin:$PATH
 ENV BOOST_ROOT=/home/jovyan/software
