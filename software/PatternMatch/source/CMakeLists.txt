@@ -3,7 +3,8 @@
 set ( LIBS      ${LIBS}
                 ${Boost_LIBRARIES}
                 dsgrn
-                sqlite3 )
+                sqlite3 
+                ${CMAKE_THREAD_LIBS_INIT} )
 
 set ( LIBRARYSOURCEFILES Pattern.cpp SearchGraph.cpp PatternGraph.cpp MatchingGraph.cpp PatternMatch.cpp)
 add_library ( libdsgrnpatternmatch STATIC ${LIBRARYSOURCEFILES} )
