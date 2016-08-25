@@ -130,7 +130,6 @@ command = sys.argv[2]
 
 if command == "SingleFP":
   bounds = json.loads(sys.argv[3])
-  print(bounds)
   SingleFPQuery(variables, bounds)
 
 if command == "DoubleFP":
