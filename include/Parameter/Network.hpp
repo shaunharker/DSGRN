@@ -11,6 +11,7 @@
 
 #include "Network.h"
 #include "Tools/sqlambda.h"
+#include <boost/algorithm/string/replace.hpp>
 
 INLINE_IF_HEADER_ONLY Network::
 Network ( void ) { 
@@ -61,9 +62,13 @@ load ( std::string const& filename ) {
 
 INLINE_IF_HEADER_ONLY void Network::
 assign ( std::string const& spec ) {
-  data_ . reset ( new Network_ );
-  data_ -> specification_ = spec;
-  _parse ( _lines () );
+  if ( spec.find('\n') == std::string::npos && spec.find("\\n") == std::string::npos ) {
+    load ( spec );
+  } else {
+    data_ . reset ( new Network_ );
+    data_ -> specification_ = spec;
+    _parse ( _lines () );
+  }
 }
 
 INLINE_IF_HEADER_ONLY uint64_t Network::
@@ -182,6 +187,15 @@ namespace DSGRN_parse_tools {
 ///   Open the network file and read it line by line
 INLINE_IF_HEADER_ONLY std::vector<std::string> Network::
 _lines ( void ) {
+  // Remove quote marks if they exist, and convert "\n" substrings to newlines
+  std::string & str = data_ -> specification_;
+  const std::string quote = "\"";
+  const std::string newline_escaped = "\\n";
+  const std::string newline_char = "\n";
+  const std::string empty = "";
+  boost::replace_all(data_ -> specification_, newline_escaped, newline_char );
+  boost::replace_all(data_ -> specification_, quote, empty );
+  // Parse the lines
   std::vector<std::string> result;
   std::stringstream spec ( data_ -> specification_ );
   std::string line;
@@ -269,7 +283,7 @@ _parse ( std::vector<std::string> const& lines ) {
     };
     for ( char c : logic_string ) {
       //std::cout << "Reading character " << c << "\n";
-      if ( (c == ' ') || (c == '(') || (c == ')') || (c == '+') || (c == '~') ) {
+      if ( ( c == '\t' ) || (c == ' ') || (c == '(') || (c == ')') || (c == '+') || (c == '~') ) {
         flush_token ();
       } else {
         token . push_back ( c );

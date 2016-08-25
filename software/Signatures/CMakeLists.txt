@@ -37,6 +37,7 @@ message( STATUS "Chose the following prefix: " ${CMAKE_INSTALL_PREFIX} )
 
 find_package(Boost 1.58.0 REQUIRED COMPONENTS serialization)
 find_package(MPI REQUIRED)
+find_package(Threads REQUIRED)
 
 #######################
 # Include Directories #

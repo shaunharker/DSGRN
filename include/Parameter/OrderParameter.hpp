@@ -112,6 +112,13 @@ adjacencies ( void ) const {
   return output;
 }
 
+INLINE_IF_HEADER_ONLY bool OrderParameter::
+operator == ( OrderParameter const& rhs ) const {
+  if ( data_ -> k_ != rhs . data_ -> k_ ) return false;
+  if ( data_ -> m_ != rhs . data_ -> m_ ) return false;
+  return true;
+}
+
 INLINE_IF_HEADER_ONLY std::ostream& operator << ( std::ostream& stream, OrderParameter const& p ) {
   stream << "[";
   for ( uint64_t i = 0; i <  p.data_ -> m_; ++ i ) {

@@ -60,6 +60,11 @@ public:
   std::vector<LogicParameter>
   adjacencies ( void ) const;
 
+  /// operator ==
+  ///   Equality comparison
+  bool
+  operator == ( LogicParameter const& rhs ) const;
+  
   /// operator <<
   ///   Output debug data to stream
   friend std::ostream& operator << ( std::ostream& stream, LogicParameter const& p );

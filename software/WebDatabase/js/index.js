@@ -1,4 +1,6 @@
 
+var queryURL = "php/ZooServer.php";
+
 function insertAfter(newNode, referenceNode) {
     referenceNode.parentNode.insertBefore(newNode, referenceNode.nextSibling);
 }
@@ -39,13 +41,12 @@ function loadContent () {
   var FC = document.querySelector('input[name="FC"]:checked').value;
   var XC = document.querySelector('input[name="XC"]:checked').value;
   window . loadingContent = true;
-  var url = "http://chomp.rutgers.edu/Projects/DSGRN/DB/php/ZooServer.php";
   var begin = window.numItems;
   var end = begin + 25;
   var args = "db=" + window.database + "&cmd=annotationcohort&start=" + begin + "&end=" + end 
     + "&fp=" + FP + "&fpon=" + FPON + "&fpoff=" + FPOFF + "&fc=" + FC + "&xc=" + XC ;
   window.numItems = end;
-  phpQuery ( url, args, displayContent );
+  phpQuery ( queryURL, args, displayContent );
 }
 
 function displayContent ( content ) {
@@ -66,7 +67,7 @@ function displayContent ( content ) {
     div.ZooData = s;
     div.onclick = function () {
       clicked = this; 
-      phpQuery("http://chomp.rutgers.edu/Projects/DSGRN/DB/php/ZooServer.php", 
+      phpQuery(queryURL, 
                "db=" + window.database + "&cmd=parameters&mgi=" + clicked.ZooData["MorseGraphIndex"], 
                function (content) {
         var data = JSON.parse(content);
@@ -81,7 +82,7 @@ function displayContent ( content ) {
           p . innerHTML =  s["ParameterIndex"];
           p . className = "parameter";
           p . onclick = function () {
-            phpQuery("http://chomp.rutgers.edu/Projects/DSGRN/DB/php/ZooServer.php", 
+            phpQuery(queryURL, 
                      "db=" + window.database + "&cmd=inequalities&pi=" + p.innerHTML, 
                      function (content) {
                       var div = document.createElement('div');
@@ -89,7 +90,7 @@ function displayContent ( content ) {
                       div.className = 'inequalities';
                       div.innerHTML = '<p> Parameter Inequalities (Parameter ' + s["ParameterIndex"] + ')</p> <pre>' + content + "</pre>";
                      });
-            phpQuery("http://chomp.rutgers.edu/Projects/DSGRN/DB/php/ZooServer.php", 
+            phpQuery(queryURL, 
                      "db=" + window.database + "&cmd=domaingraph&pi=" + p.innerHTML, 
                      function (content) {
                       var div = document.createElement('div');
@@ -104,7 +105,7 @@ function displayContent ( content ) {
                         div.innerHTML = '<p> Domain Graph (' + s["ParameterIndex"] + ')</p> <p> (Too large to display) </p>';
                       }
                      });
-            phpQuery("http://chomp.rutgers.edu/Projects/DSGRN/DB/php/ZooServer.php", 
+            phpQuery(queryURL, 
                      "db=" + window.database + "&cmd=timeseries&pi=" + p.innerHTML,
                      function ( content ) {
                       var div = document.createElement('div');
@@ -128,7 +129,7 @@ function displayContent ( content ) {
 
 /// Code run at startup. It queries for networks and displays them in panels.
 /// Clicking on a panel results in a Morse Graph Zoo being displayed.
-phpQuery("http://chomp.rutgers.edu/Projects/DSGRN/DB/php/ZooServer.php", 
+phpQuery(queryURL, 
   "db=registry.db&cmd=networks", 
   function (content) {
     var data = JSON.parse(content);

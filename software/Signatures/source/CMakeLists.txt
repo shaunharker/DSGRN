@@ -1,6 +1,6 @@
 # Signatures.cpp CMake file
 
-set ( LIBS ${LIBS} ${Boost_LIBRARIES} ${MPI_LIBRARIES} dsgrn sqlite3 )
+set ( LIBS ${LIBS} ${Boost_LIBRARIES} ${MPI_LIBRARIES} dsgrn sqlite3 ${CMAKE_THREAD_LIBS_INIT} )
 
 add_executable ( Signatures Signatures.cpp )
 target_link_libraries ( Signatures ${LIBS} )
