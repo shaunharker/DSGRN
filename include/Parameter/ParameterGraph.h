@@ -33,6 +33,33 @@ public:
   uint64_t
   size ( void ) const;
 
+  /// dimension
+  ///   Return the number of nodes in the network
+  ///   (i.e. the dimension of the phase space)
+  uint64_t 
+  dimension ( void ) const;
+
+  /// logicsize
+  ///   Given a network node 0 <= i < dimension(), 
+  ///   Return the size of the factor graph associated
+  ///   with network node i (for some fixed output edge ordering)
+  uint64_t
+  logicsize ( uint64_t i ) const;
+
+  /// ordersize
+  ///   Given a network node 0 <= i < dimension(), 
+  ///   returns the number of output edge orderings
+  ///   network().outputs().size() !
+  uint64_t
+  ordersize ( uint64_t i ) const;
+
+  /// factorgraph
+  ///   Return the list of hex-code strings
+  ///   representing the logic parameters of the ith
+  ///   ith factor graph
+  std::vector<std::string> const& 
+  factorgraph ( uint64_t i ) const;
+  
   /// parameter
   ///   Return the parameter associated with an index
   Parameter
