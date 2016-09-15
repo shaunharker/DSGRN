@@ -2,6 +2,77 @@ import DSGRN
 import sqlite3
 import graphviz
 
+class Graph:
+  def __init__(self, vertices, edges):
+    self.vertices = vertices
+    self.edges = edges 
+    self.adjacency_lists = {}
+    for s,t in self.edges:
+      if not s in self.vertices:
+        self.vertices.add(s)
+      if not t in self.vertices:
+        self.vertices.add(t)
+      if not s in self.adjacency_lists:
+          self.adjacency_lists[s] = []
+      self.adjacency_lists[s].append(t) 
+
+  def _repr_svg_(self):
+    return graphviz.Source('digraph {' + \
+  '\n'.join([ 'X' + str(v) + '[label="' + self.label(v) + '";style="filled";fillcolor="' + self.color(v) + '"];' for v in self.vertices ]) + \
+   '\n' + '\n'.join([ 'X' + str(u) + " -> " + 'X' + str(v) + ';' for (u, v) in self.edges ]) + \
+   '\n' + '}\n')._repr_svg_()
+
+  def numberOfPaths(self, p, q):
+    """
+    Compute the number of paths from "p" to "q" in the graph described by "adjacency_lists"
+    """
+    cache = {q : 1}
+    subresult = lambda x : cache.get(x, sum([subresult(y) for y in self.adjacency_lists.get(x,[])]))
+    return subresult(p)
+
+  def subgraph(self, predicate):
+    """
+    Extract induced subgraph consisting of vertices satisfying "predicate"
+    """
+    return Graph({ v for v in self.vertices if predicate(v)}, { (s,t) for (s,t) in self.edges if predicate(s) and predicate(t)})
+
+  def unavoidable(self, p, q, predicate):
+    """
+    Return "true" if every path in a graph from "p" to "q" must satisfy "predicate" at one or more vertices.
+    """
+    return self.subgraph(lambda v : not predicate(v)).numberOfPaths(p,q) == 0
+
+  def label(self, v):
+    """
+    Return a label string to be used when displaying graph
+    """
+    return str(v)
+
+  def color(self, v):
+    """
+    Return a fillcolor to be used when displaying graph
+    """
+    return "blue"
+
+def essential(hexcode,n,m):
+  i = int(hexcode, 16)
+  binning = [sum ([ 1 if i & 2**k else 0 for k in range(j*m,(j+1)*m)]) for j in range(0,2**n)]
+  if not 0 in binning:
+    return False 
+  if not m in binning:
+    return False
+  N = 2**n 
+  for d in range(0,n):
+    bit = 2**d 
+    flag = False
+    for x in range(0, N):
+      if binning[x] != binning[x ^ bit]:
+        flag = True
+        break
+    if not flag:
+      return False
+  return True
+
 class dsgrnDatabase:
   def __init__(self, database_name):
     """
@@ -36,6 +107,9 @@ class dsgrnDatabase:
     self.conn.commit()
     self.conn.close()
 
+  def _repr_svg_(self):
+    return graphviz.Source(self.network.graphviz())._repr_svg_()
+
   def single_gene_query_prepare (self, gene ):
     """
     Add a table to the database to enable gene manipulation queries
@@ -63,8 +137,23 @@ class dsgrnDatabase:
 
   def single_gene_query (self, gene, reduced_parameter_index ):
     """
-    Return dictionary from hex codes to morse graph indices for single-gene query
-    """
+    The query returns a graph which contains the poset of gene parameter indices 
+    corresponding to adjusting the parameter by changing the logic parameter associated 
+    with the gene being queried.
+    The graph is as follows: 
+
+    * The vertices of the graph are named according to Gene Parameter Index (gpi). 
+    * There is a directed edge p -> q iff p < q and the associated logic parameters are adjacent.
+    * The graph is labelled with pairs (Parameter index, Morse graph index).
+
+    In addition the following extra structures are provided:
+
+    * `graph.data` is a dictionary from gene parameter index to (hex code, parameter index, morse graph index)
+    * `graph.mgi` is a function which accepts a gpi and returns the associated Morse graph idnex
+    * `graph.num_inputs` is the number of network edges which are inputs to the gene associated with the query
+    * `graph.num_outputs`is the number of network edges which are outputs to the gene associated with the query
+    * `graph.essential` is a boolean-valued function which determines if each vertex corresponds to an essential parameter node
+   """
     # Sanitize "gene":
     if gene not in self.names:
       raise NameError(gene + " is not the name of a node in the network")
@@ -72,7 +161,19 @@ class dsgrnDatabase:
     c.execute("select GeneParameterIndex,ParameterIndex,MorseGraphIndex from " + gene + " where ReducedParameterIndex=?" , (str(reduced_parameter_index),))
     gene_index = self.network.index(gene)
     factorgraph = self.parametergraph.factorgraph(gene_index)
-    return { row[0] : (factorgraph[row[0]],  row[1], row[2]) for row in c }
+    Q = { row[0] : (factorgraph[row[0]],  row[1], row[2]) for row in c }
+    isPowerOfTwo = lambda n : (n & (n-1) == 0) and (n != 0)
+    isAdjacentHexcode = lambda hexcode1, hexcode2 : int(hexcode1, 16) < int(hexcode2, 16) and isPowerOfTwo( int(hexcode1, 16) ^ int(hexcode2, 16) )
+    vertices = set(Q.keys())
+    edges = [ (gpi1, gpi2) for gpi1 in Q.keys() for gpi2 in Q.keys() if isAdjacentHexcode(Q[gpi1][0], Q[gpi2][0]) ]
+    graph = Graph(vertices,edges)
+    graph.data = Q
+    graph.mgi = lambda gpi : graph.data[gpi][2]
+    graph.label = lambda gpi : str(graph.data[gpi][1]) + ':' + str(graph.data[gpi][2])
+    graph.num_inputs = len(self.network.inputs(gene_index))
+    graph.num_outputs = len(self.network.outputs(gene_index))
+    graph.essential = lambda gpi : essential(graph.data[gpi][0],graph.num_inputs,graph.num_outputs)
+    return graph
 
   def UniqueStableMorseGraphIndices(self):
     """
@@ -126,3 +227,83 @@ class dsgrnDatabase:
     gv = c.fetchone()[0]
     print gv 
     return graphviz.Source(gv)
+
+  ## FP QUERY MECHANISMS
+  # SingleFPQuery and DoubleFPQuery
+  # (use FPString, buildQueryExpression, MatchQuery as helper methods)
+
+  def FPString(self, i, j):
+    terms = [ "_" for k in range(0, self.D) ]
+    terms[i] = str(j)  
+    expression = "Label like 'FP { " + ', '.join(terms) + "%'";
+    return expression
+
+  def buildQueryExpression(self, bounds):
+    expressions = []
+    for i in range(0,self.D):
+      networknodename = self.names[i]
+      lowerbound = 0
+      upperbound = self.D
+      if networknodename in bounds:
+        varbounds = bounds[networknodename]
+        if type(varbounds) == int :
+          lowerbound = varbounds
+          upperbound = varbounds
+        else:
+          lowerbound = varbounds[0]
+          upperbound = varbounds[1]
+      expression = " or ".join([ self.FPString(i,j) for j in range(lowerbound, upperbound+1)])
+      expressions.append(expression)
+    return expressions
+
+  def MatchQuery(self, bounds,outputtablename):
+    # Parse the command line
+    c = self.conn.cursor()
+    expressions = self.buildQueryExpression(bounds)
+    N = len(expressions)
+    for i, expression in enumerate(expressions):
+      oldtable = 'tmpMatches' + str(i)
+      if i == 0: oldtable = "MorseGraphAnnotations"
+      newtable = 'tmpMatches' + str(i+1)
+      if i == N-1: newtable = outputtablename
+      c.execute('create temp table ' + newtable + ' as select * from ' + oldtable + ' where ' + expression + ';')
+      if i > 0: c.execute('drop table ' + oldtable);
+
+  def SingleFPQuery (self, bounds):
+    self.MatchQuery(bounds,"Matches")
+    # Final query and print results
+    c = self.conn.cursor()
+    result = [ row[0] for row in c.execute('select MorseGraphIndex from Matches;')]
+    #result = [row[0] for row in c.execute('select distinct ParameterIndex from Matches natural join Signatures order by ParameterIndex;')]
+    c.execute('drop table Matches');
+    return result
+
+  def DoubleFPQuery (self, bounds1, bounds2):
+    self.MatchQuery(bounds1,"Matches1");
+    self.MatchQuery(bounds2,"Matches2");
+    c = self.conn.cursor()
+    c.execute('create temp table Left as select MorseGraphIndex ' +
+              'from (select * from Matches1 except select * from Matches2) group by MorseGraphIndex;')
+    c.execute('create temp table Middle as select MorseGraphIndex, count(Vertex) as middle ' +
+              'from (select * from Matches1 intersect select * from Matches2) group by MorseGraphIndex;')
+    c.execute('create temp table Right as select MorseGraphIndex ' +
+              'from (select * from Matches2 except select * from Matches1) group by MorseGraphIndex;')
+    c.execute('create temp table Matches as ' +
+              'select * from (select * from Left intersect select * from Right) ' +
+              'union ' +
+              'select * from (select MorseGraphIndex from Middle ' +
+                             'intersect ' +
+                             'select * from (select * from Left union select * from Right)) ' +
+              'union ' +
+              'select MorseGraphIndex from Middle where middle >= 2;')
+
+    # Final query and print results
+    result = [ row[0] for row in c.execute('select MorseGraphIndex from Matches;')]
+    #result = [ row[0] for row in c.execute('select distinct ParameterIndex from Matches natural join Signatures order by ParameterIndex;')]
+    c.execute('drop table Matches1');
+    c.execute('drop table Matches2');
+    c.execute('drop table Matches');
+    c.execute('drop table Left');
+    c.execute('drop table Middle');
+    c.execute('drop table Right');
+    return result
