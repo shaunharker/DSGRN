@@ -103,6 +103,12 @@ recurrent ( void ) const {
   return data_ -> components_ . recurrentComponents ();
 }
 
+INLINE_IF_HEADER_ONLY std::vector<uint64_t> MorseDecomposition::
+morseset ( uint64_t i ) const {
+  auto component = recurrent()[i];
+  return std::vector<uint64_t>(component.begin(), component.end());
+}
+
 INLINE_IF_HEADER_ONLY std::string MorseDecomposition::
 graphviz ( void ) const {
   std::stringstream ss;

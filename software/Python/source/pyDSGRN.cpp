@@ -324,6 +324,7 @@ BOOST_PYTHON_MODULE(libpyDSGRN)
       .def("poset", &MorseDecomposition::poset)
       .def("components", &MorseDecomposition::components)
       .def("recurrent", &MorseDecomposition::recurrent)
+      .def("morseset", &MorseDecomposition::morseset)
       .def("graphviz", &MorseDecomposition::graphviz)
       .def("__str__", &printMorseDecomposition)
     ;
