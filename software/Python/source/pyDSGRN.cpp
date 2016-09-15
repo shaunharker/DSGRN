@@ -73,6 +73,22 @@ printOrderParameterList( OrderParameterList const* self ) {
   return ss.str();
 }
 
+// ParameterGraph wrapping incidentals
+
+typedef std::vector<std::string> StringList;
+std::string
+printStringList( StringList const* self ) {
+  std::stringstream ss;
+  bool first = true;
+  ss << "[";
+  for ( auto const& item : *self ) {
+    if ( first ) first = false; else ss << ", ";
+    ss << item;
+  }
+  ss << "]";
+  return ss.str();
+}
+
 // Domain wrapping incidentals
 std::string
 printDomain ( Domain const* domain ) {
@@ -92,6 +108,7 @@ printMorseDecomposition ( MorseDecomposition const* md ) {
   return ss . str ();
 }
 
+// 
 BOOST_PYTHON_MODULE(libpyDSGRN)
 {
     using namespace boost::python;
@@ -198,10 +215,20 @@ BOOST_PYTHON_MODULE(libpyDSGRN)
 
     // ParameterGraph
 
+    class_<StringList>("StringList")
+      .def(vector_indexing_suite<StringList>() )
+      .def("__str__", &printStringList)
+      .def("__repr__", &printStringList)
+    ;
+
     class_<ParameterGraph>("ParameterGraph", init<>())
       .def(init<Network const&>())
       .def("assign", &ParameterGraph::assign)
       .def("size", &ParameterGraph::size)
+      .def("dimension", &ParameterGraph::dimension)
+      .def("logicsize", &ParameterGraph::logicsize)
+      .def("ordersize", &ParameterGraph::ordersize)
+      .def("factorgraph", &ParameterGraph::factorgraph, return_value_policy<copy_const_reference>())
       .def("parameter", &ParameterGraph::parameter)
       .def("index", &ParameterGraph::index)
       .def("adjacencies", &ParameterGraph::adjacencies)
@@ -297,6 +324,7 @@ BOOST_PYTHON_MODULE(libpyDSGRN)
       .def("poset", &MorseDecomposition::poset)
       .def("components", &MorseDecomposition::components)
       .def("recurrent", &MorseDecomposition::recurrent)
+      .def("morseset", &MorseDecomposition::morseset)
       .def("graphviz", &MorseDecomposition::graphviz)
       .def("__str__", &printMorseDecomposition)
     ;
@@ -313,4 +341,24 @@ BOOST_PYTHON_MODULE(libpyDSGRN)
       .def("__str__", &MorseGraph::stringify)
     ;
 
+    // Components
+    //class_<Components>("Components")
+    //  .def(vector_indexing_suite<Components>() )
+      //.def("__str__", &printComponents)
+      //.def("__repr__", &printComponents)
+    //;
+
+    // ComponentContainer
+    //class_<Components::ComponentContainer>("ComponentContainer")
+    //  .def(vector_indexing_suite<Components::ComponentContainer>() )
+      //.def("__str__", &printComponentContainer)
+      //.def("__repr__", &printComponentContainer
+    //;
+
+    // Component
+    //class_<Component>("Component")
+    //  .def(vector_indexing_suite<Component>() )
+      //.def("__str__", &printComponent)
+      //.def("__repr__", &printComponent)
+    //;
 }

@@ -81,6 +81,26 @@ size ( void ) const {
   return data_ -> size_;
 }
 
+INLINE_IF_HEADER_ONLY uint64_t ParameterGraph::
+dimension ( void ) const {
+  return network().size();
+}
+
+INLINE_IF_HEADER_ONLY uint64_t ParameterGraph::
+logicsize ( uint64_t i ) const {
+  return data_ -> logic_place_bases_ [ i ];
+}
+
+INLINE_IF_HEADER_ONLY uint64_t ParameterGraph::
+ordersize ( uint64_t i ) const {
+  return data_ -> order_place_bases_ [ i ];
+}
+
+INLINE_IF_HEADER_ONLY std::vector<std::string> const& ParameterGraph::
+factorgraph ( uint64_t i ) const {
+  return data_ -> factors_[i];
+}
+
 INLINE_IF_HEADER_ONLY Parameter ParameterGraph::
 parameter ( uint64_t index ) const {
   //std::cout << data_ -> "ParameterGraph::parameter( " << index << " )\n";

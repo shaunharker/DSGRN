@@ -65,6 +65,11 @@ public:
   Components::ComponentContainer const
   recurrent ( void ) const;
 
+  /// morseset
+  ///   Return a Morse set
+  std::vector<uint64_t>
+  morseset ( uint64_t i ) const;
+  
   /// graphviz
   ///   Return a graphviz representation
   std::string
