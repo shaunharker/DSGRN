@@ -1,0 +1,5 @@
+SWI4 : (~YOX1)(SWI5) : E
+HCM1 : SWI4 : E
+NDD1 : (HCM1)(SWI4) : E
+SWI5 : (NDD1) : E
+YOX1 : SWI4 : E

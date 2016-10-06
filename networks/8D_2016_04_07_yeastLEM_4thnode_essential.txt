@@ -1,0 +1,8 @@
+FKH1 : (PLM2)(~WTM2) : E
+SPT21 : (~FKH1) : E
+PLM2 : (SPT21) : E
+WTM2 : (~SPT21)(~SWI4) : E
+SWI4 : (~FKH1)(~NDD1) : E
+NDD1 : (HCM1 + TOS4) : E
+HCM1 : (~FKH1) : E
+TOS4 : (SWI4) : E
