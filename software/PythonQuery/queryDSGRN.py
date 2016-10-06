@@ -307,3 +307,6 @@ class dsgrnDatabase:
     c.execute('drop table Middle');
     c.execute('drop table Right');
     return result
+
+  def MonostableFPQuery (self, bounds):
+    return set(self.SingleFPQuery(bounds)).intersection(self.uniquestablemorsegraphindices)
