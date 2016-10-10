@@ -310,3 +310,25 @@ class dsgrnDatabase:
 
   def MonostableFPQuery (self, bounds):
     return set(self.SingleFPQuery(bounds)).intersection(self.uniquestablemorsegraphindices)
+
+  def full_inducibility (self, gene, bounds1, bounds2, max_gpi):
+    #Assume database is calculated and single gene prepare is done
+    Matches1 = frozenset(self.MonostableFPQuery(bounds1))
+    Matches2 = frozenset(self.MonostableFPQuery(bounds2))
+    MatchesDouble = frozenset(self.DoubleFPQuery(bounds1,bounds2)) #This includes bistability at lowest and highest nodes
+    c = self.conn.cursor()
+    c.execute('create index ' + gene + '2 on ' + gene + ' (GeneParameterIndex)')
+
+    FP1_reduced_params = set([])
+    for row in c.execute("select MorseGraphIndex,ReducedParameterIndex from " + gene + " where GeneParameterIndex=0;"):
+      if row[0] in Matches1: FP1_reduced_params.add(row[1])
+
+    FP2_reduced_params = set([])
+    for row in c.execute("select MorseGraphIndex,ReducedParameterIndex from " + gene + " where GeneParameterIndex=" + str(max_gpi) + ";"):
+      if row[0] in Matches2: FP2_reduced_params.add(row[1])
+
+    Bistab_reduced_params = set([])
+    for row in c.execute("select MorseGraphIndex,ReducedParameterIndex from " + gene + " where GeneParameterIndex!=0 and GeneParameterIndex!=" + str(max_gpi) + ";"):
+      if row[0] in MatchesDouble: Bistab_reduced_params.add(row[1])
+
+    return FP1_reduced_params, FP2_reduced_params, Bistab_reduced_params 
