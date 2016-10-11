@@ -1,0 +1,8 @@
+Size : ~Cdc14 : E
+Cdc14 : Cdc20 : E
+Cdc20 : (~G1)(Clb2) : E
+G1 : (Cdc14)(~Cln) : E
+Clb2 : (SBF)(~G1)(~Cdc20) : E
+Cln : Size + SBF : E
+SBF : (~G1)(~Nrm1) : E
+Nrm1 : (SBF)(~G1)(~Clb2) : E
