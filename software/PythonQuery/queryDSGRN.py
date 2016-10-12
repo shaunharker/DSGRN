@@ -3,8 +3,6 @@ from __future__ import generators
 import DSGRN
 import sqlite3
 import graphviz
-from guppy import hpy
-import sys
 
 class Graph:
   def __init__(self, vertices, edges):
@@ -133,77 +131,26 @@ class dsgrnDatabase:
     c = self.conn.cursor()
     c.execute("drop table if exists " + gene) # gene is sanitized
     c.execute("create table " + gene + " (ReducedParameterIndex INTEGER, GeneParameterIndex INTEGER, ParameterIndex INTEGER, MorseGraphIndex INTEGER)")
-    hp = hpy()
-    hp.setrelheap()
-    values = [ self.reduced_parameter_index(row[0], gene_index) + row for row in c.execute("select * from Signatures")]
-    c.executemany('INSERT INTO ' + gene + ' VALUES (?,?,?,?)', values )
-    print(hp.heap())
-    indexname = gene + '1'
-    c.execute('create index ' + gene + '1 on ' + gene + ' (ReducedParameterIndex, GeneParameterIndex)') # gene is sanitized
-    self.conn.commit()
-    return (N, M)
 
-  def single_gene_query_prepare2 (self, gene ):
-    """
-    Add a table to the database to enable gene manipulation queries
-    """
-    # Sanitize "gene":
-    if gene not in self.names:
-      raise NameError(gene + " is not the name of a node in the network")
-    # "gene_index" gives the integer index used in the representation
-    gene_index = self.network.index(gene)
-    # N is the size of the factor graph associated with "gene"
-    N = self.indexing_place_bases[gene_index]
-    # M is the product of the sizes of all remaining factor graphs, and reorderings of all genes (including "gene")
-    M = self.parametergraph.size() / N 
+    # # old method -- loads whole table into memory
+    # values = [ self.reduced_parameter_index(row[0], gene_index) + row for row in c.execute("select * from Signatures")]
+    # c.executemany('INSERT INTO ' + gene + ' VALUES (?,?,?,?)', values )
 
-    # Now we scan the database and create a new table we can do single gene poset queries with
-    c = self.conn.cursor()
-    c.execute("drop table if exists " + gene) # gene is sanitized
-
-    def valuegenerator (c,arraysize=10):
-      'An iterator that uses fetchmany to keep memory usage down'
+    # new method -- a generator that uses fetchmany to keep memory usage down
+    # default value arraysize=10000 was chosen based on limited testing. No improvement seen at 50000 or 100000 on a 13M parameter db. Worse performance at arraysize=1000.
+    def valuegenerator (cursor,arraysize=10000):
       while True:
-          rows = c.fetchmany(arraysize)
+          rows = cursor.fetchmany(arraysize)
           if not rows:
               break
           yield [self.reduced_parameter_index(row[0], gene_index) + row for row in rows]
 
-    hp = hpy()
-    hp.setrelheap()
-    # c.execute("create table " + gene + " (ReducedParameterIndex INTEGER, GeneParameterIndex INTEGER, ParameterIndex INTEGER, MorseGraphIndex INTEGER)")
-    # c.execute("select * from Signatures")
-    # for values in valuegenerator(c):
-    #   c.executemany('INSERT INTO ' + gene + ' VALUES (?,?,?,?)', values )
-    # row = c.fetchone()
-    # while row:
-    #   c.execute('INSERT INTO ' + gene + ' VALUES (?,?,?,?)', self.reduced_parameter_index(row[0], gene_index) + row )
-    #   row = c.fetchone()
-    # values = [ self.reduced_parameter_index(row[0], gene_index) + row for row in c.execute("select * from Signatures")]
-    # for (row,val) in zip(c.execute("select * from Signatures"),values):
-    #   new_val = self.reduced_parameter_index(row[0], gene_index) + row
-    #   c.execute('INSERT INTO ' + gene + ' VALUES (?,?,?,?)', new_val )
-    # values = [ ]
-    # for row in c.execute("select * from Signatures"):
-    #   values.append(self.reduced_parameter_index(row[0], gene_index) + row)
-    # for v in values:
-    #   c.execute('INSERT INTO ' + gene + ' VALUES (?,?,?,?)', v )
-    # for row in c.execute("select * from Signatures"):
-    #   v=self.reduced_parameter_index(row[0], gene_index) + row
-    #   c.execute('INSERT INTO ' + gene + ' VALUES (?,?,?,?)', v )
-    conn2 = sqlite3.connect(self.dbname)
-    c2 = conn2.cursor()
-
-    c.execute("create table "+ gene +" as select * from Signatures")
-    c.execute("alter table " + gene + " add column ReducedParameterIndex INTEGER")
-    c.execute("alter table " + gene + " add column GeneParameterIndex INTEGER")
-    for row in c2.execute("select * from Signatures"):
-      c.execute("update " + gene + " set ReducedParameterIndex = ? and GeneParameterIndex = ?", self.reduced_parameter_index(row[0], gene_index))
-      self.conn.commit()
-
+    c2 = self.conn.cursor() # need a second cursor to keep the place in the iteration as updates to the table occur
+    c2.execute("select * from Signatures")
+    for values in valuegenerator(c2):
+      c.executemany('INSERT INTO ' + gene + ' VALUES (?,?,?,?)', values )
     c2.close()
 
-    # print(hp.heap())
     c.execute('create index ' + gene + '1 on ' + gene + ' (ReducedParameterIndex, GeneParameterIndex)') # gene is sanitized
     self.conn.commit()
     return (N, M)
