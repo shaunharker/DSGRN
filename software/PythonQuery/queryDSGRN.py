@@ -1,3 +1,5 @@
+from __future__ import generators
+
 import DSGRN
 import sqlite3
 import graphviz
@@ -78,6 +80,7 @@ class dsgrnDatabase:
     """
     Initialize a DSGRN database object
     """
+    self.dbname = database_name
     self.conn = sqlite3.connect(database_name)
     self.network = DSGRN.Network(database_name)
     self.parametergraph = DSGRN.ParameterGraph(self.network)
@@ -128,9 +131,26 @@ class dsgrnDatabase:
     c = self.conn.cursor()
     c.execute("drop table if exists " + gene) # gene is sanitized
     c.execute("create table " + gene + " (ReducedParameterIndex INTEGER, GeneParameterIndex INTEGER, ParameterIndex INTEGER, MorseGraphIndex INTEGER)")
-    values = [ self.reduced_parameter_index(row[0], gene_index) + row for row in c.execute("select * from Signatures")]
-    c.executemany('INSERT INTO ' + gene + ' VALUES (?,?,?,?)', values )
-    indexname = gene + '1'
+
+    # # old method -- loads whole table into memory
+    # values = [ self.reduced_parameter_index(row[0], gene_index) + row for row in c.execute("select * from Signatures")]
+    # c.executemany('INSERT INTO ' + gene + ' VALUES (?,?,?,?)', values )
+
+    # new method -- a generator that uses fetchmany to keep memory usage down
+    # default value arraysize=10000 was chosen based on limited testing. No improvement seen at 50000 or 100000 on a 13M parameter db. Worse performance at arraysize=1000.
+    def valuegenerator (cursor,arraysize=10000):
+      while True:
+          rows = cursor.fetchmany(arraysize)
+          if not rows:
+              break
+          yield [self.reduced_parameter_index(row[0], gene_index) + row for row in rows]
+
+    c2 = self.conn.cursor() # need a second cursor to keep the place in the iteration as updates to the table occur
+    c2.execute("select * from Signatures")
+    for values in valuegenerator(c2):
+      c.executemany('INSERT INTO ' + gene + ' VALUES (?,?,?,?)', values )
+    c2.close()
+
     c.execute('create index ' + gene + '1 on ' + gene + ' (ReducedParameterIndex, GeneParameterIndex)') # gene is sanitized
     self.conn.commit()
     return (N, M)
