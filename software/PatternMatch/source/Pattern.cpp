@@ -31,9 +31,12 @@ assign ( Poset const& poset,
 
 void Pattern::
 load ( std::string const& filename ) {
-  std::ifstream t ( filename );
+  std::ifstream infile ( filename );
+  if ( not infile . good () ) { 
+    throw std::runtime_error ( "Problem loading pattern specification file " + filename );
+  }
   std::stringstream buffer;
-  buffer << t.rdbuf();
+  buffer << infile.rdbuf();
   parse ( buffer . str () ); 
 }
 

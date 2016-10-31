@@ -20,10 +20,29 @@ std::string help_string =
   " --> output file \n";
 
 int main ( int argc, char * argv [] ) {
+  // Check for proper number of files
   if ( argc < 3 ) {
-    std::cout << help_string;
+    std::cerr << help_string;
     return 1;
   }
+
+  // Handle missing file errors
+  auto file_exists = [](std::string const& filename){std::ifstream infile(filename); return infile.good();};
+  if ( not file_exists(argv[1]) ) {
+    std::cerr << "Could not find indicated network specification file " + std::string(argv[1]) + ".\n";
+    return 1;
+  }
+  if ( not file_exists(argv[2]) ) {
+    std::cerr << "Could not find indicated pattern specification file " + std::string(argv[2]) + ".\n";
+    return 1;
+  }
+
+  if ( not file_exists(argv[3]) ) {
+    std::cerr << "Could not find indicated analysis file " + std::string(argv[3]) + ".\n";
+    return 1;
+  }
+
+  // Start MPI process
   delegator::Start ();
   delegator::Run < PatternMatchDatabase > (argc, argv);
   delegator::Stop ();
