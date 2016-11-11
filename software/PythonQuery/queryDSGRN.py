@@ -335,7 +335,9 @@ class dsgrnDatabase:
     #Assume database is calculated and single gene prepare is done
     Matches1 = frozenset(self.MonostableFPQuery(bounds1))
     Matches2 = frozenset(self.MonostableFPQuery(bounds2))
-    MatchesDouble = frozenset(self.DoubleFPQuery(bounds1,bounds2)) #This includes bistability at lowest and highest nodes
+    # MatchesDouble = frozenset(self.DoubleFPQuery(bounds1,bounds2).intersection(self.bistablemorsegraphindices)) 
+    #strict bistability not required
+    MatchesDouble = frozenset(self.DoubleFPQuery(bounds1,bounds2)) ##This includes bistability at lowest and highest nodes
     c = self.conn.cursor()
     c.execute('create index ' + gene + '2 on ' + gene + ' (GeneParameterIndex)')
 
