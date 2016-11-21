@@ -2,19 +2,27 @@
 # MIT LICENSE 2016
 # Shaun Harker
 
-def AlignmentGraph ( graph1, graph2, matching_relation ):
-  """
-  Creates alignment graph of graph1 and graph2 (i.e. induced subgraph of tensor product where "matching_label" attribute matches)
-  The graph structures must have: 
-    an attribute "vertices" which is the set of vertices,
-    a method "adjacency" which gives adjacency lists,
-    an attribute "matching_label"
-  """
-  vertices = set([ (u, v) for u in graph1.vertices for v in graph2.vertices if matching_relation(graph1.matching_label(u),graph2.matching_label(v)) ])
-  edges = [ ((x,y),(u,v)) for (x,y) in vertices for u in graph1.adjacencies(x) for v in graph2.adjacencies(y) if (u,v) in vertices ]
-  return Graph(vertices, edges)
+from Graph import *
+from AlignmentGraph import *
+from MonostableFixedPointQuery import *
+from DoubleFixedPointQuery import *
+from SingleGeneQuery import *
 
 class HysteresisQuery:
+  """
+  HysteresisQuery
+    A HysteresisQuery post-processes the result graph of a SingleGeneQuery
+    and returns true if there exists a path from the root of the graph 
+    to the leaf of the graph which has the following property:
+      The path matches the regular expression 
+        QQ*BB*PP*, i.e. passes through Q one or more times, 
+        then B one or more times, and then P one or more times from root to leaf.
+      where vertices are labeled
+        Q if it matches MonostableFixedPoint(quiescent_bounds) query
+        P if it matches MonostableFixedPoint(proliferative_bounds) query
+        B if it matches DoubleFixedPointQuery(database, quiescent_bounds, proliferative_bounds)
+        O otherwise
+  """
   def __init__(self, database, gene, quiescent_bounds, proliferative_bounds):
     """
     In order to perform hysteresis queries we must first categorize each Morse graph as either 
@@ -23,25 +31,27 @@ class HysteresisQuery:
     """
     self.database = database
     self.gene = gene
-    # Create query object to check if morse graph indices have quiescent FP
-    Q = SingleFPQuery(database, quiescent_bounds)
-    # Create query object to check if morse graph indices have proliferative FP
-    P = SingleFPQuery(database, proliferative_bounds)
+    # Create query object to check if morse graph indices have quiescent FP as only minimal morse node
+    Q = MonostableFixedPointQuery(database, quiescent_bounds)
+    # Create query object to check if morse graph indices have proliferative FP as only minimal morse node
+    P = MonostableFixedPointQuery(database, proliferative_bounds)
+    # Check query object to check if morse graph index has both quiescent FP and proliferative FP
+    B = DoubleFixedPointQuery(database, quiescent_bounds, proliferative_bounds)
     # Create a labelling function which accepts a morse graph index and returns Q, P, B, or O
-    self.matching_label = lambda mgi : { (False,False):'O', (False,True):'P', (True,False):'Q', (True,True) : 'B'}[(Q(mgi), P(mgi))]
+    self.matching_label = lambda mgi : 'Q' if Q(mgi) else ( 'P' if P(mgi) else ( 'B' if B(mgi) else 'O' ) )
     # Create the pattern graph to represent Q -> B -> P (with self-loop on Q, B, and P)
     self.patterngraph = Graph(set([0,1,2]), [(0,0),(0,1),(1,1),(1,2),(2,2)])
-    self.patterngraph.matching_label = { 0:'Q', 1:'B', 2:'P' }
+    self.patterngraph.matching_label = lambda v : { 0:'Q', 1:'B', 2:'P' }[v]
     # Create matching relation (in this case we just check for equality of the matching labels)
     self.matching_relation = lambda label1, label2 : label1 == label2
     # Create SingleGeneQuery object
-    self.single_gene_query = SingleGeneQuery(database, gene)
+    self.GeneQuery = SingleGeneQuery(database, gene)
 
-  def __call__(self, gene, reduced_parameter_index):
-    searchgraph = self.single_gene_query(reduced_parameter_index)
-    searchgraph.matching_label = { v : self.matching_label(searchgraph.mgi(v)) for v in searchgraph.vertices }
+  def __call__(self, reduced_parameter_index):
+    searchgraph = self.GeneQuery(reduced_parameter_index)
+    searchgraph.matching_label = lambda v : self.matching_label(searchgraph.mgi(v))
     alignment_graph = AlignmentGraph(searchgraph, self.patterngraph, self.matching_relation)
     root_vertex = (0,0)
     leaf_vertex = (len(searchgraph.vertices)-1, 2)
-    return alignment_graph.number_of_paths(root_vertex, leaf_vertex) > 0
+    return alignment_graph.numberOfPaths(root_vertex, leaf_vertex) > 0
     

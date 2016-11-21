@@ -40,5 +40,4 @@ class Database:
     sqlexpression = "select Graphviz from MorseGraphViz where MorseGraphIndex = ?"
     c.execute(sqlexpression,(morsegraphindex,))
     gv = c.fetchone()[0]
-    print gv 
     return graphviz.Source(gv)

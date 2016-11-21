@@ -7,8 +7,8 @@ from FixedPointTables import *
 class DoubleFixedPointQuery:
   def __init__ (self, database, bounds1, bounds2):
     self.database = database
-    _MatchQuery(bounds1,"Matches1",database);
-    _MatchQuery(bounds2,"Matches2",database);
+    MatchQuery(bounds1,"Matches1",database);
+    MatchQuery(bounds2,"Matches2",database);
     c = database.conn.cursor()
     c.execute('create temp table Left as select MorseGraphIndex ' +
               'from (select * from Matches1 except select * from Matches2) group by MorseGraphIndex;')

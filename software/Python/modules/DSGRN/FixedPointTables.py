@@ -7,13 +7,13 @@
 #   DoubleFixedPointQuery.py
 # in order to create SQL tables to support their queries.
 
-def _FPString(i, j, database):
+def FPString(i, j, database):
   terms = [ "_" for k in range(0, database.D) ]
   terms[i] = str(j)  
   expression = "Label like 'FP { " + ', '.join(terms) + "%'";
   return expression
 
-def _buildQueryExpression(bounds, database):
+def buildQueryExpression(bounds, database):
   expressions = []
   for i in range(0,database.D):
     networknodename = database.names[i]
@@ -27,14 +27,14 @@ def _buildQueryExpression(bounds, database):
       else:
         lowerbound = varbounds[0]
         upperbound = varbounds[1]
-    expression = " or ".join([ _FPString(i,j,database) for j in range(lowerbound, upperbound+1)])
+    expression = " or ".join([ FPString(i,j,database) for j in range(lowerbound, upperbound+1)])
     expressions.append(expression)
   return expressions
 
-def _MatchQuery(bounds, outputtablename, database):
+def MatchQuery(bounds, outputtablename, database):
   # Parse the command line
   c = database.conn.cursor()
-  expressions = _buildQueryExpression(bounds, database)
+  expressions = buildQueryExpression(bounds, database)
   N = len(expressions)
   for i, expression in enumerate(expressions):
     oldtable = 'tmpMatches' + str(i)

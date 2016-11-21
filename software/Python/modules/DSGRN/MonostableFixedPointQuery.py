@@ -2,8 +2,8 @@
 # MIT LICENSE 2016
 # Shaun Harker
 
-from FixedPointQuery import *
-from StabilityQuery import *
+from SingleFixedPointQuery import *
+from MonostableQuery import *
 
 class MonostableFixedPointQuery:
   """
@@ -14,7 +14,7 @@ class MonostableFixedPointQuery:
     (b) the Morse node is annotated as an FP within specified bounds
   """
   def __init__(self, database, bounds):
-    self.set_of_matches = SingleFPQuery(database,bounds).matches() & MonostableQuery(database).matches()
+    self.set_of_matches = SingleFixedPointQuery(database,bounds).matches() & MonostableQuery(database).matches()
 
   def matches(self):
     """

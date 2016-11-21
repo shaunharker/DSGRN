@@ -7,7 +7,7 @@ from FixedPointTables import *
 class SingleFixedPointQuery:
   def __init__ (self, database, bounds):
     self.database = database
-    _MatchQuery(bounds,"Matches",database)
+    MatchQuery(bounds,"Matches",database)
     # Final query and print results
     c = database.conn.cursor()
     self.set_of_matches = set([ row[0] for row in c.execute('select MorseGraphIndex from Matches;')])
