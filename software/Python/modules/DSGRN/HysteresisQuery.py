@@ -45,7 +45,7 @@ class HysteresisQuery:
     # Note: case fallthrough order matters here
     self.matching_label = lambda mgi : 'Q' if Q(mgi) else ( 'P' if P(mgi) else ( 'B' if B(mgi) else ( 'q' if q(mgi) else ( 'p' if p(mgi) else 'O') ) ) )
     # Create the pattern graph to represent Q -> B -> P (with self-loop on Q, B, and P)
-    self.patterngraph = Graph(set([0,1,2,3,4]), [(0,0),(1,1),(0,1),(1,0),(0,2),(1,2),(2,2),(2,3),(2,4)(3,3),(3,4),(4,4),(4,3)])
+    self.patterngraph = Graph(set([0,1,2,3,4]), [(0,0),(1,1),(0,1),(1,0),(0,2),(1,2),(2,2),(2,3),(2,4),(3,3),(3,4),(4,4),(4,3)])
     self.patterngraph.matching_label = lambda v : { 0:'Q', 1:'q', 2:'B', 3:'p', 4:'P' }[v]
     # Create matching relation (in this case we just check for equality of the matching labels)
     self.matching_relation = lambda label1, label2 : label1 == label2
