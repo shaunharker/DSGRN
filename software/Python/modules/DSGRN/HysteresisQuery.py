@@ -28,7 +28,7 @@ class HysteresisQuery:
   def __init__(self, database, gene, quiescent_bounds, proliferative_bounds):
     """
     In order to perform hysteresis queries we must first categorize each Morse graph as either 
-    'Q' quiescent, 'P' proliferative, 'B' bistable, or 'O' other
+    'Q' monostable quiescent, 'P' monostable proliferative, 'q' quiescent, 'p' quiescent, 'B' bistable, or 'O' other
     We assume the quiescent and proliferative FP states are given by disjoint bounding rectangles
     """
     self.database = database
