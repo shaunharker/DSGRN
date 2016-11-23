@@ -20,6 +20,8 @@ class HysteresisQuery:
       where vertices are labeled
         Q if it matches MonostableFixedPoint(quiescent_bounds) query
         P if it matches MonostableFixedPoint(proliferative_bounds) query
+        q if it matches SingleFixedPointQuery(database, quiescent_bounds) query but does not match Q
+        p if it matches SingleFixedPointQuery(database, proliferative_bounds) query but does not match P
         B if it matches DoubleFixedPointQuery(database, quiescent_bounds, proliferative_bounds)
         O otherwise
   """
