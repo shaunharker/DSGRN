@@ -5,6 +5,7 @@
 from Graph import *
 from AlignmentGraph import *
 from MonostableFixedPointQuery import *
+from SingleFixedPointQuery import *
 from DoubleFixedPointQuery import *
 from SingleGeneQuery import *
 

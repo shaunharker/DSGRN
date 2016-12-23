@@ -11,3 +11,4 @@ from MonostableFixedPointQuery import *
 from SingleGeneQuery import *
 from InducibilityQuery import *
 from HysteresisQuery import *
+from PhenotypeQuery import *

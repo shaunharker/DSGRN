@@ -22,6 +22,13 @@ class Database:
     self.indexing_place_bases = [self.parametergraph.logicsize(i) for i in range(0,self.D)] + [self.parametergraph.ordersize(i) for i in range(0,self.D)]
     self.indexing_place_values = reduce ( lambda x, y : x + [x[-1]*y], self.indexing_place_bases[:-1], [1])
 
+  def __call__(self, pi):
+    c = self.conn.cursor()
+    sqlexpression = "select MorseGraphIndex from Signatures where ParameterIndex = ?"
+    c.execute(sqlexpression,(pi,))
+    mgi = c.fetchone()[0]
+    return mgi
+
   def __del__(self):
     """
     Commit and close upon destruction
