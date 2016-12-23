@@ -24,7 +24,7 @@ before_install:
   - PREFIX=$HOME/.local
   - export PATH=$PREFIX/bin:$PATH
 install:
-  - pip install cpp-coveralls --user `whoami`
+  - pip install cpp-coveralls --user
   - ./.install/boost.sh serialization
   - ./.install/sqlite3.sh
   - ./.install/delegator.sh
