@@ -58,11 +58,11 @@ public:
   label ( uint64_t v ) const;
   
   /// consume
-  ///   Given a vertex v and a variable, report the unique vertex u, if it exists,
-  ///   in the adjacency list of vertex. This corresponds to "consuming" the edge
-  ///   in the pattern graph.
+  ///   Given a vertex v and an edge label, report the unique vertex u, if it exists,
+  ///   in the adjacency list of vertex with an identical (not just matching) edge label.
+  ///   edge_label is only 1 on single bit; bit i means max (M) in i, bit i+D means min (m) in i
   uint64_t 
-  consume ( uint64_t vertex, uint64_t variable ) const;
+  consume ( uint64_t vertex, uint64_t edge_label ) const;
 
   /// graphviz
   ///   Return a graphviz representation of the pattern graph

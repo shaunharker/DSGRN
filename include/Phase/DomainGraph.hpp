@@ -64,6 +64,11 @@ assign ( Parameter const parameter ) {
   digraph . finalize ();
 }
 
+INLINE_IF_HEADER_ONLY Parameter const DomainGraph::
+parameter ( void ) const {
+  return data_ -> parameter_;
+}
+
 INLINE_IF_HEADER_ONLY Digraph const DomainGraph::
 digraph ( void ) const {
   return data_ -> digraph_;
@@ -88,6 +93,15 @@ coordinates ( uint64_t domain ) const {
 INLINE_IF_HEADER_ONLY uint64_t DomainGraph::
 label ( uint64_t domain ) const {
   return data_ -> labelling_ [ domain ];
+}
+
+INLINE_IF_HEADER_ONLY uint64_t DomainGraph::
+label ( uint64_t source, uint64_t target ) const {
+  if ( source == target ) return 0;
+  uint64_t i = direction(source,target);
+  uint64_t j = regulator(source,target);
+  if ( i == j ) return 0;
+  return 1L << ( j + (parameter().network().interaction(i,j) ? dimension() : 0 ) );
 }
 
 INLINE_IF_HEADER_ONLY uint64_t DomainGraph::

@@ -68,7 +68,7 @@ public:
 
   /// poset
   ///   Return underlying poset
-  Poset const& 
+  Poset
   poset ( void ) const;
 
   /// event

@@ -48,11 +48,10 @@ adjacencies ( Vertex const& v ) const {
     // Check for intermediate match
     if ( query ( {nextdomain, position} ) ) result . push_back ( {nextdomain, position} );
     // Check for extremal match
-    // Determine what variable can have a min/max event 
-    uint64_t variable = searchgraph() . event ( domain, nextdomain );
-    if ( variable == -1 ) continue;
+    // Determine which event occurs between domains (min/max on a given variable, encoded as signed integer
+    uint64_t edge_label = searchgraph() . event ( domain, nextdomain );
     // Find successor in pattern graph which consumes event
-    uint64_t nextposition = patterngraph() . consume ( position, variable );
+    uint64_t nextposition = patterngraph() . consume ( position, edge_label );
     if ( nextposition == -1 ) continue;
     if ( query ( {nextdomain, nextposition} ) ) result . push_back ( {nextdomain, nextposition} );
   }

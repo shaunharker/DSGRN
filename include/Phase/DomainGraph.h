@@ -27,6 +27,11 @@ public:
   void
   assign ( Parameter const parameter );
 
+  /// parameter
+  ///   Return underlying parameter
+  Parameter const
+  parameter ( void ) const;
+
   /// digraph
   ///   Return underlying digraph
   Digraph const
@@ -56,6 +61,17 @@ public:
   ///   A bit of 0 means entrance and 1 means absorbing.
   uint64_t 
   label ( uint64_t domain ) const;
+
+  /// label
+  ///   Given (u,u), return 0.
+  ///   Given a pair of adjacent domains (source, target), return a 64-bit integer 
+  ///   which indicates the search graph label for the edge.
+  ///   For bits i+D and i,  00 means -  (both minima and maxima ruled out)
+  ///                        10 means m  (maxima in i ruled out)
+  ///                        01 means M  (minima in i ruled out)
+  ///                        11 means *  (anything may happen (never occurs)) 
+  uint64_t 
+  label ( uint64_t source, uint64_t target ) const;
 
   /// direction
   ///   Given adjacent domains, return the variable

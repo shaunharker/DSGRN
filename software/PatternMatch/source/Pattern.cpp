@@ -50,7 +50,7 @@ dimension ( void ) const {
   return data_ -> dimension_;
 }
 
-Poset const& Pattern::
+Poset Pattern::
 poset ( void ) const {
   return data_ -> poset_;
 }

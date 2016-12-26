@@ -43,9 +43,7 @@ assign ( DomainGraph dg, uint64_t morse_set_index ) {
       if ( domain_to_vertex . count ( target ) ) {
         uint64_t v = domain_to_vertex[target];
         digraph . add_edge ( u, v );
-        uint64_t direction = dg . direction ( source, target );
-        uint64_t regulator = dg . regulator ( source, target );
-        data_ -> event_ [ u ] [ v ] = _label_event ( label(u), label(v), direction, regulator, data_ -> dimension_ );
+        data_ -> event_ [ u ] [ v ] = dg . label ( source, target );
       }
     }
   }
@@ -213,14 +211,3 @@ std::string SearchGraph::
 edgeInformation ( uint64_t source, uint64_t target ) const {
   return data_ -> edge_information_ ( source, target );
 }
-
-uint64_t SearchGraph::
-_label_event ( uint64_t source_label, uint64_t target_label, 
-              uint64_t direction, uint64_t regulator, uint64_t dimension ) const {
-  if ( direction == dimension || regulator == dimension || direction == regulator ) return -1;
-  uint64_t mask = (1 << regulator) | ( 1 << (regulator + dimension) );
-  uint64_t x = source_label & mask;
-  uint64_t y = target_label & mask;
-  return ( (x != y) || ( x == 0 ) ) ? regulator : -1; 
-}
-

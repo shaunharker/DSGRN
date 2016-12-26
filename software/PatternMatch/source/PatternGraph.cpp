@@ -70,11 +70,12 @@ assign ( Pattern const& pattern ) {
       // Use event variable to set consume_ and labels_ data
       auto const& variable = pattern . event ( v );
       //std::cout << "The event variable is " << variable << "\n";
-      data_ -> consume_ [ source ] [ variable ] = target;
       // Bit fiddling to toggle increasing/decreasing label for "variable"
       uint64_t bit = 1 << variable;
       bit |= bit << pattern . dimension ();
       data_ -> labels_ [ source ] = label(target) ^ bit;
+      data_ -> consume_ [ source ] [ label(target) & bit ] = target; 
+      // example: consider bits (i+D,i). 01 means Max, 01 means decreasing. Target is decreasing after a Max
     }
   }
   data_ -> root_ = vertices [ std::set<uint64_t> () ];
@@ -106,8 +107,8 @@ label ( uint64_t v ) const {
 }
 
 uint64_t PatternGraph::
-consume ( uint64_t vertex, uint64_t variable ) const {
-  auto it = data_ -> consume_ [ vertex ] . find ( variable );
+consume ( uint64_t vertex, uint64_t edge_label ) const {
+  auto it = data_ -> consume_ [ vertex ] . find ( edge_label );
   if ( it != data_ -> consume_ [ vertex ] . end () ) return it -> second;
   return -1;
 }
@@ -121,6 +122,18 @@ graphviz ( void ) const {
     }
     return result;
   };
+  auto edgelabelstring = [&](uint64_t L) {
+    std::string result;
+    uint64_t D = dimension();
+    for ( uint64_t d = 0; d < D; ++ d ) {
+      int type = ((L & (1 << d)) >> d) | ((L & (1 << (d + D))) >> (d + D - 1));
+      if ( type == 0 ) result.push_back('-');
+      if ( type == 1 ) result.push_back('M');
+      if ( type == 2 ) result.push_back('m');
+      if ( type == 3 ) result.push_back('*');
+    }
+    return result;
+  };
   std::stringstream ss;
   ss << "digraph {\n";
   for ( uint64_t vertex = 0; vertex < size (); ++ vertex ) {
@@ -130,12 +143,14 @@ graphviz ( void ) const {
     ss << "\"];\n";
   }
   for ( uint64_t source = 0; source < size (); ++ source ) {
-    for ( uint64_t variable = 0; variable < dimension (); ++ variable ) {
-      uint64_t target = consume ( source, variable );
+    for ( uint64_t variable = 0; variable < 2 * dimension (); ++ variable ) {
+      uint64_t edge_label = 1L << variable;
+      uint64_t target = consume ( source, edge_label );
       if ( target != -1 ) { 
-        ss << source << " -> " << target << " [label=\"" << variable << "\"];\n";
+        ss << source << " -> " << target << " [label=\"" << edgelabelstring(edge_label) << "\"];\n";
       }
     }
+    ss << source << " -> " << source << " [label=\"" << edgelabelstring(0L) << "\"];\n";
   }
   ss << "}\n";
   return ss . str ();
