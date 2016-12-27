@@ -1,6 +1,14 @@
-/// SearchGraph.cpp
+/// SearchGraph.hpp
+/// MIT LICENSE
 /// Shaun Harker and Bree Cummins
 /// 2016-03-20
+
+#ifndef DSGRN_SEARCHGRAPH_HPP
+#define DSGRN_SEARCHGRAPH_HPP
+
+#ifndef INLINE_IF_HEADER_ONLY
+#define INLINE_IF_HEADER_ONLY
+#endif
 
 #include "SearchGraph.h"
 #include "MatchingRelation.h"

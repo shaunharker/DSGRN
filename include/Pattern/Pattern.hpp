@@ -1,15 +1,23 @@
-/// Pattern.cpp
+/// Pattern.hpp
+/// MIT LICENSE
 /// Shaun Harker and Bree Cummins
 /// 2016-03-21
 
+#ifndef DSGRN_PATTERN_HPP
+#define DSGRN_PATTERN_HPP
+
+#ifndef INLINE_IF_HEADER_ONLY
+#define INLINE_IF_HEADER_ONLY
+#endif
+
 #include "Pattern.h"
 
-Pattern::
+INLINE_IF_HEADER_ONLY Pattern::
 Pattern ( void ) {
   data_ . reset ( new Pattern_ );
 }
 
-Pattern::
+INLINE_IF_HEADER_ONLY Pattern::
 Pattern ( Poset const& poset, 
           std::vector<uint64_t> const& events,
           uint64_t final_label,
@@ -17,7 +25,7 @@ Pattern ( Poset const& poset,
   assign ( poset, events, final_label, dimension );
 }
 
-void Pattern::
+INLINE_IF_HEADER_ONLY void Pattern::
 assign ( Poset const& poset, 
          std::vector<uint64_t> const& events, 
          uint64_t final_label,
@@ -29,7 +37,7 @@ assign ( Poset const& poset,
   data_ -> dimension_ = dimension;
 }
 
-void Pattern::
+INLINE_IF_HEADER_ONLY void Pattern::
 load ( std::string const& filename ) {
   std::ifstream infile ( filename );
   if ( not infile . good () ) { 
@@ -40,22 +48,22 @@ load ( std::string const& filename ) {
   parse ( buffer . str () ); 
 }
 
-uint64_t Pattern::
+INLINE_IF_HEADER_ONLY uint64_t Pattern::
 label ( void ) const {
   return data_ -> label_;
 }
 
-uint64_t Pattern::
+INLINE_IF_HEADER_ONLY uint64_t Pattern::
 dimension ( void ) const {
   return data_ -> dimension_;
 }
 
-Poset Pattern::
+INLINE_IF_HEADER_ONLY Poset Pattern::
 poset ( void ) const {
   return data_ -> poset_;
 }
 
-uint64_t Pattern::
+INLINE_IF_HEADER_ONLY uint64_t Pattern::
 event ( uint64_t v ) const {
   return data_ -> events_ [ v ];
 }

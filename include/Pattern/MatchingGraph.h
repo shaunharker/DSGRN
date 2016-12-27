@@ -1,15 +1,15 @@
 /// MatchingGraph.h
+/// MIT LICENSE
 /// Shaun Harker and Bree Cummins
 /// 2016-03-19
 
-#ifndef MATCHINGGRAPH_H
-#define MATCHINGGRAPH_H
+#ifndef DSGRN_MATCHINGGRAPH_H
+#define DSGRN_MATCHINGGRAPH_H
 
-#include "DSGRN.h"
 #include "common.h"
-#include <boost/functional/hash.hpp>
-#include "PatternGraph.h"
-#include "SearchGraph.h"
+
+#include "Pattern/PatternGraph.h"
+#include "Pattern/SearchGraph.h"
 
 struct MatchingGraph_;
 

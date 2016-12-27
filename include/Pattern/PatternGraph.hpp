@@ -1,23 +1,29 @@
-/// PatternGraph.cpp
+/// PatternGraph.hpp
+/// MIT LICENSE
 /// Shaun Harker and Bree Cummins
 /// 2016-03-20
 
-#include "PatternGraph.h"
-#include "MatchingRelation.h"
-#include <boost/functional/hash.hpp>
-#include <boost/iterator/counting_iterator.hpp>
+#ifndef DSGRN_PATTERNGRAPH_HPP
+#define DSGRN_PATTERNGRAPH_HPP
 
-PatternGraph::
+#ifndef INLINE_IF_HEADER_ONLY
+#define INLINE_IF_HEADER_ONLY
+#endif
+
+#include "Pattern/PatternGraph.h"
+#include "Pattern/MatchingRelation.h"
+
+INLINE_IF_HEADER_ONLY PatternGraph::
 PatternGraph ( void ) {
   data_ . reset ( new PatternGraph_ );
 }
 
-PatternGraph::
+INLINE_IF_HEADER_ONLY PatternGraph::
 PatternGraph ( Pattern const& pattern ) {
   assign ( pattern );
 }
 
-void PatternGraph::
+INLINE_IF_HEADER_ONLY void PatternGraph::
 assign ( Pattern const& pattern ) {
   // std::cout << "DEBUG PatternGraph::assign " << __LINE__ << "\n";
   data_ . reset ( new PatternGraph_ );
@@ -82,39 +88,39 @@ assign ( Pattern const& pattern ) {
   data_ -> root_ = vertices [ std::set<uint64_t> () ];
 }
 
-uint64_t PatternGraph::
+INLINE_IF_HEADER_ONLY uint64_t PatternGraph::
 root ( void ) const {
   return data_ -> root_;
 }
 
-uint64_t PatternGraph::
+INLINE_IF_HEADER_ONLY uint64_t PatternGraph::
 leaf ( void ) const {
   return data_ -> leaf_;
 }
 
-uint64_t PatternGraph::
+INLINE_IF_HEADER_ONLY uint64_t PatternGraph::
 size ( void ) const {
   return data_ -> size_;
 }
 
-uint64_t PatternGraph::
+INLINE_IF_HEADER_ONLY uint64_t PatternGraph::
 dimension ( void ) const {
   return data_ -> dimension_;
 }
 
-uint64_t PatternGraph::
+INLINE_IF_HEADER_ONLY uint64_t PatternGraph::
 label ( uint64_t v ) const {
   return data_ -> labels_ [ v ];
 }
 
-uint64_t PatternGraph::
+INLINE_IF_HEADER_ONLY uint64_t PatternGraph::
 consume ( uint64_t vertex, uint64_t edge_label ) const {
   auto it = data_ -> consume_ [ vertex ] . find ( edge_label );
   if ( it != data_ -> consume_ [ vertex ] . end () ) return it -> second;
   return -1;
 }
 
-std::string PatternGraph::
+INLINE_IF_HEADER_ONLY std::string PatternGraph::
 graphviz ( void ) const {
   MatchingRelation mr(dimension());
   std::stringstream ss;

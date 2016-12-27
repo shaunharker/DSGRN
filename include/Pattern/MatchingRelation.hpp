@@ -3,27 +3,34 @@
 /// MIT LICENSE 
 /// 2016-12-26
 
+#ifndef DSGRN_MATCHINGRELATION_HPP
+#define DSGRN_MATCHINGRELATION_HPP
+
+#ifndef INLINE_IF_HEADER_ONLY
+#define INLINE_IF_HEADER_ONLY
+#endif
+
 #include "MatchingRelation.h"
 
-MatchingRelation::
+INLINE_IF_HEADER_ONLY MatchingRelation::
 MatchingRelation ( void ) {}
 
-MatchingRelation::
+INLINE_IF_HEADER_ONLY MatchingRelation::
 MatchingRelation ( uint64_t dim ) {
   assign(dim);
 }
 
-void MatchingRelation::
+INLINE_IF_HEADER_ONLY void MatchingRelation::
 assign ( uint64_t dim ) {
   dimension_ = dim;
 }
 
-uint64_t MatchingRelation::
+INLINE_IF_HEADER_ONLY uint64_t MatchingRelation::
 dimension ( void ) const {
   return dimension_;
 }
 
-std::string MatchingRelation::
+INLINE_IF_HEADER_ONLY std::string MatchingRelation::
 vertex_labelstring ( uint64_t L ) const {
   std::string result;
   for ( uint64_t d = 0; d < dimension(); ++ d ){
@@ -38,7 +45,7 @@ vertex_labelstring ( uint64_t L ) const {
   return result;
 };
 
-std::string MatchingRelation::
+INLINE_IF_HEADER_ONLY std::string MatchingRelation::
 edge_labelstring ( uint64_t L ) const {
   std::string result;
   uint64_t D = dimension();

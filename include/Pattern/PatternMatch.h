@@ -1,13 +1,14 @@
 /// PatternMatch.h
+/// MIT LICENSE
 /// Shaun Harker and Bree Cummins
 /// 2016-03-19
 
-#ifndef PATTERNMATCH_H
-#define PATTERNMATCH_H
+#ifndef DSGRN_PATTERNMATCH_H
+#define DSGRN_PATTERNMATCH_H
 
-#include "DSGRN.h"
 #include "common.h"
-#include "MatchingGraph.h"
+
+#include "Pattern/MatchingGraph.h"
 
 /// QueryCycleMatch
 ///   Determine if there is a cycle match

@@ -1,12 +1,15 @@
 /// SearchGraph.h
+/// MIT LICENSE
 /// Shaun Harker and Bree Cummins
 /// 2016-03-19
 
-#ifndef SEARCHGRAPH_H
-#define SEARCHGRAPH_H
+#ifndef DSGRN_SEARCHGRAPH_H
+#define DSGRN_SEARCHGRAPH_H
 
-#include "DSGRN.h"
 #include "common.h"
+
+#include "Phase/DomainGraph.h"
+#include "Graph/Digraph.h"
 
 struct SearchGraph_;
 

@@ -1,12 +1,14 @@
 /// Pattern.h
+/// MIT LICENSE
 /// Shaun Harker and Bree Cummins
 /// 2016-03-21
 
-#ifndef PATTERN_H
-#define PATTERN_H
+#ifndef DSGRN_PATTERN_H
+#define DSGRN_PATTERN_H
 
-#include "DSGRN.h"
 #include "common.h"
+
+#include "Graph/Poset.h"
 
 struct Pattern_;
 

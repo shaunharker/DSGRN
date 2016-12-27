@@ -1,45 +1,52 @@
 /// MatchingGraph.cpp
+/// MIT LICENSE
 /// Shaun Harker and Bree Cummins
 /// 2016-03-20
 
+#ifndef DSGRN_MATCHINGGRAPH_HPP
+#define DSGRN_MATCHINGGRAPH_HPP
+
+#ifndef INLINE_IF_HEADER_ONLY
+#define INLINE_IF_HEADER_ONLY
+#endif
+
 #include "MatchingGraph.h"
 
-
-MatchingGraph::
+INLINE_IF_HEADER_ONLY MatchingGraph::
 MatchingGraph ( void ) {
   data_ . reset ( new MatchingGraph_ );
 }
 
-MatchingGraph::
+INLINE_IF_HEADER_ONLY MatchingGraph::
 MatchingGraph ( SearchGraph const& sg, PatternGraph const& pg ) {
   assign ( sg, pg );
 }
 
-void MatchingGraph::
+INLINE_IF_HEADER_ONLY void MatchingGraph::
 assign ( SearchGraph const& sg, PatternGraph const& pg ) {
   data_ . reset ( new MatchingGraph_ );
   data_ -> sg_ = sg;
   data_ -> pg_ = pg;
 }
 
-SearchGraph const& MatchingGraph::
+INLINE_IF_HEADER_ONLY SearchGraph const& MatchingGraph::
 searchgraph ( void ) const {
   return data_ ->  sg_;
 }
 
-PatternGraph const& MatchingGraph::
+INLINE_IF_HEADER_ONLY PatternGraph const& MatchingGraph::
 patterngraph ( void ) const {
   return data_ -> pg_;
 }
 
-bool MatchingGraph::
+INLINE_IF_HEADER_ONLY bool MatchingGraph::
 query ( Vertex const& v ) const {
   uint64_t search_label = searchgraph().label(v.first);
   uint64_t pattern_label = patterngraph().label(v.second);
   return (pattern_label & search_label) == search_label;
 }
 
-std::vector<MatchingGraph::Vertex> MatchingGraph::
+INLINE_IF_HEADER_ONLY std::vector<MatchingGraph::Vertex> MatchingGraph::
 adjacencies ( Vertex const& v ) const {
   std::vector<Vertex> result;
   uint64_t const& domain = v . first;
@@ -59,7 +66,7 @@ adjacencies ( Vertex const& v ) const {
   return result;
 }
 
-std::vector<MatchingGraph::Vertex> MatchingGraph::
+INLINE_IF_HEADER_ONLY std::vector<MatchingGraph::Vertex> MatchingGraph::
 roots ( void ) const {
   std::vector<Vertex> result;
   uint64_t root = patterngraph().root();
@@ -69,22 +76,22 @@ roots ( void ) const {
   return result;
 }
 
-uint64_t MatchingGraph::
+INLINE_IF_HEADER_ONLY uint64_t MatchingGraph::
 domain ( Vertex const& v ) const {
   return v . first;
 }
 
-uint64_t MatchingGraph::
+INLINE_IF_HEADER_ONLY uint64_t MatchingGraph::
 position ( Vertex const& v ) const {
   return v . second;
 }
 
-MatchingGraph::Vertex MatchingGraph::
+INLINE_IF_HEADER_ONLY MatchingGraph::Vertex MatchingGraph::
 vertex ( uint64_t domain, uint64_t position ) const {
   return Vertex ( {domain, position} );
 }
 
-std::string MatchingGraph::
+INLINE_IF_HEADER_ONLY std::string MatchingGraph::
 graphviz ( void ) const {
   std::stringstream ss;
   std::set<Vertex> vertices;
@@ -116,7 +123,7 @@ graphviz ( void ) const {
   return ss . str ();
 }
 
-bool MatchingGraph::
+INLINE_IF_HEADER_ONLY bool MatchingGraph::
 _match ( uint64_t search_label, uint64_t pattern_label ) const {
   // auto labelstring = [&](uint64_t L) {
   //   std::string result;

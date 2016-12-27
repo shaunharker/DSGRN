@@ -35,8 +35,8 @@
 #include "boost/serialization/split_member.hpp"
 #include "boost/archive/text_iarchive.hpp"
 #include "boost/archive/text_oarchive.hpp"
-
 #include "boost/functional/hash.hpp"
+#include "boost/iterator/counting_iterator.hpp"
 
 #include "Tools/SHA256.h"
 #include "Tools/json.hpp"

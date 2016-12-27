@@ -23,5 +23,11 @@
 #include "Phase/DomainGraph.hpp"
 #include "Phase/Wall.hpp"
 #include "Phase/WallGraph.hpp"
+#include "Pattern/MatchingGraph.hpp"
+#include "Pattern/MatchingRelation.hpp"
+#include "Pattern/Pattern.hpp"
+#include "Pattern/PatternGraph.hpp"
+#include "Pattern/PatternMatch.hpp"
+#include "Pattern/SearchGraph.hpp"
 
 #endif

@@ -21,5 +21,11 @@
 #include "Graph/Poset.h"
 #include "Graph/Components.h"
 #include "Graph/StrongComponents.h"
+#include "Pattern/MatchingGraph.h"
+#include "Pattern/MatchingRelation.h"
+#include "Pattern/Pattern.h"
+#include "Pattern/PatternGraph.h"
+#include "Pattern/PatternMatch.h"
+#include "Pattern/SearchGraph.h"
 
 #endif

@@ -1,11 +1,18 @@
-/// PatternMatch.cpp
+/// PatternMatch.hpp
+/// MIT LICENSE
 /// Shaun Harker and Bree Cummins
 /// 2016-03-19
 
-#include "PatternMatch.h"
-#include <boost/functional/hash.hpp>
+#ifndef DSGRN_PATTERNMATCH_HPP
+#define DSGRN_PATTERNMATCH_HPP
 
-bool
+#ifndef INLINE_IF_HEADER_ONLY
+#define INLINE_IF_HEADER_ONLY
+#endif
+
+#include "PatternMatch.h"
+
+INLINE_IF_HEADER_ONLY bool
 QueryCycleMatch ( MatchingGraph const& mg ) {
   typedef MatchingGraph::Vertex Vertex;
   uint64_t N = mg . searchgraph() . size ();
@@ -32,7 +39,7 @@ QueryCycleMatch ( MatchingGraph const& mg ) {
 }
 
 // Debugging routine
-std::string
+INLINE_IF_HEADER_ONLY std::string
 ExplainCycleMatch ( MatchingGraph const& mg ) {
   typedef MatchingGraph::Vertex Vertex;
   uint64_t N = mg . searchgraph() . size ();
@@ -114,7 +121,7 @@ ExplainCycleMatch ( MatchingGraph const& mg ) {
 }
 
 
-bool
+INLINE_IF_HEADER_ONLY bool
 QueryPathMatch ( MatchingGraph const& mg ) {
   typedef MatchingGraph::Vertex Vertex;
   uint64_t N = mg . searchgraph() . size ();

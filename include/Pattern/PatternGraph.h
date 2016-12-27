@@ -1,13 +1,14 @@
 /// PatternGraph.h
+/// MIT LICENSE
 /// Shaun Harker and Bree Cummins
 /// 2016-03-19
 
-#ifndef PATTERNGRAPH_H
-#define PATTERNGRAPH_H
+#ifndef DSGRN_PATTERNGRAPH_H
+#define DSGRN_PATTERNGRAPH_H
 
-#include "DSGRN.h"
 #include "common.h"
-#include "Pattern.h"
+
+#include "Pattern/Pattern.h"
 
 struct PatternGraph_;
 

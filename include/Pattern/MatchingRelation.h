@@ -3,8 +3,8 @@
 /// MIT LICENSE 
 /// 2016-12-26
 
-#ifndef MATCHINGRELATION_H
-#define MATCHINGRELATION_H
+#ifndef DSGRN_MATCHINGRELATION_H
+#define DSGRN_MATCHINGRELATION_H
 
 #include "common.h"
 
