@@ -123,26 +123,4 @@ graphviz ( void ) const {
   return ss . str ();
 }
 
-INLINE_IF_HEADER_ONLY bool MatchingGraph::
-_match ( uint64_t search_label, uint64_t pattern_label ) const {
-  // auto labelstring = [&](uint64_t L) {
-  //   std::string result;
-  //   for ( uint64_t d = 0; d < searchgraph().dimension(); ++ d ){
-  //     if ( L & ( 1 << d ) ) {
-  //       result.push_back('D');
-  //     } else if ( L & ( 1 << (d + searchgraph().dimension() ) ) ) {
-  //       result.push_back('I');
-  //     } else {
-  //       result.push_back('?');
-  //     }
-  //   }
-  //   return result;
-  // };
-  // std::cout << "search_label = " << labelstring(search_label) << " pattern_label = " << labelstring(pattern_label) << "\n";
-  // std::cout << "search_label = " << (search_label) << " pattern_label = " << (pattern_label) << "\n";
-  // std::cout << (pattern_label & search_label) << "\n";
-  // std::cout << (((pattern_label & search_label) == search_label) ? "match\n" : "no match\n");
-  return (pattern_label & search_label) == search_label;
-}
-
 #endif

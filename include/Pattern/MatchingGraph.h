@@ -87,11 +87,6 @@ public:
   graphviz ( void ) const;
 
 private:
-  /// _match
-  ///   Return true if search graph label and pattern graph label match
-  bool
-  _match ( uint64_t search_label, uint64_t pattern_label ) const;
-
   std::shared_ptr<MatchingGraph_> data_;
   /// serialize
   ///   For use with BOOST Serialization library,
