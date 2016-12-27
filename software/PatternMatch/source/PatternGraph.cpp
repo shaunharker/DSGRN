@@ -3,6 +3,7 @@
 /// 2016-03-20
 
 #include "PatternGraph.h"
+#include "MatchingRelation.h"
 #include <boost/functional/hash.hpp>
 #include <boost/iterator/counting_iterator.hpp>
 
@@ -115,29 +116,11 @@ consume ( uint64_t vertex, uint64_t edge_label ) const {
 
 std::string PatternGraph::
 graphviz ( void ) const {
-  auto labelstring = [&](uint64_t L) { // DRY
-    std::string result;
-    for ( uint64_t d = 0; d < dimension(); ++ d ){
-      if ( L & (1 << d) ) result.push_back('D'); else result.push_back('I');
-    }
-    return result;
-  };
-  auto edgelabelstring = [&](uint64_t L) { // DRY
-    std::string result;
-    uint64_t D = dimension();
-    for ( uint64_t d = 0; d < D; ++ d ) {
-      int type = ((L & (1 << d)) >> d) | ((L & (1 << (d + D))) >> (d + D - 1));
-      if ( type == 0 ) result.push_back('-');
-      if ( type == 1 ) result.push_back('M');
-      if ( type == 2 ) result.push_back('m');
-      if ( type == 3 ) result.push_back('*');
-    }
-    return result;
-  };
+  MatchingRelation mr(dimension());
   std::stringstream ss;
   ss << "digraph {\n";
   for ( uint64_t vertex = 0; vertex < size (); ++ vertex ) {
-    ss << vertex << "[label=\"" << vertex << ":" << labelstring(label ( vertex ));
+    ss << vertex << "[label=\"" << vertex << ":" << mr.vertex_labelstring(label ( vertex ));
     if ( vertex == root() ) ss << "(root)";
     if ( vertex == leaf() ) ss << "(leaf)";
     ss << "\"];\n";
@@ -147,10 +130,10 @@ graphviz ( void ) const {
       uint64_t edge_label = 1L << variable;
       uint64_t target = consume ( source, edge_label );
       if ( target != -1 ) { 
-        ss << source << " -> " << target << " [label=\"" << edgelabelstring(edge_label) << "\"];\n";
+        ss << source << " -> " << target << " [label=\"" << mr.edge_labelstring(edge_label) << "\"];\n";
       }
     }
-    ss << source << " -> " << source << " [label=\"" << edgelabelstring(0L) << "\"];\n";
+    ss << source << " -> " << source << " [label=\"" << mr.edge_labelstring(0L) << "\"];\n";
   }
   ss << "}\n";
   return ss . str ();

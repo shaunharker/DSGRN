@@ -18,12 +18,21 @@ public:
 
   /// SearchGraph
   ///   Create search graph from a domain graph and a morse set index
+  SearchGraph ( DomainGraph dg );
+
+  /// SearchGraph
+  ///   Create search graph from a domain graph and a morse set index
   SearchGraph ( DomainGraph dg, uint64_t morse_set_index );
 
   /// SearchGraph
   ///   Create search graph from a sequence of labels
   ///   (This is used for checking for a pattern in a time series)
   SearchGraph ( std::vector<uint64_t> const& labels, uint64_t dim );
+
+  /// assign
+  ///   Create search graph from a domain graph
+  void
+  assign ( DomainGraph dg );
 
   /// assign
   ///   Create search graph from a domain graph and a morse set index

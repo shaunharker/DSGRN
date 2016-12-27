@@ -6,7 +6,7 @@ set ( LIBS      ${LIBS}
                 sqlite3 
                 ${CMAKE_THREAD_LIBS_INIT} )
 
-set ( LIBRARYSOURCEFILES Pattern.cpp SearchGraph.cpp PatternGraph.cpp MatchingGraph.cpp PatternMatch.cpp)
+set ( LIBRARYSOURCEFILES Pattern.cpp SearchGraph.cpp PatternGraph.cpp MatchingGraph.cpp PatternMatch.cpp MatchingRelation.cpp)
 add_library ( libdsgrnpatternmatch STATIC ${LIBRARYSOURCEFILES} )
 set_target_properties( libdsgrnpatternmatch PROPERTIES OUTPUT_NAME dsgrnpatternmatch )
 

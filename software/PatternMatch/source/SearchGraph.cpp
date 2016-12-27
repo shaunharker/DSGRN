@@ -3,10 +3,16 @@
 /// 2016-03-20
 
 #include "SearchGraph.h"
+#include "MatchingRelation.h"
 
 SearchGraph::
 SearchGraph ( void ) {
   data_ . reset ( new SearchGraph_ );
+}
+
+SearchGraph::
+SearchGraph ( DomainGraph dg ) {
+  assign ( dg );
 }
 
 SearchGraph::
@@ -17,6 +23,29 @@ SearchGraph ( DomainGraph dg, uint64_t morse_set_index ) {
 SearchGraph::
 SearchGraph ( std::vector<uint64_t> const& labels, uint64_t dim ) {
   assign ( labels, dim );
+}
+
+// TODO: code coverage
+void SearchGraph::
+assign ( DomainGraph dg ) {
+  data_ . reset ( new SearchGraph_ );
+  data_ -> dimension_ = dg . dimension ();
+  Digraph & digraph = data_ -> digraph_;
+  std::unordered_map<uint64_t, uint64_t> domain_to_vertex;
+  uint64_t N = dg . digraph() . size ();
+  for ( uint64_t domain = 0; domain < N; ++ domain ) {
+    data_ -> labels_ . push_back ( dg . label ( domain ) );
+  }
+  digraph . resize ( N );
+  data_ -> event_ . resize ( N );
+  for ( uint64_t source = 0; source < N; ++ source ) {
+    for ( uint64_t target : dg . digraph() . adjacencies ( source ) ) {
+      if ( source == target ) continue; // Don't add self-edge to search graph.
+      digraph . add_edge ( source, target );
+      data_ -> event_ [ source ] [ target ] = dg . label ( source, target );
+    }
+  }
+  digraph . finalize ();
 }
 
 void SearchGraph::
@@ -49,6 +78,7 @@ assign ( DomainGraph dg, uint64_t morse_set_index ) {
   }
   digraph . finalize ();
   // Debug information (Note: will not survive a serialization/deserialization)
+  MatchingRelation mr(dimension());
   data_ -> vertex_information_ = [=](uint64_t v ){
     auto vec_to_string = [](std::vector<uint64_t> const& vec ) {
       std::stringstream ss;
@@ -64,33 +94,22 @@ assign ( DomainGraph dg, uint64_t morse_set_index ) {
     return vec_to_string(dg.coordinates(domains[v]));
   };
   data_ -> edge_information_ = [=](uint64_t u, uint64_t v ){
-    auto domainlabel = [&](uint64_t L) {
-      std::string result;
-      for ( uint64_t d = 0; d < dimension(); ++ d ){
-        if ( L & ( 1 << d ) ) { 
-          result.push_back('D');
-        } else if ( L & ( 1 << (d + dimension() ) ) ) { 
-          result.push_back('I');
-        } else {
-          result.push_back('?');
-        }
-      }
-      return result;
-    };
     std::stringstream ss;
     uint64_t source = domains[u];
     uint64_t target = domains[v];
     ss << "Transition from " << u << " to " << v << " in searchgraph.\n";
     ss << u << " is domain " << source << " with coordinates " << vertexInformation(u) << "\n";
-    ss << "  and label " << domainlabel(dg.label(source)) << "\n";
+    ss << "  and label " << mr.vertex_labelstring(dg.label(source)) << "\n";
     ss << v << " is domain " << target << " with coordinates " << vertexInformation(v) << "\n";
-    ss << "  and label " << domainlabel(dg.label(target)) << "\n";
+    ss << "  and label " << mr.vertex_labelstring(dg.label(target)) << "\n";
     ss << "The direction variable is " << dg . direction ( source, target ) << "\n";
     ss << "The regulator variable is " << dg . regulator ( source, target ) << "\n";
+    ss << "(" << u << ", " << v << ") has label " << mr.edge_labelstring(event(u,v)) << "(" << event(u,v) << ")\n";
     return ss.str();
   };
 }
 
+// TODO PROBLEM: This code is uncovered by tests.
 void SearchGraph::
 assign ( std::vector<uint64_t> const& labels, uint64_t dim ) {
   data_ . reset ( new SearchGraph_ );
@@ -101,63 +120,22 @@ assign ( std::vector<uint64_t> const& labels, uint64_t dim ) {
   data_ -> event_ . resize ( N );
   for ( uint64_t v = 0; v < N-1; ++ v ) {
     data_ -> digraph_ . add_edge ( v, v+1 );
-    uint64_t xor_label = label(v) ^ label(v+1);
-    uint64_t bit = 1;
-    uint64_t & event = data_ -> event_ [ v ] [ v+1 ];
-    event = -1;
-    for ( uint64_t d = 0; d < dimension (); ++ d ) {
-      if ( xor_label & bit ) { 
-        event = d;
-        break;
-      }
-      bit <<= 1;
-    }
-    // DEBUG BEGIN
-    if ( event == - 1 ) {
-      std::cout << "Failed to learn event.\n";
-      abort ();
-    }
-    // DEBUG END
+    data_ -> event_ [ v ] [ v+1 ] = (label(v) ^ label(v+1)) & label(v+1);
   }
   data_ -> digraph_ . finalize ();
   // Debug information (Note: will not survive a serialization/deserialization)
+  MatchingRelation mr(dimension());
   data_ -> vertex_information_ = [=]( uint64_t v ){
     std::stringstream ss;
     ss << "[Vertex " << v << "; Label " << label(v) << "]";
     return ss . str ();
   };
   data_ -> edge_information_ = [=](uint64_t u, uint64_t v ){ //dry
-    auto labelstring = [&](uint64_t L) {
-      std::string result;
-      for ( uint64_t d = 0; d < dimension(); ++ d ){
-        if ( L & ( 1 << d ) ) { 
-          result.push_back('D');
-        } else if ( L & ( 1 << (d + dimension() ) ) ) { 
-          result.push_back('I');
-        } else {
-          result.push_back('*');
-        }
-      }
-      return result;
-    };
-    auto edgelabelstring = [&](uint64_t L) { // DRY
-      std::string result;
-      uint64_t D = dimension();
-      for ( uint64_t d = 0; d < D; ++ d ) {
-        int type = ((L & (1 << d)) >> d) | ((L & (1 << (d + D))) >> (d + D - 1));
-        if ( type == 0 ) result.push_back('-');
-        if ( type == 1 ) result.push_back('M');
-        if ( type == 2 ) result.push_back('m');
-        if ( type == 3 ) result.push_back('*');
-      }
-      return result;
-    };
     std::stringstream ss;
     ss << "Transition from " << u << " to " << v << " in searchgraph.\n";
-    ss << u << " has label " << labelstring(label(u)) << "(" << label(u) << ")\n";
-    ss << v << " has label " << labelstring(label(v)) << "(" << label(v) << ")\n";
-    ss << "(" << u << ", " << v << ") has label " << edgelabelstring(event(u,v)) << "(" << event(u,v) << ")\n";
-
+    ss << u << " has label " << mr.vertex_labelstring(label(u)) << "(" << label(u) << ")\n";
+    ss << v << " has label " << mr.vertex_labelstring(label(v)) << "(" << label(v) << ")\n";
+    ss << "(" << u << ", " << v << ") has label " << mr.edge_labelstring(event(u,v)) << "(" << event(u,v) << ")\n";
     return ss.str();
   };
 } 
@@ -189,39 +167,15 @@ event ( uint64_t source, uint64_t target ) const {
 
 std::string SearchGraph::
 graphviz ( void ) const {
-  auto labelstring = [&](uint64_t L) { //DRY
-    std::string result;
-    for ( uint64_t d = 0; d < dimension(); ++ d ){
-      if ( L & ( 1 << d ) ) { 
-        result.push_back('D');
-      } else if ( L & ( 1 << (d + dimension() ) ) ) { 
-        result.push_back('I');
-      } else {
-        result.push_back('*');
-      }
-    }
-    return result;
-  };
-  auto edgelabelstring = [&](uint64_t L) { // DRY
-    std::string result;
-    uint64_t D = dimension();
-    for ( uint64_t d = 0; d < D; ++ d ) {
-      int type = ((L & (1 << d)) >> d) | ((L & (1 << (d + D))) >> (d + D - 1));
-      if ( type == 0 ) result.push_back('-');
-      if ( type == 1 ) result.push_back('M');
-      if ( type == 2 ) result.push_back('m');
-      if ( type == 3 ) result.push_back('*');
-    }
-    return result;
-  };
+  MatchingRelation mr(dimension());
   std::stringstream ss;
   ss << "digraph {\n";
   for ( uint64_t vertex = 0; vertex < size (); ++ vertex ) {
-    ss << vertex << "[label=\"" << vertex << ":" << labelstring(label(vertex)) << "\"];\n";
+    ss << vertex << "[label=\"" << vertex << ":" << mr.vertex_labelstring(label(vertex)) << "\"];\n";
   }
   for ( uint64_t source = 0; source < size (); ++ source ) {
     for ( uint64_t target : adjacencies(source) ) {
-      ss << source << " -> " << target << " [label=\"" << edgelabelstring(event(source,target)) << "\"];\n";
+      ss << source << " -> " << target << " [label=\"" << mr.edge_labelstring(event(source,target)) << "\"];\n";
     }
   }
   ss << "}\n";
