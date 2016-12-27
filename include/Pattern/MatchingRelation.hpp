@@ -58,3 +58,5 @@ edge_labelstring ( uint64_t L ) const {
   }
   return result;
 };
+
+#endif

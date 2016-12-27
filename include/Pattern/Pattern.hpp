@@ -93,3 +93,5 @@ parse ( std::string const& str ) {
   data_ -> label_ = j["label"];
   data_ -> dimension_ = j["dimension"];
 }
+
+#endif

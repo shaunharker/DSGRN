@@ -199,3 +199,5 @@ std::string SearchGraph::
 edgeInformation ( uint64_t source, uint64_t target ) const {
   return data_ -> edge_information_ ( source, target );
 }
+
+#endif

@@ -1,5 +1,9 @@
-#include <iostream>
-#include "MatchingGraph.h"
+/// TestMatchingGraph.cpp
+/// Shaun Harker
+/// MIT LICENSE 2016
+
+#include "common.h"
+#include "DSGRN.h"
 
 std::string expected_output =
   "digraph {\n"

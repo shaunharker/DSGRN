@@ -1,5 +1,9 @@
-#include <iostream>
-#include "PatternMatch.h"
+/// TestPatternMatch.cpp
+/// Shaun Harker
+/// MIT LICENSE 2016
+
+#include "common.h"
+#include "DSGRN.h"
 
 int main ( int argc, char * argv [] ) {
   if ( argc == 5 ) {

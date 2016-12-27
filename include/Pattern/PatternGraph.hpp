@@ -144,3 +144,5 @@ graphviz ( void ) const {
   ss << "}\n";
   return ss . str ();
 }
+
+#endif

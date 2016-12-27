@@ -144,3 +144,5 @@ _match ( uint64_t search_label, uint64_t pattern_label ) const {
   // std::cout << (((pattern_label & search_label) == search_label) ? "match\n" : "no match\n");
   return (pattern_label & search_label) == search_label;
 }
+
+#endif

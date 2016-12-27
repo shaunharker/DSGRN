@@ -9,7 +9,6 @@
 #include "cluster-delegator.hpp"
 #include "Tools/sqlambda.h"
 #include "DSGRN.h"
-#include "PatternMatch.h"
 
 class PatternMatchDatabase : public Coordinator_Worker_Process {
  public:

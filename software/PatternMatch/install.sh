@@ -25,4 +25,4 @@ source $SRC_ROOT/../../.install/parse.sh
 
 # Build "PatternMatch"
 cd ${SRC_ROOT}
-$build --prefix=$PREFIX --searchpath=$SEARCHPATH --build=$BUILDTYPE --test $MASS || exit 1
+$build --prefix=$PREFIX --searchpath=$SEARCHPATH --build=$BUILDTYPE $MASS || exit 1

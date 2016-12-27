@@ -1,5 +1,9 @@
-#include <iostream>
-#include "Pattern.h"
+/// TestPattern.cpp
+/// Shaun Harker
+/// MIT LICENSE 2016
+
+#include "common.h"
+#include "DSGRN.h"
 
 int main ( int argc, char * argv [] ) {
   try {

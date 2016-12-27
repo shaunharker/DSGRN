@@ -232,3 +232,6 @@ CountPathMatches ( MatchingGraph const& mg ) {
   }
 }
 */
+
+#endif
+

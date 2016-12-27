@@ -73,15 +73,3 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 ###########
 
 add_subdirectory (source)
-add_subdirectory (tests)
-
-#########
-# Tests #
-#########
-
-enable_testing()
-add_test ( TestPattern ${CMAKE_BINARY_DIR}/bin/TestPattern )
-add_test ( TestPatternGraph ${CMAKE_BINARY_DIR}/bin/TestPatternGraph )
-add_test ( TestSearchGraph ${CMAKE_BINARY_DIR}/bin/TestSearchGraph )
-add_test ( TestMatchingGraph ${CMAKE_BINARY_DIR}/bin/TestMatchingGraph )
-add_test ( TestPatternMatch ${CMAKE_BINARY_DIR}/bin/TestPatternMatch )
