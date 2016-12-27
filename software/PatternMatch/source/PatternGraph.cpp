@@ -115,14 +115,14 @@ consume ( uint64_t vertex, uint64_t edge_label ) const {
 
 std::string PatternGraph::
 graphviz ( void ) const {
-  auto labelstring = [&](uint64_t L) {
+  auto labelstring = [&](uint64_t L) { // DRY
     std::string result;
     for ( uint64_t d = 0; d < dimension(); ++ d ){
       if ( L & (1 << d) ) result.push_back('D'); else result.push_back('I');
     }
     return result;
   };
-  auto edgelabelstring = [&](uint64_t L) {
+  auto edgelabelstring = [&](uint64_t L) { // DRY
     std::string result;
     uint64_t D = dimension();
     for ( uint64_t d = 0; d < D; ++ d ) {

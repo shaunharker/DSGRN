@@ -126,8 +126,8 @@ assign ( std::vector<uint64_t> const& labels, uint64_t dim ) {
     ss << "[Vertex " << v << "; Label " << label(v) << "]";
     return ss . str ();
   };
-  data_ -> edge_information_ = [=](uint64_t u, uint64_t v ){
-    auto humanlabel = [&](uint64_t L) {
+  data_ -> edge_information_ = [=](uint64_t u, uint64_t v ){ //dry
+    auto labelstring = [&](uint64_t L) {
       std::string result;
       for ( uint64_t d = 0; d < dimension(); ++ d ){
         if ( L & ( 1 << d ) ) { 
@@ -135,15 +135,29 @@ assign ( std::vector<uint64_t> const& labels, uint64_t dim ) {
         } else if ( L & ( 1 << (d + dimension() ) ) ) { 
           result.push_back('I');
         } else {
-          result.push_back('?');
+          result.push_back('*');
         }
+      }
+      return result;
+    };
+    auto edgelabelstring = [&](uint64_t L) { // DRY
+      std::string result;
+      uint64_t D = dimension();
+      for ( uint64_t d = 0; d < D; ++ d ) {
+        int type = ((L & (1 << d)) >> d) | ((L & (1 << (d + D))) >> (d + D - 1));
+        if ( type == 0 ) result.push_back('-');
+        if ( type == 1 ) result.push_back('M');
+        if ( type == 2 ) result.push_back('m');
+        if ( type == 3 ) result.push_back('*');
       }
       return result;
     };
     std::stringstream ss;
     ss << "Transition from " << u << " to " << v << " in searchgraph.\n";
-    ss << u << " has label " << humanlabel(label(u)) << "(" << label(u) << ")\n";
-    ss << v << " has label " << humanlabel(label(v)) << "(" << label(v) << ")\n";
+    ss << u << " has label " << labelstring(label(u)) << "(" << label(u) << ")\n";
+    ss << v << " has label " << labelstring(label(v)) << "(" << label(v) << ")\n";
+    ss << "(" << u << ", " << v << ") has label " << edgelabelstring(event(u,v)) << "(" << event(u,v) << ")\n";
+
     return ss.str();
   };
 } 
@@ -175,7 +189,7 @@ event ( uint64_t source, uint64_t target ) const {
 
 std::string SearchGraph::
 graphviz ( void ) const {
-  auto labelstring = [&](uint64_t L) {
+  auto labelstring = [&](uint64_t L) { //DRY
     std::string result;
     for ( uint64_t d = 0; d < dimension(); ++ d ){
       if ( L & ( 1 << d ) ) { 
@@ -183,8 +197,20 @@ graphviz ( void ) const {
       } else if ( L & ( 1 << (d + dimension() ) ) ) { 
         result.push_back('I');
       } else {
-        result.push_back('?');
+        result.push_back('*');
       }
+    }
+    return result;
+  };
+  auto edgelabelstring = [&](uint64_t L) { // DRY
+    std::string result;
+    uint64_t D = dimension();
+    for ( uint64_t d = 0; d < D; ++ d ) {
+      int type = ((L & (1 << d)) >> d) | ((L & (1 << (d + D))) >> (d + D - 1));
+      if ( type == 0 ) result.push_back('-');
+      if ( type == 1 ) result.push_back('M');
+      if ( type == 2 ) result.push_back('m');
+      if ( type == 3 ) result.push_back('*');
     }
     return result;
   };
@@ -195,7 +221,7 @@ graphviz ( void ) const {
   }
   for ( uint64_t source = 0; source < size (); ++ source ) {
     for ( uint64_t target : adjacencies(source) ) {
-      ss << source << " -> " << target << " [label=\"" << (int64_t) event(source,target) << "\"];\n";
+      ss << source << " -> " << target << " [label=\"" << edgelabelstring(event(source,target)) << "\"];\n";
     }
   }
   ss << "}\n";

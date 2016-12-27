@@ -101,7 +101,7 @@ label ( uint64_t source, uint64_t target ) const {
   uint64_t i = direction(source,target);
   uint64_t j = regulator(source,target);
   if ( i == j ) return 0;
-  return 1L << ( j + (parameter().network().interaction(i,j) ? dimension() : 0 ) );
+  return 1L << ( j + ( ((source < target) ^ parameter().network().interaction(i,j)) ? 0 : dimension() ) );
 }
 
 INLINE_IF_HEADER_ONLY uint64_t DomainGraph::
