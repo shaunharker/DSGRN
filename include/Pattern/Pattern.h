@@ -24,8 +24,8 @@ public:
   ///           "events" gives the map from poset elements to event
   ///                    variable indexing. (Note: it does not
   ///                    have min/max data.)
-  ///           "initial_label" gives the final state after
-  ///                    any events. Further details below.
+  ///           "final_label" gives the final state after
+  ///                    all events. Further details below.
   ///           "dimension" is the number of variables
   ///   The label is a 64 bit word with bits interpreted as follows:
   ///    bit i+D     bit i   interpretation
@@ -52,7 +52,7 @@ public:
   load ( std::string const& filename );
 
   /// label
-  ///   Return the label corresponding to the initial state
+  ///   Return the label corresponding to the final state
   ///   The label is a 64 bit word with bits interpreted as follows:
   ///    bit i+D     bit i   interpretation
   ///         0        1    ith variable decreasing  

@@ -1,8 +1,19 @@
 
 import graphviz
 
+def DrawGraph(g):
+  """
+  Return an object which renders in Notebook visualizations.
+  Works with any input g with a "graphviz" method returning a valid
+  graphviz string
+  """
+  return graphviz.Source(g.graphviz())
+
 class Graph:
   def __init__(self, vertices, edges):
+    """
+    Construct graph from set of vertices and collection of edges
+    """
     self.vertices = vertices
     self.edges = edges 
     self.adjacency_lists = {}
@@ -16,10 +27,19 @@ class Graph:
       self.adjacency_lists[s].append(t) 
 
   def _repr_svg_(self):
-    return graphviz.Source('digraph {' + \
+    """
+    Return svg representation suitable for Notebook visualization
+    """
+    return graphviz.Source(self.graphviz())._repr_svg_()
+
+  def graphviz(self):
+    """
+    Return graphviz string for graph
+    """
+    'digraph {' + \
   '\n'.join([ 'X' + str(v) + '[label="' + self.label(v) + '";style="filled";fillcolor="' + self.color(v) + '"];' for v in self.vertices ]) + \
    '\n' + '\n'.join([ 'X' + str(u) + " -> " + 'X' + str(v) + ';' for (u, v) in self.edges ]) + \
-   '\n' + '}\n')._repr_svg_()
+   '\n' + '}\n'
 
   def adjacencies(self, p):
     """

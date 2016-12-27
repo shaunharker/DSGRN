@@ -12,3 +12,4 @@ from SingleGeneQuery import *
 from InducibilityQuery import *
 from HysteresisQuery import *
 from PhenotypeQuery import *
+from PosetOfExtrema import *
