@@ -1,8 +1,35 @@
 
 import graphviz
 
+from .libpyDSGRN import *
+
+def DrawGraph(g):
+  """
+  Return an object which renders in Notebook visualizations.
+  Works with any input g with a "graphviz" method returning a valid
+  graphviz string
+  """
+  return graphviz.Source(g.graphviz())
+
+def DrawGraphWithHighlightedPath(g, path):
+  """
+  Return an object which renders in Notebook visualizations.
+  Works for "SearchGraph" "PatternGraph" and "MatchingGraph".
+  If given a python integer list it can convert for "SearchGraph" and "PatternGraph"
+  Currently "MatchingGraph" requires an IntPairList input
+  """
+  if type(path) == list:
+    converted_path = IntList()
+    converted_path.extend(path)
+  else:
+    converted_path = path 
+  return graphviz.Source(g.graphviz_with_highlighted_path(converted_path))
+
 class Graph:
   def __init__(self, vertices, edges):
+    """
+    Construct graph from set of vertices and collection of edges
+    """
     self.vertices = vertices
     self.edges = edges 
     self.adjacency_lists = {}
@@ -16,10 +43,19 @@ class Graph:
       self.adjacency_lists[s].append(t) 
 
   def _repr_svg_(self):
-    return graphviz.Source('digraph {' + \
+    """
+    Return svg representation suitable for Notebook visualization
+    """
+    return graphviz.Source(self.graphviz())._repr_svg_()
+
+  def graphviz(self):
+    """
+    Return graphviz string for graph
+    """
+    'digraph {' + \
   '\n'.join([ 'X' + str(v) + '[label="' + self.label(v) + '";style="filled";fillcolor="' + self.color(v) + '"];' for v in self.vertices ]) + \
    '\n' + '\n'.join([ 'X' + str(u) + " -> " + 'X' + str(v) + ';' for (u, v) in self.edges ]) + \
-   '\n' + '}\n')._repr_svg_()
+   '\n' + '}\n'
 
   def adjacencies(self, p):
     """

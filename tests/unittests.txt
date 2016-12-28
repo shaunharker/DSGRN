@@ -11,7 +11,12 @@
 ../build/bin/TestNetwork 
 ../build/bin/TestOrderParameter 
 ../build/bin/TestParameter
-../build/bin/TestParameterGraph 
+../build/bin/TestParameterGraph
+../build/bin/TestPattern
+../build/bin/TestPatternGraph
+../build/bin/TestSearchGraph
+../build/bin/TestMatchingGraph
+../build/bin/TestPatternMatch
 ../build/bin/dsgrn 
 ../build/bin/dsgrn help
 ../build/bin/dsgrn network networks/network9.txt 
