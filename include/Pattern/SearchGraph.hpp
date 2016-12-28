@@ -175,15 +175,27 @@ event ( uint64_t source, uint64_t target ) const {
 
 std::string SearchGraph::
 graphviz ( void ) const {
+  return graphviz_with_highlighted_path( {} );
+}
+
+INLINE_IF_HEADER_ONLY std::string SearchGraph::
+graphviz_with_highlighted_path ( std::vector<uint64_t> const& path ) const {
+  std::unordered_set<uint64_t> vertices ( path.begin(), path.end() );
+  std::unordered_set<std::pair<uint64_t,uint64_t>,boost::hash<std::pair<uint64_t,uint64_t>>> edges;
+  for ( int64_t i = 0; i < (int64_t)path.size() - 1; ++ i ) edges.insert({path[i], path[i+1]});
   MatchingRelation mr(dimension());
   std::stringstream ss;
   ss << "digraph {\n";
   for ( uint64_t vertex = 0; vertex < size (); ++ vertex ) {
-    ss << vertex << "[label=\"" << vertex << ":" << mr.vertex_labelstring(label(vertex)) << "\"];\n";
+    ss << vertex << "[label=\"" << vertex << ":" << mr.vertex_labelstring(label(vertex)) << "\"";
+    if ( vertices.count(vertex) ) ss << " color=red";
+    ss << "];\n";
   }
   for ( uint64_t source = 0; source < size (); ++ source ) {
     for ( uint64_t target : adjacencies(source) ) {
-      ss << source << " -> " << target << " [label=\"" << mr.edge_labelstring(event(source,target)) << "\"];\n";
+      ss << source << " -> " << target << " [label=\"" << mr.edge_labelstring(event(source,target)) << "\"";
+      if ( edges.count({source,target} ) ) ss << " color=red";
+      ss << "];\n";
     }
   }
   ss << "}\n";

@@ -122,6 +122,14 @@ consume ( uint64_t vertex, uint64_t edge_label ) const {
 
 INLINE_IF_HEADER_ONLY std::string PatternGraph::
 graphviz ( void ) const {
+  return graphviz_with_highlighted_path ( std::vector<uint64_t> () );
+}
+
+INLINE_IF_HEADER_ONLY std::string PatternGraph::
+graphviz_with_highlighted_path ( std::vector<uint64_t> const& path ) const {
+  std::unordered_set<uint64_t> vertices ( path.begin(), path.end() );
+  std::unordered_set<std::pair<uint64_t,uint64_t>, boost::hash<std::pair<uint64_t,uint64_t>>> edges;
+  for ( int64_t i = 0; i < (int64_t)path.size() - 1; ++ i ) edges.insert({path[i], path[i+1]});
   MatchingRelation mr(dimension());
   std::stringstream ss;
   ss << "digraph {\n";
@@ -129,17 +137,23 @@ graphviz ( void ) const {
     ss << vertex << "[label=\"" << vertex << ":" << mr.vertex_labelstring(label ( vertex ));
     if ( vertex == root() ) ss << "(root)";
     if ( vertex == leaf() ) ss << "(leaf)";
-    ss << "\"];\n";
+    ss << "\"";
+    if ( vertices.count(vertex) ) ss << " color=red";
+    ss << "];\n";
   }
   for ( uint64_t source = 0; source < size (); ++ source ) {
     for ( uint64_t variable = 0; variable < 2 * dimension (); ++ variable ) {
       uint64_t edge_label = 1L << variable;
       uint64_t target = consume ( source, edge_label );
       if ( target != -1 ) { 
-        ss << source << " -> " << target << " [label=\"" << mr.edge_labelstring(edge_label) << "\"];\n";
+        ss << source << " -> " << target << " [label=\"" << mr.edge_labelstring(edge_label) << "\"";
+        if ( edges.count({source,target}) ) ss << " color = red";
+        ss << "];\n";
       }
     }
-    ss << source << " -> " << source << " [label=\"" << mr.edge_labelstring(0L) << "\"];\n";
+    ss << source << " -> " << source << " [label=\"" << mr.edge_labelstring(0L) << "\"";
+    if ( edges.count({source,source}) ) ss << " color = red";
+    ss << "];\n";
   }
   ss << "}\n";
   return ss . str ();

@@ -415,6 +415,7 @@ BOOST_PYTHON_MODULE(libpyDSGRN)
     .def("label", &PatternGraph::label)
     .def("consume", &PatternGraph::consume)
     .def("graphviz", &PatternGraph::graphviz)
+    .def("graphviz_with_highlighted_path", &PatternGraph::graphviz_with_highlighted_path)
   ;  
 
   // SearchGraph
@@ -432,6 +433,7 @@ BOOST_PYTHON_MODULE(libpyDSGRN)
     .def("adjacencies", &SearchGraph::adjacencies, return_value_policy<copy_const_reference>())
     .def("event", &SearchGraph::event)
     .def("graphviz", &SearchGraph::graphviz)
+    .def("graphviz_with_highlighted_path", &SearchGraph::graphviz_with_highlighted_path)
     .def("vertexInformation", &SearchGraph::vertexInformation)
     .def("edgeInformation", &SearchGraph::edgeInformation)
   ;  
@@ -473,6 +475,14 @@ BOOST_PYTHON_MODULE(libpyDSGRN)
     .def("position", &MatchingGraph::position)
     .def("vertex", &MatchingGraph::vertex)
     .def("graphviz", &MatchingGraph::graphviz)
+    .def("graphviz_with_highlighted_path", &MatchingGraph::graphviz_with_highlighted_path)
   ;  
+
+  // PatternMatch
+
+  def("QueryCycleMatch", QueryCycleMatch);
+  def("QueryPathMatch", QueryPathMatch);
+  def("CycleMatch", CycleMatch);
+  def("PathMatch", PathMatch);
 
 }

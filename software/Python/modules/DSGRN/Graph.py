@@ -1,6 +1,8 @@
 
 import graphviz
 
+from .libpyDSGRN import *
+
 def DrawGraph(g):
   """
   Return an object which renders in Notebook visualizations.
@@ -8,6 +10,20 @@ def DrawGraph(g):
   graphviz string
   """
   return graphviz.Source(g.graphviz())
+
+def DrawGraphWithHighlightedPath(g, path):
+  """
+  Return an object which renders in Notebook visualizations.
+  Works for "SearchGraph" "PatternGraph" and "MatchingGraph".
+  If given a python integer list it can convert for "SearchGraph" and "PatternGraph"
+  Currently "MatchingGraph" requires an IntPairList input
+  """
+  if type(path) == list:
+    converted_path = IntList()
+    converted_path.extend(path)
+  else:
+    converted_path = path 
+  return graphviz.Source(g.graphviz_with_highlighted_path(converted_path))
 
 class Graph:
   def __init__(self, vertices, edges):

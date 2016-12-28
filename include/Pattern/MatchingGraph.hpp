@@ -93,7 +93,12 @@ vertex ( uint64_t domain, uint64_t position ) const {
 
 INLINE_IF_HEADER_ONLY std::string MatchingGraph::
 graphviz ( void ) const {
-  std::stringstream ss;
+  return graphviz_with_highlighted_path( {} );
+}
+
+INLINE_IF_HEADER_ONLY std::string MatchingGraph::
+graphviz_with_highlighted_path ( std::vector<MatchingGraph::Vertex> const& path ) const {
+  // traverse graph to learn all vertices
   std::set<Vertex> vertices;
   std::stack<Vertex> dfs;
   for ( Vertex const& v : roots () ) dfs . push ( v );
@@ -107,16 +112,30 @@ graphviz ( void ) const {
       dfs . push(u);
     }
   }
+
+  // lookup for path
+  std::unordered_set<Vertex, boost::hash<Vertex>> path_vertices ( path.begin(), path.end() );
+  std::unordered_set<std::pair<Vertex,Vertex>, boost::hash<std::pair<Vertex,Vertex>>> path_edges; 
+  for ( int64_t i = 0; i < (int64_t) path.size() - 1; ++ i ) path_edges.insert({path[i], path[i+1]});
+
+  // build string
+  std::stringstream ss;
   std::unordered_map<Vertex,uint64_t,boost::hash<Vertex>> indexing;
   ss << "digraph {\n";
+  // vertices
   for ( Vertex const& v : vertices ) {
     uint64_t index = indexing . size ();
     indexing[v] = index;
-    ss << index << "[label=\"(" << domain(v) << "," << position(v) << ")\"];\n";
+    ss << index << "[label=\"(" << domain(v) << "," << position(v) << ")\""; 
+    if ( path_vertices.count(v) ) ss << " color=red";
+    ss << "];\n";
   }
+  // edges
   for ( Vertex const& source : vertices ) {
     for ( Vertex const& target : adjacencies(source) ) {
-      ss << indexing[source] << " -> " << indexing[target] << ";\n";
+      ss << indexing[source] << " -> " << indexing[target];
+      if ( path_edges.count({source,target}) ) ss << " [color=red]";
+      ss << ";\n";
     }
   }
   ss << "}\n";

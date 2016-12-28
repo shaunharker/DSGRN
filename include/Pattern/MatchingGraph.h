@@ -86,6 +86,11 @@ public:
   std::string
   graphviz ( void ) const;
 
+  /// graphviz_with_highlighted_path
+  ///   Return a graphviz representation of the matching graph with given path highlighted
+  std::string 
+  graphviz_with_highlighted_path ( std::vector<MatchingGraph::Vertex> const& path ) const;
+
 private:
   std::shared_ptr<MatchingGraph_> data_;
   /// serialize

@@ -88,6 +88,11 @@ public:
   std::string
   graphviz ( void ) const;
 
+  /// graphviz_with_highlighted_path
+  ///   Return a graphviz representation of the graph with given path highlighted
+  std::string 
+  graphviz_with_highlighted_path ( std::vector<uint64_t> const& path ) const;
+
   /// vertexInformation
   ///   Return information about a search graph vertex
   ///   This method is intended for debug purposes

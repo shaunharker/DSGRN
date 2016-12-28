@@ -70,6 +70,11 @@ public:
   std::string
   graphviz ( void ) const;
 
+  /// graphviz_with_highlighted_path
+  ///   Return a graphviz representation of the graph with given path highlighted
+  std::string 
+  graphviz_with_highlighted_path ( std::vector<uint64_t> const& path ) const;
+
 private:
   std::shared_ptr<PatternGraph_> data_;
   /// serialize
