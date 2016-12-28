@@ -356,11 +356,21 @@ BOOST_PYTHON_MODULE(libpyDSGRN)
     .def("__str__", &printMorseDecomposition)
   ;
 
+  // Annotation
+  class_<Annotation>("Annotation", init<>())
+    .def("__getitem__", &Annotation::operator[], return_value_policy<copy_const_reference>())
+    .def("__len__", &Annotation::size)
+    .def("size", &Annotation::size)
+    .def("stringify", &Annotation::stringify)
+    .def("__str__", &Annotation::stringify)
+    .def("__repr__", &Annotation::stringify)
+  ;  
+
   // MorseGraph
   class_<MorseGraph>("MorseGraph", init<>())
     .def("assign", &MorseGraph::assign<DomainGraph>)
     .def("poset", &MorseGraph::poset)
-    //.def("annotation", &MorseGraph::annotation)
+    .def("annotation", &MorseGraph::annotation)
     .def("SHA256", &MorseGraph::SHA256)
     .def("stringify", &MorseGraph::stringify)
     .def("parse", &MorseGraph::parse)
