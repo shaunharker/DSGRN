@@ -74,6 +74,9 @@ Load_CAD_Databases ( Network const& network ) {
     // Load the file into the json object
     //std::cout << "Reading " << ss.str () << "\n";
     std::ifstream infile (ss.str());
+    if ( not infile.good() ) {
+      throw std::runtime_error("Missing CAD database " + ss.str() );
+    }
     infile >> J;
     infile.close();
     //std::cout << "File read.\n";
