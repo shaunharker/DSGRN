@@ -8,6 +8,7 @@ from Logging import LogToSTDOUT
 
 class SingleGeneQuery:
   def __init__(self, database, gene):
+    LogToSTDOUT("SingleGeneQuery(" + str(database.dbname) + ", " + str(gene) + ")")
     self.database = database
     self.gene = gene
     # "gene_index" gives the integer index used in the representation
@@ -26,26 +27,40 @@ class SingleGeneQuery:
     vertices = set(range(0,len(self.hexcodes)))
     edges = [ (gpi1, gpi2) for gpi1 in vertices for gpi2 in vertices if isAdjacentHexcode(self.hexcodes[gpi1], self.hexcodes[gpi2]) ]
     self.graph = Graph(vertices,edges)
+    
+    LogToSTDOUT("SingleGeneQuery: FactorGraph generated")
 
     if not hasattr(database, 'SingleGeneQuery'):
+      LogToSTDOUT("SingleGeneQuery: SingleGeneQuery attribute missing from python database object.")
       database.SingleGeneQuery = set()
       # For single-gene manipulations, we convert from parameter index to (reduced parameter index, gene parameter index)
       # To recover the parameter index from the reduced parameter index, we insert a "digit":
       database.full_parameter_index = lambda rpi, gpi, gene_index : rpi % database.indexing_place_values[gene_index] + gpi * database.indexing_place_values[gene_index] + (rpi // database.indexing_place_values[gene_index]) * database.indexing_place_values[gene_index+1]
       database.reduced_parameter_index = lambda pi, gene_index : (pi % database.indexing_place_values[gene_index] + (pi // database.indexing_place_values[gene_index+1]) * database.indexing_place_values[gene_index], (pi // database.indexing_place_values[gene_index]) % database.indexing_place_bases[gene_index] )
+    
+    LogToSTDOUT("SingleGeneQuery: SingleGeneQuery attributes created.")
+
     if gene not in database.SingleGeneQuery:
+      LogToSTDOUT("SingleGeneQuery: database structure unaware of gene " + str(gene) )
       # Sanitize "gene":
       if gene not in database.names:
         raise NameError(gene + " is not the name of a node in the network")
 
+      LogToSTDOUT("SingleGeneQuery: sanitized " + str(gene) )
       # Now we scan the database and create a new table we can do single gene poset queries with
       c = database.conn.cursor()
       # c.execute("drop table if exists " + gene) # gene is sanitized
       # Check if table exists
+      LogToSTDOUT("SingleGeneQuery: cursor constructed " )
+
       c.execute("SELECT count(*) FROM sqlite_master WHERE type='table' AND name='" + gene + "';")
+      LogToSTDOUT("SingleGeneQuery: checked for table" )
+
       table_exists = c.fetchone()[0]
       if not table_exists:
+        LogToSTDOUT("SingleGeneQuery: table did not exist" )
         c.execute("create table " + gene + " (ReducedParameterIndex INTEGER, GeneParameterIndex INTEGER, ParameterIndex INTEGER, MorseGraphIndex INTEGER)")
+        LogToSTDOUT("SingleGeneQuery: created table" )
 
         # # old method -- loads whole table into memory
         # values = [ self.reduced_parameter_index(row[0], self.gene_index) + row for row in c.execute("select * from Signatures")]
@@ -62,12 +77,20 @@ class SingleGeneQuery:
 
         c2 = database.conn.cursor() # need a second cursor to keep the place in the iteration as updates to the table occur
         c2.execute("select * from Signatures")
+        LogToSTDOUT("SingleGeneQuery: executed select statement on signatures" )
         for values in valuegenerator(c2):
           c.executemany('INSERT INTO ' + gene + ' VALUES (?,?,?,?)', values )
+        LogToSTDOUT("SingleGeneQuery: inserted values" )
         c2.close()
+        LogToSTDOUT("SingleGeneQuery: closed cursor" )
         c.execute('create index ' + gene + '1 on ' + gene + ' (ReducedParameterIndex, GeneParameterIndex)') # gene is sanitized
+        LogToSTDOUT("SingleGeneQuery: created index" )
         database.conn.commit()
+        LogToSTDOUT("SingleGeneQuery: committed database transaction" )
       database.SingleGeneQuery.add(gene)
+      LogToSTDOUT("SingleGeneQuery: added gene to python database object.")
+    LogToSTDOUT("SingleGeneQuery: returning." )
+
 
   def __call__ (self, reduced_parameter_index):
     """
