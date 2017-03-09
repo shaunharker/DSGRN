@@ -8,6 +8,7 @@ from MonostableFixedPointQuery import *
 from SingleFixedPointQuery import *
 from DoubleFixedPointQuery import *
 from SingleGeneQuery import *
+from Logging import LogToSTDOUT
 
 class HysteresisQuery:
   """
@@ -54,12 +55,25 @@ class HysteresisQuery:
     self.matching_relation = lambda label1, label2 : label1 == label2
     # Create SingleGeneQuery object
     self.GeneQuery = SingleGeneQuery(database, gene)
+    self.memoization_cache = {}
 
   def __call__(self, reduced_parameter_index):
+    LogToSTDOUT("HysteresisQuery(" + str(reduced_parameter_index)  + ")") # DEBUG
     searchgraph = self.GeneQuery(reduced_parameter_index)
+    LogToSTDOUT("HysteresisQuery: Search Graph Constructed." ) # DEBUG
     searchgraph.matching_label = lambda v : self.matching_label(searchgraph.mgi(v))
-    alignment_graph = AlignmentGraph(searchgraph, self.patterngraph, self.matching_relation)
-    root_vertex = (0,0)
-    leaf_vertex = (len(searchgraph.vertices)-1, 4)
-    return alignment_graph.numberOfPaths(root_vertex, leaf_vertex) > 0
+    searchgraphstring = ''.join([ searchgraph.matching_label(v) for v in searchgraph.vertices ])
+    if searchgraphstring not in self.memoization_cache:
+      alignment_graph = AlignmentGraph(searchgraph, self.patterngraph, self.matching_relation)
+      LogToSTDOUT("HysteresisQuery: Alignment Graph Constructed." ) # DEBUG
+      LogToSTDOUT("HysteresisQuery: Alignment Graph has " + str(len(alignment_graph.vertices)) + " vertices"  ) # DEBUG
+      LogToSTDOUT("HysteresisQuery: Alignment Graph has " + str(len(alignment_graph.edges)) + " edges"  ) # DEBUG
+      root_vertex = (0,0)
+      leaf_vertex = (len(searchgraph.vertices)-1, 4)
+      is_reachable = alignment_graph.reachable(root_vertex, leaf_vertex) 
+      #number_of_paths = alignment_graph.numberOfPaths(root_vertex, leaf_vertex) 
+      LogToSTDOUT("HysteresisQuery: Reachability computed." ) # DEBUG
+      self.memoization_cache[searchgraphstring] = is_reachable
+    LogToSTDOUT("HysteresisQuery: Returning." ) # DEBUG
+    return self.memoization_cache[searchgraphstring]
     

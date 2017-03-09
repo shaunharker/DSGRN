@@ -29,9 +29,11 @@ class Graph:
   def __init__(self, vertices, edges):
     """
     Construct graph from set of vertices and collection of edges
+    Note: vertices and edges can be presented as either lists of sets;
+          they will be interally converted to sets.
     """
-    self.vertices = vertices
-    self.edges = edges 
+    self.vertices = set(vertices)
+    self.edges = set(edges) 
     self.adjacency_lists = {}
     for s,t in self.edges:
       if not s in self.vertices:
@@ -41,6 +43,12 @@ class Graph:
       if not s in self.adjacency_lists:
           self.adjacency_lists[s] = []
       self.adjacency_lists[s].append(t) 
+
+  def clone(self):
+    """
+    Return a deep copy
+    """
+    return Graph(self.vertices, self.edges)
 
   def _repr_svg_(self):
     """
@@ -63,9 +71,21 @@ class Graph:
     """
     return self.adjacency_lists.get(p,[])
 
+  def reachable(self, p, q):
+    explored = set()
+    items = [p]
+    while items:
+      x = items.pop()
+      if x == q: return True
+      if x in explored: continue
+      explored.add(x)
+      items.extend([ y for y in self.adjacencies(x) if y not in explored ])
+    return False
+
   def numberOfPaths(self, p, q):
     """
     Compute the number of paths from "p" to "q" in the graph described by "adjacency_lists"
+    TODO: this appears to be unexpectedly slow
     """
     cache = {q : 1}
     subresult = lambda x : cache.get(x, sum([subresult(y) for y in self.adjacencies(x)]))

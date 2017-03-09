@@ -13,3 +13,5 @@ from InducibilityQuery import *
 from HysteresisQuery import *
 from PhenotypeQuery import *
 from PosetOfExtrema import *
+from Logging import *
+from StableFCQuery import *

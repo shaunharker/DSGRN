@@ -9,6 +9,7 @@ class Database:
     """
     self.dbname = database_name
     self.conn = sqlite3.connect(database_name)
+    self.cursor = self.conn.cursor()
     self.network = Network(database_name)
     self.parametergraph = ParameterGraph(self.network)
     # D is the number of network nodes
@@ -21,6 +22,13 @@ class Database:
     # each node. We call these "bases" (as in number base) and we compute the place value for each digit.
     self.indexing_place_bases = [self.parametergraph.logicsize(i) for i in range(0,self.D)] + [self.parametergraph.ordersize(i) for i in range(0,self.D)]
     self.indexing_place_values = reduce ( lambda x, y : x + [x[-1]*y], self.indexing_place_bases[:-1], [1])
+
+  def execute(self, expression, parameters = None):
+    """
+    Perform an SQL query.
+    Returns a "cursor" object (see python sqlite3 API for details)
+    """
+    return self.cursor.execute(expression, parameters)
 
   def __call__(self, pi):
     c = self.conn.cursor()

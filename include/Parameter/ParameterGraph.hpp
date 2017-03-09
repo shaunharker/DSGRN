@@ -28,7 +28,7 @@ assign ( Network const& network ) {
   data_ -> network_ = network;
   data_ -> reorderings_ = 1;
   data_ -> fixedordersize_ = 1;
-  // Load the network files one by one.
+  // Load the logic files one by one.
   uint64_t D = data_ -> network_ . size ();
   for ( uint64_t d = 0; d < D; ++ d ) {
     uint64_t n = data_ -> network_ . inputs ( d ) . size ();
