@@ -7,12 +7,18 @@ from FixedPointTables import *
 class SingleFixedPointQuery:
   def __init__ (self, database, bounds):
     self.database = database
+    LogToSTDOUT("SingleFixedPointQuery :: initializing")
+    LogToSTDOUT("SingleFixedPointQuery :: calling MatchQuery")
     MatchQuery(bounds,"Matches",database)
     # Final query and print results
     c = database.conn.cursor()
+    LogToSTDOUT("SingleFixedPointQuery :: select MorseGraphIndex from Matches;")
     self.set_of_matches = set([ row[0] for row in c.execute('select MorseGraphIndex from Matches;')])
     #result = [row[0] for row in c.execute('select distinct ParameterIndex from Matches natural join Signatures order by ParameterIndex;')]
+    LogToSTDOUT("SingleFixedPointQuery :: drop table Matches;")
     c.execute('drop table Matches');
+    LogToSTDOUT("SingleFixedPointQuery :: constructed")
+
 
   def matches(self):
     """

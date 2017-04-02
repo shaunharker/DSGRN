@@ -14,7 +14,10 @@ class MonostableFixedPointQuery:
     (b) the Morse node is annotated as an FP within specified bounds
   """
   def __init__(self, database, bounds):
+    LogToSTDOUT("MonostableFixedPointQuery :: initializing")
     self.set_of_matches = SingleFixedPointQuery(database,bounds).matches() & MonostableQuery(database).matches()
+    LogToSTDOUT("MonostableFixedPointQuery :: constructed")
+
 
   def matches(self):
     """

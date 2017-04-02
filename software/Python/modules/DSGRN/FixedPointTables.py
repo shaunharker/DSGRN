@@ -7,6 +7,8 @@
 #   DoubleFixedPointQuery.py
 # in order to create SQL tables to support their queries.
 
+from Logging import LogToSTDOUT
+
 def FPString(i, j, database):
   terms = [ "_" for k in range(0, database.D) ]
   terms[i] = str(j)  
@@ -33,6 +35,7 @@ def buildQueryExpression(bounds, database):
 
 def MatchQuery(bounds, outputtablename, database):
   # Parse the command line
+  LogToSTDOUT("MatchQuery(" + str(bounds) + ", " + str(outputtablename) + ")")
   c = database.conn.cursor()
   expressions = buildQueryExpression(bounds, database)
   N = len(expressions)
@@ -41,7 +44,11 @@ def MatchQuery(bounds, outputtablename, database):
     if i == 0: oldtable = "MorseGraphAnnotations"
     newtable = 'tmpMatches' + str(i+1)
     if i == N-1: newtable = outputtablename
-    c.execute('create temp table ' + newtable + ' as select * from ' + oldtable + ' where ' + expression + ';')
+    sql_string = 'create temp table ' + newtable + ' as select * from ' + oldtable + ' where ' + expression + ';'
+    LogToSTDOUT("MatchQuery :: " + sql_string)
+    c.execute(sql_string)
     if i > 0: c.execute('drop table ' + oldtable);
+  LogToSTDOUT("MatchQuery :: constructed")
+
 
 

@@ -89,7 +89,7 @@ class SingleGeneQuery:
         LogToSTDOUT("SingleGeneQuery: committed database transaction" )
       database.SingleGeneQuery.add(gene)
       LogToSTDOUT("SingleGeneQuery: added gene to python database object.")
-    LogToSTDOUT("SingleGeneQuery: returning." )
+    LogToSTDOUT("SingleGeneQuery: constructed" )
 
 
   def __call__ (self, reduced_parameter_index):
