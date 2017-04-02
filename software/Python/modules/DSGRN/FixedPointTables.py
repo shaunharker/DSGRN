@@ -20,7 +20,7 @@ def buildQueryExpression(bounds, database):
   for i in range(0,database.D):
     networknodename = database.names[i]
     lowerbound = 0
-    upperbound = database.D
+    upperbound = database.network.outputs(i).size()
     if networknodename in bounds:
       varbounds = bounds[networknodename]
       if type(varbounds) == int :
@@ -38,6 +38,7 @@ def MatchQuery(bounds, outputtablename, database):
   LogToSTDOUT("MatchQuery(" + str(bounds) + ", " + str(outputtablename) + ")")
   c = database.conn.cursor()
   expressions = buildQueryExpression(bounds, database)
+  LogToSTDOUT("MatchQuery :: built expressions " + str(expressions) )
   N = len(expressions)
   for i, expression in enumerate(expressions):
     oldtable = 'tmpMatches' + str(i)
