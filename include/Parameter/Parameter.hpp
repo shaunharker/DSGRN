@@ -55,19 +55,15 @@ attracting ( Domain const& dom ) const {
   return true;
 }
 
-INLINE_IF_HEADER_ONLY bool Parameter::
-absorbing ( Domain const& dom, int collapse_dim, int direction ) const {
-  //std::cout << "Absorbing (" << dom . index () << ", " << collapse_dim << ", " << direction << ")\n";
-  int thres = dom [ collapse_dim ];
-  if ( direction == -1 ) thres -= 1;
-  //std::cout << "  Threshold # = " << thres << "\n";
+INLINE_IF_HEADER_ONLY std::vector<bool> Parameter::
+combination ( Domain const& dom, int variable ) const {
   std::vector<bool> input_combination;
-  //std::cout << "  Forming input combination by analyzing inputs of node " << collapse_dim << ".\n";
-  for ( int source : data_ -> network_ . inputs ( collapse_dim ) ) {
+  //std::cout << "  Forming input combination by analyzing inputs of node " << variable << ".\n";
+  for ( int source : data_ -> network_ . inputs ( variable ) ) {
     //std::cout << "    Analyze source edge " << source << "\n";
-    bool activating = data_ -> network_ . interaction ( source, collapse_dim );
+    bool activating = data_ -> network_ . interaction ( source, variable );
     //std::cout << "      This edge is " << (activating ? "activating" : "repressing" ) << ".\n";
-    int inedge = data_ -> network_ . order ( source, collapse_dim );
+    int inedge = data_ -> network_ . order ( source, variable );
     //std::cout << "      This edge is the " << inedge << "th ordered outedge of " << source << ".\n";
     int thres = data_ -> order_ [ source ] . inverse ( inedge );
     //std::cout << "      The input combination digit depends on which side of threshold " << thres << " on dimension " << source << " we are at.\n";
@@ -75,12 +71,22 @@ absorbing ( Domain const& dom, int collapse_dim, int direction ) const {
     //std::cout << "      The domain is on the " << ( ( dom [ source ] > thres ) ? "right" : "left" ) << " side of this threshold.\n";
     input_combination . push_back ( result );
     //std::cout << "      Hence, the input combination digit is " << (result ? "1" : "0") << "\n";
-  }
+  } 
   //std::cout << "  Input combination formed. Big-endian representation = ";
   //for ( int i = input_combination . size () - 1; i >= 0; -- i ){
   // std::cout << (input_combination[i] ? "1" : "0");
   //}
   //std::cout << "\n";
+  return input_combination;
+}
+
+INLINE_IF_HEADER_ONLY bool Parameter::
+absorbing ( Domain const& dom, int collapse_dim, int direction ) const {
+  //std::cout << "Absorbing (" << dom . index () << ", " << collapse_dim << ", " << direction << ")\n";
+  int thres = dom [ collapse_dim ];
+  if ( direction == -1 ) thres -= 1;
+  //std::cout << "  Threshold # = " << thres << "\n";
+  std::vector<bool> input_combination = combination(dom, collapse_dim);
   //std::cout << "  Consulting parameter " <<  data_ -> logic_ [ collapse_dim ] . stringify () << ".\n";
   bool flow_direction = data_ -> logic_ [ collapse_dim ] ( input_combination, thres );
   //std::cout << "  Flow direction is to the " << (flow_direction ? "right" : "left") << "\n";

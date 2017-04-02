@@ -30,20 +30,26 @@ class HysteresisQuery:
   def __init__(self, database, gene, quiescent_bounds, proliferative_bounds):
     """
     In order to perform hysteresis queries we must first categorize each Morse graph as either 
-    'Q' monostable quiescent, 'P' monostable proliferative, 'q' quiescent, 'p' quiescent, 'B' bistable, or 'O' other
+    'Q' monostable quiescent, 'P' monostable proliferative, 'q' quiescent, 'p' proliferative, 'B' bistable, or 'O' other
     We assume the quiescent and proliferative FP states are given by disjoint bounding rectangles
     """
+    LogToSTDOUT("HysteresisQuery(" + str(database.dbname) + ", " + str(gene) + ")")
     self.database = database
     self.gene = gene
     # Create query object to check if morse graph indices have quiescent FP as only minimal morse node
+    LogToSTDOUT("HysteresisQuery :: MonostableFixedPointQuery(" + str(database.dbname) + ", " + str(quiescent_bounds) + ")")
     Q = MonostableFixedPointQuery(database, quiescent_bounds)
     # Create query object to check if morse graph indices has quiescent FP
+    LogToSTDOUT("HysteresisQuery :: SingleFixedPointQuery(" + str(database.dbname) + ", " + str(quiescent_bounds) + ")")
     q = SingleFixedPointQuery(database, quiescent_bounds)
     # Create query object to check if morse graph indices have proliferative FP as only minimal morse node
+    LogToSTDOUT("HysteresisQuery :: MonostableFixedPointQuery(" + str(database.dbname) + ", " + str(proliferative_bounds) + ")")
     P = MonostableFixedPointQuery(database, proliferative_bounds)
     # Create query object to check if morse graph indices has proliferative FP
+    LogToSTDOUT("HysteresisQuery :: SingleFixedPointQuery(" + str(database.dbname) + ", " + str(proliferative_bounds) + ")")
     p = SingleFixedPointQuery(database, proliferative_bounds)
     # Check query object to check if morse graph index has both quiescent FP and proliferative FP
+    LogToSTDOUT("HysteresisQuery :: DoubleFixedPointQuery(" + str(database.dbname) + ", " + str(quiescent_bounds) + ", " + str(proliferative_bounds) + ")")
     B = DoubleFixedPointQuery(database, quiescent_bounds, proliferative_bounds)
     # Create a labelling function which accepts a morse graph index and returns Q, P, B, p, q, or O
     # Note: case fallthrough order matters here
@@ -54,6 +60,7 @@ class HysteresisQuery:
     # Create matching relation (in this case we just check for equality of the matching labels)
     self.matching_relation = lambda label1, label2 : label1 == label2
     # Create SingleGeneQuery object
+    LogToSTDOUT("HysteresisQuery :: SingleGeneQuery(" + str(database.dbname) + ", " + str(gene) + ")")
     self.GeneQuery = SingleGeneQuery(database, gene)
     self.memoization_cache = {}
 

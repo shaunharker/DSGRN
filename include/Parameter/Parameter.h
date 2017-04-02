@@ -43,6 +43,12 @@ public:
   void
   assign ( Network const& network );
 
+  /// combination
+  ///   Get the "input combination" (which input edges are "on" or "off")
+  ///   for a given variable in a given domain
+  std::vector<bool>
+  combination ( Domain const& dom, int variable ) const;
+
   /// attracting
   ///   Return true if domain is attracting.
   ///   This is true iff none of the walls of

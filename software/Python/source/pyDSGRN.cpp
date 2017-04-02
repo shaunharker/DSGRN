@@ -8,6 +8,21 @@
 
 // Network wrapping incidentals
 
+// BoolList
+typedef std::vector<bool> BoolList;
+std::string
+printBoolList ( BoolList const* self ) {
+  std::stringstream ss;
+  bool first = true;
+  ss << "[";
+  for ( auto const& item : *self ) {
+    if ( first ) first = false; else ss << ", ";
+    ss << (item ? "1" : "0");
+  }
+  ss << "]";
+  return ss.str();
+}
+
 // IntList 
 typedef std::vector<uint64_t> IntList;
 std::string
@@ -141,6 +156,12 @@ BOOST_PYTHON_MODULE(libpyDSGRN)
 
   // Network
 
+  class_<BoolList>("BoolList")
+    .def(vector_indexing_suite<BoolList>() )
+    .def("__str__", &printBoolList)
+    .def("__repr__", &printBoolList)
+  ;
+
   class_<IntList>("IntList")
     .def(vector_indexing_suite<IntList>() )
     .def("__str__", &printIntList)
@@ -161,7 +182,7 @@ BOOST_PYTHON_MODULE(libpyDSGRN)
     .def("index", &Network::index)  
     .def("name", &Network::name, return_value_policy<copy_const_reference>()) 
     .def("inputs", &Network::inputs, return_value_policy<copy_const_reference>()) 
-    .def("outputs", &Network::inputs, return_value_policy<copy_const_reference>()) 
+    .def("outputs", &Network::outputs, return_value_policy<copy_const_reference>()) 
     .def("logic", &Network::logic, return_value_policy<copy_const_reference>())
     .def("essential", &Network::essential) 
     .def("interaction", &Network::interaction) 
@@ -226,6 +247,7 @@ BOOST_PYTHON_MODULE(libpyDSGRN)
     .def(init<Network const&>())
     .def("assign", static_cast<void (Parameter::*)(std::vector<LogicParameter> const&, std::vector<OrderParameter> const&, Network const& network)>(&Parameter::assign) )
     .def("assign", static_cast<void (Parameter::*)(Network const& )>(&Parameter::assign) )
+    .def("combination", &Parameter::combination)
     .def("attracting", &Parameter::attracting)
     .def("asborbing", &Parameter::absorbing)
     .def("regulator", &Parameter::regulator)
