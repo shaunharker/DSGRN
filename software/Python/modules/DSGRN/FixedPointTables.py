@@ -20,7 +20,7 @@ def buildQueryExpression(bounds, database):
   for i in range(0,database.D):
     networknodename = database.names[i]
     lowerbound = 0
-    upperbound = database.network.outputs(i).size()
+    upperbound = len(database.network.outputs(i))
     if networknodename in bounds:
       varbounds = bounds[networknodename]
       if type(varbounds) == int :
