@@ -2,6 +2,8 @@ import sqlite3
 import graphviz
 from .libpyDSGRN import *
 
+from Logging import LogToSTDOUT
+
 class Database:
   def __init__(self, database_name):
     """

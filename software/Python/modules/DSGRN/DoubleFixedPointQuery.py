@@ -2,6 +2,7 @@
 # MIT LICENSE 2016
 # Shaun Harker
 
+from Logging import LogToSTDOUT
 from FixedPointTables import *
 
 class DoubleFixedPointQuery:

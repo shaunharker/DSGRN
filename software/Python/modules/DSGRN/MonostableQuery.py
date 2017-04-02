@@ -2,6 +2,8 @@
 # MIT LICENSE 2016
 # Shaun Harker
 
+from Logging import LogToSTDOUT
+
 class MonostableQuery:
   """
   MonostableQuery

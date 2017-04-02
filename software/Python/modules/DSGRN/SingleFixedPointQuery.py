@@ -3,6 +3,7 @@
 # Shaun Harker
 
 from FixedPointTables import *
+from Logging import LogToSTDOUT
 
 class SingleFixedPointQuery:
   def __init__ (self, database, bounds):

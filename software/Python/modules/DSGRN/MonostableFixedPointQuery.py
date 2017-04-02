@@ -4,6 +4,7 @@
 
 from SingleFixedPointQuery import *
 from MonostableQuery import *
+from Logging import LogToSTDOUT
 
 class MonostableFixedPointQuery:
   """
