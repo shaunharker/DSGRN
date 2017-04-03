@@ -60,7 +60,7 @@ class Graph:
     """
     Return graphviz string for graph
     """
-    'digraph {' + \
+    return 'digraph {' + \
   '\n'.join([ 'X' + str(v) + '[label="' + self.label(v) + '";style="filled";fillcolor="' + self.color(v) + '"];' for v in self.vertices ]) + \
    '\n' + '\n'.join([ 'X' + str(u) + " -> " + 'X' + str(v) + ';' for (u, v) in self.edges ]) + \
    '\n' + '}\n'
