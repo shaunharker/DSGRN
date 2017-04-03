@@ -15,3 +15,4 @@ from PhenotypeQuery import *
 from PosetOfExtrema import *
 from Logging import *
 from StableFCQuery import *
+from ComputeSingleGeneQuery import *
