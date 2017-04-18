@@ -72,12 +72,33 @@ class Graph:
     return self.adjacency_lists.get(p,[])
 
   def reachable(self, p, q):
+    """
+    Return "true" if there is a path from p to q
+    """
     explored = set()
     items = [p]
     while items:
       x = items.pop()
       if x == q: return True
       if x in explored: continue
+      explored.add(x)
+      items.extend([ y for y in self.adjacencies(x) if y not in explored ])
+    return False
+
+  def predicate_reachable(self, p, allowed, terminal):
+    """
+    Return "true" if there is a path from the vertex p to some vertex q such that
+    each node in the path (except possibly q) satisfies allowed(p) and q satisfies terminal(q)
+    """
+    if not allowed(p):
+      return False
+    explored = set()
+    items = [p]
+    while items:
+      x = items.pop()
+      if terminal(x): return True
+      if x in explored: continue
+      if not allowed(x): continue
       explored.add(x)
       items.extend([ y for y in self.adjacencies(x) if y not in explored ])
     return False

@@ -26,17 +26,25 @@ Network ( std::string const& filename ) {
 INLINE_IF_HEADER_ONLY void Network::
 load ( std::string const& filename ) {
   data_ . reset ( new Network_ );
-  // Check extension on filename.
+  // Check for ".db" extension on filename.
   auto lastdot = filename.find_last_of("."); 
   std::string extension;
-  if ( lastdot == std::string::npos ) { 
-    extension = ".txt"; // Assume network file specification
-  } else {
+  if ( lastdot != std::string::npos ) { 
     extension = filename.substr(lastdot); 
   }
-  // If it is a .txt, assume it is a network specification
-  // file.
-  if ( extension == ".txt" ) {
+
+  // If it is a .db, assume it is an sqlite3 database
+  // and the network spec is in the Specification 
+  // column of the "Network" table.
+  if ( extension == ".db" ) {
+    // database
+    sqlite::database db ( filename );
+    sqlite::statement stmt = db . prepare ( "select Specification from Network;");
+    stmt . forEach ( [&] ( std::string spec ) {
+      data_ -> specification_ = spec;
+    });
+  } else {
+    // Assume it is a network specification file.
     std::ifstream infile ( filename );
     if ( not infile . good () ) { 
       throw std::runtime_error ( "Problem loading network specification file " + filename );
@@ -46,16 +54,6 @@ load ( std::string const& filename ) {
       data_ -> specification_ += line + '\n';
     }
     infile . close ();
-  }
-  // If it is a .db, assume it is an sqlite3 database
-  // and the network spec is in the Specification 
-  // column of the "Network" table.
-  if ( extension == ".db" ) {
-      sqlite::database db ( filename );
-      sqlite::statement stmt = db . prepare ( "select Specification from Network;");
-      stmt . forEach ( [&] ( std::string spec ) {
-        data_ -> specification_ = spec;
-      });
   }
   _parse ( _lines () );
 }
