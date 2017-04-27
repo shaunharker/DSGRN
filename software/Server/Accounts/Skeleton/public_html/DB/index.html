@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title> DSGRN Web Interface </title>
+  <link rel="stylesheet" href="css/index.css">
+</head>
+<header> <h1> DSGRN Web Interface </h1> 
+</header>
+<body>
+
+  <div class="flexcontainer" id="paneldiv">
+  <div id="filterbox" style="display: none; margin:10px; padding:10px; text-align:center; background-color:#555577;">
+  <p style="color: white;"> Annotation Filter </p>
+  <table border="1" style="border-collapse: collapse;">
+    <tr>
+      <td>  
+        <form action="" style="float: left;">
+          <input type="radio" name="FP" value="Yes"> Yes
+          <input type="radio" name="FP" value="No"> No
+          <input type="radio" name="FP" value="Either" checked="checked"> Either
+        </form>
+      </td>
+      <td>FP</td>    
+    </tr>
+    <tr>
+      <td>  
+        <form action="" style="float: left;">
+          <input type="radio" name="FPON" value="Yes"> Yes
+          <input type="radio" name="FPON" value="No"> No
+          <input type="radio" name="FPON" value="Either" checked="checked"> Either
+        </form>
+      </td>
+      <td>FP ON</td>    
+    </tr>
+    <tr>
+      <td>  
+        <form action="" style="float: left;">
+          <input type="radio" name="FPOFF" value="Yes"> Yes
+          <input type="radio" name="FPOFF" value="No"> No
+          <input type="radio" name="FPOFF" value="Either" checked="checked"> Either
+        </form>
+      </td>
+      <td>FP OFF</td>    
+    </tr>
+    <tr>
+      <td>  
+        <form action="" style="float: left;">
+          <input type="radio" name="FC" value="Yes"> Yes
+          <input type="radio" name="FC" value="No"> No
+          <input type="radio" name="FC" value="Either" checked="checked"> Either
+        </form>
+      </td>
+      <td>FC</td>    
+    </tr>
+    <tr>
+      <td>  
+        <form action="" style="float: left;">
+          <input type="radio" name="XC" value="Yes"> Yes
+          <input type="radio" name="XC" value="No"> No
+          <input type="radio" name="XC" value="Either" checked="checked"> Either
+        </form>
+      </td>
+      <td>XC</td>    
+    </tr>
+  </table>
+  <button type="button" onclick="clearContent();loadContent();">Apply filter</button>
+  </div>
+  </div>
+  <div id="loadingbar" ></div>
+  <script type="text/javascript">
+    window . onload = function () {
+      var element1 = document.createElement("script");
+      element1.src = "js/viz.js";
+      document.body.appendChild(element1);
+      element1.onload = function () {
+        var element2 = document.createElement("script");
+        element2.src = "js/d3.min.js";
+        document.body.appendChild(element2);
+        element2.onload = function () {
+          var element3 = document.createElement("script");
+          element3.src = "js/d3.legend.js";
+          document.body.appendChild(element3);
+          element3.onload = function () {
+            var element4 = document.createElement("script");
+            element4.src = "js/chart.js";
+            document.body.appendChild(element4);
+            element4.onload = function () {
+              var element5 = document.createElement("script");
+              element5.src = "js/index.js"; 
+              document.body.appendChild(element5);
+            }
+          }
+        }
+      }
+    }
+  </script>
+</body>
+
+</html>

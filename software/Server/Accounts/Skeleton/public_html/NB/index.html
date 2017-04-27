@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Network Builder</title>
+    <link rel="stylesheet" href="app.css">
+  </head>
+  
+  <body>
+  
+  <header> 
+    <h1> Network Builder </h1>
+  </header>
+
+  <div id="gizmos" class="horizontal"> 
+    <div id="leftpanel" class="panel">
+      <div class="flat"> <em> Network Editor </em> </div>
+      <div id="grapheditor" ></div>
+    </div>
+    <div id="rightpanel" class="vertical">
+      <div id="logiceditor" class="panel">
+        <div class="flat"> <em> Logic Editor </em> </div>
+      </div>
+      <div id="specpanel" class="panel"> 
+        <p> <em> Specification File </em></p> 
+        <p id="netspec"></p> 
+      </div>
+      <div id="paraminfo" class="panel"> 
+        <p> <em> Parameter Graph </em></p> 
+        <p id="graphinfo"></p> 
+      </div>
+    </div>
+  </div> 
+  
+  <div style="height: 50px;"></div>
+
+  <div style="background: #777777; margin:50px; padding: 50px; border: black 1px solid;">
+  <h1> Instructions. </h1>
+  <h2> Network Editor. </h2> 
+  <p>This panel allows one to edit networks. To create a node, click an empty region. To delete a node, click on a node and press the delete or backspace key. To create an edge, click on the source node and drag the mouse to the target node. To create a self-edge, select the node and press the "s" key. To delete an edge, click on the edge to select it, and then press the delete or backspace key. To switch an edge between an activating and repressing, click the edge twice.
+  </p>
+  <h2> Logic Editor. </h2> 
+  <p> This panel allows one to group the inputs of a network node. The target node being considered is the leftmost displayed. The inputs are the rightmost displayed. The interior nodes represent the groups. By default, each input has its own group. To group an input with another one, click the two inputs in succession. This results in the first selection being grouped with the second. To ungroup an input, click on the input node in the logic editor and then on the target node in the leftmost column.
+  </p>
+  <h2> Network Specification. </h2> 
+  <p> This panel displays the network specification file which can be parsed by DSGRN. </p>
+  </div>
+  <footer> <p align="right" style="margin-right:10px"> Shaun Harker (sharker@math.rutgers.edu)</p> </footer>
+  <script src="d3.min.js"></script>
+  <script src="app.js"></script>
+  </body>
+
+
+</html>

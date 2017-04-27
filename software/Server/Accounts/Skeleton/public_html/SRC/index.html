@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<style>
+
+body {
+  background: slategrey;
+  font-family: "Arial";
+}
+
+header {
+  background: #333333;
+  color: #dddddd;
+  padding: 1em;
+  margin: 10px;
+}
+
+
+div {
+    margin: 5px;
+    padding: 0;
+}
+
+pre {
+    margin: 0;
+    padding: 0;
+}
+
+code {
+    margin: 0;
+    padding: 0;
+}
+
+text {
+  font-size: 36px;
+  pointer-events: none;
+}
+
+circle {
+  fill: #ccc;
+  stroke: #999;
+  pointer-events: all;
+}
+
+circle.parent {
+  fill: #1f77b4;
+  fill-opacity: .1;
+  stroke: steelblue;
+}
+
+circle:hover {
+  stroke: #ff7f0e;
+  stroke-width: .5px;
+}
+
+circle.child {
+}
+
+svg {
+  background: silver;
+  height: 100%;
+  width: 100%;
+  cursor: default;
+  -webkit-touch-callout: none;
+  -khtml-user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+}
+
+.horizontal {
+  display: -webkit-flex;
+  display: flex;
+    
+  -webkit-justify-content: space-around;
+  justify-content: space-around;
+  -webkit-flex-flow: row;
+  flex-flow: row;
+  /*
+  -webkit-align-items: stretch;
+  align-items: stretch;
+  */
+}
+
+.horizontal > * {
+  flex-grow: 1;
+  -webkit-flex-grow: 1;
+}
+
+
+#leftpanel {
+  width: 50%;
+  max-height: 600px;
+  -webkit-order:1;
+  order: 1; 
+  overflow: auto;
+}
+
+#rightpanel {
+  width: 50%;
+  -webkit-order:2;
+  order: 2; 
+  overflow: none;
+}
+    </style>
+<body>
+<header>
+<h1>
+DSGRN Source Code Visualization
+</h1>
+</header>
+<div class="horizontal">
+  <div id="leftpanel">
+    <pre><code class="cpp" id="insertcodehere"></code></pre>
+  </div>
+
+  <div id="rightpanel">
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js" charset="utf-8"></script>
+
+<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.6/styles/railscasts.min.css">
+<script src="http://cdnjs.cloudflare.com/ajax/libs/highlight.js/8.6/highlight.min.js"></script>
+
+
+<script>
+//   pointer-events: none; (was in circle.child)
+
+var w = document.getElementById("rightpanel").clientWidth;
+var h = Math.max(w,document.getElementById("rightpanel").clientHeight);
+var r = Math.min(w,h),
+    x = d3.scale.linear().range([0, r]),
+    y = d3.scale.linear().range([0, r]),
+    node,
+    root;
+
+console.log(w);
+console.log(h);
+
+var textmagnification = 1.0;
+
+var pack = d3.layout.pack()
+    .size([r, r])
+    .value(function(d) { return d.size; })
+
+var vis = d3.select("#rightpanel").insert("svg:svg", "h2")
+  .attr("viewBox", "0 0 " + w + " " + h)
+  .attr("width", "100%")
+  .attr("height", "100%")
+  .append("svg:g")
+    .attr("transform", "translate(" + (w - r) / 2 + "," + (h - r) / 2 + ")");
+
+d3.json("programdata.json", function(data) {
+  node = root = data;
+
+  var nodes = pack.nodes(root);
+  //console . log ( nodes );
+  vis.selectAll("circle")
+      .data(nodes)
+    .enter().append("svg:circle")
+      .attr("class", function(d) { return d.children ? "parent" : "child"; })
+      .attr("cx", function(d) { return d.x; })
+      .attr("cy", function(d) { return d.y; })
+      .attr("r", function(d) { return d.r; })
+      .on("click", function(d) { 
+        if ( d === root ) { 
+          console.log("clicked on root");
+          zoom ( root );
+        } else if ( ! d . children ) {
+          console.log("clicked on leaf");
+          zoom(d.parent);
+          showSource(d);
+        } else {
+          console.log("clicked on intermediate");
+          zoom(d)
+        }
+      });
+
+  vis.selectAll("text")
+      .data(nodes)
+    .enter().append("svg:text")
+      .attr("class", function(d) { return d.children ? "parent" : "child"; })
+      .attr("x", function(d) { return d.x; })
+      .attr("y", function(d) { return d.y; })
+      .attr("dy", ".35em")
+      .attr("text-anchor", "middle")
+      .style("fill", function(d) { return (d === root) ? "#000000" : "#1f77b4"; })
+      .style("opacity", function(d) { 
+        if ( d===root) return .5; 
+        return (d.parent === root) ? 1 : 0; })
+      .style("font-size", function(d) { return Math.floor(2.0*d.r/d.name.length).toString() + "px" })
+      .text(function(d) { return d.name; });
+
+  d3.select(window).on("click", function() { 
+    console.log("clicked on window");
+    zoom(root); 
+  });
+  textmagnification = r / root.r / 2;
+});
+
+function showSource ( d ) {
+  var txtFile = new XMLHttpRequest();
+  txtFile.open("GET", d.file, true);
+  txtFile.onreadystatechange = function() {
+    if (txtFile.readyState === 4) {  // document is ready to parse.
+      if (txtFile.status === 200) {  // file is found
+        var allText = txtFile.responseText; 
+        allText = allText.replace(/</g,'&lt;');
+        allText = allText.replace(/>/g,'&gt;');
+        allText = allText.replace(/"/g,'&quot;');
+        var lines = allText.split("\n");
+        var snippet = lines.slice(d.start - 1,d.end).join("\n");
+        var block = document.getElementById('insertcodehere');
+        block.innerHTML = snippet;
+        d3 . select ("#insertcodehere") . classed ( "hljs", false );
+        //Prism.highlightAll();
+        hljs.highlightBlock( block );
+      } else {
+        //document.write("File not found.");
+      }
+    }
+  }
+  txtFile.send(null);
+}
+
+function zoom(d) {
+  var oldmag = textmagnification;
+  var k = r / d.r / 2;
+  console.log(k);
+  console.log(d.name);
+  x.domain([d.x - d.r, d.x + d.r]);
+  y.domain([d.y - d.r, d.y + d.r]);
+
+  var t = vis.transition()
+      .duration(d3.event.altKey ? 7500 : 750);
+
+  t.selectAll("text")
+      .style("opacity", function(e) { 
+        if ( e === d ) return .5;
+        return (e.parent === d) ? 1 : 0; })
+      .style("fill", function(e) { return (e === d ) ? "#000000" : "#1f77b4"; });
+  t.selectAll("circle")
+      .attr("cx", function(d) { return x(d.x); })
+      .attr("cy", function(d) { return y(d.y); })
+      .attr("r", function(d) { return k * d.r; });
+
+  t.selectAll("text")
+      .attr("x", function(d) { return x(d.x); })
+      .attr("y", function(d) { return y(d.y); });
+
+  t.selectAll("text")
+    .styleTween("font-size", function(e) { 
+      return d3.interpolate(
+        Math.floor(2.0*oldmag*e.r/e.name.length).toString() + "px", 
+        Math.floor(2.0*k*e.r/e.name.length).toString() + "px"); 
+    });
+  node = d;
+  d3.event.stopPropagation();
+  textmagnification = k;
+}
+
+    </script>
+  <footer> <p align="right" style="margin-right:10px"> Shaun Harker (Updated 2015-07-11)</p> </footer>
+  </body>
+  </html>
