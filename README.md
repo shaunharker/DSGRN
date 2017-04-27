@@ -8,6 +8,10 @@ dynamical surveys of switching models of gene regulatory
 networks. The resulting data is stored into a database
 which can then be queried for further research.
 
+See `Tutorials` folder for examples.
+
 Version 0.1
 Shaun Harker
 2015-05-25
+
+
