@@ -1,0 +1,153 @@
+body {
+  background: slategrey;
+  font-family: "Arial";
+}
+
+header {
+  background: #333333;
+  color: #dddddd;
+  padding: 1em;
+  margin: 10px;
+}
+
+/*
+svg {
+  pointer-events: none;
+}
+*/
+
+table {
+  margin: 10px;
+}
+table, th, td {
+    background: lightsteelblue;
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 5px;
+}
+
+.flexcontainer {
+  display: -webkit-flex;
+  -webkit-flex-flow: row wrap;
+  -webkit-justify-content: space-between;
+  display: flex;
+  flex-flow: row wrap;
+  justify-content: space-between;
+}
+.digraph {
+    background-color: lightsteelblue;
+    margin: 10px;
+    padding: 10px;
+    max-width: 279px;
+    border-style: solid;
+    border-width: 0px;
+    border-color: grey;
+    overflow: auto;
+    -webkit-flex: auto;
+    -moz-flex: auto;
+    -ms-flex: auto;
+    flex: auto;
+
+    -webkit-transition:1s all;
+    -moz-transition:1s all;
+    -ms-transition:1s all;
+    transition:1s all;
+    
+}
+
+.digraph:hover {
+  margin: 5px;
+  padding: 15px;
+}
+
+.network {
+    background-color: aliceblue;
+}
+
+.morsegraph {
+    background-color: lightsteelblue;    
+}
+
+.domaingraph {
+    background-color: lightsteelblue;
+    margin: 10px;
+    padding: 10px;
+    border-style: solid;
+    border-width: 1px;
+    border-color: grey;
+    overflow: auto;
+}
+
+.parameter {
+    background-color: lightsteelblue;
+}
+.parameter:hover {
+    background-color: steelblue;
+}
+
+.parameterlist {
+  background-color: lightsteelblue; 
+  margin: 10px;
+  padding: 10px;  
+  max-height: 300px;
+  border-style: solid;
+  border-width: 1px;
+  border-color: grey;
+  overflow: auto;
+}
+
+.inequalities {
+  background-color: lightsteelblue; 
+  margin: 10px;
+  padding: 10px;
+  max-height: 300px;
+  border-style: solid;
+  border-width: 1px;
+  border-color: grey;
+  overflow: auto;
+}
+
+.timeseries {
+  background-color: lightsteelblue; 
+  margin: 10px;
+  padding: 10px;
+  max-height: 300px;
+  border-style: solid;
+  border-width: 1px;
+  border-color: grey;
+  overflow: auto;
+}
+
+#filterbox {
+  width: 285px;
+}
+button {
+   margin:auto;
+   padding:10px;
+}
+
+.axis path, .axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.x.axis path {
+  display: none;
+}
+
+.line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+}
+
+.legend rect {
+  fill:white;
+  stroke:black;
+  opacity:0.8;
+}
+

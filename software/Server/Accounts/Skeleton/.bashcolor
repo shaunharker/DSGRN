@@ -1,0 +1,3 @@
+alias ls='echo && ls -G'
+LS_COLORS='di=1;36:fi=0:ln=36:pi=5:so=5:bd=5:cd=5:or=36:mi=5;31:ex=33:*.gz=31:*.tar=35:*.xz=31:*.bz2=31'
+export LS_COLORS
