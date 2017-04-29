@@ -6,8 +6,9 @@ source $SHELL_DIR/parse.sh
 
 ## Download
 mytmpdir=`mktemp -d 2>/dev/null || mktemp -d -t 'mytmpdir'` && cd $mytmpdir
-wget https://www.sqlite.org/snapshot/sqlite-amalgamation-201506261847.zip
-unzip sqlite-amalgamation-201506261847
+wget https://www.sqlite.org/2017/sqlite-amalgamation-3180000.zip
+unzip sqlite-amalgamation-3180000.zip
+cd sqlite-amalgamation-3180000
 
 ## Compile
 gcc shell.c sqlite3.c -lpthread -ldl -o sqlite3
@@ -19,4 +20,5 @@ mkdir -p $PREFIX/bin && mv sqlite3 $PREFIX/bin
 mkdir -p $PREFIX/lib && mv *.so $PREFIX/lib
 
 ## Clean up
+cd ..
 rm -rf $mytmpdir
