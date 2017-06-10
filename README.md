@@ -18,7 +18,7 @@ which can then be queried for further research.
 
 See `Tutorials` folder for examples.
 
-(https://shaunharker.github.io/DSGRN/)
+Also see the [documentation](https://shaunharker.github.io/DSGRN/).
 
 # DSGRN Installation Instructions
 
