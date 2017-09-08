@@ -159,9 +159,9 @@ adjacencies ( void ) const {
   /// and retrieve its index
   uint64_t N = binCode . size ( );
   for ( uint64_t i = 0; i < N; ++i ) {
-    binCode[i] = ~binCode[i];
+    binCode[i] = !binCode[i];
     output . push_back ( LogicParameter ( data_ -> n_, data_ -> m_ , Bin2HexCode ( binCode ) ) );
-    binCode[i] = ~binCode[i];
+    binCode[i] = !binCode[i];
   }
   return output;
 }
