@@ -1,6 +1,4 @@
 # ComputeSingleGeneQuery.py
-# MIT LICENSE 2016
-# ComputeSingleGeneQuery.py
 # MIT LICENSE 2017
 # Shaun Harker
 

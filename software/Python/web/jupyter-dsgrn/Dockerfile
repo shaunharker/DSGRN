@@ -1,6 +1,6 @@
 # Jupyter Notebook with DSGRN module available
 FROM jupyter/minimal-notebook
-MAINTAINER Shaun Harker <sharker@math.rutgers.edu>
+MAINTAINER Shaun Harker <shaun.harker@rutgers.edu>
 
 #########
 # CMAKE #
@@ -45,7 +45,6 @@ RUN \
   cd /home/jovyan/software && \
   git clone https://github.com/shaunharker/DSGRN.git && \
   cd DSGRN && \
-  git checkout python_bindings && \
   ./install.sh --prefix=/home/jovyan/software; exit 0  # ignore open-mpi based failure
 
 #######################
@@ -55,7 +54,8 @@ RUN \
   cd /home/jovyan/software/DSGRN/software/Python && \
   sed -i 's/2.7/3.5/g' CMakeLists.txt && \
   ./install.sh --prefix=/home/jovyan/software && \
-  cp -rf /home/jovyan/software/share/DSGRN/modules/DSGRN /opt/conda/lib/python3.5/site-packages/
+  cd modules && \
+  python setup.py install
 
 ############
 # GRAPHVIZ #
