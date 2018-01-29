@@ -117,4 +117,27 @@ struct MatchingGraph_ {
   }
 };
 
+/// Python Bindings
+
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+namespace py = pybind11;
+
+inline void
+MatchingGraphBinding (py::module &m) {
+  py::class_<MatchingGraph, std::shared_ptr<MatchingGraph>, MatchingGraph>(m, "MatchingGraph")
+    .def(py::init<>())
+    .def(py::init<std::shared_ptr<SearchGraph>,std::shared_ptr<PatternGraph>>())
+    .def("searchgraph", &MatchingGraph::searchgraph)
+    .def("patterngraph", &MatchingGraph::patterngraph)
+    .def("query", &MatchingGraph::query)
+    .def("adjacencies", &MatchingGraph::adjacencies)
+    .def("roots", &MatchingGraph::roots)
+    .def("domain", &MatchingGraph::domain)
+    .def("position", &MatchingGraph::position)
+    .def("vertex", &MatchingGraph::vertex)
+    .def("graphviz", &MatchingGraph::graphviz)
+    .def("graphviz_with_highlighted_path", &MatchingGraph::graphviz_with_highlighted_path);
+}
+
 #endif

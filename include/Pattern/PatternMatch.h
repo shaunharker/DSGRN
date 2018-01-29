@@ -64,4 +64,19 @@ FindPath ( MatchingGraph const& mg,
 std::string
 ExplainCycleMatch ( MatchingGraph const& mg );
 
+/// Python Bindings
+
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+namespace py = pybind11;
+
+inline
+void PatternMatchBinding(py::module &m) {
+  m.def("QueryCycleMatch", &QueryCycleMatch);
+  m.def("QueryPathMatch", &QueryPathMatch);
+  m.def("CycleMatch", &CycleMatch);
+  m.def("PathMatch", &PathMatch);
+  m.def("FindPath", &FindPath);
+}
+
 #endif

@@ -124,4 +124,31 @@ private:
   }
 };
 
+/// Python Bindings
+
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+namespace py = pybind11;
+
+inline void
+DomainBinding (py::module &m) {
+  py::class_<Domain, std::shared_ptr<Domain>, Domain>(m, "Domain")
+    .def(py::init<>())
+    .def(py::init<std::vector<uint64_t> const&>())
+    // TODO: increments
+    .def("root", &Domain::root)
+    .def("leaf", &Domain::leaf)
+    .def("left", &Domain::size)
+    .def("left", &Domain::size)
+    .def("size", &Domain::size)
+    .def("index", &Domain::size)
+    .def("setIndex", &Domain::size)
+    .def("left", &Domain::size)
+    .def("right", &Domain::dimension)
+    .def("isMin", &Domain::label)
+    .def("isMax", &Domain::consume)
+    .def("isValid", &Domain::graphviz)
+    .def("__str__", &Domain::graphviz_with_highlighted_path);
+}
+
 #endif

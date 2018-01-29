@@ -31,15 +31,10 @@ public:
   void
   assign ( std::vector<std::vector<uint64_t>> & adjacencies );
 
-  /// adjacencies (getter)
+  /// adjacencies
   ///   Return vector of Vertices which are out-edge adjacencies of input v
   std::vector<uint64_t> const&
   adjacencies ( uint64_t v ) const;
-
-  /// adjacencies (setter)
-  ///   Return vector of Vertices which are out-edge adjacencies of input v
-  std::vector<uint64_t> &
-  adjacencies ( uint64_t v );
 
   /// size
   ///   Return number of vertices
@@ -143,5 +138,30 @@ struct Digraph_ {
     ar & adjacencies_;
   }
 };
+
+/// Python Bindings
+
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+namespace py = pybind11;
+
+inline void
+DigraphBinding (py::module &m) {
+  py::class_<Digraph, std::shared_ptr<Digraph>, Digraph>(m, "Digraph")
+    .def(py::init<>())
+    .def(py::init<std::vector<std::vector<uint64_t>> &>())
+    .def("size", &Digraph::size)
+    .def("resize", &Digraph::resize)
+    .def("add_vertex", &Digraph::add_vertex)      
+    .def("add_edge", &Digraph::add_edge)
+    .def("finalize", &Digraph::finalize)
+    .def("transpose", &Digraph::transpose)
+    .def("transitive_reduction", &Digraph::transitive_reduction)
+    .def("transitive_closure", &Digraph::transitive_closure)
+    .def("permute", &Digraph::permute)
+    .def("stringify", &Digraph::stringify)
+    .def("parse", &Digraph::parse)
+    .def("graphviz", &Digraph::graphviz);
+}
 
 #endif

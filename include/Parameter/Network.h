@@ -147,4 +147,30 @@ struct Network_ {
   }
 };
 
+/// Python Bindings
+
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+namespace py = pybind11;
+
+inline void
+NetworkBinding (py::module &m) {
+  py::class_<Network, std::shared_ptr<Network>, Network>(m, "Network")
+    .def(py::init<>())
+    .def(py::init<std::string const&>())
+    .def("load", &Network::load)
+    .def("assign", &Network::assign)
+    .def("size", &Network::size)
+    .def("name", &Network::name)
+    .def("inputs", &Network::inputs)
+    .def("outputs", &Network::outputs)
+    .def("logic", &Network::logic)
+    .def("essential", &Network::essential)
+    .def("interactions", &Network::interactions)
+    .def("order", &Network::order)
+    .def("domains", &Network::domains)
+    .def("specification", &Network::specification)
+    .def("graphviz", &Network::graphviz);
+}
+
 #endif

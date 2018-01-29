@@ -110,4 +110,25 @@ struct PatternGraph_ {
   }
 };
 
+/// Python Bindings
+
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+namespace py = pybind11;
+
+inline void
+PatternGraphBinding (py::module &m) {
+  py::class_<PatternGraph, std::shared_ptr<PatternGraph>, PatternGraph>(m, "PatternGraph")
+    .def(py::init<>())
+    .def(py::init<std::shared_ptr<Pattern>>())
+    .def("root", &PatternGraph::root)
+    .def("leaf", &PatternGraph::leaf)
+    .def("size", &PatternGraph::size)
+    .def("dimension", &PatternGraph::dimension)
+    .def("label", &PatternGraph::label)
+    .def("consume", &PatternGraph::consume)
+    .def("graphviz", &PatternGraph::graphviz)
+    .def("graphviz_with_highlighted_path", &PatternGraph::graphviz_with_highlighted_path);
+}
+
 #endif

@@ -140,4 +140,29 @@ struct ParameterGraph_ {
   }
 };
 
+/// Python Bindings
+
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+namespace py = pybind11;
+
+inline void
+ParameterGraphBinding (py::module &m) {
+  py::class_<ParameterGraph, std::shared_ptr<ParameterGraph>, ParameterGraph>(m, "ParameterGraph")
+    .def(py::init<>())
+    .def(py::init<std::shared_ptr<Network>>())
+    .def("size", &ParameterGraph::size)
+    .def("dimension", &ParameterGraph::dimension)
+    .def("logicsize", &ParameterGraph::logicsize)
+    .def("ordersize", &ParameterGraph::ordersize)
+    .def("factorgraph", &ParameterGraph::factorgraph)
+    .def("index", &ParameterGraph::index)
+    .def("adjacencies", &ParameterGraph::adjacencies)
+    .def("network", &ParameterGraph::network)
+    .def("fixedordersize", &ParameterGraph::fixedordersize)
+    .def("reorderings", &ParameterGraph::reorderings)
+    .def("__str__", [](ParameterGraph * lp){ std::stringstream ss; ss << *lp; return; });
+}
+
+
 #endif

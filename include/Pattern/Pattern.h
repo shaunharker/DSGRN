@@ -125,4 +125,24 @@ struct Pattern_ {
   }
 };
 
+/// Python Bindings
+
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+namespace py = pybind11;
+
+inline void
+PatternBinding (py::module &m) {
+  py::class_<Pattern, std::shared_ptr<Pattern>, Pattern>(m, "Pattern")
+    .def(py::init<>())
+    .def(py::init<Poset const&, std::vector<uint64_t> const&, uint64_t, uint64_t >())
+    .def("load", &Pattern::load)
+    .def("label", &Pattern::label)
+    .def("dimension", &Pattern::dimension)
+    .def("poset", &Pattern::poset)
+    .def("event", &Pattern::event)
+    .def("stringify", &Pattern::stringify)
+    .def("parse", &Pattern::parse);
+}
+
 #endif

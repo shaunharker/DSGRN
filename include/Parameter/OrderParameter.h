@@ -125,4 +125,28 @@ struct OrderParameter_ {
   }
 };
 
+/// Python Bindings
+
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+namespace py = pybind11;
+
+inline void
+OrderParameterBinding (py::module &m) {
+  py::class_<OrderParameter, std::shared_ptr<OrderParameter>, OrderParameter>(m, "OrderParameter")
+    .def(py::init<>())
+    .def(py::init<uint64_t, uint64_t>())
+    .def(py::init<std::vector<uint64_t> const&>())
+    .def("__call__", &OrderParameter::operator())
+    .def("inverse", &OrderParameter::inverse)
+    .def("permutation", &OrderParameter::permutation)
+    .def("index", &OrderParameter::index)
+    .def("size", &OrderParameter::size)
+    .def("stringify", &OrderParameter::stringify)
+    .def("parse", &OrderParameter::parse)
+    .def("adjacencies", &OrderParameter::adjacencies)
+    .def("__eq__", &OrderParameter::operator==)
+    .def("__str__", [](OrderParameter * lp){ std::stringstream ss; ss << *lp; return; });
+}
+
 #endif

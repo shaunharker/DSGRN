@@ -153,4 +153,31 @@ struct Parameter_ {
     ar & network_;
   }
 };
+
+/// Python Bindings
+
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+namespace py = pybind11;
+
+inline void
+ParameterBinding (py::module &m) {
+  py::class_<Parameter, std::shared_ptr<Parameter>, Parameter>(m, "Parameter")
+    .def(py::init<>())
+    .def(py::init< std::vector<LogicParameter> const&, std::vector<OrderParameter> const&,Network const&>())
+    .def(py::init<std::shared_ptr<Network>>())
+    .def("combination", &Parameter::combination)
+    .def("attracting", &Parameter::attracting)
+    .def("absorbing", &Parameter::absorbing)
+    .def("regulator", &Parameter::regulator)
+    .def("labelling", &Parameter::labelling)
+    .def("network", &Parameter::network)
+    .def("stringify", &Parameter::stringify)
+    .def("parse", &Parameter::parse)
+    .def("inequalities", &Parameter::inequalities)
+    .def("logic", &Parameter::logic)
+    .def("order", &Parameter::order)
+    .def("__str__", [](Parameter * lp){ std::stringstream ss; ss << *lp; return; });
+}
+
 #endif

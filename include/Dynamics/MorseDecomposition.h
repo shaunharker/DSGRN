@@ -110,4 +110,25 @@ struct MorseDecomposition_ {
   }
 };
 
+/// Python Bindings
+
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+namespace py = pybind11;
+
+inline void
+MorseDecompositionBinding (py::module &m) {
+  py::class_<MorseDecomposition, std::shared_ptr<MorseDecomposition>, MorseDecomposition>(m, "MorseDecomposition")
+    .def(py::init<>())
+    .def(py::init<std::shared_ptr<Digraph>>())
+    .def(py::init<std::shared_ptr<Digraph>,std::shared_ptr<Components>>())    
+    .def("assign", (void(MorseDecomposition::*)(std::shared_ptr<Digraph>))&Complex::assign)
+    .def("assign", (void(MorseDecomposition::*)(std::shared_ptr<Digraph>,std::shared_ptr<Components>))&Complex::assign)    
+    .def("poset", &MorseDecomposition::poset)
+    .def("components", &MorseDecomposition::components)
+    .def("recurrent", &MorseDecomposition::recurrent)
+    .def("morseset", &MorseDecomposition::morseset)
+    .def("graphviz", &MorseDecomposition::graphviz);
+}
+
 #endif

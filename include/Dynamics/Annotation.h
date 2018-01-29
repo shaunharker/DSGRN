@@ -83,4 +83,26 @@ struct Annotation_ {
     ar & annotations_;
   }
 };
+
+/// Python Bindings
+
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+namespace py = pybind11;
+
+inline void
+AnnotationBinding(py::module &m) {
+  py::class_<Annotation, std::shared_ptr<Annotation>, Annotation>(m, "Annotation")
+    .def(py::init<>())
+    .def("size", &Annotation::size)
+    .def("begin", &Annotation::begin)
+    .def("end", &Annotation::end)
+    .def("__iter__", [](Annotation const& v) {
+        return py::make_iterator(v.begin(), v.end());
+      }, py::keep_alive<0, 1>())
+    .def("append", &Annotation::append)
+    .def("stringify", &Annotation::stringify)
+    .def("parse", &Annotation::parse);
+}
+
 #endif

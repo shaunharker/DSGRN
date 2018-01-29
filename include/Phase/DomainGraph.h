@@ -136,4 +136,30 @@ struct DomainGraph_ {
   }
 };
 
+/// Python Bindings
+
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+namespace py = pybind11;
+
+inline void
+DomainGraphBinding (py::module &m) {
+  py::class_<DomainGraph, std::shared_ptr<DomainGraph>, DomainGraph>(m, "DomainGraph")
+    .def(py::init<>())
+    .def(py::init<std::vector<uint64_t> const&>())
+    // TODO: increments
+    .def("root", &DomainGraph::parameter)
+    .def("leaf", &DomainGraph::digraph)
+    .def("left", &DomainGraph::dimension)
+    .def("left", &DomainGraph::coordinates)
+    .def("label", (uint64_t(DomainGraph::*)(uint64_t)const)&DomainGraph::label)
+    .def("label", (uint64_t(DomainGraph::*)(uint64_t,uint64_t)const)&DomainGraph::label)
+    .def("direction", &DomainGraph::direction)
+    .def("regulator", &DomainGraph::regulator)
+    .def("annotate", &DomainGraph::dimension)
+    .def("graphviz", &DomainGraph::label)
+    .def("__str__", [](DomainGraph * lp){ std::stringstream ss; ss << *lp; return; });
+
+}
+
 #endif

@@ -25,15 +25,23 @@ public:
                std::unordered_map<uint64_t, Annotation> const & annotations );
 
   /// assign (Morse Decomposition)
-  ///   Assign data to Morse Graph
-  template < class SwitchingGraph>
-  MorseGraph ( SwitchingGraph const& sg,
+  MorseGraph ( DomainGraph const& sg,
+               MorseDecomposition const& md );
+
+  /// assign (Morse Decomposition)
+  MorseGraph ( WallGraph const& sg,
                MorseDecomposition const& md );
 
   /// assign (Morse Decomposition)
   ///   Assign data to Morse Graph
-  template < class SwitchingGraph> void
-  assign ( SwitchingGraph const& sg,
+  void
+  assign ( DomainGraph const& sg,
+           MorseDecomposition const& md );
+
+  /// assign (Morse Decomposition)
+  ///   Assign data to Morse Graph
+  void
+  assign ( WallGraph const& sg,
            MorseDecomposition const& md );
 
   /// poset
@@ -108,8 +116,8 @@ MorseGraph ( SwitchingGraph const& sg,
   assign ( sg, md );
 }
 
-template < class SwitchingGraph > void MorseGraph::
-assign ( SwitchingGraph const& sg,
+inline void MorseGraph::
+assign ( DomainGraph const& sg,
          MorseDecomposition const& md ) {
   data_ . reset ( new MorseGraph_ );
   // Copy the poset
@@ -123,5 +131,42 @@ assign ( SwitchingGraph const& sg,
   _canonicalize ();
 }
 
+
+//DRY mistake
+inline void MorseGraph::
+assign ( WallGraph const& sg,
+         MorseDecomposition const& md ) {
+  data_ . reset ( new MorseGraph_ );
+  // Copy the poset
+  data_ -> poset_ = md . poset ();
+  // Compute the annotations
+  uint64_t N = data_ -> poset_ . size ();
+  for ( uint64_t v = 0; v < N; ++ v ) {
+    data_ -> annotations_[v] = sg . annotate ( md . recurrent () [ v ] );
+  }
+  // Canonicalize the graph
+  _canonicalize ();
+}
+
+/// Python Bindings
+
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+namespace py = pybind11;
+
+inline void
+MorseGraphBinding (py::module &m) {
+  py::class_<MorseGraph, std::shared_ptr<MorseGraph>, MorseGraph>(m, "MorseGraph")
+    .def(py::init<>())
+    .def(py::init<std::shared_ptr<Poset>,std::unordered_map<uint64_t,Annotation>>())
+    .def(py::init<std::shared_ptr<DomainGraph>,std::shared_ptr<MorseDecomposition>>())
+    .def(py::init<std::shared_ptr<WallGraph>,std::shared_ptr<MorseDecomposition>>())        
+    .def("poset", &MorseGraph::poset)
+    .def("annotation", &MorseGraph::annotation)
+    .def("SHA256", &MorseGraph::SHA256)
+    .def("stringify", &MorseGraph::stringify)
+    .def("parse", &MorseGraph::parse)
+    .def("graphviz", &MorseGraph::graphviz);
+}
 
 #endif
