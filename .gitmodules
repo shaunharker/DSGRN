@@ -1,0 +1,12 @@
+[submodule "boost/serialization"]
+	path = boost/serialization
+	url = https://github.com/boostorg/serialization.git
+[submodule "boost/functional"]
+	path = boost/functional
+	url = https://github.com/boostorg/functional.git
+[submodule "boost/iterator"]
+	path = boost/iterator
+	url = https://github.com/boostorg/iterator.git
+[submodule "pybind11"]
+	path = pybind11
+	url = https://github.com/pybind/pybind11.git
