@@ -1,4 +1,4 @@
-/// chompy.cpp
+/// DSGRN.cpp
 /// Shaun Harker
 /// 2018-01-30
 /// MIT LICENSE
@@ -9,7 +9,7 @@
 #include <pybind11/stl.h>
 namespace py = pybind11;
 
-PYBIND11_MODULE( _chomp, m) {
+PYBIND11_MODULE( _dsgrn, m) {
   // Dynamics
   AnnotationBinding(m);
   MorseDecompositionBinding(m);

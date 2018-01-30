@@ -36,14 +36,9 @@ public:
 
   /// assign (Morse Decomposition)
   ///   Assign data to Morse Graph
+  template < class SearchGraph >
   void
-  assign ( DomainGraph const& sg,
-           MorseDecomposition const& md );
-
-  /// assign (Morse Decomposition)
-  ///   Assign data to Morse Graph
-  void
-  assign ( WallGraph const& sg,
+  assign ( SearchGraph const& sg,
            MorseDecomposition const& md );
 
   /// poset
@@ -118,25 +113,9 @@ struct MorseGraph_ {
 //   assign ( sg, md );
 // }
 
-inline void MorseGraph::
-assign ( DomainGraph const& sg,
-         MorseDecomposition const& md ) {
-  data_ . reset ( new MorseGraph_ );
-  // Copy the poset
-  data_ -> poset_ = md . poset ();
-  // Compute the annotations
-  uint64_t N = data_ -> poset_ . size ();
-  for ( uint64_t v = 0; v < N; ++ v ) {
-    data_ -> annotations_[v] = sg . annotate ( md . recurrent () [ v ] );
-  }
-  // Canonicalize the graph
-  _canonicalize ();
-}
-
-
-//DRY mistake
-inline void MorseGraph::
-assign ( WallGraph const& sg,
+template <class SearchGraph>
+void MorseGraph::
+assign ( SearchGraph const& sg,
          MorseDecomposition const& md ) {
   data_ . reset ( new MorseGraph_ );
   // Copy the poset

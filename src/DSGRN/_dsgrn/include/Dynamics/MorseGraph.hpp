@@ -25,6 +25,18 @@ MorseGraph ( Poset const & ps,
   _canonicalize();
 }
 
+INLINE_IF_HEADER_ONLY MorseGraph::
+MorseGraph ( DomainGraph const& dg,
+         MorseDecomposition const& md ) {
+  assign(dg, md);
+}
+
+INLINE_IF_HEADER_ONLY MorseGraph::
+MorseGraph ( WallGraph const& wg,
+         MorseDecomposition const& md ) {
+  assign(wg, md);
+}
+
 INLINE_IF_HEADER_ONLY Poset const MorseGraph::
 poset ( void ) const {
   return data_ ->poset_;
