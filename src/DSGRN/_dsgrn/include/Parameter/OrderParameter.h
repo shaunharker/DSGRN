@@ -133,7 +133,7 @@ namespace py = pybind11;
 
 inline void
 OrderParameterBinding (py::module &m) {
-  py::class_<OrderParameter, std::shared_ptr<OrderParameter>, OrderParameter>(m, "OrderParameter")
+  py::class_<OrderParameter, std::shared_ptr<OrderParameter>>(m, "OrderParameter")
     .def(py::init<>())
     .def(py::init<uint64_t, uint64_t>())
     .def(py::init<std::vector<uint64_t> const&>())

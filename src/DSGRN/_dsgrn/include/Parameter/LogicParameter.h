@@ -107,7 +107,7 @@ namespace py = pybind11;
 
 inline void
 LogicParameterBinding (py::module &m) {
-  py::class_<LogicParameter, std::shared_ptr<LogicParameter>, LogicParameter>(m, "LogicParameter")
+  py::class_<LogicParameter, std::shared_ptr<LogicParameter>>(m, "LogicParameter")
     .def(py::init<>())
     .def(py::init<uint64_t, uint64_t, std::string const&>())
     .def("__call__", (bool(LogicParameter::*)( std::vector<bool> const&, uint64_t)const)&LogicParameter::operator())

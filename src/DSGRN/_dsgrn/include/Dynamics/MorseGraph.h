@@ -10,6 +10,8 @@
 #include "Dynamics/MorseDecomposition.h"
 #include "Dynamics/Annotation.h"
 #include "Graph/Poset.h"
+#include "Phase/DomainGraph.h"
+#include "Phase/WallGraph.h"
 
 struct MorseGraph_;
 
@@ -110,11 +112,11 @@ struct MorseGraph_ {
   }
 };
 
-template < class SwitchingGraph > MorseGraph::
-MorseGraph ( SwitchingGraph const& sg,
-             MorseDecomposition const& md ) {
-  assign ( sg, md );
-}
+// template < class SwitchingGraph > MorseGraph::
+// MorseGraph ( SwitchingGraph const& sg,
+//              MorseDecomposition const& md ) {
+//   assign ( sg, md );
+// }
 
 inline void MorseGraph::
 assign ( DomainGraph const& sg,
@@ -156,11 +158,11 @@ namespace py = pybind11;
 
 inline void
 MorseGraphBinding (py::module &m) {
-  py::class_<MorseGraph, std::shared_ptr<MorseGraph>, MorseGraph>(m, "MorseGraph")
+  py::class_<MorseGraph, std::shared_ptr<MorseGraph>>(m, "MorseGraph")
     .def(py::init<>())
-    .def(py::init<std::shared_ptr<Poset>,std::unordered_map<uint64_t,Annotation>>())
-    .def(py::init<std::shared_ptr<DomainGraph>,std::shared_ptr<MorseDecomposition>>())
-    .def(py::init<std::shared_ptr<WallGraph>,std::shared_ptr<MorseDecomposition>>())        
+    .def(py::init<Poset const&,std::unordered_map<uint64_t,Annotation>>())
+    .def(py::init<DomainGraph const&,MorseDecomposition const&>())
+    .def(py::init<WallGraph const&,MorseDecomposition const&>())        
     .def("poset", &MorseGraph::poset)
     .def("annotation", &MorseGraph::annotation)
     .def("SHA256", &MorseGraph::SHA256)

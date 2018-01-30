@@ -92,7 +92,7 @@ namespace py = pybind11;
 
 inline void
 AnnotationBinding(py::module &m) {
-  py::class_<Annotation, std::shared_ptr<Annotation>, Annotation>(m, "Annotation")
+  py::class_<Annotation, std::shared_ptr<Annotation>>(m, "Annotation")
     .def(py::init<>())
     .def("size", &Annotation::size)
     .def("begin", &Annotation::begin)

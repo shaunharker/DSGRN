@@ -24,12 +24,12 @@ public:
 
   /// Digraph
   ///   construct a Digraph from an adjacency list
-  Digraph ( std::vector<std::vector<uint64_t>> & adjacencies );
+  Digraph ( std::vector<std::vector<uint64_t>> const& adjacencies );
 
   /// assign
   ///   construct a Digraph from an adjacency list
   void
-  assign ( std::vector<std::vector<uint64_t>> & adjacencies );
+  assign ( std::vector<std::vector<uint64_t>> const& adjacencies );
 
   /// adjacencies
   ///   Return vector of Vertices which are out-edge adjacencies of input v
@@ -139,6 +139,7 @@ struct Digraph_ {
   }
 };
 
+
 /// Python Bindings
 
 #include <pybind11/pybind11.h>
@@ -147,9 +148,10 @@ namespace py = pybind11;
 
 inline void
 DigraphBinding (py::module &m) {
-  py::class_<Digraph, std::shared_ptr<Digraph>, Digraph>(m, "Digraph")
+  py::class_<Digraph, std::shared_ptr<Digraph>>(m, "Digraph")
     .def(py::init<>())
-    .def(py::init<std::vector<std::vector<uint64_t>> &>())
+    .def(py::init<std::vector<std::vector<uint64_t>> const&>())
+    .def("adjacencies", &Digraph::adjacencies)    
     .def("size", &Digraph::size)
     .def("resize", &Digraph::resize)
     .def("add_vertex", &Digraph::add_vertex)      

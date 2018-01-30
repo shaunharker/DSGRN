@@ -53,13 +53,13 @@ namespace py = pybind11;
 
 inline void
 MatchingRelationBinding (py::module &m) {
-  py::class_<MatchingRelation, std::shared_ptr<MatchingRelation>, MatchingRelation>(m, "MatchingRelation")
+  py::class_<MatchingRelation, std::shared_ptr<MatchingRelation>>(m, "MatchingRelation")
     .def(py::init<>())
     .def(py::init<uint64_t>())
-    .def("assign", &MatchingRelation::position)
-    .def("dimension", &MatchingRelation::vertex)
-    .def("vertex_labelstring", &MatchingRelation::graphviz)
-    .def("edge_labelstring", &MatchingRelation::graphviz_with_highlighted_path);
+    .def("assign", &MatchingRelation::assign)
+    .def("dimension", &MatchingRelation::dimension)
+    .def("vertex_labelstring", &MatchingRelation::vertex_labelstring)
+    .def("edge_labelstring", &MatchingRelation::edge_labelstring);
 }
 
 #endif

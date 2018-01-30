@@ -148,26 +148,26 @@ load(Archive & ar, const unsigned int version) {
   assign ( data_ -> vertices_, data_ -> components_, data_ -> recurrent_ );
 }
 
-/// Python Bindings
+// /// Python Bindings
 
-#include <pybind11/pybind11.h>
-#include <pybind11/stl.h>
-namespace py = pybind11;
+// #include <pybind11/pybind11.h>
+// #include <pybind11/stl.h>
+// namespace py = pybind11;
 
-inline void
-ComponentsBinding (py::module &m) {
-  py::class_<Components, std::shared_ptr<Components>, Components>(m, "Components")
-    .def(py::init<>())
-    .def(py::init<std::vector<uint64_t>,std::vector<bool>,std::vector<bool>>())
-    .def("begin", &Components::begin)
-    .def("end", &Components::end)
-    .def("size", &Components::size)
-    .def("__iter__", [](Components const& v) {
-        return py::make_iterator(v.begin(), v.end());
-      }, py::keep_alive<0, 1>())        
-    .def("recurrentComponents", &Components::parse)
-    .def("isRecurrent", &Components::graphviz)
-    .def("whichComponent", &Components::stringify);
-}
+// inline void
+// ComponentsBinding (py::module &m) {
+//   py::class_<Components, std::shared_ptr<Components>>(m, "Components")
+//     .def(py::init<>())
+//     .def(py::init<std::vector<uint64_t>const&,std::vector<bool>const&,std::vector<bool>const&>())
+//     .def("begin", &Components::begin)
+//     .def("end", &Components::end)
+//     .def("size", &Components::size)
+//     .def("__iter__", [](Components const& v) {
+//         return py::make_iterator(v.begin(), v.end());
+//       }, py::keep_alive<0, 1>())        
+//     .def("recurrentComponents", &Components::recurrentComponents)
+//     .def("isRecurrent", &Components::isRecurrent)
+//     .def("whichComponent", &Components::whichComponent);
+// }
 
 #endif

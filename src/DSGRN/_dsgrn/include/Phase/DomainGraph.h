@@ -20,12 +20,12 @@ public:
 
   /// DomainGraph
   ///   Construct based on parameter and network
-  DomainGraph ( Parameter const parameter );
+  DomainGraph ( Parameter const& parameter );
 
   /// assign
   ///   Construct based on parameter and network
   void
-  assign ( Parameter const parameter );
+  assign ( Parameter const& parameter );
 
   /// parameter
   ///   Return underlying parameter
@@ -144,20 +144,20 @@ namespace py = pybind11;
 
 inline void
 DomainGraphBinding (py::module &m) {
-  py::class_<DomainGraph, std::shared_ptr<DomainGraph>, DomainGraph>(m, "DomainGraph")
+  py::class_<DomainGraph, std::shared_ptr<DomainGraph>>(m, "DomainGraph")
     .def(py::init<>())
-    .def(py::init<std::vector<uint64_t> const&>())
+    .def(py::init<Parameter const&>())
     // TODO: increments
-    .def("root", &DomainGraph::parameter)
-    .def("leaf", &DomainGraph::digraph)
-    .def("left", &DomainGraph::dimension)
-    .def("left", &DomainGraph::coordinates)
+    .def("parameter", &DomainGraph::parameter)
+    .def("digraph", &DomainGraph::digraph)
+    .def("dimension", &DomainGraph::dimension)
+    .def("coordinates", &DomainGraph::coordinates)
     .def("label", (uint64_t(DomainGraph::*)(uint64_t)const)&DomainGraph::label)
     .def("label", (uint64_t(DomainGraph::*)(uint64_t,uint64_t)const)&DomainGraph::label)
     .def("direction", &DomainGraph::direction)
     .def("regulator", &DomainGraph::regulator)
-    .def("annotate", &DomainGraph::dimension)
-    .def("graphviz", &DomainGraph::label)
+    .def("annotate", &DomainGraph::annotate)
+    .def("graphviz", &DomainGraph::graphviz)
     .def("__str__", [](DomainGraph * lp){ std::stringstream ss; ss << *lp; return; });
 
 }

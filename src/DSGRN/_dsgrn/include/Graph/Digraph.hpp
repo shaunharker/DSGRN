@@ -17,12 +17,12 @@ Digraph ( void ) {
 }
 
 INLINE_IF_HEADER_ONLY Digraph::
-Digraph ( std::vector<std::vector<uint64_t>> & adjacencies ) {
+Digraph ( std::vector<std::vector<uint64_t>> const& adjacencies ) {
   assign ( adjacencies );
 }
 
 INLINE_IF_HEADER_ONLY void Digraph::
-assign ( std::vector<std::vector<uint64_t>> & adjacencies ) {
+assign ( std::vector<std::vector<uint64_t>> const& adjacencies ) {
   data_ . reset ( new Digraph_ );
   data_ -> adjacencies_ = adjacencies;
   finalize ();
@@ -30,11 +30,6 @@ assign ( std::vector<std::vector<uint64_t>> & adjacencies ) {
 
 INLINE_IF_HEADER_ONLY std::vector<uint64_t> const& Digraph::
 adjacencies ( uint64_t v ) const {
-  return data_ -> adjacencies_ [ v ];
-}
-
-INLINE_IF_HEADER_ONLY std::vector<uint64_t> & Digraph::
-adjacencies ( uint64_t v ) {
   return data_ -> adjacencies_ [ v ];
 }
 

@@ -7,6 +7,8 @@
 #ifndef DSGRN_HPP
 #define DSGRN_HPP
 
+#define INLINE_IF_HEADER_ONLY inline 
+
 #include "Graph/Components.hpp"
 #include "Graph/Digraph.hpp"
 #include "Graph/Poset.hpp"

@@ -143,10 +143,10 @@ namespace py = pybind11;
 
 inline void
 PosetBinding (py::module &m) {
-  py::class_<Poset, std::shared_ptr<Poset>, Poset>(m, "Poset")
+  py::class_<Poset, std::shared_ptr<Poset>>(m, "Poset")
     .def(py::init<>())
     .def(py::init<std::vector<std::vector<uint64_t>> &>())
-    .def(py::init<Digraph const& digraph>())
+    .def(py::init<Digraph const&>())
     .def("size", &Poset::size)
     .def("parents", &Poset::parents)
     .def("children", &Poset::children)

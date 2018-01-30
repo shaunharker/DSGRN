@@ -17,13 +17,12 @@ ParameterGraph ( void ) {
 }
 
 INLINE_IF_HEADER_ONLY ParameterGraph::
-ParameterGraph ( Network const& network ) {
+ParameterGraph ( Network const& network, std::string const& path ) {
   assign ( network );
 }
 
 INLINE_IF_HEADER_ONLY void ParameterGraph::
-assign ( Network const& network ) {
-  std::string path = std::string(INSTALLPREFIX) + "/share/DSGRN/logic";
+assign ( Network const& network, std::string const& path ) {
   data_ . reset ( new ParameterGraph_ );
   data_ -> network_ = network;
   data_ -> reorderings_ = 1;

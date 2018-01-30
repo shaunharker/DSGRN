@@ -146,10 +146,10 @@ namespace py = pybind11;
 
 inline void
 SearchGraphBinding (py::module &m) {
-  py::class_<SearchGraph, std::shared_ptr<SearchGraph>, SearchGraph>(m, "SearchGraph")
+  py::class_<SearchGraph, std::shared_ptr<SearchGraph>>(m, "SearchGraph")
     .def(py::init<>())
-    .def(py::init<std::shared_ptr<DomainGraph>>())
-    .def(py::init<std::shared_ptr<DomainGraph>, uint64_t>())
+    .def(py::init<DomainGraph const&>())
+    .def(py::init<DomainGraph const&, uint64_t>())
     .def(py::init<std::vector<uint64_t> const&, uint64_t>())
     .def("size", &SearchGraph::size)
     .def("dimension", &SearchGraph::dimension)

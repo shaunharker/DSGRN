@@ -1,0 +1,31 @@
+/// chompy.cpp
+/// Shaun Harker
+/// 2018-01-30
+/// MIT LICENSE
+
+#include "DSGRN.hpp"
+
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+namespace py = pybind11;
+
+PYBIND11_MODULE( _chomp, m) {
+  // Dynamics
+  AnnotationBinding(m);
+  MorseDecompositionBinding(m);
+  MorseGraphBinding(m);
+  // Graph
+  // ComponentsBinding(m);
+  DigraphBinding(m);
+  PosetBinding(m);
+  //StrongComponents(m);
+  // Parameter
+  LogicParameterBinding(m);
+  NetworkBinding(m);
+  OrderParameterBinding(m);
+  ParameterBinding(m);
+  ParameterGraphBinding(m);
+  // Phase
+  DomainBinding(m);
+  DomainGraphBinding(m);
+}

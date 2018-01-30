@@ -20,13 +20,13 @@ public:
   /// ParameterGraph
   ///   Assign a network to the parameter graph
   ///   Search in path for logic .dat files
-  ParameterGraph ( Network const& network );
+  ParameterGraph ( Network const& network, std::string const& path = "/usr/local/share/DSGRN/logic" );
 
   /// assign
   ///   Assign a network to the parameter graph
   ///   Search in path for logic .dat files
   void
-  assign ( Network const& network );
+  assign ( Network const& network, std::string const& path = "/usr/local/share/DSGRN/logic" );
 
   /// size
   ///   Return the number of parameters
@@ -148,9 +148,9 @@ namespace py = pybind11;
 
 inline void
 ParameterGraphBinding (py::module &m) {
-  py::class_<ParameterGraph, std::shared_ptr<ParameterGraph>, ParameterGraph>(m, "ParameterGraph")
+  py::class_<ParameterGraph, std::shared_ptr<ParameterGraph>>(m, "ParameterGraph")
     .def(py::init<>())
-    .def(py::init<std::shared_ptr<Network>>())
+    .def(py::init<Network const&>())
     .def("size", &ParameterGraph::size)
     .def("dimension", &ParameterGraph::dimension)
     .def("logicsize", &ParameterGraph::logicsize)

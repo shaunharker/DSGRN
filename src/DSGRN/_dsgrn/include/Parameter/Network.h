@@ -155,7 +155,7 @@ namespace py = pybind11;
 
 inline void
 NetworkBinding (py::module &m) {
-  py::class_<Network, std::shared_ptr<Network>, Network>(m, "Network")
+  py::class_<Network, std::shared_ptr<Network>>(m, "Network")
     .def(py::init<>())
     .def(py::init<std::string const&>())
     .def("load", &Network::load)
@@ -166,7 +166,7 @@ NetworkBinding (py::module &m) {
     .def("outputs", &Network::outputs)
     .def("logic", &Network::logic)
     .def("essential", &Network::essential)
-    .def("interactions", &Network::interactions)
+    .def("interaction", &Network::interaction)
     .def("order", &Network::order)
     .def("domains", &Network::domains)
     .def("specification", &Network::specification)

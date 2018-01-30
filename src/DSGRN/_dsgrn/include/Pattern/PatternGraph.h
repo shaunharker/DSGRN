@@ -118,9 +118,9 @@ namespace py = pybind11;
 
 inline void
 PatternGraphBinding (py::module &m) {
-  py::class_<PatternGraph, std::shared_ptr<PatternGraph>, PatternGraph>(m, "PatternGraph")
+  py::class_<PatternGraph, std::shared_ptr<PatternGraph>>(m, "PatternGraph")
     .def(py::init<>())
-    .def(py::init<std::shared_ptr<Pattern>>())
+    .def(py::init<Pattern const&>())
     .def("root", &PatternGraph::root)
     .def("leaf", &PatternGraph::leaf)
     .def("size", &PatternGraph::size)

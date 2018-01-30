@@ -162,11 +162,11 @@ namespace py = pybind11;
 
 inline void
 ParameterBinding (py::module &m) {
-  py::class_<Parameter, std::shared_ptr<Parameter>, Parameter>(m, "Parameter")
+  py::class_<Parameter, std::shared_ptr<Parameter>>(m, "Parameter")
     .def(py::init<>())
     .def(py::init< std::vector<LogicParameter> const&, std::vector<OrderParameter> const&,Network const&>())
-    .def(py::init<std::shared_ptr<Network>>())
-    .def("combination", &Parameter::combination)
+    .def(py::init<Network const&>())
+    //.def("combination", &Parameter::combination)  // TODO: FIX
     .def("attracting", &Parameter::attracting)
     .def("absorbing", &Parameter::absorbing)
     .def("regulator", &Parameter::regulator)

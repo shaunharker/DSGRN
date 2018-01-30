@@ -17,12 +17,12 @@ DomainGraph ( void ) {
 }
 
 INLINE_IF_HEADER_ONLY DomainGraph::
-DomainGraph ( Parameter const parameter ) {
+DomainGraph ( Parameter const& parameter ) {
   assign ( parameter );
 }
 
 INLINE_IF_HEADER_ONLY void DomainGraph::
-assign ( Parameter const parameter ) {
+assign ( Parameter const& parameter ) {
   data_ . reset ( new DomainGraph_ );
   data_ -> parameter_ = parameter;
   uint64_t D = parameter . network () . size ();

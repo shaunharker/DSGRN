@@ -133,7 +133,7 @@ namespace py = pybind11;
 
 inline void
 PatternBinding (py::module &m) {
-  py::class_<Pattern, std::shared_ptr<Pattern>, Pattern>(m, "Pattern")
+  py::class_<Pattern, std::shared_ptr<Pattern>>(m, "Pattern")
     .def(py::init<>())
     .def(py::init<Poset const&, std::vector<uint64_t> const&, uint64_t, uint64_t >())
     .def("load", &Pattern::load)

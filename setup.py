@@ -35,7 +35,7 @@ class CMakeBuild(build_ext):
         extdir = os.path.abspath(os.path.dirname(self.get_ext_fullpath(ext.name)))
         cmake_args = ['-DCMAKE_LIBRARY_OUTPUT_DIRECTORY=' + extdir,
                       '-DPYTHON_EXECUTABLE=' + sys.executable,
-                      '-DUSER_INCLUDE_PATH=./src/pychomp/_chomp/include']
+                      '-DUSER_INCLUDE_PATH=./src/DSGRN/_dsgrn/include']
 
         cfg = 'Debug' if self.debug else 'Release'
         build_args = ['--config', cfg]
@@ -65,11 +65,12 @@ setup(
     description='DSGRN',
     long_description='',
     package_dir = {'': 'src'},
-    ext_package='dsgrn',
+    ext_package='DSGRN',
     ext_modules=[CMakeExtension('_dsgrn')],
-    packages=['dsgrn'],
+    packages=['DSGRN'],
     cmdclass=dict(build_ext=CMakeBuild),
     zip_safe=False,
     url = 'https://github.com/shaunharker/DSGRN',
-    download_url = 'https://github.com/shaunharker/DSGRN/archive/v1.0.0.tar.gz'
+    download_url = 'https://github.com/shaunharker/DSGRN/archive/v1.0.0.tar.gz',
+    include_package_data = True
 )
