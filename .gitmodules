@@ -13,3 +13,6 @@
 [submodule "boost/algorithm"]
 	path = boost/algorithm
 	url = https://github.com/boostorg/algorithm.git
+[submodule "boost/core"]
+	path = boost/core
+	url = https://github.com/boostorg/core.git
