@@ -25,6 +25,7 @@ PYBIND11_MODULE( _dsgrn, m) {
   OrderParameterBinding(m);
   ParameterBinding(m);
   ParameterGraphBinding(m);
+  ConfigurationBinding(m);
   // Phase
   DomainBinding(m);
   DomainGraphBinding(m);

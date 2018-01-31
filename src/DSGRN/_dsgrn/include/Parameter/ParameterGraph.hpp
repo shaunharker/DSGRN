@@ -2,8 +2,7 @@
 /// Shaun Harker
 /// 2015-05-24
 
-#ifndef DSGRN_PARAMETERGRAPH_HPP
-#define DSGRN_PARAMETERGRAPH_HPP
+#pragma once 
 
 #ifndef INLINE_IF_HEADER_ONLY
 #define INLINE_IF_HEADER_ONLY
@@ -17,12 +16,13 @@ ParameterGraph ( void ) {
 }
 
 INLINE_IF_HEADER_ONLY ParameterGraph::
-ParameterGraph ( Network const& network, std::string const& path ) {
+ParameterGraph ( Network const& network ) {
   assign ( network );
 }
 
 INLINE_IF_HEADER_ONLY void ParameterGraph::
-assign ( Network const& network, std::string const& path ) {
+assign ( Network const& network ) {
+  std::string path = configuration() -> get_path();
   data_ . reset ( new ParameterGraph_ );
   data_ -> network_ = network;
   data_ -> reorderings_ = 1;
@@ -243,6 +243,3 @@ _factorial ( uint64_t m ) const {
     { 1, 1, 2, 6, 24, 120, 720, 5040, 40320, 362880};
   if ( m < 10 ) return table [ m ]; else return m * _factorial ( m - 1 );
 }
-
-
-#endif

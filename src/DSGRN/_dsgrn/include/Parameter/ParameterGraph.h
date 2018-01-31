@@ -2,13 +2,13 @@
 /// Shaun Harker
 /// 2015-05-24
 
-#ifndef DSGRN_PARAMETERGRAPH_H
-#define DSGRN_PARAMETERGRAPH_H
+#pragma once 
 
 #include "common.h"
 
 #include "Parameter/Network.h"
-#include "Parameter/Parameter.h"
+#include "Parameter/Parameter.h" 
+#include "Parameter/Configuration.h" 
 
 struct ParameterGraph_;
 
@@ -20,13 +20,13 @@ public:
   /// ParameterGraph
   ///   Assign a network to the parameter graph
   ///   Search in path for logic .dat files
-  ParameterGraph ( Network const& network, std::string const& path = "/usr/local/share/DSGRN/logic" );
+  ParameterGraph ( Network const& network );
 
   /// assign
   ///   Assign a network to the parameter graph
   ///   Search in path for logic .dat files
   void
-  assign ( Network const& network, std::string const& path = "/usr/local/share/DSGRN/logic" );
+  assign ( Network const& network );
 
   /// size
   ///   Return the number of parameters
@@ -163,6 +163,3 @@ ParameterGraphBinding (py::module &m) {
     .def("reorderings", &ParameterGraph::reorderings)
     .def("__str__", [](ParameterGraph * lp){ std::stringstream ss; ss << *lp; return ss.str(); });
 }
-
-
-#endif

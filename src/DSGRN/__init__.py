@@ -19,3 +19,6 @@ from DSGRN.Query.PosetOfExtrema import *
 from DSGRN.Query.Logging import *
 from DSGRN.Query.StableFCQuery import *
 from DSGRN.Query.ComputeSingleGeneQuery import *
+
+import os
+configuration().set_path(os.path.dirname(__file__) + '/Resources/logic')

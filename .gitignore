@@ -42,7 +42,7 @@ dsgrn.session
 *.app
 
 # Data
-*.dat
+#*.dat
 *.db
 
 # IntelliJ Idea

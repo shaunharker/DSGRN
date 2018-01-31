@@ -3,8 +3,7 @@
 /// Shaun Harker and Bree Cummins
 /// 2016-03-19
 
-#ifndef DSGRN_PATTERNMATCH_H
-#define DSGRN_PATTERNMATCH_H
+#pragma once
 
 #include "common.h"
 
@@ -78,5 +77,3 @@ void PatternMatchBinding(py::module &m) {
   m.def("PathMatch", &PathMatch);
   m.def("FindPath", &FindPath);
 }
-
-#endif

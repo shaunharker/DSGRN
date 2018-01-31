@@ -21,6 +21,7 @@
 #include "Parameter/OrderParameter.hpp"
 #include "Parameter/Parameter.hpp"
 #include "Parameter/ParameterGraph.hpp"
+#include "Parameter/Configuration.h"
 #include "Phase/Domain.hpp"
 #include "Phase/DomainGraph.hpp"
 #include "Phase/Wall.hpp"
