@@ -28,4 +28,11 @@ PYBIND11_MODULE( _dsgrn, m) {
   // Phase
   DomainBinding(m);
   DomainGraphBinding(m);
+  // Pattern
+  MatchingGraphBinding(m);
+  MatchingRelationBinding(m);
+  PatternBinding(m);
+  PatternGraphBinding(m);
+  PatternMatchBinding(m);
+  SearchGraphBinding(m);
 }
