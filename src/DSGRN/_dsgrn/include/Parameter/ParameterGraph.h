@@ -156,6 +156,7 @@ ParameterGraphBinding (py::module &m) {
     .def("logicsize", &ParameterGraph::logicsize)
     .def("ordersize", &ParameterGraph::ordersize)
     .def("factorgraph", &ParameterGraph::factorgraph)
+    .def("parameter", &ParameterGraph::parameter)    
     .def("index", &ParameterGraph::index)
     .def("adjacencies", &ParameterGraph::adjacencies)
     .def("network", &ParameterGraph::network)
