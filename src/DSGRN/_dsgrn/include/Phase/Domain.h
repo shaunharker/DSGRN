@@ -144,7 +144,7 @@ DomainBinding (py::module &m) {
     .def("isMin", &Domain::isMin)
     .def("isMax", &Domain::isMax)
     .def("isValid", &Domain::isValid)
-    .def("__str__", [](Domain * lp){ std::stringstream ss; ss << *lp; return; });
+    .def("__str__", [](Domain * lp){ std::stringstream ss; ss << *lp; return ss.str(); });
 }
 
 #endif

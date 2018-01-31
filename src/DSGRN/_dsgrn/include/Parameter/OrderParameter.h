@@ -146,7 +146,7 @@ OrderParameterBinding (py::module &m) {
     .def("parse", &OrderParameter::parse)
     .def("adjacencies", &OrderParameter::adjacencies)
     .def("__eq__", &OrderParameter::operator==)
-    .def("__str__", [](OrderParameter * lp){ std::stringstream ss; ss << *lp; return; });
+    .def("__str__", [](OrderParameter * lp){ std::stringstream ss; ss << *lp; return ss.str();; });
 }
 
 #endif

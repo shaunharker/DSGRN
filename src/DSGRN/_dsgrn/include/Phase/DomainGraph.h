@@ -158,7 +158,7 @@ DomainGraphBinding (py::module &m) {
     .def("regulator", &DomainGraph::regulator)
     .def("annotate", &DomainGraph::annotate)
     .def("graphviz", &DomainGraph::graphviz)
-    .def("__str__", [](DomainGraph * lp){ std::stringstream ss; ss << *lp; return; });
+    .def("__str__", [](DomainGraph * lp){ std::stringstream ss; ss << *lp; return ss.str(); });
 
 }
 

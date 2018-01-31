@@ -161,7 +161,7 @@ ParameterGraphBinding (py::module &m) {
     .def("network", &ParameterGraph::network)
     .def("fixedordersize", &ParameterGraph::fixedordersize)
     .def("reorderings", &ParameterGraph::reorderings)
-    .def("__str__", [](ParameterGraph * lp){ std::stringstream ss; ss << *lp; return; });
+    .def("__str__", [](ParameterGraph * lp){ std::stringstream ss; ss << *lp; return ss.str(); });
 }
 
 

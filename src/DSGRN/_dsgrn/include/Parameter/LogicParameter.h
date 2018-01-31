@@ -117,7 +117,7 @@ LogicParameterBinding (py::module &m) {
     .def("hex", &LogicParameter::hex)
     .def("adjacencies", &LogicParameter::adjacencies)
     .def("__eq__", &LogicParameter::operator==)
-    .def("__str__", [](LogicParameter * lp){ std::stringstream ss; ss << *lp; return; });
+    .def("__str__", [](LogicParameter * lp){ std::stringstream ss; ss << *lp; return ss.str(); });
 }
 
 #endif

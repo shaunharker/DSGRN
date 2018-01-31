@@ -177,7 +177,7 @@ ParameterBinding (py::module &m) {
     .def("inequalities", &Parameter::inequalities)
     .def("logic", &Parameter::logic)
     .def("order", &Parameter::order)
-    .def("__str__", [](Parameter * lp){ std::stringstream ss; ss << *lp; return; });
+    .def("__str__", [](Parameter * lp){ std::stringstream ss; ss << *lp; return ss.str(); });
 }
 
 #endif

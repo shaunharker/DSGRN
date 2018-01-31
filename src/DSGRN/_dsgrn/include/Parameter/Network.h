@@ -170,7 +170,7 @@ NetworkBinding (py::module &m) {
     .def("order", &Network::order)
     .def("domains", &Network::domains)
     .def("specification", &Network::specification)
-    .def("graphviz", &Network::graphviz);
+    .def("graphviz", [](Network const& network){ return network.graphviz();});
 }
 
 #endif
