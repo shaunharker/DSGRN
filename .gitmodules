@@ -19,3 +19,6 @@
 [submodule "boost/config"]
 	path = boost/config
 	url = https://github.com/boostorg/config.git
+[submodule "boost/move"]
+	path = boost/move
+	url = https://github.com/boostorg/move.git
