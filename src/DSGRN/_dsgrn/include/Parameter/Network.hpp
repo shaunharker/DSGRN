@@ -10,8 +10,6 @@
 #endif
 
 #include "Network.h"
-#include "Tools/sqlambda.h"
-#include <boost/algorithm/string/replace.hpp>
 
 INLINE_IF_HEADER_ONLY Network::
 Network ( void ) { 
@@ -33,17 +31,17 @@ load ( std::string const& filename ) {
     extension = filename.substr(lastdot); 
   }
 
-  // If it is a .db, assume it is an sqlite3 database
-  // and the network spec is in the Specification 
-  // column of the "Network" table.
-  if ( extension == ".db" ) {
-    // database
-    sqlite::database db ( filename );
-    sqlite::statement stmt = db . prepare ( "select Specification from Network;");
-    stmt . forEach ( [&] ( std::string spec ) {
-      data_ -> specification_ = spec;
-    });
-  } else {
+  // // If it is a .db, assume it is an sqlite3 database
+  // // and the network spec is in the Specification 
+  // // column of the "Network" table.
+  // if ( extension == ".db" ) {
+  //   // database
+  //   sqlite::database db ( filename );
+  //   sqlite::statement stmt = db . prepare ( "select Specification from Network;");
+  //   stmt . forEach ( [&] ( std::string spec ) {
+  //     data_ -> specification_ = spec;
+  //   });
+  // } else {
     // Assume it is a network specification file.
     std::ifstream infile ( filename );
     if ( not infile . good () ) { 
@@ -54,7 +52,7 @@ load ( std::string const& filename ) {
       data_ -> specification_ += line + '\n';
     }
     infile . close ();
-  }
+  //}
   _parse ( _lines () );
 }
 

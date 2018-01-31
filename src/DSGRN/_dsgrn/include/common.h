@@ -37,9 +37,12 @@
 #include "boost/archive/text_oarchive.hpp"
 #include "boost/functional/hash.hpp"
 #include "boost/iterator/counting_iterator.hpp"
+#include "boost/algorithm/string/replace.hpp"
 
+// #include "Tools/sqlambda.h"
 #include "Tools/SHA256.h"
 #include "Tools/json.hpp"
+
 using json = nlohmann::json;
 
 #endif
