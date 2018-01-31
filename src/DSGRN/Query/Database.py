@@ -1,6 +1,6 @@
 import sqlite3
 import graphviz
-from .libpyDSGRN import *
+from DSGRN._dsgrn import *
 
 from Logging import LogToSTDOUT
 

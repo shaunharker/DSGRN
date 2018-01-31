@@ -1,7 +1,7 @@
 
 import graphviz
 
-from .libpyDSGRN import *
+from DSGRN._dsgrn import *
 
 def DrawGraph(g):
   """

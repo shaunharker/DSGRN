@@ -2,7 +2,7 @@
 # MIT LICENSE
 # Shaun Harker 2016-12-27
 
-from .libpyDSGRN import *
+from DSGRN._dsgrn import *
 
 class PosetOfExtrema(Pattern):
   def __init__(self, network, events, orderings):
