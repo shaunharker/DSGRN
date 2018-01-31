@@ -2,13 +2,13 @@
 # MIT LICENSE 2016
 # Shaun Harker
 
-from Graph import *
-from AlignmentGraph import *
-from MonostableFixedPointQuery import *
-from SingleFixedPointQuery import *
-from DoubleFixedPointQuery import *
-from SingleGeneQuery import *
-from Logging import LogToSTDOUT
+from DSGRN.Query.Graph import *
+from DSGRN.Query.AlignmentGraph import *
+from DSGRN.Query.MonostableFixedPointQuery import *
+from DSGRN.Query.SingleFixedPointQuery import *
+from DSGRN.Query.DoubleFixedPointQuery import *
+from DSGRN.Query.SingleGeneQuery import *
+from DSGRN.Query.Logging import LogToSTDOUT
 
 class HysteresisQuery:
   """

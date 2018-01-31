@@ -2,7 +2,7 @@
 # MIT LICENSE 2016
 # Shaun Harker
 
-from Graph import *
+from DSGRN.Query.Graph import *
 
 def AlignmentGraph ( graph1, graph2, matching_relation ):
   """

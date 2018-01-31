@@ -2,10 +2,10 @@
 # MIT LICENSE 2016
 # Shaun Harker and Bree Cummins
 
-from SingleFixedPointQuery import *
-from DoubleFixedPointQuery import *
-from MonostableFixedPointQuery import *
-from SingleGeneQuery import *
+from DSGRN.Query.SingleFixedPointQuery import *
+from DSGRN.Query.DoubleFixedPointQuery import *
+from DSGRN.Query.MonostableFixedPointQuery import *
+from DSGRN.Query.SingleGeneQuery import *
 
 class InducibilityQuery:
   """

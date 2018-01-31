@@ -2,7 +2,7 @@
 # MIT LICENSE 2016
 # Shaun Harker
 
-from Logging import LogToSTDOUT
+from DSGRN.Query.Logging import LogToSTDOUT
 
 class MonostableQuery:
   """

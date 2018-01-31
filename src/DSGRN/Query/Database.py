@@ -2,7 +2,7 @@ import sqlite3
 import graphviz
 from DSGRN._dsgrn import *
 
-from Logging import LogToSTDOUT
+from DSGRN.Query.Logging import LogToSTDOUT
 
 class Database:
   def __init__(self, database_name):

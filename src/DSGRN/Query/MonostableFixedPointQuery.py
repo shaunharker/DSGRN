@@ -2,9 +2,9 @@
 # MIT LICENSE 2016
 # Shaun Harker
 
-from SingleFixedPointQuery import *
-from MonostableQuery import *
-from Logging import LogToSTDOUT
+from DSGRN.Query.SingleFixedPointQuery import *
+from DSGRN.Query.MonostableQuery import *
+from DSGRN.Query.Logging import LogToSTDOUT
 
 class MonostableFixedPointQuery:
   """

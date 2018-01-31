@@ -2,9 +2,9 @@
 # MIT LICENSE 2017
 # Shaun Harker
 
-from Graph import *
-from Hexcodes import *
-from Logging import LogToSTDOUT
+from DSGRN.Query.Graph import *
+from DSGRN.Query.Hexcodes import *
+from DSGRN.Query.Logging import LogToSTDOUT
 
 class ComputeSingleGeneQuery:
   def __init__(self, network, gene, labeller):
