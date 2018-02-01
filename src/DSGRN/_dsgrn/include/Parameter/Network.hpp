@@ -184,12 +184,11 @@ INLINE_IF_HEADER_ONLY std::vector<std::string> Network::
 _lines ( void ) {
   // Remove quote marks if they exist, and convert "\n" substrings to newlines
   std::string & str = data_ -> specification_;
-  const std::string quote = "\"";
-  const std::string newline_escaped = "\\n";
-  const std::string newline_char = "\n";
-  const std::string empty = "";
-  boost::replace_all(data_ -> specification_, newline_escaped, newline_char );
-  boost::replace_all(data_ -> specification_, quote, empty );
+  const std::regex quote_regex("\"", std::regex::basic);
+  const std::regex newline_regex("\n", std::regex::basic);
+  data_ -> specification_ = std::regex_replace(data_ -> specification_, newline_regex, "\n" );
+  data_ -> specification_ = std::regex_replace(data_ -> specification_, quote_regex, "" );
+
   // Parse the lines
   std::vector<std::string> result;
   std::stringstream spec ( data_ -> specification_ );

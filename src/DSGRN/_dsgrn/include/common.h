@@ -24,8 +24,8 @@
 #include <set>
 #include <unordered_set>
 #include <unordered_map>
+#include <regex>
 
-#include "boost/algorithm/string/replace.hpp"
 #include "boost/functional/hash.hpp"
 #include "boost/function.hpp"
 #include "boost/bind.hpp"
