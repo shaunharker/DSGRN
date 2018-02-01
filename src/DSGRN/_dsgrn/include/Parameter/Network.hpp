@@ -2,8 +2,7 @@
 /// Shaun Harker
 /// 2015-05-22
 
-#ifndef DSGRN_NETWORK_HPP
-#define DSGRN_NETWORK_HPP
+#pragma once
 
 #ifndef INLINE_IF_HEADER_ONLY
 #define INLINE_IF_HEADER_ONLY
@@ -370,5 +369,3 @@ INLINE_IF_HEADER_ONLY std::ostream& operator << ( std::ostream& stream, Network 
   stream << "]"; // network
   return stream;
 }
-
-#endif

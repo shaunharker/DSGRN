@@ -2,8 +2,7 @@
 /// Shaun Harker
 /// 2015-05-24
 
-#ifndef DSGRN_DIGRAPH_HPP
-#define DSGRN_DIGRAPH_HPP
+#pragma once
 
 #ifndef INLINE_IF_HEADER_ONLY
 #define INLINE_IF_HEADER_ONLY
@@ -204,5 +203,3 @@ graphviz ( void ) const {
 INLINE_IF_HEADER_ONLY std::ostream& operator << ( std::ostream& stream, Digraph const& dg ) {
   return stream << dg . graphviz ();
 }
-
-#endif

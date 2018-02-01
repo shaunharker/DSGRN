@@ -2,8 +2,7 @@
 /// Shaun Harker
 /// 2015-05-24
 
-#ifndef DSGRN_MORSEGRAPH_HPP
-#define DSGRN_MORSEGRAPH_HPP
+#pragma once
 
 #ifndef INLINE_IF_HEADER_ONLY
 #define INLINE_IF_HEADER_ONLY
@@ -180,5 +179,3 @@ _canonicalize ( void ) {
   }
   data_ -> annotations_ = annotations;
 }
-
-#endif

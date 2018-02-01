@@ -2,8 +2,7 @@
 /// Shaun Harker
 /// 2015-05-24
 
-#ifndef DSGRN_COMPONENTS_HPP
-#define DSGRN_COMPONENTS_HPP
+#pragma once
 
 #ifndef INLINE_IF_HEADER_ONLY
 #define INLINE_IF_HEADER_ONLY
@@ -130,4 +129,3 @@ INLINE_IF_HEADER_ONLY Component Components_::
 _recurrentComponent ( int64_t rank ) {
   return _component ( recurrent_select_ [ rank ] );
 }
-#endif

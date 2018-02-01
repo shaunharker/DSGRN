@@ -3,8 +3,7 @@
 /// Shaun Harker and Bree Cummins
 /// 2016-03-21
 
-#ifndef DSGRN_PATTERN_HPP
-#define DSGRN_PATTERN_HPP
+#pragma once
 
 #ifndef INLINE_IF_HEADER_ONLY
 #define INLINE_IF_HEADER_ONLY
@@ -93,5 +92,3 @@ parse ( std::string const& str ) {
   data_ -> label_ = j["label"];
   data_ -> dimension_ = j["dimension"];
 }
-
-#endif

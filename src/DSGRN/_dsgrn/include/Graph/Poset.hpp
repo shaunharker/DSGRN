@@ -2,8 +2,7 @@
 /// Shaun Harker
 /// 2015-05-15
 
-#ifndef DSGRN_POSET_HPP
-#define DSGRN_POSET_HPP
+#pragma once
 
 #ifndef INLINE_IF_HEADER_ONLY
 #define INLINE_IF_HEADER_ONLY
@@ -125,5 +124,3 @@ graphviz ( void ) const {
 INLINE_IF_HEADER_ONLY std::ostream& operator << ( std::ostream& stream, Poset const& poset ) {
   return stream << poset . data_ -> transitive_reduction;
 }
-
-#endif

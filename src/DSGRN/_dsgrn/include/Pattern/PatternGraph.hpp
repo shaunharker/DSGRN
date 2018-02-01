@@ -3,8 +3,7 @@
 /// Shaun Harker and Bree Cummins
 /// 2016-03-20
 
-#ifndef DSGRN_PATTERNGRAPH_HPP
-#define DSGRN_PATTERNGRAPH_HPP
+#pragma once
 
 #ifndef INLINE_IF_HEADER_ONLY
 #define INLINE_IF_HEADER_ONLY
@@ -158,5 +157,3 @@ graphviz_with_highlighted_path ( std::vector<uint64_t> const& path ) const {
   ss << "}\n";
   return ss . str ();
 }
-
-#endif

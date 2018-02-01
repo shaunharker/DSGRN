@@ -3,8 +3,7 @@
 /// Shaun Harker and Bree Cummins
 /// 2016-03-19
 
-#ifndef DSGRN_PATTERNMATCH_HPP
-#define DSGRN_PATTERNMATCH_HPP
+#pragma once
 
 #ifndef INLINE_IF_HEADER_ONLY
 #define INLINE_IF_HEADER_ONLY
@@ -266,7 +265,3 @@ ExplainCycleMatch ( MatchingGraph const& mg ) {
   }
   return "false";
 }
-
-
-#endif
-

@@ -4,8 +4,7 @@
 /// 
 /// Note: include this file for header-only use
 
-#ifndef DSGRN_HPP
-#define DSGRN_HPP
+#pragma once
 
 #define INLINE_IF_HEADER_ONLY inline 
 
@@ -32,5 +31,3 @@
 #include "Pattern/PatternGraph.hpp"
 #include "Pattern/PatternMatch.hpp"
 #include "Pattern/SearchGraph.hpp"
-
-#endif

@@ -2,8 +2,7 @@
 /// Shaun Harker
 /// 2015-05-24
 
-#ifndef DSGRN_MORSEDECOMPOSITION_HPP
-#define DSGRN_MORSEDECOMPOSITION_HPP
+#pragma once
 
 #ifndef INLINE_IF_HEADER_ONLY
 #define INLINE_IF_HEADER_ONLY
@@ -141,5 +140,3 @@ INLINE_IF_HEADER_ONLY std::ostream& operator << ( std::ostream& stream, MorseDec
 INLINE_IF_HEADER_ONLY void MorseDecomposition::
 _canonicalize ( void ) {
 }
-
-#endif

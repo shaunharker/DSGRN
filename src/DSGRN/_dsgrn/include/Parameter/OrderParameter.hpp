@@ -2,8 +2,7 @@
 /// Shaun Harker
 /// 2015-05-24
 
-#ifndef DSGRN_ORDERPARAMETER_HPP
-#define DSGRN_ORDERPARAMETER_HPP
+#pragma once
 
 #ifndef INLINE_IF_HEADER_ONLY
 #define INLINE_IF_HEADER_ONLY
@@ -187,5 +186,3 @@ _tail_rep_to_index ( std::vector<uint64_t> const& tail_rep ) {
   }
   return result;
 }
-
-#endif

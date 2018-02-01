@@ -3,8 +3,7 @@
 /// Shaun Harker and Bree Cummins
 /// 2016-03-19
 
-#ifndef DSGRN_PATTERNGRAPH_H
-#define DSGRN_PATTERNGRAPH_H
+#pragma once
 
 #include "common.h"
 
@@ -77,14 +76,6 @@ public:
 
 private:
   std::shared_ptr<PatternGraph_> data_;
-  /// serialize
-  ///   For use with BOOST Serialization library,
-  ///   which is used by the cluster-delegator MPI package
-  friend class boost::serialization::access;
-  template<class Archive>
-  void serialize(Archive & ar, const unsigned int version) {
-    ar & data_;
-  }
 };
 
 struct PatternGraph_ {
@@ -94,20 +85,6 @@ struct PatternGraph_ {
   uint64_t dimension_;
   std::vector<uint64_t> labels_;
   std::vector<std::unordered_map<uint64_t, uint64_t>> consume_;
-
-  /// serialize
-  ///   For use with BOOST Serialization library,
-  ///   which is used by the cluster-delegator MPI package
-  friend class boost::serialization::access;
-  template<class Archive>
-  void serialize(Archive & ar, const unsigned int version) {
-    ar & root_;
-    ar & leaf_;
-    ar & size_;
-    ar & dimension_;
-    ar & labels_;
-    ar & consume_;
-  }
 };
 
 /// Python Bindings
@@ -130,5 +107,3 @@ PatternGraphBinding (py::module &m) {
     .def("graphviz", &PatternGraph::graphviz)
     .def("graphviz_with_highlighted_path", &PatternGraph::graphviz_with_highlighted_path);
 }
-
-#endif

@@ -41,8 +41,8 @@
 ///   * Modified to be header-only
 ///   * Changed to capital letters in hex
 
-#ifndef SHA256_H
-#define SHA256_H
+#pragma once
+
 #include <string>
 #include <cstring>
 #include <cstdint>
@@ -226,6 +226,3 @@ inline std::string sha256(std::string input)
     sprintf(buf+i*2, "%02X", digest[i]);
   return std::string(buf);
 }
-
-#endif
-

@@ -2,8 +2,7 @@
 /// Shaun Harker
 /// 2015-05-24
 
-#ifndef DSGRN_STRONGCOMPONENTS_H
-#define DSGRN_STRONGCOMPONENTS_H
+#pragma once
 
 #include "common.h"
 
@@ -12,5 +11,3 @@
 
 Components
 StrongComponents ( Digraph const digraph );
-
-#endif

@@ -3,8 +3,7 @@
 /// Shaun Harker and Bree Cummins
 /// 2016-03-19
 
-#ifndef DSGRN_SEARCHGRAPH_H
-#define DSGRN_SEARCHGRAPH_H
+#pragma once
 
 #include "common.h"
 
@@ -107,15 +106,6 @@ public:
 
 private:
   std::shared_ptr<SearchGraph_> data_;
-
-  /// serialize
-  ///   For use with BOOST Serialization library,
-  ///   which is used by the cluster-delegator MPI package
-  friend class boost::serialization::access;
-  template<class Archive>
-  void serialize(Archive & ar, const unsigned int version) {
-    ar & data_;
-  }
 };
 
 struct SearchGraph_ {
@@ -125,17 +115,6 @@ struct SearchGraph_ {
   uint64_t dimension_;
   std::function<std::string(uint64_t)> vertex_information_;
   std::function<std::string(uint64_t,uint64_t)> edge_information_;
-  /// serialize
-  ///   For use with BOOST Serialization library,
-  ///   which is used by the cluster-delegator MPI package
-  friend class boost::serialization::access;
-  template<class Archive>
-  void serialize(Archive & ar, const unsigned int version) {
-    ar & digraph_;
-    ar & labels_;
-    ar & event_;
-    ar & dimension_;
-  }
 };
 
 /// Python Bindings
@@ -161,5 +140,3 @@ SearchGraphBinding (py::module &m) {
     .def("vertexInformation", &SearchGraph::vertexInformation)
     .def("edgeInformation", &SearchGraph::edgeInformation);
 }
-
-#endif

@@ -25,19 +25,15 @@
 #include <unordered_set>
 #include <unordered_map>
 
-#include "boost/serialization/serialization.hpp"
-#include "boost/serialization/base_object.hpp"
-#include "boost/serialization/vector.hpp"
-#include "boost/serialization/string.hpp"
-#include "boost/serialization/shared_ptr.hpp"
-#include "boost/serialization/unordered_set.hpp"
-#include "boost/serialization/unordered_map.hpp"
-#include "boost/serialization/split_member.hpp"
-#include "boost/archive/text_iarchive.hpp"
-#include "boost/archive/text_oarchive.hpp"
-#include "boost/functional/hash.hpp"
-#include "boost/iterator/counting_iterator.hpp"
 #include "boost/algorithm/string/replace.hpp"
+#include "boost/functional/hash.hpp"
+#include "boost/function.hpp"
+#include "boost/bind.hpp"
+#include "boost/range/sub_range.hpp"
+#include "boost/range/iterator_range.hpp"
+#include "boost/iterator/counting_iterator.hpp"
+#include "boost/iterator/transform_iterator.hpp"
+
 
 // #include "Tools/sqlambda.h"
 #include "Tools/SHA256.h"

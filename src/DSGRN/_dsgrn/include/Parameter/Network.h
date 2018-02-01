@@ -2,8 +2,7 @@
 /// Shaun Harker
 /// 2015-05-22
 
-#ifndef DSGRN_NETWORK_H
-#define DSGRN_NETWORK_H
+#pragma once
 
 #include "common.h"
 
@@ -109,14 +108,6 @@ private:
 
   std::vector<std::string> _lines ( void );
   void _parse ( std::vector<std::string> const& lines );
-  /// serialize
-  ///   For use with BOOST Serialization library,
-  ///   which is used by the cluster-delegator MPI package
-  friend class boost::serialization::access;
-  template<class Archive>
-  void serialize(Archive & ar, const unsigned int version) {
-    ar & data_;
-  }
 };
 
 struct Network_ {
@@ -129,22 +120,6 @@ struct Network_ {
   std::vector<std::vector<std::vector<uint64_t>>> logic_by_index_;
   std::vector<bool> essential_;
   std::string specification_;
-  /// serialize
-  ///   For use with BOOST Serialization library,
-  ///   which is used by the cluster-delegator MPI package
-  friend class boost::serialization::access;
-  template<class Archive>
-  void serialize(Archive & ar, const unsigned int version) {
-    ar & inputs_;
-    ar & outputs_;
-    ar & index_by_name_;
-    ar & name_by_index_;
-    ar & edge_type_;
-    ar & order_;
-    ar & logic_by_index_;
-    ar & essential_;
-    ar & specification_;
-  }
 };
 
 /// Python Bindings
@@ -172,5 +147,3 @@ NetworkBinding (py::module &m) {
     .def("specification", &Network::specification)
     .def("graphviz", [](Network const& network){ return network.graphviz();});
 }
-
-#endif

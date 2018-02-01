@@ -2,8 +2,7 @@
 /// Shaun Harker
 /// 2015-05-24
 
-#ifndef DSGRN_LOGICPARAMETER_H
-#define DSGRN_LOGICPARAMETER_H
+#pragma once
 
 #include "common.h"
 
@@ -71,14 +70,6 @@ public:
 
 private:
   std::shared_ptr<LogicParameter_> data_;
-  /// serialize
-  ///   For use with BOOST Serialization library,
-  ///   which is used by the cluster-delegator MPI package
-  friend class boost::serialization::access;
-  template<class Archive>
-  void serialize(Archive & ar, const unsigned int version) {
-    ar & data_;
-  }
 };
 
 struct LogicParameter_ {
@@ -86,17 +77,6 @@ struct LogicParameter_ {
   std::vector<bool> comp_;
   uint64_t n_;
   uint64_t m_;
-  /// serialize
-  ///   For use with BOOST Serialization library,
-  ///   which is used by the cluster-delegator MPI package
-  friend class boost::serialization::access;
-  template<class Archive>
-  void serialize(Archive & ar, const unsigned int version) {
-    ar & hex_;
-    ar & comp_;
-    ar & n_;
-    ar & m_;
-  }
 };
 
 /// Python Bindings
@@ -119,5 +99,3 @@ LogicParameterBinding (py::module &m) {
     .def("__eq__", &LogicParameter::operator==)
     .def("__str__", [](LogicParameter * lp){ std::stringstream ss; ss << *lp; return ss.str(); });
 }
-
-#endif

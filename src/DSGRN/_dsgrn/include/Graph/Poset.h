@@ -2,8 +2,7 @@
 /// Shaun Harker
 /// 2015-05-15
 
-#ifndef DSGRN_POSET_H
-#define DSGRN_POSET_H
+#pragma once
 
 #include "common.h"
 
@@ -105,14 +104,6 @@ public:
 
 private:
   std::shared_ptr<Poset_> data_;
-  /// serialize
-  ///   For use with BOOST Serialization library,
-  ///   which is used by the cluster-delegator MPI package
-  friend class boost::serialization::access;
-  template<class Archive>
-  void serialize(Archive & ar, const unsigned int version) {
-    ar & data_;
-  }
 };
 
 struct Poset_ {
@@ -121,18 +112,6 @@ struct Poset_ {
   Digraph transpose_transitive_closure;
   Digraph transpose_transitive_reduction;
   std::vector<std::unordered_set<uint64_t>> relation;
-  /// serialize
-  ///   For use with BOOST Serialization library,
-  ///   which is used by the cluster-delegator MPI package
-  friend class boost::serialization::access;
-  template<class Archive>
-  void serialize(Archive & ar, const unsigned int version) {
-    ar & transitive_closure;
-    ar & transitive_reduction;
-    ar & transpose_transitive_closure;
-    ar & transpose_transitive_reduction;
-    ar & relation;
-  }
 };
 
 /// Python Bindings
@@ -159,5 +138,3 @@ PosetBinding (py::module &m) {
     .def("parse", &Poset::parse)
     .def("graphviz", &Poset::graphviz);
 }
-
-#endif

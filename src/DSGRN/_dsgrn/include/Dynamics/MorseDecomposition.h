@@ -2,8 +2,7 @@
 /// Shaun Harker
 /// 2015-05-24
 
-#ifndef DSGRN_MORSEDECOMPOSITION_H
-#define DSGRN_MORSEDECOMPOSITION_H
+#pragma once
 
 #ifndef INLINE_IF_HEADER_ONLY
 #define INLINE_IF_HEADER_ONLY
@@ -86,28 +85,11 @@ private:
   ///   given the available information. (Note: not every
   ///   isomorphic graph has the same canonicalization.)
   void _canonicalize ( void );
-  /// serialize
-  ///   For use with BOOST Serialization library,
-  ///   which is used by the cluster-delegator MPI package
-  friend class boost::serialization::access;
-  template<class Archive>
-  void serialize(Archive & ar, const unsigned int version) {
-    ar & data_;
-  }
 };
 
 struct MorseDecomposition_ {
   Components components_;
   Poset poset_;
-  /// serialize
-  ///   For use with BOOST Serialization library,
-  ///   which is used by the cluster-delegator MPI package
-  friend class boost::serialization::access;
-  template<class Archive>
-  void serialize(Archive & ar, const unsigned int version) {
-    ar & components_;
-    ar & poset_;
-  }
 };
 
 /// Python Bindings
@@ -130,5 +112,3 @@ MorseDecompositionBinding (py::module &m) {
     .def("morseset", &MorseDecomposition::morseset)
     .def("graphviz", &MorseDecomposition::graphviz);
 }
-
-#endif

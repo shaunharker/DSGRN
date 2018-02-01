@@ -2,8 +2,7 @@
 /// Shaun Harker
 /// 2015-05-24
 
-#ifndef DSGRN_DOMAINGRAPH_HPP
-#define DSGRN_DOMAINGRAPH_HPP
+#pragma once
 
 #ifndef INLINE_IF_HEADER_ONLY
 #define INLINE_IF_HEADER_ONLY
@@ -180,5 +179,3 @@ INLINE_IF_HEADER_ONLY std::ostream& operator << ( std::ostream& stream, DomainGr
   stream << dg . digraph ();
   return stream;
 }
-
-#endif

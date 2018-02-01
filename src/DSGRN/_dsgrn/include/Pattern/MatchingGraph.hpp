@@ -3,8 +3,7 @@
 /// Shaun Harker and Bree Cummins
 /// 2016-03-20
 
-#ifndef DSGRN_MATCHINGGRAPH_HPP
-#define DSGRN_MATCHINGGRAPH_HPP
+#pragma once
 
 #ifndef INLINE_IF_HEADER_ONLY
 #define INLINE_IF_HEADER_ONLY
@@ -141,5 +140,3 @@ graphviz_with_highlighted_path ( std::vector<MatchingGraph::Vertex> const& path 
   ss << "}\n";
   return ss . str ();
 }
-
-#endif

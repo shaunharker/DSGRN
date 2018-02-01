@@ -3,8 +3,7 @@
 /// MIT LICENSE 
 /// 2016-12-26
 
-#ifndef DSGRN_MATCHINGRELATION_HPP
-#define DSGRN_MATCHINGRELATION_HPP
+#pragma once
 
 #ifndef INLINE_IF_HEADER_ONLY
 #define INLINE_IF_HEADER_ONLY
@@ -58,5 +57,3 @@ edge_labelstring ( uint64_t L ) const {
   }
   return result;
 };
-
-#endif

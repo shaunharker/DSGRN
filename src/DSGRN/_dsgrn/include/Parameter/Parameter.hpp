@@ -2,8 +2,7 @@
 /// Shaun Harker
 /// 2015-05-24
 
-#ifndef DSGRN_PARAMETER_HPP
-#define DSGRN_PARAMETER_HPP
+#pragma once
 
 #ifndef INLINE_IF_HEADER_ONLY
 #define INLINE_IF_HEADER_ONLY
@@ -386,5 +385,3 @@ INLINE_IF_HEADER_ONLY std::ostream& operator << ( std::ostream& stream, Paramete
   stream << p.stringify();
   return stream;
 }
-
-#endif

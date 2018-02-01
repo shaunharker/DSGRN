@@ -2,8 +2,7 @@
 /// Shaun Harker
 /// 2015-05-24
 
-#ifndef DSGRN_MORSEGRAPH_H
-#define DSGRN_MORSEGRAPH_H
+#pragma once
 
 #include "common.h"
 
@@ -82,29 +81,11 @@ private:
   ///   given the available information. (Note: not every
   ///   isomorphic graph has the same canonicalization.)
   void _canonicalize ( void );
-
-  /// serialize
-  ///   For use with BOOST Serialization library,
-  ///   which is used by the cluster-delegator MPI package
-  friend class boost::serialization::access;
-  template<class Archive>
-  void serialize(Archive & ar, const unsigned int version) {
-    ar & data_;
-  }
 };
 
 struct MorseGraph_ {
   Poset poset_;
   std::unordered_map<uint64_t, Annotation> annotations_;
-  /// serialize
-  ///   For use with BOOST Serialization library,
-  ///   which is used by the cluster-delegator MPI package
-  friend class boost::serialization::access;
-  template<class Archive>
-  void serialize(Archive & ar, const unsigned int version) {
-    ar & poset_;
-    ar & annotations_;
-  }
 };
 
 // template < class SwitchingGraph > MorseGraph::
@@ -149,5 +130,3 @@ MorseGraphBinding (py::module &m) {
     .def("parse", &MorseGraph::parse)
     .def("graphviz", &MorseGraph::graphviz);
 }
-
-#endif

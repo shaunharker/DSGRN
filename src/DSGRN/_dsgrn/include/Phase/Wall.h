@@ -2,8 +2,7 @@
 /// Shaun Harker
 /// 2015-05-27
 
-#ifndef DSGRN_WALL_H
-#define DSGRN_WALL_H
+#pragma once
 
 #include "common.h"
 
@@ -37,14 +36,4 @@ public:
 
 private:
   uint64_t index_;
-  /// serialize
-  ///   For use with BOOST Serialization library,
-  ///   which is used by the cluster-delegator MPI package
-  friend class boost::serialization::access;
-  template<class Archive>
-  void serialize(Archive & ar, const unsigned int version) {
-    ar & index_;
-  }
 };
-
-#endif

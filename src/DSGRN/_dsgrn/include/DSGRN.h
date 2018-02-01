@@ -2,8 +2,7 @@
 /// Shaun Harker
 /// 2015-05-29
 
-#ifndef DSGRN_H
-#define DSGRN_H
+#pragma once
 
 #include "Parameter/Network.h"
 #include "Parameter/Parameter.h"
@@ -27,5 +26,3 @@
 #include "Pattern/PatternGraph.h"
 #include "Pattern/PatternMatch.h"
 #include "Pattern/SearchGraph.h"
-
-#endif

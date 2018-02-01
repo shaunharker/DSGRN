@@ -26,8 +26,7 @@
 //
 // Documentation:
 //   The code attempts to be "self-documenting"
-#ifndef SQLAMBDA_H
-#define SQLAMBDA_H
+#pragma once
 
 #include <memory>
 #include <string>
@@ -413,5 +412,3 @@ operator sqlite3* () const {
 }
 
 }
-
-#endif

@@ -14,8 +14,7 @@ Class @ref nlohmann::basic_json is a good entry point for the documentation.
 */
 
 
-#ifndef NLOHMANN_JSON_HPP
-#define NLOHMANN_JSON_HPP
+#pragma once
 
 #include <algorithm>
 #include <array>
@@ -6566,4 +6565,3 @@ inline nlohmann::json operator "" _json(const char* s, std::size_t)
                                  (const_cast<char*>(s)));
 }
 
-#endif

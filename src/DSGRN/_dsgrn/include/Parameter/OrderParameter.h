@@ -2,8 +2,7 @@
 /// Shaun Harker
 /// 2015-05-24
 
-#ifndef DSGRN_ORDERPARAMETER_H
-#define DSGRN_ORDERPARAMETER_H
+#pragma once
 
 #include "common.h"
 
@@ -97,14 +96,6 @@ private:
   static std::vector<uint64_t> _tail_rep_to_perm ( std::vector<uint64_t> const& tail_rep );
   static std::vector<uint64_t> _perm_to_tail_rep ( std::vector<uint64_t> const& perm );
   static uint64_t _tail_rep_to_index ( std::vector<uint64_t> const& tail_rep );
-  /// serialize
-  ///   For use with BOOST Serialization library,
-  ///   which is used by the cluster-delegator MPI package
-  friend class boost::serialization::access;
-  template<class Archive>
-  void serialize(Archive & ar, const unsigned int version) {
-    ar & data_;
-  }
 };
 
 struct OrderParameter_ {
@@ -112,17 +103,6 @@ struct OrderParameter_ {
   std::vector<uint64_t> inverse_;
   uint64_t k_;
   uint64_t m_;
-  /// serialize
-  ///   For use with BOOST Serialization library,
-  ///   which is used by the cluster-delegator MPI package
-  friend class boost::serialization::access;
-  template<class Archive>
-  void serialize(Archive & ar, const unsigned int version) {
-    ar & permute_;
-    ar & inverse_;
-    ar & k_;
-    ar & m_;
-  }
 };
 
 /// Python Bindings
@@ -148,5 +128,3 @@ OrderParameterBinding (py::module &m) {
     .def("__eq__", &OrderParameter::operator==)
     .def("__str__", [](OrderParameter * lp){ std::stringstream ss; ss << *lp; return ss.str();; });
 }
-
-#endif

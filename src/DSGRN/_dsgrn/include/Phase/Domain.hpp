@@ -2,8 +2,7 @@
 /// Shaun Harker
 /// 2015-05-24
 
-#ifndef DSGRN_DOMAIN_HPP
-#define DSGRN_DOMAIN_HPP
+#pragma once
 
 #ifndef INLINE_IF_HEADER_ONLY
 #define INLINE_IF_HEADER_ONLY
@@ -111,5 +110,3 @@ operator << ( std::ostream& stream, Domain const& dom ) {
     stream << "]";
 return stream;
 }
-
-#endif

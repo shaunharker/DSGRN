@@ -3,8 +3,7 @@
 /// MIT LICENSE 
 /// 2016-12-26
 
-#ifndef DSGRN_MATCHINGRELATION_H
-#define DSGRN_MATCHINGRELATION_H
+#pragma once
 
 #include "common.h"
 
@@ -61,5 +60,3 @@ MatchingRelationBinding (py::module &m) {
     .def("vertex_labelstring", &MatchingRelation::vertex_labelstring)
     .def("edge_labelstring", &MatchingRelation::edge_labelstring);
 }
-
-#endif

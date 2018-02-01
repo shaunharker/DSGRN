@@ -3,8 +3,7 @@
 /// Shaun Harker and Bree Cummins
 /// 2016-03-20
 
-#ifndef DSGRN_SEARCHGRAPH_HPP
-#define DSGRN_SEARCHGRAPH_HPP
+#pragma once
 
 #ifndef INLINE_IF_HEADER_ONLY
 #define INLINE_IF_HEADER_ONLY
@@ -211,5 +210,3 @@ std::string SearchGraph::
 edgeInformation ( uint64_t source, uint64_t target ) const {
   return data_ -> edge_information_ ( source, target );
 }
-
-#endif

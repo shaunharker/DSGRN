@@ -100,14 +100,6 @@ public:
 private:
   std::shared_ptr<ParameterGraph_> data_;
   uint64_t _factorial ( uint64_t m ) const;
-  /// serialize
-  ///   For use with BOOST Serialization library,
-  ///   which is used by the cluster-delegator MPI package
-  friend class boost::serialization::access;
-  template<class Archive>
-  void serialize(Archive & ar, const unsigned int version) {
-    ar & data_;
-  }
 };
 
 struct ParameterGraph_ {
@@ -121,23 +113,6 @@ struct ParameterGraph_ {
   std::vector<std::unordered_map<std::string,uint64_t>> factors_inv_;
   std::vector<uint64_t> logic_place_bases_;
   std::vector<uint64_t> order_place_bases_;
-  /// serialize
-  ///   For use with BOOST Serialization library,
-  ///   which is used by the cluster-delegator MPI package
-  friend class boost::serialization::access;
-  template<class Archive>
-  void serialize(Archive & ar, const unsigned int version) {
-    ar & network_;
-    ar & size_;
-    ar & reorderings_;
-    ar & fixedordersize_;
-    ar & logic_place_values_;
-    ar & order_place_values_;
-    ar & factors_;
-    ar & factors_inv_;
-    ar & logic_place_bases_;
-    ar & order_place_bases_;
-  }
 };
 
 /// Python Bindings

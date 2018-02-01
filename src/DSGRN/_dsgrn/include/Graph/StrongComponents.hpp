@@ -2,8 +2,7 @@
 /// Shaun Harker
 /// 2015-05-24
 
-#ifndef DSGRN_STRONGCOMPONENTS_HPP
-#define DSGRN_STRONGCOMPONENTS_HPP
+#pragma once
 
 #ifndef INLINE_IF_HEADER_ONLY
 #define INLINE_IF_HEADER_ONLY
@@ -108,4 +107,3 @@ StrongComponents ( Digraph const digraph ) {
                       output_scc_root, 
                       output_recurrent );
 }
-#endif

@@ -2,8 +2,7 @@
 /// Shaun Harker
 /// 2015-05-24
 
-#ifndef DSGRN_DOMAIN_H
-#define DSGRN_DOMAIN_H
+#pragma once
 
 #include "common.h"
 
@@ -109,19 +108,6 @@ private:
   uint64_t index_;
   uint64_t max_;
   uint64_t D_;
-  /// serialize
-  ///   For use with BOOST Serialization library,
-  ///   which is used by the cluster-delegator MPI package
-  friend class boost::serialization::access;
-  template<class Archive>
-  void serialize(Archive & ar, const unsigned int version) {
-    ar & data_;
-    ar & limits_;
-    ar & offset_;
-    ar & index_;
-    ar & max_;
-    ar & D_;
-  }
 };
 
 /// Python Bindings
@@ -146,5 +132,3 @@ DomainBinding (py::module &m) {
     .def("isValid", &Domain::isValid)
     .def("__str__", [](Domain * lp){ std::stringstream ss; ss << *lp; return ss.str(); });
 }
-
-#endif

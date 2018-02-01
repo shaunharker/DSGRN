@@ -3,8 +3,7 @@
 /// Shaun Harker and Bree Cummins
 /// 2016-03-19
 
-#ifndef DSGRN_MATCHINGGRAPH_H
-#define DSGRN_MATCHINGGRAPH_H
+#pragma once
 
 #include "common.h"
 
@@ -93,28 +92,11 @@ public:
 
 private:
   std::shared_ptr<MatchingGraph_> data_;
-  /// serialize
-  ///   For use with BOOST Serialization library,
-  ///   which is used by the cluster-delegator MPI package
-  friend class boost::serialization::access;
-  template<class Archive>
-  void serialize(Archive & ar, const unsigned int version) {
-    ar & data_;
-  }
 };
 
 struct MatchingGraph_ {
   PatternGraph pg_;
   SearchGraph sg_;
-  /// serialize
-  ///   For use with BOOST Serialization library,
-  ///   which is used by the cluster-delegator MPI package
-  friend class boost::serialization::access;
-  template<class Archive>
-  void serialize(Archive & ar, const unsigned int version) {
-    ar & pg_;
-    ar & sg_;
-  }
 };
 
 /// Python Bindings
@@ -139,5 +121,3 @@ MatchingGraphBinding (py::module &m) {
     .def("graphviz", &MatchingGraph::graphviz)
     .def("graphviz_with_highlighted_path", &MatchingGraph::graphviz_with_highlighted_path);
 }
-
-#endif

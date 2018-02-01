@@ -2,8 +2,7 @@
 /// Shaun Harker
 /// 2015-05-24
 
-#ifndef DSGRN_WALLGRAPH_H
-#define DSGRN_WALLGRAPH_H
+#pragma once 
 
 #include "common.h"
 
@@ -43,14 +42,6 @@ public:
 
 private:
   std::shared_ptr<WallGraph_> data_;
-  /// serialize
-  ///   For use with BOOST Serialization library,
-  ///   which is used by the cluster-delegator MPI package
-  friend class boost::serialization::access;
-  template<class Archive>
-  void serialize(Archive & ar, const unsigned int version) {
-    ar & data_;
-  }
 };
 
 struct WallGraph_ {
@@ -58,17 +49,4 @@ struct WallGraph_ {
   Parameter parameter_;
   std::unordered_map<uint64_t, uint64_t> wall_index_to_vertex_;
   std::vector<uint64_t> vertex_to_dimension_;
-  /// serialize
-  ///   For use with BOOST Serialization library,
-  ///   which is used by the cluster-delegator MPI package
-  friend class boost::serialization::access;
-  template<class Archive>
-  void serialize(Archive & ar, const unsigned int version) {
-    ar & digraph_;
-    ar & parameter_;
-    ar & wall_index_to_vertex_;
-    ar & vertex_to_dimension_;
-  }
 };
-
-#endif

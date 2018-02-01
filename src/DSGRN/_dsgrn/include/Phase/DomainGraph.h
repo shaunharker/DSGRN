@@ -2,8 +2,7 @@
 /// Shaun Harker
 /// 2015-05-24
 
-#ifndef DSGRN_DOMAINGRAPH_H
-#define DSGRN_DOMAINGRAPH_H
+#pragma once
 
 #include "common.h"
 #include "Parameter/Parameter.h"
@@ -106,14 +105,6 @@ public:
 
 private:
   std::shared_ptr<DomainGraph_> data_;
-  /// serialize
-  ///   For use with BOOST Serialization library,
-  ///   which is used by the cluster-delegator MPI package
-  friend class boost::serialization::access;
-  template<class Archive>
-  void serialize(Archive & ar, const unsigned int version) {
-    ar & data_;
-  }
 };
 
 struct DomainGraph_ {
@@ -122,18 +113,6 @@ struct DomainGraph_ {
   Parameter parameter_;
   std::vector<uint64_t> labelling_;
   std::unordered_map<uint64_t,uint64_t> direction_;
-  /// serialize
-  ///   For use with BOOST Serialization library,
-  ///   which is used by the cluster-delegator MPI package
-  friend class boost::serialization::access;
-  template<class Archive>
-  void serialize(Archive & ar, const unsigned int version) {
-    ar & dimension_;
-    ar & digraph_;
-    ar & parameter_;
-    ar & labelling_;
-    ar & direction_;
-  }
 };
 
 /// Python Bindings
@@ -161,5 +140,3 @@ DomainGraphBinding (py::module &m) {
     .def("__str__", [](DomainGraph * lp){ std::stringstream ss; ss << *lp; return ss.str(); });
 
 }
-
-#endif

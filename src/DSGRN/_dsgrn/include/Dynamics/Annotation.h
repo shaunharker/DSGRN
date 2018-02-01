@@ -2,8 +2,7 @@
 /// Shaun Harker
 /// 2015-05-15
 
-#ifndef DSGRN_ANNOTATION_H
-#define DSGRN_ANNOTATION_H
+#pragma once
 
 #include "common.h"
 
@@ -61,27 +60,10 @@ public:
   friend std::ostream& operator << ( std::ostream& stream, Annotation const& a );
 private:
   std::shared_ptr<Annotation_> data_;
-
-  /// serialize
-  ///   For use with BOOST Serialization library,
-  ///   which is used by the cluster-delegator MPI package
-  friend class boost::serialization::access;
-  template<class Archive>
-  void serialize(Archive & ar, const unsigned int version) {
-    ar & data_;
-  }
 };
 
 struct Annotation_ {
   std::vector<std::string> annotations_;
-  /// serialize
-  ///   For use with BOOST Serialization library,
-  ///   which is used by the cluster-delegator MPI package
-  friend class boost::serialization::access;
-  template<class Archive>
-  void serialize(Archive & ar, const unsigned int version) {
-    ar & annotations_;
-  }
 };
 
 /// Python Bindings
@@ -104,5 +86,3 @@ AnnotationBinding(py::module &m) {
     .def("stringify", &Annotation::stringify)
     .def("parse", &Annotation::parse);
 }
-
-#endif

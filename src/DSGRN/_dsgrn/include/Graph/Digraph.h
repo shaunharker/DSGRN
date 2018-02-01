@@ -2,8 +2,7 @@
 /// Shaun Harker
 /// 2015-05-24
 
-#ifndef DSGRN_DIGRAPH_H
-#define DSGRN_DIGRAPH_H
+#pragma once
 
 #include "common.h"
 
@@ -115,28 +114,10 @@ public:
 
 protected:
   std::shared_ptr<Digraph_> data_;
-  
-  /// serialize
-  ///   For use with BOOST Serialization library,
-  ///   which is used by the cluster-delegator MPI package
-  friend class boost::serialization::access;
-  template<class Archive>
-  void serialize(Archive & ar, const unsigned int version) {
-    ar & data_;
-  }
-
 };
 
 struct Digraph_ {
   std::vector<std::vector<uint64_t>> adjacencies_;
-  /// serialize
-  ///   For use with BOOST Serialization library,
-  ///   which is used by the cluster-delegator MPI package
-  friend class boost::serialization::access;
-  template<class Archive>
-  void serialize(Archive & ar, const unsigned int version) {
-    ar & adjacencies_;
-  }
 };
 
 
@@ -165,5 +146,3 @@ DigraphBinding (py::module &m) {
     .def("parse", &Digraph::parse)
     .def("graphviz", &Digraph::graphviz);
 }
-
-#endif

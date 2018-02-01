@@ -3,8 +3,7 @@
 /// Shaun Harker and Bree Cummins
 /// 2016-03-21
 
-#ifndef DSGRN_PATTERN_H
-#define DSGRN_PATTERN_H
+#pragma once
 
 #include "common.h"
 
@@ -96,15 +95,7 @@ public:
   parse ( std::string const& str );
 
 private:
-  std::shared_ptr<Pattern_> data_;
-  /// serialize
-  ///   For use with BOOST Serialization library,
-  ///   which is used by the cluster-delegator MPI package
-  friend class boost::serialization::access;
-  template<class Archive>
-  void serialize(Archive & ar, const unsigned int version) {
-    ar & data_;
-  }  
+  std::shared_ptr<Pattern_> data_; 
 };
 
 struct Pattern_ {
@@ -112,17 +103,6 @@ struct Pattern_ {
   std::vector<uint64_t> events_;
   uint64_t label_;
   uint64_t dimension_;
-  /// serialize
-  ///   For use with BOOST Serialization library,
-  ///   which is used by the cluster-delegator MPI package
-  friend class boost::serialization::access;
-  template<class Archive>
-  void serialize(Archive & ar, const unsigned int version) {
-    ar & poset_;
-    ar & events_;
-    ar & label_;
-    ar & dimension_;
-  }
 };
 
 /// Python Bindings
@@ -144,5 +124,3 @@ PatternBinding (py::module &m) {
     .def("stringify", &Pattern::stringify)
     .def("parse", &Pattern::parse);
 }
-
-#endif

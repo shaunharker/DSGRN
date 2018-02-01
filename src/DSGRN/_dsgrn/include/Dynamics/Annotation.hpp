@@ -2,8 +2,7 @@
 /// Shaun Harker
 /// 2015-05-15
 
-#ifndef DSGRN_ANNOTATION_HPP
-#define DSGRN_ANNOTATION_HPP
+#pragma once
 
 #ifndef INLINE_IF_HEADER_ONLY
 #define INLINE_IF_HEADER_ONLY
@@ -73,5 +72,3 @@ INLINE_IF_HEADER_ONLY std::ostream& operator << ( std::ostream& stream, Annotati
   stream << "}";
   return stream;
 }
-
-#endif

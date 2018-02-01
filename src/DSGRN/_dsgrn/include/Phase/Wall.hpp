@@ -2,8 +2,7 @@
 /// Shaun Harker
 /// 2015-05-27
 
-#ifndef DSGRN_WALL_HPP
-#define DSGRN_WALL_HPP
+#pragma once
 
 #ifndef INLINE_IF_HEADER_ONLY
 #define INLINE_IF_HEADER_ONLY
@@ -38,5 +37,3 @@ operator << ( std::ostream& stream, Wall const& w ) {
   stream << w . index ();
   return stream;
 }
-
-#endif

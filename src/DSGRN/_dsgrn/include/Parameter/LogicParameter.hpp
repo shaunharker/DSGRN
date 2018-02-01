@@ -2,8 +2,7 @@
 /// Shaun Harker
 /// 2015-05-24
 
-#ifndef DSGRN_LOGICPARAMETER_HPP
-#define DSGRN_LOGICPARAMETER_HPP
+#pragma once
 
 #ifndef INLINE_IF_HEADER_ONLY
 #define INLINE_IF_HEADER_ONLY
@@ -178,5 +177,3 @@ INLINE_IF_HEADER_ONLY std::ostream& operator << ( std::ostream& stream, LogicPar
   stream << p.stringify ();
   return stream;
 }
-
-#endif

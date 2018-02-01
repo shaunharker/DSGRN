@@ -2,8 +2,7 @@
 /// Shaun Harker
 /// 2015-05-24
 
-#ifndef DSGRN_PARAMETER_H
-#define DSGRN_PARAMETER_H
+#pragma once
 
 #include "common.h"
 
@@ -128,30 +127,12 @@ public:
 
 private:
   std::shared_ptr<Parameter_> data_;
-  /// serialize
-  ///   For use with BOOST Serialization library,
-  ///   which is used by the cluster-delegator MPI package
-  friend class boost::serialization::access;
-  template<class Archive>
-  void serialize(Archive & ar, const unsigned int version) {
-    ar & data_;
-  }
 };
 
 struct Parameter_ {
   std::vector<LogicParameter> logic_;
   std::vector<OrderParameter> order_;
   Network network_;
-  /// serialize
-  ///   For use with BOOST Serialization library,
-  ///   which is used by the cluster-delegator MPI package
-  friend class boost::serialization::access;
-  template<class Archive>
-  void serialize(Archive & ar, const unsigned int version) {
-    ar & logic_;
-    ar & order_;
-    ar & network_;
-  }
 };
 
 /// Python Bindings
@@ -179,5 +160,3 @@ ParameterBinding (py::module &m) {
     .def("order", &Parameter::order)
     .def("__str__", [](Parameter * lp){ std::stringstream ss; ss << *lp; return ss.str(); });
 }
-
-#endif
