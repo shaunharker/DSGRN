@@ -37,9 +37,11 @@ assign ( Pattern const& pattern ) {
   data_ -> leaf_ = data_ -> size_ ++;
   data_ -> labels_ . push_back ( pattern . label () );
   data_ -> consume_ . push_back ( std::unordered_map<uint64_t, uint64_t> () );
-  Clique maximal = poset . maximal ( std::set<uint64_t> ( 
-    boost::counting_iterator<uint64_t>(0), 
-    boost::counting_iterator<uint64_t> ( poset.size() ) ) ); 
+
+  std::set<int> s;
+  for (int i = 0; i < poset.size(); ++i) s.insert(s.end(), i); // insert-with-hint
+  Clique maximal = poset . maximal ( s );
+
   vertices [ maximal ] = leaf ();
   // Begin bottom-up traversal of pattern graph
   std::stack<Clique> recursion_stack;

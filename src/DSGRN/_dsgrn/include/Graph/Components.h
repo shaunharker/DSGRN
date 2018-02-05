@@ -6,8 +6,6 @@
 
 #include "common.h"
 
-//typedef boost::sub_range < std::vector<uint64_t> > Component;
-
 template < typename I >
 class Range {
 public:
