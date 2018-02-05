@@ -6,6 +6,11 @@
 
 /// Common includes
 
+// #include "Tools/sqlambda.h"
+#include "Tools/SHA256.h"
+#include "Tools/json.hpp"
+#include "Tools/hash.hpp"
+
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -26,7 +31,6 @@
 #include <unordered_map>
 #include <regex>
 
-#include "boost/functional/hash.hpp"
 #include "boost/function.hpp"
 #include "boost/bind.hpp"
 #include "boost/range/sub_range.hpp"
@@ -35,9 +39,7 @@
 #include "boost/iterator/transform_iterator.hpp"
 
 
-// #include "Tools/sqlambda.h"
-#include "Tools/SHA256.h"
-#include "Tools/json.hpp"
+
 
 using json = nlohmann::json;
 

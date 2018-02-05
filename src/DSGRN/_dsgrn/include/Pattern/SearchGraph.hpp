@@ -180,7 +180,7 @@ graphviz ( void ) const {
 INLINE_IF_HEADER_ONLY std::string SearchGraph::
 graphviz_with_highlighted_path ( std::vector<uint64_t> const& path ) const {
   std::unordered_set<uint64_t> vertices ( path.begin(), path.end() );
-  std::unordered_set<std::pair<uint64_t,uint64_t>,boost::hash<std::pair<uint64_t,uint64_t>>> edges;
+  std::unordered_set<std::pair<uint64_t,uint64_t>, dsgrn::hash<std::pair<uint64_t,uint64_t>>> edges;
   for ( int64_t i = 0; i < (int64_t)path.size() - 1; ++ i ) edges.insert({path[i], path[i+1]});
   MatchingRelation mr(dimension());
   std::stringstream ss;

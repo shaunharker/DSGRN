@@ -59,8 +59,8 @@ FindPath ( MatchingGraph const& mg,
   //auto str = [](Vertex const& v) { std::stringstream ss; ss << "(" << v.first << ", " << v.second << ")"; return ss.str();};
   //std::cout << "0 " << str(start) << "\n";
   std::stack<Vertex> dfs_stack;
-  std::unordered_set<Vertex, boost::hash<Vertex>> explored;
-  std::unordered_map<Vertex, Vertex, boost::hash<Vertex>> parent;
+  std::unordered_set<Vertex, dsgrn::hash<Vertex>> explored;
+  std::unordered_map<Vertex, Vertex, dsgrn::hash<Vertex>> parent;
   parent[start] = start; 
   dfs_stack . push ( start );
   while ( not dfs_stack . empty () ) {
@@ -193,8 +193,8 @@ ExplainCycleMatch ( MatchingGraph const& mg ) {
     Vertex start = {sg_vertex, mg . patterngraph() . root () };
     Vertex end = {sg_vertex, mg . patterngraph() . leaf () };
     if ( not ( mg . query ( start ) && mg . query ( end ) ) ) continue;
-    std::unordered_set<Vertex, boost::hash<Vertex>> preordered;
-    std::unordered_set<Vertex, boost::hash<Vertex>> postordered; 
+    std::unordered_set<Vertex, dsgrn::hash<Vertex>> preordered;
+    std::unordered_set<Vertex, dsgrn::hash<Vertex>> postordered; 
     std::stack<Vertex> dfs_stack;
     std::vector<Vertex> history;
     dfs_stack . push ( start );

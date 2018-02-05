@@ -115,8 +115,8 @@ struct Network_ {
   std::vector<std::vector<uint64_t>> outputs_;
   std::unordered_map<std::string, uint64_t> index_by_name_;
   std::vector<std::string> name_by_index_;
-  std::unordered_map<std::pair<uint64_t,uint64_t>, bool, boost::hash<std::pair<uint64_t,uint64_t>>> edge_type_;
-  std::unordered_map<std::pair<uint64_t,uint64_t>, uint64_t, boost::hash<std::pair<uint64_t,uint64_t>>> order_;
+  std::unordered_map<std::pair<uint64_t,uint64_t>, bool, dsgrn::hash<std::pair<uint64_t,uint64_t>>> edge_type_;
+  std::unordered_map<std::pair<uint64_t,uint64_t>, uint64_t, dsgrn::hash<std::pair<uint64_t,uint64_t>>> order_;
   std::vector<std::vector<std::vector<uint64_t>>> logic_by_index_;
   std::vector<bool> essential_;
   std::string specification_;

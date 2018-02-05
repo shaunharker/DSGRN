@@ -6,15 +6,59 @@
 
 #include "common.h"
 
-typedef boost::sub_range < std::vector<uint64_t> > Component;
+//typedef boost::sub_range < std::vector<uint64_t> > Component;
+
+template < typename I >
+class Range {
+public:
+  typedef I iterator;
+  typedef I const_iterator;
+  Range ( void ) {}
+  Range ( iterator b, iterator e ) : begin_(b), end_(e) {}
+  iterator begin ( void ) const { return begin_;}
+  iterator end ( void ) const { return end_;}
+  uint64_t size ( void ) const { return end_ - begin_;}
+  typename iterator::value_type operator [] ( int64_t i ) const {return *(begin_ + i);}
+private:
+  iterator begin_;
+  iterator end_;
+};
+
+template < typename T >
+class fun_iterator {
+public:
+    typedef fun_iterator self_type;
+    typedef T value_type;
+    typedef T& reference;
+    typedef T* pointer;
+    typedef int64_t difference_type;
+    typedef std::forward_iterator_tag iterator_category;
+    fun_iterator(void){}
+    fun_iterator(int64_t i, std::function<T(int64_t)> f) : f_(f), val_(i) { }
+    fun_iterator(std::function<T(int64_t)> f) : f_(f), val_(0) { }
+    self_type operator++() { val_++; return *this; }
+    self_type operator++(int) { self_type i = *this; val_++; return i; }
+    self_type operator+(int64_t i) const {return fun_iterator(val_ + i, f_);}
+    difference_type operator-(self_type const& rhs) const{return rhs.val_ - val_;}
+    T operator*() { return f_(val_); }
+    //const T* operator->() { return ptr_; }
+    self_type operator=(const self_type& other) { val_ = other.val_; f_ = other.f_; return *this; }
+    bool operator==(const self_type& rhs)const { return val_ == rhs.val_; }
+    bool operator!=(const self_type& rhs)const { return val_ != rhs.val_; }
+private:
+    std::function<T(int64_t)> f_;
+    int64_t val_;
+};
+
+typedef Range<std::vector<uint64_t>::const_iterator> Component;
 
 struct Components_;
 
 class Components {
 public:
-  typedef boost::function < Component ( int64_t ) > Functor;
-  typedef boost::transform_iterator<Functor, boost::counting_iterator<int64_t> > iterator;
-  typedef boost::iterator_range<iterator> ComponentContainer;
+  typedef std::function < Component ( int64_t ) > Functor;
+  typedef fun_iterator<Component> iterator;
+  typedef Range<iterator> ComponentContainer;
 
   /// Components
   Components ( void );

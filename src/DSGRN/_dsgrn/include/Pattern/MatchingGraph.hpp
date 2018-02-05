@@ -113,13 +113,13 @@ graphviz_with_highlighted_path ( std::vector<MatchingGraph::Vertex> const& path 
   }
 
   // lookup for path
-  std::unordered_set<Vertex, boost::hash<Vertex>> path_vertices ( path.begin(), path.end() );
-  std::unordered_set<std::pair<Vertex,Vertex>, boost::hash<std::pair<Vertex,Vertex>>> path_edges; 
+  std::unordered_set<Vertex, dsgrn::hash<Vertex>> path_vertices ( path.begin(), path.end() );
+  std::unordered_set<std::pair<Vertex,Vertex>, dsgrn::hash<std::pair<Vertex,Vertex>>> path_edges; 
   for ( int64_t i = 0; i < (int64_t) path.size() - 1; ++ i ) path_edges.insert({path[i], path[i+1]});
 
   // build string
   std::stringstream ss;
-  std::unordered_map<Vertex,uint64_t,boost::hash<Vertex>> indexing;
+  std::unordered_map<Vertex,uint64_t, dsgrn::hash<Vertex>> indexing;
   ss << "digraph {\n";
   // vertices
   for ( Vertex const& v : vertices ) {

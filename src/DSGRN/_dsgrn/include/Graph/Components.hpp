@@ -51,12 +51,13 @@ assign ( std::vector<uint64_t> const& vertices,
   }
 
   //std::cout << "Number of recurrent components = " << recurrent_size << "\n";
-  iterator componentBegin ( 0, boost::bind ( &Components_::_component, data_ . get(), _1 ) );
+  iterator componentBegin ( [&](int64_t i){ return data_ -> _component (i);} );
   iterator componentEnd = componentBegin + C;
-  iterator recurrentBegin ( 0, boost::bind ( &Components_::_recurrentComponent, data_ . get(), _1 ) );
+  iterator recurrentBegin ( [&](int64_t i){ return data_ -> _recurrentComponent (i);} );
   iterator recurrentEnd = recurrentBegin + R;
-  data_ -> component_container_ = boost::make_iterator_range ( componentBegin, componentEnd );
-  data_ -> recurrent_container_ = boost::make_iterator_range ( recurrentBegin, recurrentEnd ); 
+  
+  data_ -> component_container_ = ComponentContainer ( componentBegin, componentEnd );
+  data_ -> recurrent_container_ = ComponentContainer ( recurrentBegin, recurrentEnd ); 
 
   for ( uint64_t i = 0; i < C; ++ i ) {
     auto const& comp = operator [] ( i );
