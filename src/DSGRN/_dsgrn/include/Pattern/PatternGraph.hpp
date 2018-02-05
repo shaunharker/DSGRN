@@ -38,8 +38,8 @@ assign ( Pattern const& pattern ) {
   data_ -> labels_ . push_back ( pattern . label () );
   data_ -> consume_ . push_back ( std::unordered_map<uint64_t, uint64_t> () );
 
-  std::set<int> s;
-  for (int i = 0; i < poset.size(); ++i) s.insert(s.end(), i); // insert-with-hint
+  std::set<uint64_t> s;
+  for (uint64_t i = 0; i < poset.size(); ++i) s.insert(s.end(), i); // insert-with-hint
   Clique maximal = poset . maximal ( s );
 
   vertices [ maximal ] = leaf ();
