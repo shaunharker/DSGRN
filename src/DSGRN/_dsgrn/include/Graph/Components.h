@@ -37,7 +37,7 @@ public:
     self_type operator++() { val_++; return *this; }
     self_type operator++(int) { self_type i = *this; val_++; return i; }
     self_type operator+(int64_t i) const {return fun_iterator(val_ + i, f_);}
-    difference_type operator-(self_type const& rhs) const{return rhs.val_ - val_;}
+    difference_type operator-(self_type const& rhs) const{return val_ - rhs.val_;}
     T operator*() { return f_(val_); }
     //const T* operator->() { return ptr_; }
     self_type operator=(const self_type& other) { val_ = other.val_; f_ = other.f_; return *this; }
@@ -141,24 +141,25 @@ struct Components_ {
   _recurrentComponent ( int64_t rank );
 };
 
-// /// Python Bindings
+/// Python Bindings
 
-// #include <pybind11/pybind11.h>
-// #include <pybind11/stl.h>
-// namespace py = pybind11;
+#include <pybind11/pybind11.h>
+#include <pybind11/stl.h>
+namespace py = pybind11;
 
-// inline void
-// ComponentsBinding (py::module &m) {
-//   py::class_<Components, std::shared_ptr<Components>>(m, "Components")
-//     .def(py::init<>())
-//     .def(py::init<std::vector<uint64_t>const&,std::vector<bool>const&,std::vector<bool>const&>())
-//     .def("begin", &Components::begin)
-//     .def("end", &Components::end)
-//     .def("size", &Components::size)
-//     .def("__iter__", [](Components const& v) {
-//         return py::make_iterator(v.begin(), v.end());
-//       }, py::keep_alive<0, 1>())        
-//     .def("recurrentComponents", &Components::recurrentComponents)
-//     .def("isRecurrent", &Components::isRecurrent)
-//     .def("whichComponent", &Components::whichComponent);
-// }
+inline void
+ComponentsBinding (py::module &m) {
+  py::class_<Components, std::shared_ptr<Components>>(m, "Components")
+    .def(py::init<>())
+    .def(py::init<std::vector<uint64_t>const&,std::vector<bool>const&,std::vector<bool>const&>())
+    .def("begin", &Components::begin)
+    .def("end", &Components::end)
+    .def("size", &Components::size)
+    .def("__iter__", [](Components const& v) {
+        return py::make_iterator(v.begin(), v.end());
+      }, py::keep_alive<0, 1>())        
+    .def("recurrentComponents", &Components::recurrentComponents)
+    .def("isRecurrent", &Components::isRecurrent)
+    .def("whichComponent", &Components::whichComponent)
+    .def("__str__", [](Components * c){ std::stringstream ss; ss << *c; return ss.str(); });
+}

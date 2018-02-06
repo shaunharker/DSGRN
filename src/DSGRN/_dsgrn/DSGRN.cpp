@@ -15,10 +15,10 @@ PYBIND11_MODULE( _dsgrn, m) {
   MorseDecompositionBinding(m);
   MorseGraphBinding(m);
   // Graph
-  // ComponentsBinding(m);
   DigraphBinding(m);
   PosetBinding(m);
-  //StrongComponents(m);
+  ComponentsBinding(m);
+  StrongComponentsBinding(m);
   // Parameter
   LogicParameterBinding(m);
   NetworkBinding(m);
