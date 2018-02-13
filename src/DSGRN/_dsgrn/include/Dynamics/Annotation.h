@@ -82,6 +82,9 @@ AnnotationBinding(py::module &m) {
     .def("__iter__", [](Annotation const& v) {
         return py::make_iterator(v.begin(), v.end());
       }, py::keep_alive<0, 1>())
+    .def("__getitem__", [](Annotation const& v, uint64_t key) {
+      return v[key];
+    })
     .def("append", &Annotation::append)
     .def("stringify", &Annotation::stringify)
     .def("parse", &Annotation::parse);
