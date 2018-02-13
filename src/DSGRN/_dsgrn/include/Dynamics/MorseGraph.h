@@ -94,9 +94,9 @@ struct MorseGraph_ {
 //   assign ( sg, md );
 // }
 
-template <class SearchGraph>
+template <class SwitchingGraph>
 void MorseGraph::
-assign ( SearchGraph const& sg,
+assign ( SwitchingGraph const& sg,
          MorseDecomposition const& md ) {
   data_ . reset ( new MorseGraph_ );
   // Copy the poset

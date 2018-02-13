@@ -51,9 +51,9 @@ assign ( std::vector<uint64_t> const& vertices,
   }
 
   //std::cout << "Number of recurrent components = " << recurrent_size << "\n";
-  iterator componentBegin ( [&](int64_t i){ return data_ -> _component (i);} );
+  iterator componentBegin ( [data_ = data_](int64_t i){ return data_ -> _component (i);} );
   iterator componentEnd = componentBegin + C;
-  iterator recurrentBegin ( [&](int64_t i){ return data_ -> _recurrentComponent (i);} );
+  iterator recurrentBegin ( [data_ = data_](int64_t i){ return data_ -> _recurrentComponent (i);} );
   iterator recurrentEnd = recurrentBegin + R;
   
   data_ -> component_container_ = ComponentContainer ( componentBegin, componentEnd );

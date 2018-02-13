@@ -6,6 +6,8 @@ from DSGRN.Query.Graph import *
 from DSGRN.Query.Hexcodes import *
 from DSGRN.Query.Logging import LogToSTDOUT
 
+import functools
+
 class ComputeSingleGeneQuery:
   def __init__(self, network, gene, labeller):
     self.network = network
@@ -20,7 +22,7 @@ class ComputeSingleGeneQuery:
     # significant) the sizes of each factor graph, followed by the number of permutations of the out-edges for
     # each node. We call these "bases" (as in number base) and we compute the place value for each digit.
     self.indexing_place_bases = [self.parametergraph.logicsize(i) for i in range(0,self.D)] + [self.parametergraph.ordersize(i) for i in range(0,self.D)]
-    self.indexing_place_values = reduce ( lambda x, y : x + [x[-1]*y], self.indexing_place_bases[:-1], [1])
+    self.indexing_place_values = functools.reduce ( lambda x, y : x + [x[-1]*y], self.indexing_place_bases[:-1], [1])
 
     # "gene_index" gives the integer index used in the representation
     self.gene_index = self.network.index(self.gene)

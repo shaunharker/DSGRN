@@ -136,6 +136,7 @@ NetworkBinding (py::module &m) {
     .def("load", &Network::load)
     .def("assign", &Network::assign)
     .def("size", &Network::size)
+    .def("index", &Network::index)
     .def("name", &Network::name)
     .def("inputs", &Network::inputs)
     .def("outputs", &Network::outputs)

@@ -49,8 +49,10 @@ private:
 };
 
 typedef Range<std::vector<uint64_t>::const_iterator> Component;
+typedef fun_iterator<Component> ComponentIterator;
 
 struct Components_;
+
 
 class Components {
 public:
@@ -111,6 +113,12 @@ public:
   uint64_t
   whichComponent ( uint64_t i ) const;
   
+  /// ptr
+  uint64_t
+  ptr ( void ) const {
+    return (uint64_t) data_.get();
+  }
+
   /// operator <<
   ///   Output to stream
   friend std::ostream& operator << ( std::ostream& stream, Components const& c );
@@ -149,6 +157,27 @@ namespace py = pybind11;
 
 inline void
 ComponentsBinding (py::module &m) {
+  py::class_<Component, std::shared_ptr<Component>>(m, "Component")
+    .def(py::init<>())
+    .def(py::init<std::vector<uint64_t>::const_iterator,std::vector<uint64_t>::const_iterator>())
+    .def("begin", &Component::begin)
+    .def("end", &Component::end)
+    .def("size", &Component::size)
+    .def("__iter__", [](Component const& v) {
+        return py::make_iterator(v.begin(), v.end());
+      }, py::keep_alive<0, 1>());
+
+  py::class_<fun_iterator<Component>, std::shared_ptr<fun_iterator<Component>>>(m, "ComponentIterator");
+
+  py::class_<Components::ComponentContainer, std::shared_ptr<Components::ComponentContainer>>(m, "ComponentContainer")
+    .def(py::init<>())
+    .def("begin", &Components::ComponentContainer::begin)
+    .def("end", &Components::ComponentContainer::end)
+    .def("size", &Components::ComponentContainer::size)
+    .def("__iter__", [](Components::ComponentContainer const& v) {
+        return py::make_iterator(v.begin(), v.end());
+      }, py::keep_alive<0, 1>());
+
   py::class_<Components, std::shared_ptr<Components>>(m, "Components")
     .def(py::init<>())
     .def(py::init<std::vector<uint64_t>const&,std::vector<bool>const&,std::vector<bool>const&>())
@@ -161,5 +190,6 @@ ComponentsBinding (py::module &m) {
     .def("recurrentComponents", &Components::recurrentComponents)
     .def("isRecurrent", &Components::isRecurrent)
     .def("whichComponent", &Components::whichComponent)
+    .def("ptr", &Components::ptr)
     .def("__str__", [](Components * c){ std::stringstream ss; ss << *c; return ss.str(); });
 }
