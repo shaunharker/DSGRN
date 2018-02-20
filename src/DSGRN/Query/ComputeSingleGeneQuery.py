@@ -66,7 +66,7 @@ class ComputeSingleGeneQuery:
     graph.matching_label = lambda gpi : self.labeller(self.full_parameter_index(reduced_parameter_index,gpi,self.gene_index))
     graph.num_inputs = len(self.network.inputs(self.gene_index))
     graph.num_outputs = len(self.network.outputs(self.gene_index))
-    graph.essential = lambda gpi : essential(graph.data[gpi][0],graph.num_inputs,graph.num_outputs)
+    #graph.essential = lambda gpi : essential(graph.data[gpi][0],graph.num_inputs,graph.num_outputs)
     return graph
 
   def number_of_gene_parameters(self):

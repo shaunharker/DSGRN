@@ -87,5 +87,6 @@ AnnotationBinding(py::module &m) {
     })
     .def("append", &Annotation::append)
     .def("stringify", &Annotation::stringify)
-    .def("parse", &Annotation::parse);
+    .def("parse", &Annotation::parse)
+    .def("str", [](Annotation * a){ std::stringstream ss; ss << *a; return ss.str(); });
 }
