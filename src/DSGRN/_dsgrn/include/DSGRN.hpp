@@ -12,6 +12,7 @@
 #include "Graph/Digraph.hpp"
 #include "Graph/Poset.hpp"
 #include "Graph/StrongComponents.hpp"
+#include "Graph/GraphRegexSearch.hpp"
 #include "Dynamics/Annotation.hpp"
 #include "Dynamics/MorseDecomposition.hpp"
 #include "Dynamics/MorseGraph.hpp"
