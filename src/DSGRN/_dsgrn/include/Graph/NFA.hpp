@@ -1,26 +1,9 @@
-/// GraphRegexSearch.hpp
+/// NFA.hpp
 /// Shaun Harker
 /// 2018-02-20
 /// MIT LICENSE
 
-/*
-
-TODO: +? and ?+ combinations do not always give same as * (correct, but non-optimal)
-
-Algorithm. 
-Given: a regex, and a graph G with vertices labelled with letters of alphabet, 
-allowed starting vertices, allowed ending vertices, and optionally a filter of allowed vertices.
-An unambiguous regex can be compiled into a graph H with labelled vertices.
-Create the matching tensor product graph G \otimes H.
-
-https://en.wikipedia.org/wiki/Thompson%27s_construction
-gives a way of generating the regex's NFA graph
-
-I do this along with some tricks to simplify the graph (and allow + and ? in expressions with their usual meaning)
-
-*/
-
-#include "GraphRegexSearch.h"
+#include "NFA.h"
 
 namespace NFA_detail {
 
@@ -238,8 +221,6 @@ namespace NFA_detail {
     std::unordered_set<NFA_Node *> parents_;
     uint64_t index;
   };
-
-
 
   bool have_same_self_edges ( NFA_Node * lhs, NFA_Node * rhs ) {
     if ( lhs->num_self_edges() != rhs->num_self_edges() ) {
@@ -532,11 +513,6 @@ NFA::contract ( void ) {
   return;
 }
 
-inline uint64_t
-NFA::num_vertices ( void ) const {
-  return adj_.size();
-}
-
 inline std::string 
 NFA::graphviz ( void ) const {
   using namespace NFA_detail;
@@ -549,7 +525,7 @@ NFA::graphviz ( void ) const {
 
   // Queue the remaining children.
   for ( uint64_t i = 0; i < num_vertices(); ++ i ) {
-    for ( auto label_set : adj_[i] ) {
+    for ( auto label_set : adjacencies(i) ) {
       auto label = label_set.first;
       auto set = label_set.second;
       for ( auto j : set ) ss << i << " -> " << j << "[label=\"" << label << "\"]\n";
@@ -558,7 +534,6 @@ NFA::graphviz ( void ) const {
   ss << "}\n";
   return ss.str();
 }
-
 
 inline 
 NFA::NFA (std::string const& regex) {
@@ -639,17 +614,6 @@ NFA::NFA (std::string const& regex) {
   final_ = result.final_;
   finalize();
 }
-
-inline uint64_t 
-NFA::add_vertex ( void ) {
-  adj_ . push_back ( std::unordered_map<LabelType, std::unordered_set<uint64_t>>());
-  return adj_.size() - 1;
-}
-
-inline void 
-NFA::add_edge ( uint64_t i, uint64_t j, NFA::LabelType l ) {
-  adj_[i][l].insert(j);
-} 
 
 inline void 
 NFA::finalize ( void ) {

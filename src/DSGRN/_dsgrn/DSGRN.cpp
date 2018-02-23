@@ -19,7 +19,8 @@ PYBIND11_MODULE( _dsgrn, m) {
   PosetBinding(m);
   ComponentsBinding(m);
   StrongComponentsBinding(m);
-  GraphRegexSearchBinding(m);
+  LabelledMultidigraphBinding(m);
+  NFABinding(m);
   // Parameter
   LogicParameterBinding(m);
   NetworkBinding(m);
