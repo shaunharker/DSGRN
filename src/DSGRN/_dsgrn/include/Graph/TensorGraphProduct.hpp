@@ -10,4 +10,5 @@
 LabelledMultidigraph
 TensorGraphProduct ( LabelledMultidigraph const& lhs, LabelledMultidigraph const& rhs ) {
   // TODO
+  
 }

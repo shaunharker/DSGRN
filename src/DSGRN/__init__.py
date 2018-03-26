@@ -2,6 +2,7 @@
 ### MIT LICENSE 2018 Shaun Harker
 
 from DSGRN._dsgrn import *
+from DSGRN.SubdomainGraph import *
 from DSGRN.Query.Graph import *
 from DSGRN.Query.Database import *
 from DSGRN.Query.Hexcodes import *

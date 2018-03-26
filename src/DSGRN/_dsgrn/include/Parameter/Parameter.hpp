@@ -84,6 +84,8 @@ absorbing ( Domain const& dom, int collapse_dim, int direction ) const {
   //std::cout << "Absorbing (" << dom . index () << ", " << collapse_dim << ", " << direction << ")\n";
   int thres = dom [ collapse_dim ];
   if ( direction == -1 ) thres -= 1;
+  if ( thres < 0 ) return false;
+  if ( thres == data_ -> network_ . outputs(collapse_dim).size() ) return false;
   //std::cout << "  Threshold # = " << thres << "\n";
   std::vector<bool> input_combination = combination(dom, collapse_dim);
   //std::cout << "  Consulting parameter " <<  data_ -> logic_ [ collapse_dim ] . stringify () << ".\n";

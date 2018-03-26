@@ -38,7 +38,7 @@ public:
     self_type operator++(int) { self_type i = *this; val_++; return i; }
     self_type operator+(int64_t i) const {return fun_iterator(val_ + i, f_);}
     difference_type operator-(self_type const& rhs) const{return val_ - rhs.val_;}
-    T operator*() { return f_(val_); }
+    T operator*() const { return f_(val_); }
     //const T* operator->() { return ptr_; }
     self_type operator=(const self_type& other) { val_ = other.val_; f_ = other.f_; return *this; }
     bool operator==(const self_type& rhs)const { return val_ == rhs.val_; }

@@ -107,7 +107,7 @@ assign ( SwitchingGraph const& sg,
     data_ -> annotations_[v] = sg . annotate ( md . recurrent () [ v ] );
   }
   // Canonicalize the graph
-  _canonicalize ();
+  _canonicalize ();  // TODO: this is a defect. It makes MorseGraph vertices not the same as MorseDecomposition vertices
 }
 
 /// Python Bindings

@@ -101,8 +101,8 @@ public:
   ///   Output to stream
   friend std::ostream& operator << ( std::ostream& stream, Domain const& dom );
 
-private:
   std::vector<uint64_t> data_;
+private:
   std::vector<uint64_t> limits_; 
   std::vector<uint64_t> offset_; 
   uint64_t index_;
@@ -130,5 +130,9 @@ DomainBinding (py::module &m) {
     .def("isMin", &Domain::isMin)
     .def("isMax", &Domain::isMax)
     .def("isValid", &Domain::isValid)
+    .def("preincrement", (Domain &(Domain::*)(void))&Domain::operator++)
+    .def("__iter__", [](Domain const& d) {
+       return py::make_iterator(d.data_.begin(), d.data_.end());
+    }, py::keep_alive<0, 1>())
     .def("__str__", [](Domain * lp){ std::stringstream ss; ss << *lp; return ss.str(); });
 }

@@ -52,6 +52,7 @@ private:
   delete_nodes ( void );
 
   /// contract
+  ///   Contract nodes together to give an equivalent but simpler NFA
   void
   contract ( void );
 
