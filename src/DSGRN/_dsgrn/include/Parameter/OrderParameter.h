@@ -126,5 +126,16 @@ OrderParameterBinding (py::module &m) {
     .def("parse", &OrderParameter::parse)
     .def("adjacencies", &OrderParameter::adjacencies)
     .def("__eq__", &OrderParameter::operator==)
-    .def("__str__", [](OrderParameter * lp){ std::stringstream ss; ss << *lp; return ss.str();; });
+    .def("__str__", [](OrderParameter * lp){ std::stringstream ss; ss << *lp; return ss.str();; })
+    .def(py::pickle(
+    [](OrderParameter const& p) { // __getstate__
+        /* Return a tuple that fully encodes the state of the object */
+        return py::make_tuple(p.size(), p.index());
+    },
+    [](py::tuple t) { // __setstate__
+        if (t.size() != 2)
+            throw std::runtime_error("Unpickling Parameter object: Invalid state!");
+        /* Create a new C++ instance */
+        return OrderParameter(t[0].cast<uint64_t>(), t[1].cast<uint64_t>());
+    }));
 }

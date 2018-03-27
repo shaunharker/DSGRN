@@ -146,5 +146,16 @@ NetworkBinding (py::module &m) {
     .def("order", &Network::order)
     .def("domains", &Network::domains)
     .def("specification", &Network::specification)
-    .def("graphviz", [](Network const& network){ return network.graphviz();});
+    .def("graphviz", [](Network const& network){ return network.graphviz();})
+    .def(py::pickle(
+    [](Network const& p) { // __getstate__
+        /* Return a tuple that fully encodes the state of the object */
+        return py::make_tuple(p.specification());
+    },
+    [](py::tuple t) { // __setstate__
+        if (t.size() != 1)
+            throw std::runtime_error("Unpickling Parameter object: Invalid state!");
+        /* Create a new C++ instance */
+        return Network(t[0].cast<std::string>());
+    }));
 }

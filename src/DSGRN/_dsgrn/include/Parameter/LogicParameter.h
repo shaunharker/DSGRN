@@ -49,6 +49,16 @@ public:
   void
   parse ( std::string const& str );
 
+  /// numInputs()
+  ///   Returns n
+  uint64_t
+  numInputs() const;
+
+  /// numOutputs()
+  ///   Returns m
+  uint64_t
+  numOutputs() const;
+
   /// hex ()
   ///   Return the hex code of the LogicParameter
   std::string const &
@@ -97,5 +107,16 @@ LogicParameterBinding (py::module &m) {
     .def("hex", &LogicParameter::hex)
     .def("adjacencies", &LogicParameter::adjacencies)
     .def("__eq__", &LogicParameter::operator==)
-    .def("__str__", [](LogicParameter * lp){ std::stringstream ss; ss << *lp; return ss.str(); });
+    .def("__str__", [](LogicParameter * lp){ std::stringstream ss; ss << *lp; return ss.str(); })
+    .def(py::pickle(
+    [](LogicParameter const& p) { // __getstate__
+        /* Return a tuple that fully encodes the state of the object */
+        return py::make_tuple(p.numInputs(), p.numOutputs(), p.hex());
+    },
+    [](py::tuple t) { // __setstate__
+        if (t.size() != 3)
+            throw std::runtime_error("Unpickling Parameter object: Invalid state!");
+        /* Create a new C++ instance */
+        return LogicParameter(t[0].cast<uint64_t>(), t[1].cast<uint64_t>(), t[2].cast<std::string>() );
+    }));
 }

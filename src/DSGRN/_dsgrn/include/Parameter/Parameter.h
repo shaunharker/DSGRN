@@ -158,5 +158,16 @@ ParameterBinding (py::module &m) {
     .def("inequalities", &Parameter::inequalities)
     .def("logic", &Parameter::logic)
     .def("order", &Parameter::order)
-    .def("__str__", [](Parameter * lp){ std::stringstream ss; ss << *lp; return ss.str(); });
+    .def("__str__", [](Parameter * lp){ std::stringstream ss; ss << *lp; return ss.str(); })
+    .def(py::pickle(
+    [](Parameter const& p) { // __getstate__
+        /* Return a tuple that fully encodes the state of the object */
+        return py::make_tuple(p.logic(), p.order(), p.network());
+    },
+    [](py::tuple t) { // __setstate__
+        if (t.size() != 3)
+            throw std::runtime_error("Unpickling Parameter object: Invalid state!");
+        /* Create a new C++ instance */
+        return Parameter(t[0].cast<std::vector<LogicParameter>>(), t[1].cast<std::vector<OrderParameter>>(), t[2].cast<Network>() );
+    }));
 }

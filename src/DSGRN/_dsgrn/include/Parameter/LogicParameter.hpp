@@ -95,7 +95,17 @@ parse ( std::string const& str ) {
   assign ( n, m, hex );
 }
 
-INLINE_IF_HEADER_ONLY std::string const & LogicParameter::
+INLINE_IF_HEADER_ONLY uint64_t LogicParameter::
+numInputs() const {
+  return data_ -> n_;
+}
+
+INLINE_IF_HEADER_ONLY uint64_t LogicParameter::
+numOutputs() const {
+  return data_ -> m_;
+}
+
+INLINE_IF_HEADER_ONLY std::string const& LogicParameter::
 hex ( void ) const {
     return data_ -> hex_;
 }
