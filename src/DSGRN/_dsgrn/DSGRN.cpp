@@ -10,6 +10,7 @@
 namespace py = pybind11;
 
 PYBIND11_MODULE( _dsgrn, m) {
+  TypedObjectBinding(m);
   // Dynamics
   AnnotationBinding(m);
   MorseDecompositionBinding(m);

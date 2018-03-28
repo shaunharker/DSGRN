@@ -16,54 +16,35 @@ Network ( void ) {
 }
 
 INLINE_IF_HEADER_ONLY Network::
-Network ( std::string const& filename ) {
-  load ( filename );
+Network ( std::string const& s ) {
+  assign(s);
+}
+
+INLINE_IF_HEADER_ONLY void Network::
+assign ( std::string const& s ) {
+  auto colon = s.find(':');
+  if ( colon != std::string::npos ) {
+    data_ . reset ( new Network_ );
+    data_ -> specification_ = s;
+    _parse ( _lines () );
+  } else {
+    load(s);
+  }
 }
 
 INLINE_IF_HEADER_ONLY void Network::
 load ( std::string const& filename ) {
-  data_ . reset ( new Network_ );
-  // Check for ".db" extension on filename.
-  auto lastdot = filename.find_last_of("."); 
-  std::string extension;
-  if ( lastdot != std::string::npos ) { 
-    extension = filename.substr(lastdot); 
+data_ . reset ( new Network_ );
+  std::ifstream infile ( filename );
+  if ( not infile . good () ) { 
+    throw std::runtime_error ( "Problem loading network specification file " + filename );
   }
-
-  // // If it is a .db, assume it is an sqlite3 database
-  // // and the network spec is in the Specification 
-  // // column of the "Network" table.
-  // if ( extension == ".db" ) {
-  //   // database
-  //   sqlite::database db ( filename );
-  //   sqlite::statement stmt = db . prepare ( "select Specification from Network;");
-  //   stmt . forEach ( [&] ( std::string spec ) {
-  //     data_ -> specification_ = spec;
-  //   });
-  // } else {
-    // Assume it is a network specification file.
-    std::ifstream infile ( filename );
-    if ( not infile . good () ) { 
-      throw std::runtime_error ( "Problem loading network specification file " + filename );
-    }
-    std::string line;
-    while ( std::getline ( infile, line ) ) {
-      data_ -> specification_ += line + '\n';
-    }
-    infile . close ();
-  //}
+  std::string line;
+  while ( std::getline ( infile, line ) ) {
+    data_ -> specification_ += line + '\n';
+  }
+  infile . close ();
   _parse ( _lines () );
-}
-
-INLINE_IF_HEADER_ONLY void Network::
-assign ( std::string const& spec ) {
-  if ( spec.find('\n') == std::string::npos && spec.find("\\n") == std::string::npos ) {
-    load ( spec );
-  } else {
-    data_ . reset ( new Network_ );
-    data_ -> specification_ = spec;
-    _parse ( _lines () );
-  }
 }
 
 INLINE_IF_HEADER_ONLY uint64_t Network::

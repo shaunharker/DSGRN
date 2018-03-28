@@ -12,8 +12,11 @@
 
 struct DomainGraph_;
 
-class DomainGraph {
+class DomainGraph : public TypedObject {
 public:
+
+  virtual std::string type (void) const final { return "DomainGraph"; }
+
   /// constructor
   DomainGraph ( void );
 
@@ -123,7 +126,7 @@ namespace py = pybind11;
 
 inline void
 DomainGraphBinding (py::module &m) {
-  py::class_<DomainGraph, std::shared_ptr<DomainGraph>>(m, "DomainGraph")
+  py::class_<DomainGraph, std::shared_ptr<DomainGraph>, TypedObject>(m, "DomainGraph")
     .def(py::init<>())
     .def(py::init<Parameter const&>())
     // TODO: increments

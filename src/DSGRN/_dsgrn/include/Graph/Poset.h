@@ -90,7 +90,7 @@ public:
   ///   Format: A JSON description of a Digraph object
   ///           The digraph is one suitable for use in
   ///           the constructor method.
-  void
+  Poset &
   parse ( std::string const& str );
 
   /// graphviz
@@ -136,5 +136,16 @@ PosetBinding (py::module &m) {
     .def("permute", &Poset::permute)
     .def("stringify", &Poset::stringify)
     .def("parse", &Poset::parse)
-    .def("graphviz", &Poset::graphviz);
+    .def("graphviz", &Poset::graphviz)
+    .def(py::pickle(
+    [](Poset const& p) { // __getstate__
+        /* Return a tuple that fully encodes the state of the object */
+        return py::make_tuple(p.stringify());
+    },
+    [](py::tuple t) { // __setstate__
+        if (t.size() != 1)
+            throw std::runtime_error("Unpickling Parameter object: Invalid state!");
+        /* Create a new C++ instance */
+        return Poset().parse(t[0].cast<std::string>());
+    }));
 }

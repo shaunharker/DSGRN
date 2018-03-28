@@ -3,6 +3,7 @@
 
 from DSGRN._dsgrn import *
 from DSGRN.SubdomainGraph import *
+from DSGRN.Graphics import *
 from DSGRN.Query.Graph import *
 from DSGRN.Query.Database import *
 from DSGRN.Query.Hexcodes import *
@@ -21,5 +22,8 @@ from DSGRN.Query.Logging import *
 from DSGRN.Query.StableFCQuery import *
 from DSGRN.Query.ComputeSingleGeneQuery import *
 
+import sys
 import os
+import pickle
+
 configuration().set_path(os.path.dirname(__file__) + '/Resources/logic')

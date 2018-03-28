@@ -52,7 +52,7 @@ public:
 
   /// parse
   ///   Initialize from a JSON description
-  void
+  Annotation &
   parse ( std::string const& str );
 
   /// operator <<
@@ -88,5 +88,16 @@ AnnotationBinding(py::module &m) {
     .def("append", &Annotation::append)
     .def("stringify", &Annotation::stringify)
     .def("parse", &Annotation::parse)
-    .def("str", [](Annotation * a){ std::stringstream ss; ss << *a; return ss.str(); });
+    .def("str", [](Annotation * a){ std::stringstream ss; ss << *a; return ss.str(); })
+    .def(py::pickle(
+    [](Annotation const& p) { // __getstate__
+        /* Return a tuple that fully encodes the state of the object */
+        return py::make_tuple(p.stringify());
+    },
+    [](py::tuple t) { // __setstate__
+        if (t.size() != 1)
+            throw std::runtime_error("Unpickling Parameter object: Invalid state!");
+        /* Create a new C++ instance */
+        return Annotation().parse(t[0].cast<std::string>());
+    }));
 }

@@ -19,19 +19,21 @@ public:
   Network ( void );
 
   /// Network
-  ///   load from network specification file 
-  Network ( std::string const& filename );
+  ///   Construct network
+  ///   If s contains a colon character (i.e. ':') it assumes s is a network specification.
+  ///   Otherwise, it assumes s is a filename and attempts to load a network specification.
+  Network ( std::string const& s );
 
+  /// assign
+  ///   Delayed construction of default constructed object
+  void
+  assign ( std::string const& s );
+  
   /// load
   ///   load from network specification file
   void 
   load ( std::string const& filename );
 
-  /// assign
-  ///   Directly assign a network specification string
-  void
-  assign ( std::string const& spec );
-  
   /// size
   ///   Return the number of nodes in the network
   uint64_t

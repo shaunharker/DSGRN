@@ -25,15 +25,61 @@ MorseGraph ( Poset const & ps,
 }
 
 INLINE_IF_HEADER_ONLY MorseGraph::
-MorseGraph ( DomainGraph const& dg,
-         MorseDecomposition const& md ) {
-  assign(dg, md);
+MorseGraph ( TypedObject const& a,
+             TypedObject const& b ) {
+  assign(a, b);
 }
 
 INLINE_IF_HEADER_ONLY MorseGraph::
-MorseGraph ( WallGraph const& wg,
-         MorseDecomposition const& md ) {
-  assign(wg, md);
+MorseGraph ( TypedObject const& sg ) {
+  std::string t = sg . type();
+  if ( t == "DomainGraph" ) {
+      assign(sg, MorseDecomposition(static_cast<DomainGraph const&>(sg).digraph()));
+  } else if ( t == "WallGraph" ) {
+      assign(sg, MorseDecomposition(static_cast<WallGraph const&>(sg).digraph()));
+  } else if ( t == "MorseDecomposition" ) {
+    throw std::invalid_argument("MorseGraph: Constructor requires either a DomainGraph or WallGraph");
+  } else {
+    throw std::invalid_argument("MorseGraph: Unsupported argument type");
+  }
+}
+
+
+INLINE_IF_HEADER_ONLY void MorseGraph::
+assign ( TypedObject const& a,
+         TypedObject const& b ) {
+  // Allow arguments in either order
+  MorseDecomposition const* md;
+  TypedObject const* sg;
+  if ( dynamic_cast<MorseDecomposition const*>(&a) ) { 
+    md = dynamic_cast<MorseDecomposition const*>(&a);
+    sg = &b;
+  } else if ( dynamic_cast<MorseDecomposition const*>(&b) ) { 
+    md = dynamic_cast<MorseDecomposition const*>(&b);
+    sg = &a;
+  } else {
+    throw std::invalid_argument("MorseGraph: A MorseDecomposition argument is required");
+  }
+  std::function<Annotation(Component)> annotator;
+  std::string t = sg -> type();
+  if ( t == "DomainGraph" ) {
+      annotator = [&](Component c){ return static_cast<DomainGraph const*>(sg) -> annotate(c); };
+  } else if ( t == "WallGraph" ) {
+      annotator = [&](Component c){ return static_cast<WallGraph const*>(sg) -> annotate(c); };
+  } else {
+    throw std::invalid_argument("MorseGraph: Unsupported argument type");
+  }
+  
+  data_ . reset ( new MorseGraph_ );
+  // Copy the poset
+  data_ -> poset_ = md -> poset ();
+  // Compute the annotations
+  uint64_t N = data_ -> poset_ . size ();
+  for ( uint64_t v = 0; v < N; ++ v ) {
+    data_ -> annotations_[v] = annotator ( md -> recurrent () [ v ] );
+  }
+  // Canonicalize the graph
+  _canonicalize ();  // TODO: this is a defect. It makes MorseGraph vertices not the same as MorseDecomposition vertices
 }
 
 INLINE_IF_HEADER_ONLY Poset const MorseGraph::
@@ -44,6 +90,11 @@ poset ( void ) const {
 INLINE_IF_HEADER_ONLY Annotation const MorseGraph::
 annotation ( uint64_t v ) const {
   return data_ ->annotations_ . find ( v ) -> second;
+}
+
+INLINE_IF_HEADER_ONLY std::unordered_map<uint64_t, Annotation> const& MorseGraph::
+annotations ( void ) const {
+  return data_ -> annotations_;
 }
 
 INLINE_IF_HEADER_ONLY std::string MorseGraph::
@@ -62,7 +113,7 @@ stringify ( void ) const {
   return ss . str ();
 }
 
-INLINE_IF_HEADER_ONLY void MorseGraph::
+INLINE_IF_HEADER_ONLY MorseGraph & MorseGraph::
 parse ( std::string const& str ) {
   json mg = json::parse(str);
   data_ -> poset_ . parse ( json::stringify ( mg["poset"] )); //TODO: inefficient
@@ -72,6 +123,7 @@ parse ( std::string const& str ) {
   for ( uint64_t v = 0; v < N; ++ v ) {
     data_ -> annotations_ [ v ] . parse ( json::stringify ( annotation_array[v] )); //TODO: inefficient
   }
+  return *this;
 }
 
 

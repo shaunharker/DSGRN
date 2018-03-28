@@ -21,24 +21,27 @@ public:
   MorseGraph ( void );
 
   /// constructor from a poset and annotations
-  /// Used for TestPoset only
-  MorseGraph ( Poset const & ps,
-               std::unordered_map<uint64_t, Annotation> const & annotations );
+  MorseGraph ( Poset const& ps,
+               std::unordered_map<uint64_t, Annotation> const& annotations );
 
-  /// assign (Morse Decomposition)
-  MorseGraph ( DomainGraph const& sg,
-               MorseDecomposition const& md );
+  /// MorseGraph (Morse Decomposition)
+  ///   Arguments should be a MorseDecomposition and associated DomainGraph (or WallGraph)
+  ///   given in either order
+  MorseGraph ( TypedObject const& a,
+               TypedObject const& b );
 
-  /// assign (Morse Decomposition)
-  MorseGraph ( WallGraph const& sg,
-               MorseDecomposition const& md );
+  /// MorseGraph (Morse Decomposition)
+  ///   Arguments should be either a DomainGraph (or a WallGraph)
+  ///   Note: A MorseDecomposition object will be computed and discarded
+  MorseGraph ( TypedObject const& sg );
 
   /// assign (Morse Decomposition)
   ///   Assign data to Morse Graph
-  template < class SearchGraph >
+  ///   Arguments should be a MorseDecomposition and the associated DomainGraph (or WallGraph)
+  ///   given in either order
   void
-  assign ( SearchGraph const& sg,
-           MorseDecomposition const& md );
+  assign ( TypedObject const& sg,
+           TypedObject const& md );
 
   /// poset
   ///   Access poset
@@ -49,6 +52,11 @@ public:
   ///   Return the annotation on vertex v.
   Annotation const
   annotation ( uint64_t v ) const;
+
+  /// annotations
+  ///   Access annotations data
+  std::unordered_map<uint64_t, Annotation> const&
+  annotations ( void ) const;
 
   /// SHA
   ///   Return a SHA-256 code
@@ -62,7 +70,7 @@ public:
 
   /// parse
   ///   Initialize from a JSON description
-  void
+  MorseGraph &
   parse ( std::string const& str );
 
   /// graphviz
@@ -88,28 +96,6 @@ struct MorseGraph_ {
   std::unordered_map<uint64_t, Annotation> annotations_;
 };
 
-// template < class SwitchingGraph > MorseGraph::
-// MorseGraph ( SwitchingGraph const& sg,
-//              MorseDecomposition const& md ) {
-//   assign ( sg, md );
-// }
-
-template <class SwitchingGraph>
-void MorseGraph::
-assign ( SwitchingGraph const& sg,
-         MorseDecomposition const& md ) {
-  data_ . reset ( new MorseGraph_ );
-  // Copy the poset
-  data_ -> poset_ = md . poset ();
-  // Compute the annotations
-  uint64_t N = data_ -> poset_ . size ();
-  for ( uint64_t v = 0; v < N; ++ v ) {
-    data_ -> annotations_[v] = sg . annotate ( md . recurrent () [ v ] );
-  }
-  // Canonicalize the graph
-  _canonicalize ();  // TODO: this is a defect. It makes MorseGraph vertices not the same as MorseDecomposition vertices
-}
-
 /// Python Bindings
 
 #include <pybind11/pybind11.h>
@@ -121,12 +107,25 @@ MorseGraphBinding (py::module &m) {
   py::class_<MorseGraph, std::shared_ptr<MorseGraph>>(m, "MorseGraph")
     .def(py::init<>())
     .def(py::init<Poset const&,std::unordered_map<uint64_t,Annotation>>())
-    .def(py::init<DomainGraph const&,MorseDecomposition const&>())
-    .def(py::init<WallGraph const&,MorseDecomposition const&>())        
+    .def(py::init<TypedObject const&,TypedObject const&>())
+    .def(py::init<TypedObject const&>())
+    .def("assign", &MorseGraph::assign)
     .def("poset", &MorseGraph::poset)
     .def("annotation", &MorseGraph::annotation)
     .def("SHA256", &MorseGraph::SHA256)
+    .def("__str__", &MorseGraph::stringify)
     .def("stringify", &MorseGraph::stringify)
     .def("parse", &MorseGraph::parse)
-    .def("graphviz", &MorseGraph::graphviz);
+    .def("graphviz", &MorseGraph::graphviz)
+    .def(py::pickle(
+    [](MorseGraph const& p) { // __getstate__
+        /* Return a tuple that fully encodes the state of the object */
+        return py::make_tuple(p.poset(), p.annotations());
+    },
+    [](py::tuple t) { // __setstate__
+        if (t.size() != 2)
+            throw std::runtime_error("Unpickling Parameter object: Invalid state!");
+        /* Create a new C++ instance */
+        return MorseGraph(t[0].cast<Poset>(), t[1].cast<std::unordered_map<uint64_t, Annotation>>());
+    }));
 }

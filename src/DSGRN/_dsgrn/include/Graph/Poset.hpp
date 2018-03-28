@@ -109,11 +109,12 @@ stringify ( void ) const {
   return data_ -> transitive_reduction . stringify ();
 }
 
-INLINE_IF_HEADER_ONLY void Poset::
+INLINE_IF_HEADER_ONLY Poset & Poset::
 parse ( std::string const& str ) {
   Digraph digraph;
   digraph . parse ( str );
   assign ( digraph );
+  return *this;
 }
 
 INLINE_IF_HEADER_ONLY std::string Poset::

@@ -53,13 +53,14 @@ stringify ( void ) const {
 return ss . str ();
 }
 
-INLINE_IF_HEADER_ONLY void Annotation::
+INLINE_IF_HEADER_ONLY Annotation & Annotation::
 parse ( std::string const& str ) {
   json array = json::parse(str);
   data_ -> annotations_ . clear ();
   for ( std::string const& s : array ) {
     data_ -> annotations_ . push_back ( s );
   } 
+  return *this;
 }
 
 INLINE_IF_HEADER_ONLY std::ostream& operator << ( std::ostream& stream, Annotation const& a ) {

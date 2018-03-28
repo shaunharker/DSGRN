@@ -22,6 +22,9 @@ private:
   iterator end_;
 };
 
+/// fun_iterator
+/// like a boost::counting_iterator except it dereferences to f(i) instead of i
+///   Note: f(i) has type T, which is the template parameter
 template < typename T >
 class fun_iterator {
 public:

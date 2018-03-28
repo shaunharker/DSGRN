@@ -16,8 +16,12 @@
 
 struct MorseDecomposition_;
 
-class MorseDecomposition {
+class MorseDecomposition : public TypedObject {
 public:
+
+  /// type
+  virtual std::string type (void) const final { return "MorseDecomposition"; }
+
   /// constructor
   MorseDecomposition ( void );
 
@@ -100,7 +104,7 @@ namespace py = pybind11;
 
 inline void
 MorseDecompositionBinding (py::module &m) {
-  py::class_<MorseDecomposition, std::shared_ptr<MorseDecomposition>>(m, "MorseDecomposition")
+  py::class_<MorseDecomposition, std::shared_ptr<MorseDecomposition>, TypedObject>(m, "MorseDecomposition")
     .def(py::init<>())
     .def(py::init<Digraph const&>())
     .def(py::init<Digraph const&,Components const&>())    

@@ -13,8 +13,11 @@
 
 struct WallGraph_;
 
-class WallGraph {
+class WallGraph : public TypedObject {
 public:
+
+  virtual std::string type (void) const final { return "WallGraph"; }
+
   /// WallGraph
   WallGraph ( void );
 
