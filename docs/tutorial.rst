@@ -557,11 +557,11 @@ Time for Morse theory. Here we ask for a Morse decomposition, which is essential
 
 .. code-block:: bash
 
-> dsgrn morsedecomposition json 126
+  > dsgrn morsedecomposition json 126
 
-.. code-block:: bash
+.. code-block:: json
 
-[[],[],[]]
+  [[],[],[]]
 
 
 Hmm, this isn't great, since it lacks the phase space annotatation. That will be fixed! Meanwhile the graphviz output does have the appropriate annotations:
