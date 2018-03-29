@@ -47,7 +47,7 @@ class CMakeBuild(build_ext):
             build_args += ['--', '/m']
         else:
             cmake_args += ['-DCMAKE_BUILD_TYPE=' + cfg]
-            build_args += ['--', '-j2']
+            build_args += ['--', '-j8']
 
         env = os.environ.copy()
         env['CXXFLAGS'] = '{} -DVERSION_INFO=\\"{}\\"'.format(env.get('CXXFLAGS', ''),
@@ -59,7 +59,7 @@ class CMakeBuild(build_ext):
 
 setup(
     name='DSGRN',
-    version='1.0',
+    version='1.1',
     author='Shaun Harker',
     author_email='shaun.harker@rutgers.edu',
     description='DSGRN',
@@ -68,9 +68,15 @@ setup(
     ext_package='DSGRN',
     ext_modules=[CMakeExtension('_dsgrn')],
     packages=['DSGRN'],
+    #scripts=['bin/DSGRN-Make-SQL-Database'],
+    entry_points={'console_scripts': ['Signatures=DSGRN.Signatures:main [MPI]']},
     cmdclass=dict(build_ext=CMakeBuild),
     zip_safe=False,
     url = 'https://github.com/shaunharker/DSGRN',
-    download_url = 'https://github.com/shaunharker/DSGRN/archive/v1.0.0.tar.gz',
-    include_package_data = True
+    download_url = 'https://github.com/shaunharker/DSGRN/archive/v1.1.0.tar.gz',
+    include_package_data = True,
+    install_requires=['scipy', 'matplotlib', 'numpy', 'graphviz', 'progressbar2', 'jupyter'],
+    extras_require={
+        'MPI':  ["mpi4py"]
+    }
 )

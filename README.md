@@ -18,10 +18,63 @@ which can then be queried for further research.
 
 ### Dependencies
 
-* C++11 compiler
-* Open MPI
+* Modern C++ compiler
 * sqlite3
+* Python3
+* Jupyter Notebook
+* Open MPI and mpi4py (optional)
 
+### Installation on macOS
+
+    # Install Modern C++
+    xcode-select --install    # Then click "install" button on dialog
+    # Install Homebrew <https://brew.sh>, an open source package manager
+    ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+
+You will also want `python3`; both homebrew's python and Anaconda3 have been tested.
+
+For Anaconda3: See <https://www.anaconda.com> for instructions. This seems to be the most fool-proof setup for most people.
+
+Another option is to use homebrew python:
+
+    brew install python
+
+To use the `Signatures` tool, which uses MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface> you also need:
+
+    brew install openmpi
+    pip install mpi4py
+
+Finally,
+
+    # Install DSGRN
+    git clone https://github.com/shaunharker/DSGRN.git
+    cd DSGRN
+    ./install.sh
+
+### Installation on Linux
+
+On an HPC cluster it is likely modern compilers, python, and a suitable version of MPI are already installed.
+However, you cannot `pip install` due to permissions issues. In this case one solution is to pass the `--user` flag:
+
+    pip install mpi4py --user
+    # Install DSGRN
+    git clone https://github.com/shaunharker/DSGRN.git
+    cd DSGRN
+    ./install.sh --user
+
+This would put the `Signatures` script in `~/.local/bin`, so you may consider putting that on your `PATH`.
+
+On your own system you may use the package manager to install dependencies, e.g.
+
+    sudo apt install libopenmpi-dev
+
+on Ubuntu. 
+
+### Uninstalling
+
+    pip uninstall DSGRN
+
+<!--
 ### Latest Stable Version
 
 To get the latest tagged version from the PyPi repository:
@@ -35,27 +88,13 @@ To uninstall:
 ```bash
 pip uninstall dsgrn
 ```
-
-### Repository version
-
-To get the bleeding edge version (i.e., this repo):
-
-```bash
-git clone https://github.com/shaunharker/DSGRN.git
-cd DSGRN
-git submodule update --init --recursive
-pip install . --ignore-installed --no-cache-dir -v -v -v --user
-```
+-->
 
 ## Examples and Documentation
 
 See `Tutorials` folder for examples.
 
-Also see the [documentation](https://shaunharker.github.io/DSGRN/), but currently much of this needs to be updated due to the deprecation of the `Signatures` and `dsgrn` command line program. 
-
-## Cluster Computing
-
-TODO
+Also see the [documentation](https://shaunharker.github.io/DSGRN/).
 
 ## Troubleshooting
 
@@ -72,15 +111,7 @@ This will install into a folder named `anaconda3` and add a line in `~/.bash_pro
 
 This will redirect command line python and pip. Note you may have to start a new `bash` session for the path changes to take effect (i.e. close and reopen the terminal program). This has the effect of plastering over any problems you might be having with multiple installations/permissions problems/jupyter not seeing the package/etc.
 
-After installing this,
-
-```
-pip install jupyter
-```
-
-and try the installation above again.
-
-### For macOS users who don't want anaconda but instead want to use `homebrew` python:
+### For macOS users with permissions issues:
 
 If the installation gives permissions issues, oftentimes the culprit is broken permissions on the subfolders of the homebrew folder `/usr/local`. 
 
@@ -116,6 +147,18 @@ To install homebrew (don't use `sudo` here!):
 ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 ```
 
+### For Linux users with permissions issues:
+
+For missing dependencies, you'll need to contact your system admin.
+
+For python modules, you can pass the `--user` flag:
+
+    # Install DSGRN
+    git clone https://github.com/shaunharker/DSGRN.git
+    cd DSGRN
+    ./install.sh --user
+
+
 ### Python/Jupyter Integration issues:
 
 If the package installs but it is not visible in jupyter, the likely problem is that the jupyter python kernel is not the same python for which pychomp was installed. That is, you may have multiple pythons on your system.
@@ -132,3 +175,17 @@ Possible fixes include steps such as
 
 1. checking/changing your environmental variable `PATH` in `~/.bash_profile` or `.bashrc`
 2. uninstalling python and jupyter, then reinstalling python then jupyter
+3. plastering over with anaconda3
+4. googling for answers until 3AM
+
+### You suspect you have an old install of DSGRN conflicting
+
+In python, type
+
+```python
+import DSGRN
+print(DSGRN.__name__)
+```
+
+This will tell you the path to the DSGRN the python module loader used, and you can check if it correct.
+
