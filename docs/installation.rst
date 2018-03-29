@@ -15,13 +15,13 @@ Installation on macOS
 
 Install Modern C++:
   
-.. code:: bash
+.. code-block:: bash
 
     xcode-select --install    # Then click "install" button on dialog
 
 Install Homebrew https://brew.sh, an open source package manager
 
-.. code:: bash
+.. code-block:: bash
 
     ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 
@@ -31,20 +31,20 @@ Experience seems to indicate Anaconda3_ is the most fool-proof setup for most pe
 
 Another option is to use homebrew python:
 
-.. code:: bash
+.. code-block:: bash
 
     brew install python
 
 To use the ``Signatures`` tool, which uses MPI <https://en.wikipedia.org/wiki/Message_Passing_Interface> you also need:
 
-.. code:: bash
+.. code-block:: bash
 
     brew install openmpi
     pip install mpi4py
 
 Finally,
 
-.. code:: bash
+.. code-block:: bash
 
     # Install DSGRN
     git clone https://github.com/shaunharker/DSGRN.git
@@ -57,7 +57,7 @@ Installation on Linux
 On an HPC cluster it is likely modern compilers, python, and a suitable version of MPI are already installed.
 However, you cannot ``pip install`` due to permissions issues. In this case one solution is to pass the ``--user`` flag:
 
-.. code:: bash
+.. code-block:: bash
 
     pip install mpi4py --user
     # Install DSGRN
@@ -69,7 +69,7 @@ This would put the ``Signatures`` script in ``~/.local/bin``, so you may conside
 
 On your own system you may use the package manager to install dependencies, e.g.
 
-.. code:: bash
+.. code-block:: bash
 
     sudo apt install libopenmpi-dev
 
@@ -78,7 +78,7 @@ on Ubuntu.
 Uninstalling
 ------------
 
-.. code:: bash
+.. code-block:: bash
 
     pip uninstall DSGRN
 
@@ -94,7 +94,7 @@ If python won't stop giving you trouble, I recommend trying Anaconda3_.
 
 This will install into a folder named ``anaconda3`` and add a line in ``~/.bash_profile``:
 
-.. code:: bash
+.. code-block:: bash
 
     #added by Anaconda3 5.0.1 installer
     export PATH="/PATH/TO/anaconda3/bin:$PATH"
@@ -109,14 +109,14 @@ If the installation gives permissions issues, oftentimes the culprit is broken p
 
 First, see what
 
-.. code:: bash
+.. code-block:: bash
 
     brew doctor
 
 
 says. A common fix is:
 
-.. code:: bash
+.. code-block:: bash
     
     sudo chown -R $(whoami) $(brew --prefix)/*
 
@@ -125,21 +125,21 @@ If it still doesn't work after this, then you might try uninstalling and reinsta
 
 To uninstall homebrew:
 
-.. code:: bash
+.. code-block:: bash
 
     ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/uninstall)"
 
 
 Or ``sudo`` if it gives issues:
 
-.. code:: bash
+.. code-block:: bash
 
     sudo ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/uninstall)"
 
 
 To install homebrew (don't use ``sudo`` here!):
 
-.. code:: bash
+.. code-block:: bash
 
     ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 
@@ -151,7 +151,7 @@ For missing dependencies, you'll need to contact your system admin.
 
 For python modules, you can pass the ``--user`` flag:
 
-.. code:: bash
+.. code-block:: bash
     
     # Install DSGRN
     git clone https://github.com/shaunharker/DSGRN.git
@@ -166,7 +166,7 @@ If the package installs but it is not visible in jupyter, the likely problem is 
 
 You can try to confirm this by typing
 
-.. code:: bash
+.. code-block:: bash
     
     which python
     which pip
@@ -185,7 +185,7 @@ You suspect you have an old install of DSGRN conflicting:
 
 In python, type
 
-.. code:: python
+.. code-block:: python
 
     import DSGRN
     print(DSGRN.__name__)
