@@ -134,7 +134,7 @@ OrderParameterBinding (py::module &m) {
     },
     [](py::tuple t) { // __setstate__
         if (t.size() != 2)
-            throw std::runtime_error("Unpickling Parameter object: Invalid state!");
+            throw std::runtime_error("Unpickling OrderParameter object: Invalid state!");
         /* Create a new C++ instance */
         return OrderParameter(t[0].cast<uint64_t>(), t[1].cast<uint64_t>());
     }));

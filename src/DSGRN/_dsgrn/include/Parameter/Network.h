@@ -156,7 +156,7 @@ NetworkBinding (py::module &m) {
     },
     [](py::tuple t) { // __setstate__
         if (t.size() != 1)
-            throw std::runtime_error("Unpickling Parameter object: Invalid state!");
+            throw std::runtime_error("Unpickling Network object: Invalid state!");
         /* Create a new C++ instance */
         return Network(t[0].cast<std::string>());
     }));

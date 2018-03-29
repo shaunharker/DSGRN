@@ -115,7 +115,7 @@ LogicParameterBinding (py::module &m) {
     },
     [](py::tuple t) { // __setstate__
         if (t.size() != 3)
-            throw std::runtime_error("Unpickling Parameter object: Invalid state!");
+            throw std::runtime_error("Unpickling LogicParameter object: Invalid state!");
         /* Create a new C++ instance */
         return LogicParameter(t[0].cast<uint64_t>(), t[1].cast<uint64_t>(), t[2].cast<std::string>() );
     }));

@@ -124,7 +124,7 @@ MorseGraphBinding (py::module &m) {
     },
     [](py::tuple t) { // __setstate__
         if (t.size() != 2)
-            throw std::runtime_error("Unpickling Parameter object: Invalid state!");
+            throw std::runtime_error("Unpickling MorseGraph object: Invalid state!");
         /* Create a new C++ instance */
         return MorseGraph(t[0].cast<Poset>(), t[1].cast<std::unordered_map<uint64_t, Annotation>>());
     }));

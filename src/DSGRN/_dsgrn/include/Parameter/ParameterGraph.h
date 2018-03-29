@@ -137,5 +137,16 @@ ParameterGraphBinding (py::module &m) {
     .def("network", &ParameterGraph::network)
     .def("fixedordersize", &ParameterGraph::fixedordersize)
     .def("reorderings", &ParameterGraph::reorderings)
-    .def("__str__", [](ParameterGraph * lp){ std::stringstream ss; ss << *lp; return ss.str(); });
+    .def("__str__", [](ParameterGraph * lp){ std::stringstream ss; ss << *lp; return ss.str(); })
+    .def(py::pickle(
+    [](ParameterGraph const& p) { // __getstate__
+        /* Return a tuple that fully encodes the state of the object */
+        return py::make_tuple(p.network());
+    },
+    [](py::tuple t) { // __setstate__
+        if (t.size() != 1)
+            throw std::runtime_error("Unpickling ParameterGraph object: Invalid state!");
+        /* Create a new C++ instance */
+        return ParameterGraph(t[0].cast<Network>());
+    }));
 }
