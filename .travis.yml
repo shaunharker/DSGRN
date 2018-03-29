@@ -2,6 +2,8 @@ sudo: false
 before_install:
   - if [ "$CXX" = "g++" ]; then export CXX="g++-4.9" CC="gcc-4.9"; fi
 language: cpp
+python:
+  - 3.6
 compiler:
   - gcc
 addons:

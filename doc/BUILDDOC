@@ -1,3 +1,0 @@
-sed 's/\$\([^$]*\)\$/stem:\[\1\]/g' index.raw > index.asc
-asciidoctor index.asc -o ../index.html
-rm index.asc
