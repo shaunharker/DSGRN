@@ -6,7 +6,7 @@ DSGRN Tutorial
   The command line interface described below has been deprecated. For examples using the python interface to
   DSGRN, see the `DSGRN Getting Started`__ notebook.
 
-__ https://github.com/shaunharker/DSGRN/blob/master/Tutorials/DSGRN_Python_GettingStarted.ipynb
+__ https://github.com/shaunharker/DSGRN/blob/master/Tutorials/GettingStarted.ipynb
 
 To begin with, we tell DSGRN what network we are interested in. Let's study the network ``2D_Example_C.txt``:
 
