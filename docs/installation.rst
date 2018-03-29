@@ -14,16 +14,20 @@ Installation on macOS
 ---------------------
 
 Install Modern C++:
-    
+  
+.. code:: bash
+
     xcode-select --install    # Then click "install" button on dialog
 
-Install Homebrew <https://brew.sh>, an open source package manager
+Install Homebrew https://brew.sh, an open source package manager
+
+.. code:: bash
 
     ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
 
-You will also want ``python3``; both homebrew's python and Anaconda3 have been tested.
+You will also want ``python3``; both homebrew's python and Anaconda3_ have been tested.
 
-For Anaconda3: See <https://www.anaconda.com> for instructions. This seems to be the most fool-proof setup for most people.
+Experience seems to indicate Anaconda3_ is the most fool-proof setup for most people.
 
 Another option is to use homebrew python:
 
@@ -84,7 +88,9 @@ Troubleshooting
 Python issues:
 ++++++++++++++
 
-Try Anaconda3 <https://www.anaconda.com>.
+If python won't stop giving you trouble, I recommend trying Anaconda3_.
+
+.. _Anaconda3: https://www.anaconda.com.
 
 This will install into a folder named ``anaconda3`` and add a line in ``~/.bash_profile``:
 
@@ -169,10 +175,10 @@ You can try to confirm this by typing
 
 Possible fixes include steps such as 
 
-1. checking/changing your environmental variable ``PATH`` in ``~/.bash_profile`` or ``.bashrc``
-2. uninstalling python and jupyter, then reinstalling python then jupyter
-3. plastering over with anaconda3
-4. googling for answers until 3AM
+1. Checking/changing your environmental variable ``PATH`` in ``~/.bash_profile`` or ``.bashrc``
+2. Uninstalling python and jupyter, then reinstalling python then jupyter
+3. Plastering over with anaconda3
+4. Googling for answers until 3AM
 
 You suspect you have an old install of DSGRN conflicting:
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++++
