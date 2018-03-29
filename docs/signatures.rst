@@ -42,7 +42,7 @@ A database is comprised of tables; we can ask SQLite about what tables we have:
 
 .. code-block:: sql
 
-  sqlite> .tables
+  .tables
 
 ::
 
@@ -54,7 +54,7 @@ The information produced by ``Signatures`` is in these tables. Each table has a 
 
 .. code-block:: sql
 
-  sqlite> .schema
+  .schema
 
 .. code-block:: sql
 
@@ -84,7 +84,7 @@ We'll type
 
 .. code-block:: sql
 
-  sqlite> select * from MorseGraphViz;
+  select * from MorseGraphViz;
 
 
 The ``*`` here says you want to know the values for all the columns. 
@@ -144,7 +144,7 @@ As we can see, the database computation recorded 28 distinct Morse graphs. By wa
 
 .. code-block:: sql
 
-  sqlite> select * from Signatures where MorseGraphIndex=18 or MorseGraphIndex=19;
+  select * from Signatures where MorseGraphIndex=18 or MorseGraphIndex=19;
 
 .. code-block:: sql
 
@@ -182,7 +182,7 @@ Thus, these sorts of queries should be fast. We can actually ask SQLite how it p
 
 .. code-block:: sql
 
-  sqlite> explain query plan select * from Signatures where MorseGraphIndex=18 or MorseGraphIndex=19;
+  explain query plan select * from Signatures where MorseGraphIndex=18 or MorseGraphIndex=19;
 
 .. code-block:: sql
 
@@ -194,8 +194,8 @@ Seems legit. What happens if it didn't have that index?
 
 .. code-block:: sql
 
-  sqlite> drop index Signatures2;
-  sqlite> explain query plan select * from Signatures where MorseGraphIndex=18 or MorseGraphIndex=19;
+  drop index Signatures2;
+  explain query plan select * from Signatures where MorseGraphIndex=18 or MorseGraphIndex=19;
 
 .. code-block:: sql
 
@@ -206,14 +206,14 @@ Oh no! The dreaded full table scan! Quick, rebuild the index!
 
 .. code-block:: sql
 
-  sqlite> CREATE INDEX Signatures2 on Signatures (MorseGraphIndex, ParameterIndex);
+  CREATE INDEX Signatures2 on Signatures (MorseGraphIndex, ParameterIndex);
 
 
 Let's try another query. For the network we are considering, there were 4 cohorts of 400 parameters. We might only be interested in a particular cohort (i.e. ordering of thresholds) so we only care about, for instance, parameters 0 through 399. We could make a similar query, but restricted to the first 400 parameters:
 
 .. code-block:: sql
 
-  sqlite> select * from Signatures where (MorseGraphIndex=18 or MorseGraphIndex=19) and ParameterIndex < 400;
+  select * from Signatures where (MorseGraphIndex=18 or MorseGraphIndex=19) and ParameterIndex < 400;
 
 .. code-block:: sql
 
@@ -237,7 +237,7 @@ Back to the example. Let's say we do not care which parameter was assigned Morse
 
 .. code-block:: sql
 
-  sqlite> select ParameterIndex from Signatures where (MorseGraphIndex=18 or MorseGraphIndex=19) and ParameterIndex < 400;
+  select ParameterIndex from Signatures where (MorseGraphIndex=18 or MorseGraphIndex=19) and ParameterIndex < 400;
 
 .. code-block:: sql
 
@@ -256,7 +256,7 @@ We could also ask for the columns out of order, or the same column more than onc
 
 .. code-block:: sql
 
-  sqlite> select ParameterIndex,ParameterIndex,MorseGraphIndex,ParameterIndex from Signatures where (MorseGraphIndex=18 or MorseGraphIndex=19) and ParameterIndex < 400;
+  select ParameterIndex,ParameterIndex,MorseGraphIndex,ParameterIndex from Signatures where (MorseGraphIndex=18 or MorseGraphIndex=19) and ParameterIndex < 400;
 
 
 .. code-block:: sql
@@ -280,7 +280,7 @@ We may prefer a comma separated list rather than a long column, so we can use th
 
 .. code-block:: sql
 
-  sqlite> select GROUP_CONCAT(ParameterIndex) from Signatures where MorseGraphIndex=18 or MorseGraphIndex=19 and ParameterIndex < 400;
+  select GROUP_CONCAT(ParameterIndex) from Signatures where MorseGraphIndex=18 or MorseGraphIndex=19 and ParameterIndex < 400;
 
 .. code-block:: sql
 
@@ -303,7 +303,7 @@ SQLite will use this index to quickly answer the following query:
 
 .. code-block:: sql
 
-  sqlite> select GROUP_CONCAT(MorseGraphIndex) from MorseGraphVertices where Vertex=3;
+  select GROUP_CONCAT(MorseGraphIndex) from MorseGraphVertices where Vertex=3;
 
 .. code-block:: sql
 
@@ -314,21 +314,21 @@ But wait; these aren't the parameters with Morse graphs having at least 4 vertic
 
 .. code-block:: sql
 
-  sqlite> select ParameterIndex from Signatures where MorseGraphIndex=8 or MorseGraphIndex=10 or ...
+  select ParameterIndex from Signatures where MorseGraphIndex=8 or MorseGraphIndex=10 or ...
 
 
 Nope! Ack! Don't do that. Instead, try this:
 
 .. code-block:: sql
 
-  sqlite> create temp table GotAtLeastFour as select MorseGraphIndex from MorseGraphVertices where Vertex=3;
+  create temp table GotAtLeastFour as select MorseGraphIndex from MorseGraphVertices where Vertex=3;
 
 
 Now ``GotAtLeastFour`` is the table of results we were just considering. We told SQLite it was temporary, so it knows this isn't going to be a permanent citizen of our database. We can use it with the ``Signatures`` table as follows:
 
 .. code-block:: sql
 
-  sqlite> select GROUP_CONCAT(ParameterIndex) from Signatures natural join GotAtLeastFour;
+  select GROUP_CONCAT(ParameterIndex) from Signatures natural join GotAtLeastFour;
 
 .. code-block:: sql
 
@@ -343,14 +343,14 @@ We can get rid of that temporary table now:
 
 .. code-block:: sql
 
-  sqlite> drop table GotAtLeastFour;
+  drop table GotAtLeastFour;
 
 
 Good riddance. In fact, we never needed that pesky tempory table in the first place:
 
 .. code-block:: sql
 
-  sqlite> select GROUP_CONCAT(ParameterIndex) from Signatures natural join (select MorseGraphIndex from MorseGraphVertices where Vertex=3);
+  select GROUP_CONCAT(ParameterIndex) from Signatures natural join (select MorseGraphIndex from MorseGraphVertices where Vertex=3);
 
 .. code-block:: sql
 
@@ -360,7 +360,7 @@ Good riddance. In fact, we never needed that pesky tempory table in the first pl
 We should stay in the habit of always making sure the queries we run are efficient:
 .. code-block:: sql
 
-  sqlite> explain query plan select GROUP_CONCAT(ParameterIndex) from Signatures natural join (select MorseGraphIndex from MorseGraphVertices where Vertex=3);
+  explain query plan select GROUP_CONCAT(ParameterIndex) from Signatures natural join (select MorseGraphIndex from MorseGraphVertices where Vertex=3);
 
 .. code-block:: sql
 
@@ -378,7 +378,7 @@ There is a command ``COUNT`` which lets you count things:
 
 .. code-block:: sql
 
-  sqlite> select COUNT(*) from Signatures;
+  select COUNT(*) from Signatures;
 
 .. code-block:: sql
 
@@ -389,7 +389,7 @@ Those are our 1600 parameters. There is also a ``distinct`` keyword, which lets 
 
 .. code-block:: sql
 
-  sqlite> select COUNT(distinct MorseGraphIndex) from Signatures;
+  select COUNT(distinct MorseGraphIndex) from Signatures;
 
 .. code-block:: sql
 
@@ -402,13 +402,13 @@ __ http://www.mail-archive.com/sqlite-users@sqlite.org/msg10279.html
 
 .. code-block:: sql
 
-  sqlite> select COUNT(*) from (select distinct MorseGraphIndex from Signatures);
+  select COUNT(*) from (select distinct MorseGraphIndex from Signatures);
 
 This still runs a full table scan with ``COUNT``, but it does it on the small table returned by the interior ``SELECT``. Meanwhile, the ``select distinct MorseGraphIndex from Signatures`` *does the right thing*:
 
 .. code-block:: sql
 
-  sqlite> explain query plan select distinct MorseGraphIndex from Signatures;
+  explain query plan select distinct MorseGraphIndex from Signatures;
 
 ::
 
@@ -426,7 +426,7 @@ In fact, we can combine aggregate functions together in queries in comma-concate
 
 .. code-block:: sql
 
-  sqlite> select MorseGraphIndex,COUNT(Vertex) from MorseGraphVertices;
+  select MorseGraphIndex,COUNT(Vertex) from MorseGraphVertices;
 
 Which yields:
 .. code-block:: sql
@@ -440,7 +440,7 @@ For a very ridiculous example (purely to illustrate the behavior of aggregate fu
 
 .. code-block:: sql
 
-  sqlite> select GROUP_CONCAT(MorseGraphIndex),GROUP_CONCAT(Vertex) from MorseGraphVertices;
+  select GROUP_CONCAT(MorseGraphIndex),GROUP_CONCAT(Vertex) from MorseGraphVertices;
 
 .. code-block:: sql
 
@@ -461,7 +461,7 @@ We'll illustrate this by example. Let's figure out which Morse graphs have more 
 
 .. code-block:: sql
 
-  sqlite> select MorseGraphIndex,COUNT(*) as Frequency from Signatures group by MorseGraphIndex order by Frequency desc;
+  select MorseGraphIndex,COUNT(*) as Frequency from Signatures group by MorseGraphIndex order by Frequency desc;
 
 
 ::
@@ -501,7 +501,7 @@ Wonderful! But how did it work? There are several new pieces of syntax. First, w
 As a quick aside, we can now calculate the average number of parameters associated to a Morse graph by using the ``AVG`` aggregate function:
 .. code-block:: sql
 
-  sqlite> select AVG(Frequency) from MorseGraphClasses;
+  select AVG(Frequency) from MorseGraphClasses;
 
 .. code-block:: sql
 
@@ -512,7 +512,7 @@ Anyhow, we are now ready to give the list of all Morse graphs have more than 50 
 
 .. code-block:: sql
 
-  sqlite> select GROUP_CONCAT(MorseGraphIndex) from (select MorseGraphIndex,count(*) as Frequency from Signatures group by MorseGraphIndex order by Frequency desc) where Frequency > 50;
+  select GROUP_CONCAT(MorseGraphIndex) from (select MorseGraphIndex,count(*) as Frequency from Signatures group by MorseGraphIndex order by Frequency desc) where Frequency > 50;
 
 ::
 
@@ -526,14 +526,14 @@ Let's do an even more glamorous example of grouping. Let's create a table with t
 
 .. code-block:: sql
 
-  sqlite> create temp table MorseGraphClasses as select MorseGraphIndex,COUNT(*) as Frequency,GROUP_CONCAT(ParameterIndex) from Signatures group by MorseGraphIndex order by Frequency desc;
+  create temp table MorseGraphClasses as select MorseGraphIndex,COUNT(*) as Frequency,GROUP_CONCAT(ParameterIndex) from Signatures group by MorseGraphIndex order by Frequency desc;
 
 
 Is this table what we want? Instead of ``SELECT * FROM MorseGraphClasses``, let's instead go with
 
 .. code-block:: sql
 
-  sqlite> select * from MorseGraphClasses where Frequency < 10
+  select * from MorseGraphClasses where Frequency < 10
 
 .. code-block:: sql
 
@@ -552,7 +552,7 @@ Great! Just what we wanted. But is it doing it efficiently? You'd think because 
 
 .. code-block:: sql
 
-  sqlite> explain query plan select * from MorseGraphClasses where Frequency < 10; 
+  explain query plan select * from MorseGraphClasses where Frequency < 10; 
 
 .. code-block:: sql
 
@@ -563,14 +563,14 @@ Ah, the dreaded full table scan. Probably the rationale is that you could later 
 
 .. code-block:: sql
 
-  sqlite> create index MorseGraphClasses2 on MorseGraphClasses (Frequency);
+  create index MorseGraphClasses2 on MorseGraphClasses (Frequency);
 
 
 Now the database software has twigged to the better plan:
 
 .. code-block:: sql
 
-  sqlite> explain query plan select * from MorseGraphClasses where Frequency < 10; 
+  explain query plan select * from MorseGraphClasses where Frequency < 10; 
 
 .. code-block:: sql
 
@@ -586,14 +586,14 @@ We'll make a table which lists each Morse graph according to the number of verti
 
 .. code-block:: sql
 
-  sqlite> create temp table MorseGraphVertexCount as select MorseGraphIndex,COUNT(*) as VertexCount from MorseGraphVertices group by MorseGraphIndex order by VertexCount desc;
+  create temp table MorseGraphVertexCount as select MorseGraphIndex,COUNT(*) as VertexCount from MorseGraphVertices group by MorseGraphIndex order by VertexCount desc;
 
 
 Now let's select the ones with more than 3 vertices:
 
 .. code-block:: sql
 
-  sqlite> select GROUP_CONCAT(MorseGraphIndex) from MorseGraphVertexCount where VertexCount > 3;
+  select GROUP_CONCAT(MorseGraphIndex) from MorseGraphVertexCount where VertexCount > 3;
 
 .. code-block:: sql
 
@@ -611,10 +611,10 @@ Let's say we are interested in finding all parameters which have a Morse graph t
 
 .. code-block:: sql
 
-  sqlite> create temp table HasFPOFF as select MorseGraphIndex from MorseGraphAnnotations where Label="FP OFF";
-  sqlite> create temp table HasFC as select MorseGraphIndex from MorseGraphAnnotations where Label="FC";
-  sqlite> create temp table HasFPON as select MorseGraphIndex from MorseGraphAnnotations where Label="FP ON";
-  sqlite> select GROUP_CONCAT(ParameterIndex) from Signatures natural join (select * from HasFPOFF union select * from HasFC except select * from HasFPON);
+  create temp table HasFPOFF as select MorseGraphIndex from MorseGraphAnnotations where Label="FP OFF";
+  create temp table HasFC as select MorseGraphIndex from MorseGraphAnnotations where Label="FC";
+  create temp table HasFPON as select MorseGraphIndex from MorseGraphAnnotations where Label="FP ON";
+  select GROUP_CONCAT(ParameterIndex) from Signatures natural join (select * from HasFPOFF union select * from HasFC except select * from HasFPON);
 
 .. code-block:: sql
 
@@ -624,7 +624,7 @@ Let's say we are interested in finding all parameters which have a Morse graph t
 We check the query plans to make sure this is happening efficiently:
 .. code-block:: sql
 
-  sqlite> explain query plan select MorseGraphIndex from MorseGraphAnnotations where Label="FP ON";
+  explain query plan select MorseGraphIndex from MorseGraphAnnotations where Label="FP ON";
 
 .. code-block:: sql
 
@@ -632,7 +632,7 @@ We check the query plans to make sure this is happening efficiently:
 
 .. code-block:: sql
 
-  sqlite> explain query plan select GROUP_CONCAT(ParameterIndex) from Signatures natural join (select * from HasFPOFF union select * from HasFC except select * from HasFPON);
+  explain query plan select GROUP_CONCAT(ParameterIndex) from Signatures natural join (select * from HasFPOFF union select * from HasFC except select * from HasFPON);
 
 .. code-block:: sql
 
@@ -654,7 +654,7 @@ It is important to make sure that the database is being efficient in answering q
 
 .. code-block:: sql
 
-  sqlite> select GROUP_CONCAT(distinct MorseGraphIndex) from Signatures; 
+  select GROUP_CONCAT(distinct MorseGraphIndex) from Signatures; 
 
 .. code-block:: sql
 
@@ -665,7 +665,7 @@ This result is a little bit disturbing: it is simply the Morse graph indices occ
 
 .. code-block:: sql
 
-  sqlite> explain query plan select GROUP_CONCAT(distinct MorseGraphIndex) from Signatures;
+  explain query plan select GROUP_CONCAT(distinct MorseGraphIndex) from Signatures;
 
 
 .. code-block:: sql
@@ -677,7 +677,7 @@ A full table scan! Terrible! The culprit is the ``GROUP_CONCAT`` and not ``disti
 
 .. code-block:: sql
 
-  sqlite> select distinct MorseGraphIndex from Signatures;
+  select distinct MorseGraphIndex from Signatures;
 
 which returns
 
@@ -693,7 +693,7 @@ This indicates the query used the index efficiently:
 
 .. code-block:: sql
 
-  sqlite> explain query plan select distinct MorseGraphIndex from Signatures;
+  explain query plan select distinct MorseGraphIndex from Signatures;
 
 .. code-block:: sql
 
@@ -706,7 +706,7 @@ So if I wanted the comma-separated list without a slow full-table scan, a soluti
 
 .. code-block:: sql
 
-  sqlite> select GROUP_CONCAT(MorseGraphIndex) from (select distinct MorseGraphIndex from Signatures);
+  select GROUP_CONCAT(MorseGraphIndex) from (select distinct MorseGraphIndex from Signatures);
 
 .. code-block:: sql
 
@@ -714,7 +714,7 @@ So if I wanted the comma-separated list without a slow full-table scan, a soluti
 
 .. code-block:: sql
 
-  sqlite> explain query plan select GROUP_CONCAT(MorseGraphIndex) from (select distinct MorseGraphIndex from Signatures);
+  explain query plan select GROUP_CONCAT(MorseGraphIndex) from (select distinct MorseGraphIndex from Signatures);
 
 .. code-block:: sql
 

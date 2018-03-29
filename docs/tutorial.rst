@@ -20,7 +20,7 @@ To do this we type:
 
 .. code-block:: bash
 
-  > dsgrn network ./networks/2D_Example_C.txt
+  dsgrn network ./networks/2D_Example_C.txt
 
 
 This produces a file called ``dsgrn.session`` in the current working directory. You can delete it when you are done. It just remembers which network we want to study. If you change directories and call ``dsgrn`` again, it won't find the session file and will have forgotten about the network.
@@ -29,7 +29,7 @@ Anyhow, we can visualize the network using DSGRN by asking it for a graphviz rep
 
 .. code-block:: bash
 
-  > dsgrn network draw > network.gv
+  dsgrn network draw > network.gv
 
 
 Here we used the shell redirection operator ``>`` to pipe the output to the file ``network.gv``. We can open this up with Graphviz and we get the following image:
@@ -89,7 +89,7 @@ Next, we ask about parameters. Let's find out how many parameters there are.
 
 .. code-block:: bash
 
-  > dsgrn parameter
+  dsgrn parameter
 
 
 ::
@@ -103,7 +103,7 @@ Let's pick a parameter out of a hat: 126. Let's ask DSGRN about parameter 126. F
 
 .. code-block:: bash
 
-  > dsgrn parameter json 126
+  dsgrn parameter json 126
 
 
 .. code-block:: json
@@ -117,7 +117,7 @@ We can ask about which parameter inequalities this logic/order corresponds to:
 
 .. code-block:: bash
 
-  > dsgrn parameter inequalities 126
+  dsgrn parameter inequalities 126
 
 .. code-block:: json
 
@@ -143,7 +143,7 @@ Neat. Let's try to turn around and find out the index (i.e. 126) from the JSON-s
 
 .. code-block:: bash
 
-  > dsgrn parameter index '[["X",[2,2,"C0"],[0,1]],["Y",[2,2,"C0"],[0,1]]]'
+  dsgrn parameter index '[["X",[2,2,"C0"],[0,1]],["Y",[2,2,"C0"],[0,1]]]'
 
 .. code-block:: bash
 
@@ -153,7 +153,7 @@ And now a consistency check:
 
 .. code-block:: bash
 
-  > dsgrn parameter inequalities '[["X",[2,2,"C0"],[0,1]],["Y",[2,2,"C0"],[0,1]]]'
+  dsgrn parameter inequalities '[["X",[2,2,"C0"],[0,1]],["Y",[2,2,"C0"],[0,1]]]'
 
 .. code-block:: json
 
@@ -181,7 +181,7 @@ Now let's start doing dynamics. We can ask it to create a domain graph:
 
 .. code-block:: bash
 
-  > dsgrn domaingraph json '[["X",[2,2,"C0"],[0,1]],["Y",[2,2,"C0"],[0,1]]]'
+  dsgrn domaingraph json '[["X",[2,2,"C0"],[0,1]],["Y",[2,2,"C0"],[0,1]]]'
 
 .. code-block:: json
 
@@ -326,7 +326,7 @@ And we could also pass the parameter by it’s index:
 
 .. code-block:: bash
 
-  > dsgrn domaingraph json 126
+  dsgrn domaingraph json 126
 
 .. code-block:: json
 
@@ -335,14 +335,14 @@ And we could also pass the parameter by it’s index:
 
 .. code-block:: bash
 
-  > dsgrn domaingraph graphviz 126
+  dsgrn domaingraph graphviz 126
 
 
 Very similarly, we can also get wall graphs:
 
 .. code-block:: bash
 
-  > dsgrn wallgraph json 126
+  dsgrn wallgraph json 126
 
 .. code-block:: json
 
@@ -351,7 +351,7 @@ Very similarly, we can also get wall graphs:
 
 .. code-block:: bash
 
-  > dsgrn wallgraph graphviz 126 > wg.gv
+  dsgrn wallgraph graphviz 126 > wg.gv
 
 .. raw:: html
   
@@ -557,7 +557,7 @@ Time for Morse theory. Here we ask for a Morse decomposition, which is essential
 
 .. code-block:: bash
 
-  > dsgrn morsedecomposition json 126
+  dsgrn morsedecomposition json 126
 
 .. code-block:: json
 
@@ -568,7 +568,7 @@ Hmm, this isn't great, since it lacks the phase space annotatation. That will be
 
 .. code-block:: bash
 
-  > dsgrn morsedecomposition graphviz 126 > md.gv
+  dsgrn morsedecomposition graphviz 126 > md.gv
 
 
 .. raw:: html
@@ -611,7 +611,7 @@ Next up: Morse graphs. Same drill: we can give it the parameter either by index 
 
 .. code-block:: bash
 
-  > dsgrn morsegraph json 126
+  dsgrn morsegraph json 126
 
 .. code-block:: json
 
@@ -620,7 +620,7 @@ Next up: Morse graphs. Same drill: we can give it the parameter either by index 
 
 .. code-block:: bash
 
-  > dsgrn morsegraph json '[["X",[2,2,"C0"],[0,1]],["Y",[2,2,"C0"],[0,1]]]'
+  dsgrn morsegraph json '[["X",[2,2,"C0"],[0,1]],["Y",[2,2,"C0"],[0,1]]]'
 
 .. code-block:: json
 
@@ -629,7 +629,7 @@ Next up: Morse graphs. Same drill: we can give it the parameter either by index 
 
 .. code-block:: bash
 
-  > dsgrn morsegraph graphviz 126
+  dsgrn morsegraph graphviz 126
 
 
 .. raw:: html
