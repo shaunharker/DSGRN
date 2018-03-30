@@ -24,7 +24,7 @@ notifications:
 # install:
 #   - pip install cpp-coveralls --user
 script: 
-  - pip install tornado==4.5.3  # up-to-date tornado breaking Travis CI builds 2018-03-30
+  - pip install tornado==4.5.3 --user # up-to-date tornado breaking Travis CI builds 2018-03-30
   - git submodule update --init --recursive
   - pip install . --user
 # after_success: 
