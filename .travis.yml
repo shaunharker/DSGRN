@@ -2,8 +2,6 @@ sudo: false
 before_install:
   - if [ "$CXX" = "g++" ]; then export CXX="g++-4.9" CC="gcc-4.9"; fi
 language: cpp
-python:
-  - 3.6
 compiler:
   - gcc
 addons:
@@ -26,6 +24,7 @@ notifications:
 # install:
 #   - pip install cpp-coveralls --user
 script: 
+  - pip install tornado==4.5.3  # up-to-date tornado breaking Travis CI builds 2018-03-30
   - git submodule update --init --recursive
   - pip install . --user
 # after_success: 
