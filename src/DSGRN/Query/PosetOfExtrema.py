@@ -36,12 +36,7 @@ class PosetOfExtrema(Pattern):
       if variable not in latest_event:
         raise ValueError('Not every variable has an event. Currently the code is limited to this case, so this raises an error. TODO: generalize')
       final_label += label[variable]
-    # Convert to C++ datatypes
-    def Wrap(obj):
-      wrapped = IntList()
-      wrapped.extend(obj)
-      return wrapped
-    events_for_pattern = Wrap([network.index(event[0]) for event in events])
+    events_for_pattern = [network.index(event[0]) for event in events]
     # Create "Pattern" object instance
     super(PosetOfExtrema, self).__init__(self.poset_, events_for_pattern, final_label, self.network_.size())
 

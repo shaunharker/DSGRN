@@ -18,12 +18,7 @@ def DrawGraphWithHighlightedPath(g, path):
   If given a python integer list it can convert for "SearchGraph" and "PatternGraph"
   Currently "MatchingGraph" requires an IntPairList input
   """
-  if type(path) == list:
-    converted_path = IntList()
-    converted_path.extend(path)
-  else:
-    converted_path = path 
-  return graphviz.Source(g.graphviz_with_highlighted_path(converted_path))
+  return graphviz.Source(g.graphviz_with_highlighted_path(path))
 
 class Graph:
   def __init__(self, vertices, edges):
