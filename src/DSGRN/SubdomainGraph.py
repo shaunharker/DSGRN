@@ -10,6 +10,13 @@ from math import log2
 from DSGRN._dsgrn import *
 
 class SubdomainGraph:
+
+    def complex(self):
+        return self.cc
+
+    def diagram(self):
+        return self.digraph.adjacencies
+
     def domains(self):
         def domgen():
             sizes = self.network.domains()

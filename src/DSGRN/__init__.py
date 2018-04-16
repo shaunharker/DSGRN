@@ -3,6 +3,7 @@
 
 from DSGRN._dsgrn import *
 from DSGRN.SubdomainGraph import *
+from DSGRN.BlowupGraph import *
 from DSGRN.Graphics import *
 from DSGRN.Query.Graph import *
 from DSGRN.Query.Database import *

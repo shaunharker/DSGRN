@@ -106,6 +106,8 @@ LogicParameterBinding (py::module &m) {
     .def("parse", &LogicParameter::parse)
     .def("hex", &LogicParameter::hex)
     .def("adjacencies", &LogicParameter::adjacencies)
+    .def("numInputs", &LogicParameter::numInputs )
+    .def("numOutputs", &LogicParameter::numOutputs )    
     .def("__eq__", &LogicParameter::operator==)
     .def("__str__", [](LogicParameter * lp){ std::stringstream ss; ss << *lp; return ss.str(); })
     .def(py::pickle(

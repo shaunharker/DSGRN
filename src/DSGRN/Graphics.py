@@ -6,7 +6,7 @@
 import IPython.display
 
 def makehtml(item):
-    if type(item) == type([]):
+    if type(item) == type([]) or type(item) == type(()):
         return '<div>[' + ','.join([makehtml(i) for i in item]) + ']</div>'
     try:
         itemhtml = item._repr_html_()
@@ -16,6 +16,12 @@ def makehtml(item):
         except AttributeError:
             itemhtml = str(item)
     return itemhtml  
+
+class View:
+    def __init__(self, obj):
+        self.html = makehtml(obj)
+    def _repr_html_(self):
+        return self.html
 
 class Table:
     def __init__(self, headers, rows, etc = None):
@@ -45,6 +51,6 @@ class Table:
     def view(self, rowindices = None):
         if not rowindices:
             rowindices = range(0,len(self.rows))
-        if type(rowindices) == type(0):
+        if type(rowindices) == type(0): # single row table
             rowindices = [rowindices]
-        return IPython.display.HTML(self.tablestring((self.rows[i] for i in rowindices)))
+        return View(self.tablestring((self.rows[i] for i in rowindices)))

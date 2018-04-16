@@ -38,6 +38,9 @@ class Graph:
       if not s in self.adjacency_lists:
           self.adjacency_lists[s] = []
       self.adjacency_lists[s].append(t) 
+    self.vertexname = {}
+    for i, v in enumerate(self.vertices):
+      self.vertexname[v] = 'X' + str(i)
 
   def clone(self):
     """
@@ -56,8 +59,8 @@ class Graph:
     Return graphviz string for graph
     """
     return 'digraph {' + \
-  '\n'.join([ 'X' + str(v) + '[label="' + self.label(v) + '";style="filled";fillcolor="' + self.color(v) + '"];' for v in self.vertices ]) + \
-   '\n' + '\n'.join([ 'X' + str(u) + " -> " + 'X' + str(v) + ';' for (u, v) in self.edges ]) + \
+  '\n'.join([ self.vertexname[v] + '[label="' + self.label(v) + '";style="filled";fillcolor="' + self.color(v) + '"];' for v in self.vertices ]) + \
+   '\n' + '\n'.join([ self.vertexname[u]  + " -> " + self.vertexname[v]  + ';' for (u, v) in self.edges ]) + \
    '\n' + '}\n'
 
   def adjacencies(self, p):
