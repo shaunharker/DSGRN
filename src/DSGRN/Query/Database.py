@@ -12,7 +12,12 @@ class Database:
     self.dbname = database_name
     self.conn = sqlite3.connect(database_name)
     self.cursor = self.conn.cursor()
-    self.network = Network(database_name)
+    # Load network spec from database
+    sqlexpression = "select Specification from Network"
+    c.execute(sqlexpression)
+    network_spec = c.fetchone()[0]
+    # construct network
+    self.network = Network(network_spec)
     self.parametergraph = ParameterGraph(self.network)
     # D is the number of network nodes
     self.D = self.parametergraph.dimension()
