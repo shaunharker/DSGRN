@@ -6,8 +6,9 @@ from DSGRN import *
 import sqlite3, sys, time
 import progressbar # pip install progressbar2
 
-def SaveDatabase(filename, data, N):
+def SaveDatabase(filename, data, pg):
     print("Save Database")
+    N = pg.size()
     conn = sqlite3.connect(filename)
     conn.executescript("""
       create table if not exists Signatures (ParameterIndex INTEGER PRIMARY KEY, MorseGraphIndex INTEGER);
@@ -36,6 +37,13 @@ def SaveDatabase(filename, data, N):
 
     def MG(mgi):
         return MorseGraph().parse(morsegraphs[mgi])
+
+    name = filename
+    if filename[-3:] == '.db':
+        name = filename[:-3]
+        
+    print("Inserting Network table into Database", flush=True)
+    conn.execute("insert into Network ( Name, Dimension, Specification, Graphviz) values (?, ?, ?, ?);", name, pg.network().size(), pg.network().specification(), pg.network().graphviz())
 
     print("Inserting Signatures table into Database", flush=True)
     conn.executemany("insert into Signatures (ParameterIndex, MorseGraphIndex) values (?, ?);", signatures_table(data))
@@ -84,16 +92,16 @@ if len(sys.argv) != 3:
     exit(1)
 specfile = sys.argv[1]
 outfile = sys.argv[2]
-pg = ParameterGraph(Network(specfile))
+gpg = ParameterGraph(Network(specfile))
 
 def work(pi): 
-  return (pi, MorseGraph(DomainGraph(pg.parameter(pi))).stringify())
+  return (pi, MorseGraph(DomainGraph(gpg.parameter(pi))).stringify())
 
 def main():
-    global pg
+    global gpg
     with MPICommExecutor(MPI.COMM_WORLD, root=0) as executor:
         if executor is not None: 
-            bar = progressbar.ProgressBar(max_value=pg.size())
+            bar = progressbar.ProgressBar(max_value=gpg.size())
             print("Computing Morse Graphs")
-            results = list(bar(executor.map(work, range(0,pg.size()),chunksize=65536)))
-            SaveDatabase(outfile, results, pg.size())
+            results = list(bar(executor.map(work, range(0,gpg.size()),chunksize=65536)))
+            SaveDatabase(outfile, results, gpg)
