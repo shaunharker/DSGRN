@@ -43,7 +43,7 @@ def SaveDatabase(filename, data, pg):
         name = filename[:-3]
         
     print("Inserting Network table into Database", flush=True)
-    conn.execute("insert into Network ( Name, Dimension, Specification, Graphviz) values (?, ?, ?, ?);", name, pg.network().size(), pg.network().specification(), pg.network().graphviz())
+    conn.execute("insert into Network ( Name, Dimension, Specification, Graphviz) values (?, ?, ?, ?);", (name, pg.network().size(), pg.network().specification(), pg.network().graphviz()))
 
     print("Inserting Signatures table into Database", flush=True)
     conn.executemany("insert into Signatures (ParameterIndex, MorseGraphIndex) values (?, ?);", signatures_table(data))
