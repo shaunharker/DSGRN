@@ -1,6 +1,7 @@
 import sqlite3
 import graphviz
 from DSGRN._dsgrn import *
+from functools import reduce
 
 from DSGRN.Query.Logging import LogToSTDOUT
 
@@ -14,8 +15,8 @@ class Database:
     self.cursor = self.conn.cursor()
     # Load network spec from database
     sqlexpression = "select Specification from Network"
-    c.execute(sqlexpression)
-    network_spec = c.fetchone()[0]
+    self.cursor.execute(sqlexpression)
+    network_spec = self.cursor.fetchone()[0]
     # construct network
     self.network = Network(network_spec)
     self.parametergraph = ParameterGraph(self.network)
