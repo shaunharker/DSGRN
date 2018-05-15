@@ -3,13 +3,18 @@
 /// 2018-02-20
 /// MIT LICENSE
 
-#include "LabelledMultidigraph.h"
+#pragma once
+
+#include "common.h"
+#include "Graph/LabelledMultidigraph.h"
 
 namespace NFA_detail {
   typedef char LabelType;
   class NFA_Node;
 }
 
+/// NFA
+///   nondeterministic finite automata with epsilon transitions
 class NFA : public LabelledMultidigraph {
 public:
   typedef NFA_detail::LabelType LabelType;
@@ -19,18 +24,21 @@ public:
 
   /// set initial
   void
-  set_initial ( Integer idx ) { initial_idx_ = idx; }
+  set_initial ( uint64_t idx ) { initial_idx_ = idx; }
   
   /// set_final
   void
-  set_final ( Integer idx ) { final_idx_ = idx; }
+  set_final ( uint64_t idx ) { final_idx_ = idx; }
   
-  ///
-  Integer
-  initial ( void ) { return initial_idx_; }
+  /// initial
+  ///   Give start node of automata
+  uint64_t
+  initial ( void ) const { return initial_idx_; }
 
-  Integer
-  final ( void ) { return final_idx_; }
+  /// final
+  ///   Give accept node of automata
+  uint64_t
+  final ( void ) const { return final_idx_; }
   
   /// graphviz (override)
   std::string 
@@ -50,7 +58,7 @@ namespace py = pybind11;
 inline void
 NFABinding (py::module &m) {
   py::class_<NFA, std::shared_ptr<NFA>>(m, "NFA")
-    .def(py::init<void>())
+    .def(py::init<>())
     .def("set_initial", &NFA::set_initial)
     .def("set_final", &NFA::set_final)
     .def("initial", &NFA::initial)

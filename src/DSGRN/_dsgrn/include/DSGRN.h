@@ -21,7 +21,6 @@
 #include "Graph/Components.h"
 #include "Graph/StrongComponents.h"
 #include "Graph/LabelledMultidigraph.h"
-#include "Graph/NFA.h"
 #include "Pattern/MatchingGraph.h"
 #include "Pattern/MatchingRelation.h"
 #include "Pattern/Pattern.h"
