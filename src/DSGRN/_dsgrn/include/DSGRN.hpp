@@ -33,3 +33,6 @@
 #include "Pattern/PatternGraph.hpp"
 #include "Pattern/PatternMatch.hpp"
 #include "Pattern/SearchGraph.hpp"
+#include "Query/ComputeSingleGeneQuery.hpp"
+#include "Query/NFA.hpp"
+#include "Query/ThompsonsConstruction.hpp"

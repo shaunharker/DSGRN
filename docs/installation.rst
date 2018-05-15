@@ -5,6 +5,7 @@ Dependencies
 ------------
 
 * Modern C++ compiler
+* cmake
 * sqlite3
 * Python3
 * Jupyter Notebook
@@ -24,6 +25,12 @@ Install Homebrew https://brew.sh, an open source package manager
 .. code-block:: bash
 
     ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+
+To install `cmake`:
+
+.. code-block:: bash
+
+    brew install cmake
 
 You will also want ``python3``; both homebrew's python and Anaconda3_ have been tested.
 

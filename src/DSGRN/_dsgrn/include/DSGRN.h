@@ -28,3 +28,6 @@
 #include "Pattern/PatternGraph.h"
 #include "Pattern/PatternMatch.h"
 #include "Pattern/SearchGraph.h"
+#include "Query/ComputeSingleGeneQuery.h"
+#include "Query/NFA.h"
+#include "Query/ThompsonsConstruction.h"
