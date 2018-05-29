@@ -9,7 +9,7 @@
 
 #include "Parameter/Network.h"
 #include "Parameter/ParameterGraph.h"
-#include "Graph/LabelledMultidigraph.h"
+#include "Query/NFA.h"
 
 struct ComputeSingleGeneQuery_ {
   Network network;
@@ -43,19 +43,15 @@ public:
   ComputeSingleGeneQuery(Network network, std::string const& gene, std::function<char(uint64_t)> labeller);
 
   /// operator ()
-  ///   The query returns a graph which contains the poset of gene parameter indices 
+  ///   The query returns a NFA which recognizes paths through the Hasse diagram of the poset of gene parameter indices 
   ///   corresponding to adjusting the parameter by changing the logic parameter associated 
   ///   with the gene being queried. The vertices are labelled according to the function
   ///   labeller which accepts full parameter indices.
   ///   The graph is as follows: 
   ///     * The vertices of the graph are named according to Gene Parameter Index (gpi). 
   ///     * There is a directed edge p -> q iff p < q and the associated logic parameters are adjacent.
-  ///     * The graph is labelled (graph.matching_label) with the output of `labeller`
-  ///   In addition the following extra structures are provided:
-  ///     * `graph.num_inputs` is the number of network edges which are inputs to the gene associated with the query
-  ///     * `graph.num_outputs`is the number of network edges which are outputs to the gene associated with the query
-  ///     * `graph.essential` is a boolean-valued function which determines if each vertex corresponds to an essential parameter node
-  LabelledMultidigraph
+  ///     * The graph is labelled with the output of `labeller`
+  NFA
   operator () (uint64_t reduced_parameter_index) const;
 
   /// full_parameter_index
@@ -92,13 +88,17 @@ private:
 
 #include <pybind11/pybind11.h>
 #include <pybind11/stl.h>
+#include <pybind11/functional.h>
+
 namespace py = pybind11;
 
 inline void
 ComputeSingleGeneQueryBinding (py::module &m) {
-  py::class_<ComputeSingleGeneQuery, std::shared_ptr<ComputeSingleGeneQuery>>(m, "ComputeSingleGeneQuery")
+  py::class_<ComputeSingleGeneQuery, std::shared_ptr<ComputeSingleGeneQuery>>(m, "NewComputeSingleGeneQuery")
     .def(py::init<Network, std::string const&, std::function<char(uint64_t)>>())
     .def("__call__", &ComputeSingleGeneQuery::operator())
+    .def("full_parameter_index",&ComputeSingleGeneQuery::full_parameter_index)
+    .def("reduced_parameter_index",&ComputeSingleGeneQuery::reduced_parameter_index)
     .def("number_of_gene_parameters", &ComputeSingleGeneQuery::number_of_gene_parameters)
     .def("number_of_reduced_parameters", &ComputeSingleGeneQuery::number_of_reduced_parameters);
 }

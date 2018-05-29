@@ -107,10 +107,13 @@ reduced_parameter_index(uint64_t pi) const {
 ///     * `graph.num_inputs` is the number of network edges which are inputs to the gene associated with the query
 ///     * `graph.num_outputs`is the number of network edges which are outputs to the gene associated with the query
 ///     * `graph.essential` is a boolean-valued function which determines if each vertex corresponds to an essential parameter node
-inline LabelledMultidigraph ComputeSingleGeneQuery::
+inline NFA ComputeSingleGeneQuery::
 operator () (uint64_t reduced_parameter_index) const {
-  LabelledMultidigraph result;
-  for ( auto v : self.vertices ) result.add_vertex();
+  NFA result;
+  for ( auto v : self.vertices ) { 
+    auto i = result.add_vertex();
+    result.add_edge(i,i,' '); // self epsilon edge
+  }
   for ( auto e : self.edges ) { 
     auto u = e.first;
     auto v = e.second;
@@ -118,6 +121,8 @@ operator () (uint64_t reduced_parameter_index) const {
     auto label = self.labeller(parameter_index);
     result.add_edge(u,v,label);
   }
+  result.set_initial(0);
+  result.set_final(self.vertices.size()-1);
   return result;
 }
 
