@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 #
 # Sample
 #
@@ -26,7 +26,7 @@ import DSGRN
 
 # Read command line arguments
 network_spec_file = sys.argv[1]
-parameter_node_index = sys.argv[2]
+parameter_node_index = int(sys.argv[2])
 
 # Call DSGRN to obtain inequalities
 
@@ -57,9 +57,10 @@ solution = subprocess.check_output ( [sys.path[0]+'/runMathematica', '"Import[\\
 #      (a) putting quotes around variable names
 #      (b) replacing "->"  with ":"
 
-json_solution = re.sub(r"([LUT]\[[^\]]*\])",r'"\1"', solution).replace("->",":");
+
+json_solution = re.sub(r"([LUT]\[[^\]]*\])",r'"\1"', str(solution)).replace("->",":");
 
 # Output result
-print json_solution
+print(json_solution)
 
 
