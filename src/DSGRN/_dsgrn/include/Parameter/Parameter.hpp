@@ -280,6 +280,11 @@ inequalities ( void ) const {
       network () . logic ( d );
     std::string const& node_name = network() . name ( d );
     uint64_t n = network() . inputs ( d ) . size ();
+    // Corner case: n == 0 (no inputs)
+    if ( n == 0 ) {
+      input_ss << "B[" << node_name << "]";
+      return input_ss . str ();
+    }
     uint64_t bit = 1;
     uint64_t k = 0;
     for ( auto const& factor : logic ) {
@@ -341,12 +346,18 @@ inequalities ( void ) const {
       }
       ss << output_string ( j, d );
     }
+
     ss << " && ";
-    // Output 0 < L < U  constraints
-    first = true;
-    for ( uint64_t i = 0; i < n; ++ i ) {
-      if ( first ) first = false; else ss << " && ";
-      ss << "0 < L" << input_string ( i, d ) << " < U" << input_string ( i, d );
+    if ( n == 0 ) {
+      // Output 0 < B constraint (here, B is basal rate for zero-input node)
+      ss << "0 < " << input_combo_string ( 0, d );
+    } else {
+      // Output 0 < L < U  constraints
+      first = true;
+      for ( uint64_t i = 0; i < n; ++ i ) {
+        if ( first ) first = false; else ss << " && ";
+        ss << "0 < L" << input_string ( i, d ) << " < U" << input_string ( i, d );
+      }
     }
 
   }
