@@ -21,7 +21,6 @@ PYBIND11_MODULE( _dsgrn, m) {
   ComponentsBinding(m);
   StrongComponentsBinding(m);
   LabelledMultidigraphBinding(m);
-  NFABinding(m);
   // Parameter
   LogicParameterBinding(m);
   NetworkBinding(m);
@@ -39,4 +38,8 @@ PYBIND11_MODULE( _dsgrn, m) {
   PatternGraphBinding(m);
   PatternMatchBinding(m);
   SearchGraphBinding(m);
+  // Query
+  NFABinding(m);
+  ComputeSingleGeneQueryBinding(m);
+  ThompsonsConstructionBinding(m);
 }

@@ -196,11 +196,12 @@ _parse ( std::vector<std::string> const& lines ) {
     // If begins with . or @, skip
     if ( (splitline[0][0] == '.') || (splitline[0][0] == '@' ) ) continue; 
     data_ ->  name_by_index_ . push_back ( splitline[0] );
-    // This is a network node description line, so it should have a logic:
+    // If no logic specified, zero inputs.
     if ( splitline . size () < 2 ) {
-      throw std::runtime_error ( "Problem parsing network specification file: missing logic");
+      logic_strings . push_back ( " ");
+    } else {
+      logic_strings . push_back ( splitline[1] );
     }
-    logic_strings . push_back ( splitline[1] );
     //std::cout << line << " has " << splitline.size() << " parts.\n";
     if ( splitline . size () >= 3 ) {
       // TODO: make it check for keyword "essential"
