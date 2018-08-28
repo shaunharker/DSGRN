@@ -141,7 +141,7 @@ class BlowupGraph:
 
         return { k : self.network.outputs(k)[coords[k]-1] for k in self.NormalVariables(s)}
 
-    def isOpaque(self,s):
+    def isOpaque(self,s):  # not definition in paper, check for bug
         """
         Return True if s is an opaque cubical cell,
           i.e. if RegulationMap(s) is a permutation
@@ -157,9 +157,8 @@ class BlowupGraph:
             return False
         for t in self.cc.topstar(s):
             rf = self.RookField(t)
-            for d in self.TangentVariables(s):
-                if rf[d] != 0:
-                    return False
+            if any(rf[d] != 0 for d in self.TangentVariables(s)):
+                return False
         return True
 
     def EquilibriumCells(self):
@@ -244,69 +243,72 @@ class BlowupGraph:
         """
         Apply Rule 3 edge removals
         """
+        print("** Rule 3 ********************************************")
         for s in self.EquilibriumCells():
-            # print("=====================")
-            # print("Checking equilibrium cell s = " + str(s))
-            # print("  topstar(s) = " + str(self.cc.topstar(s)))
-            # print("  star(s) = " + str(self.cc.star({s})))
-            # print("  fringe in star: " + str([(k, str(self.cc.coordinates(k)), self.cc.rightfringe(k)) for k in self.cc.star({s})]))
-            # print("  dim s = " + str(self.cc.cell_dim(s)))
-            # print("  Coordinates = " + str(self.cc.coordinates(s)))
-            # print("  Barycenter = " + str(self.cc.barycenter(s)))
-            # print("  NormalVariables = " + str(self.NormalVariables(s)))
-            # print("  TangentVariables = " + str(self.TangentVariables(s)))
-            # print("  RegulationMap = " + str(self.RegulationMap(s)))
-            # print("  OpacityCycles = " + str(self.OpacityCycles(s)))
+            print("=====================")
+            print("Checking equilibrium cell s = " + str(s))
+            print("  topstar(s) = " + str(self.cc.topstar(s)))
+            print("  star(s) = " + str(self.cc.star({s})))
+            print("  fringe in star: " + str([(k, str(self.cc.coordinates(k)), self.cc.rightfringe(k)) for k in self.cc.star({s})]))
+            print("  dim s = " + str(self.cc.cell_dim(s)))
+            print("  Coordinates = " + str(self.cc.coordinates(s)))
+            print("  Barycenter = " + str(self.cc.barycenter(s)))
+            print("  NormalVariables = " + str(self.NormalVariables(s)))
+            print("  TangentVariables = " + str(self.TangentVariables(s)))
+            print("  RegulationMap = " + str(self.RegulationMap(s)))
+            print("  OpacityCycles = " + str(self.OpacityCycles(s)))
             cycles = self.OpacityCycles(s)
             for t in self.cc.topstar(s):
-                # print("  Checking top cell t = " + str(t))
+                print("  Checking top cell t = " + str(t))
                 q = self.RelativePositionVector(s,t)
-                # print("    RelativePositionVector" + str((s,t)) + " = " + str(q))
+                print("    RelativePositionVector" + str((s,t)) + " = " + str(q))
                 unstable = [ (self.CrossingNumber(q,cycle) <= 
-                    (len(cycle)+self.Feedback(cycle))/2 - 1) for cycle in cycles]
-                # for cycle in cycles:
-                #     edges = list(zip(cycle[:-1],cycle[1:]))+[(cycle[-1],cycle[0])]
-                #     print("    Cycle = " + str(cycle) )
-                #     print("      len(cycle) = " + str(len(cycle)))
-                #     print("      edges = " + str(edges))
-                #     print("      feedback type = " + str(self.Feedback(cycle)))
-                #     print("      crossing number = " + str(self.CrossingNumber(q,cycle)))
-                #     print("      calc = " + str([ (1 if ((1 if self.network.interaction(i,j) else -1) != q[i]*q[j]) else 0,"delta[i,j]=" + str((1 if self.network.interaction(i,j) else -1)),"q[i]=" + str(q[i]),"q[j] = " + str(q[j]),"i = "+str(i),"j = " + str(j)) for (i,j) in edges]))
-                # print("    Unstable = " + str(unstable))
+                    (len(cycle)+self.Feedback(cycle))/2 + 1) for cycle in cycles]
+                for cycle in cycles:
+                    edges = list(zip(cycle[:-1],cycle[1:]))+[(cycle[-1],cycle[0])]
+                    print("    Cycle = " + str(cycle) )
+                    print("      len(cycle) = " + str(len(cycle)))
+                    print("      edges = " + str(edges))
+                    print("      feedback type = " + str(self.Feedback(cycle)))
+                    print("      crossing number = " + str(self.CrossingNumber(q,cycle)))
+                    print("      calc = " + str([ (1 if ((1 if self.network.interaction(i,j) else -1) != q[i]*q[j]) else 0,"delta[i,j]=" + str((1 if self.network.interaction(i,j) else -1)),"q[i]=" + str(q[i]),"q[j] = " + str(q[j]),"i = "+str(i),"j = " + str(j)) for (i,j) in edges]))
+                print("    Unstable = " + str(unstable))
                 S = self.dc.dual(s)
                 T = self.dc.dual(t)
                 if all(unstable):
                     if T in self.digraph.adjacencies(S):
                         self.digraph.remove_edge(T,S)
-                        # print("    Removing edge from " + str(t) + " to " + str(s))
-                        # print("      barycenter(" + str(t) + ") = " + str(self.cc.barycenter(t)))
-                        # print("      barycenter(" + str(s) + ") = " + str(self.cc.barycenter(s)))
-                        # print("      CUT(" + str(self.cc.barycenter(t)) + ", " + str(self.cc.barycenter(s)) + ")")
+                        print("    Removing edge from " + str(t) + " to " + str(s))
+                        print("      barycenter(" + str(t) + ") = " + str(self.cc.barycenter(t)))
+                        print("      barycenter(" + str(s) + ") = " + str(self.cc.barycenter(s)))
+                        print("      CUT(" + str(self.cc.barycenter(t)) + ", " + str(self.cc.barycenter(s)) + ")")
           
                 if not any(unstable):
                     if S in self.digraph.adjacencies(T):
                         self.digraph.remove_edge(S,T)
-                        # print("    Removing edge from " + str(s) + " to " + str(t))
-                        # print("      barycenter(" + str(s) + ") = " + str(self.cc.barycenter(s)))
-                        # print("      barycenter(" + str(t) + ") = " + str(self.cc.barycenter(t)))
-                        # print("      CUT(" + str(self.cc.barycenter(s)) + ", " + str(self.cc.barycenter(t)) + ")")
+                        print("    Removing edge from " + str(s) + " to " + str(t))
+                        print("      barycenter(" + str(s) + ") = " + str(self.cc.barycenter(s)))
+                        print("      barycenter(" + str(t) + ") = " + str(self.cc.barycenter(t)))
+                        print("      CUT(" + str(self.cc.barycenter(s)) + ", " + str(self.cc.barycenter(t)) + ")")
 
     def Rule4(self):
         """
         Apply Rule 4 edge removals
         """
+        print("** Rule 4 ********************************************")
         for s in self.EquilibriumCells():
             cycles = self.OpacityCycles(s)
             for t in self.cc.star({s}):
                 q = self.RelativePositionVector(s,t)
+                print("    RelativePositionVector" + str((s,t)) + " = " + str(q))
                 if any([[q[i] for i in cycle].count(0) > 1 for cycle in cycles]):
                     continue
                 qplus = [ x if x != 0 else 1 for x in q ]
                 qminus = [ x if x != 0 else -1 for x in q ]           
                 unstableplus = [ (self.CrossingNumber(qplus,cycle) <= 
-                    (len(cycle)+self.Feedback(cycle))/2 - 1) for cycle in cycles] 
+                    (len(cycle)+self.Feedback(cycle))/2 + 1) for cycle in cycles] 
                 unstableminus = [ (self.CrossingNumber(qminus,cycle) <= 
-                    (len(cycle)+self.Feedback(cycle))/2 - 1) for cycle in cycles]
+                    (len(cycle)+self.Feedback(cycle))/2 + 1) for cycle in cycles]
                 unstable = unstableplus + unstableminus
                 S = self.dc.dual(s)
                 T = self.dc.dual(t)
@@ -322,38 +324,232 @@ class BlowupGraph:
         """
         Apply Rule 5 edge removals
         """
+        print("** Rule 5 *#******************************************")
+        print(self.EquilibriumCells())
         for s in self.EquilibriumCells():
+            print("=====================")
+            print("Checking equilibrium cell s = " + str(s))
+            print("  topstar(s) = " + str(self.cc.topstar(s)))
+            print("  star(s) = " + str(self.cc.star({s})))
+            print("  fringe in star: " + str([(k, str(self.cc.coordinates(k)), self.cc.rightfringe(k)) for k in self.cc.star({s})]))
+            print("  dim s = " + str(self.cc.cell_dim(s)))
+            print("  Coordinates = " + str(self.cc.coordinates(s)))
+            print("  Barycenter = " + str(self.cc.barycenter(s)))
+            print("  NormalVariables = " + str(self.NormalVariables(s)))
+            print("  TangentVariables = " + str(self.TangentVariables(s)))
+            print("  RegulationMap = " + str(self.RegulationMap(s)))
+            print("  OpacityCycles = " + str(self.OpacityCycles(s)))
             cycles = self.OpacityCycles(s)
             for t in self.cc.star({s}):
+                print("  Checking top cell t = " + str(t))
                 q = self.RelativePositionVector(s,t)
+                print("    RelativePositionVector" + str((s,t)) + " = " + str(q))
+                for cycle in cycles:  # debug
+                    edges = list(zip(cycle[:-1],cycle[1:]))+[(cycle[-1],cycle[0])]
+                    print("    Cycle = " + str(cycle) )
+                    print("      len(cycle) = " + str(len(cycle)))
+                    print("      edges = " + str(edges))
+                    print("      feedback type = " + str(self.Feedback(cycle)))
+                    print("      crossing number = " + str(self.CrossingNumber(q,cycle)))
+                    print("      calc = " + str([ (1 if ((1 if self.network.interaction(i,j) else -1) != q[i]*q[j]) else 0,"delta[i,j]=" + str((1 if self.network.interaction(i,j) else -1)),"q[i]=" + str(q[i]),"q[j] = " + str(q[j]),"i = "+str(i),"j = " + str(j)) for (i,j) in edges]))
+                #print("    Unstable = " + str(unstable)) #debug end
+
+                # skip if not order 2 coface
                 if any([[q[i] for i in cycle].count(0) > 1 for cycle in cycles]):
                     continue
                 qplus = [ x if x != 0 else 1 for x in q ]
                 qminus = [ x if x != 0 else -1 for x in q ]   
                 def stability(cycle):
-                    stab1 = (self.CrossingNumber(qplus,cycle) <= 
-                        (len(cycle)+self.Feedback(cycle))/2 - 1)
-                    stab2 = (self.CrossingNumber(qminus,cycle) <= 
-                        (len(cycle)+self.Feedback(cycle))/2 - 1)
-                    if stab1 and stab1:
-                        return -1
-                    elif (not stab1 and not stab2):
+                    unstab1 = (self.CrossingNumber(qplus,cycle) <= 
+                        (len(cycle)+self.Feedback(cycle))/2 + 1)
+                    unstab2 = (self.CrossingNumber(qminus,cycle) <= 
+                        (len(cycle)+self.Feedback(cycle))/2 + 1)
+                    print("    Analyzing w_k for cycle " + str(cycle))
+                    print("        qplus = " + str(qplus))
+                    print("        qminus = " + str(qminus))
+                    print("        qplus crossing = " + str(self.CrossingNumber(qplus,cycle)))
+                    print("        qminus crossing = " + str(self.CrossingNumber(qminus,cycle)))
+                    print("        unstab1 = " + str(unstab1) + "  unstab2 = " + str(unstab2))
+                    if unstab1 and unstab2:
                         return 1
+                    elif (not unstab1 and not unstab2):
+                        return -1
                     else:
                         return 0
                 w = [ stability(cycle) for cycle in cycles ]
+                print("    w = " + str(w))
                 S = self.dc.dual(s)
                 T = self.dc.dual(t)
                 if all( x <= 0 for x in w) and any(x < 0 for x in w):
                     if S in self.digraph.adjacencies(T):
                         self.digraph.remove_edge(S,T)
+                        print("    Removing edge from " + str(s) + " to " + str(t))
+                        print("      barycenter(" + str(s) + ") = " + str(self.cc.barycenter(s)))
+                        print("      barycenter(" + str(t) + ") = " + str(self.cc.barycenter(t)))
+                        print("      CUT(" + str(self.cc.barycenter(s)) + ", " + str(self.cc.barycenter(t)) + ")")
+
                 if all( x >= 0 for x in w) and any(x > 0 for x in w):
                     if T in self.digraph.adjacencies(S):
                         self.digraph.remove_edge(T,S)
+                        print("    Removing edge from " + str(t) + " to " + str(s))
+                        print("      barycenter(" + str(t) + ") = " + str(self.cc.barycenter(t)))
+                        print("      barycenter(" + str(s) + ") = " + str(self.cc.barycenter(s)))
+                        print("      CUT(" + str(self.cc.barycenter(t)) + ", " + str(self.cc.barycenter(s)) + ")")
+          
+    def Rule5b(self):
+        """
+        Apply Rule 5b edge removals
+        """
+        print("** Rule 5b *#******************************************")
+        print(self.EquilibriumCells())
+        for s in self.EquilibriumCells():
+            print("=====================")
+            print("Checking equilibrium cell s = " + str(s))
+            print("  topstar(s) = " + str(self.cc.topstar(s)))
+            print("  star(s) = " + str(self.cc.star({s})))
+            print("  fringe in star: " + str([(k, str(self.cc.coordinates(k)), self.cc.rightfringe(k)) for k in self.cc.star({s})]))
+            print("  dim s = " + str(self.cc.cell_dim(s)))
+            print("  Coordinates = " + str(self.cc.coordinates(s)))
+            print("  Barycenter = " + str(self.cc.barycenter(s)))
+            print("  NormalVariables = " + str(self.NormalVariables(s)))
+            print("  TangentVariables = " + str(self.TangentVariables(s)))
+            print("  RegulationMap = " + str(self.RegulationMap(s)))
+            print("  OpacityCycles = " + str(self.OpacityCycles(s)))
+            cycles = self.OpacityCycles(s)
+            for t in self.cc.star({s}):
+                print("  Checking top cell t = " + str(t))
+                q = self.RelativePositionVector(s,t)
+                print("    RelativePositionVector" + str((s,t)) + " = " + str(q))
+                for cycle in cycles:  # debug
+                    edges = list(zip(cycle[:-1],cycle[1:]))+[(cycle[-1],cycle[0])]
+                    print("    Cycle = " + str(cycle) )
+                    print("      len(cycle) = " + str(len(cycle)))
+                    print("      edges = " + str(edges))
+                    print("      feedback type = " + str(self.Feedback(cycle)))
+                    print("      crossing number = " + str(self.CrossingNumber(q,cycle)))
+                    print("      calc = " + str([ (1 if ((1 if self.network.interaction(i,j) else -1) != q[i]*q[j]) else 0,"delta[i,j]=" + str((1 if self.network.interaction(i,j) else -1)),"q[i]=" + str(q[i]),"q[j] = " + str(q[j]),"i = "+str(i),"j = " + str(j)) for (i,j) in edges]))
+                #print("    Unstable = " + str(unstable)) #debug end
 
+                # skip if not order 2 coface
+                if any([[q[i] for i in cycle].count(0) > 1 for cycle in cycles]):
+                    continue
+                qplus = [ x if x != 0 else 1 for x in q ]
+                qminus = [ x if x != 0 else -1 for x in q ]   
+                def stability(cycle):
+                    unstab1 = (self.CrossingNumber(qplus,cycle) <= 
+                        (len(cycle)+self.Feedback(cycle))/2 + 1)
+                    unstab2 = (self.CrossingNumber(qminus,cycle) <= 
+                        (len(cycle)+self.Feedback(cycle))/2 + 1)
+                    print("    Analyzing w_k for cycle " + str(cycle))
+                    print("        qplus = " + str(qplus))
+                    print("        qminus = " + str(qminus))
+                    print("        qplus crossing = " + str(self.CrossingNumber(qplus,cycle)))
+                    print("        qminus crossing = " + str(self.CrossingNumber(qminus,cycle)))
+                    print("        unstab1 = " + str(unstab1) + "  unstab2 = " + str(unstab2))
+                    if unstab1 and unstab2:
+                        return 1
+                    elif (not unstab1 and not unstab2):
+                        return -1
+                    else:
+                        return 0
+                w = [ stability(cycle) for cycle in cycles ]
+                print("    w = " + str(w))
+                S = self.dc.dual(s)
+                T = self.dc.dual(t)
+                if all( x <= 0 for x in w) and any(x < 0 for x in w):
+                    if S in self.digraph.adjacencies(T):
+                        self.digraph.remove_edge(S,T)
+                        print("    Removing edge from " + str(s) + " to " + str(t))
+                        print("      barycenter(" + str(s) + ") = " + str(self.cc.barycenter(s)))
+                        print("      barycenter(" + str(t) + ") = " + str(self.cc.barycenter(t)))
+                        print("      CUT(" + str(self.cc.barycenter(s)) + ", " + str(self.cc.barycenter(t)) + ")")
 
+                if all( x >= 0 for x in w) and any(x > 0 for x in w):
+                    if T in self.digraph.adjacencies(S):
+                        self.digraph.remove_edge(T,S)
+                        print("    Removing edge from " + str(t) + " to " + str(s))
+                        print("      barycenter(" + str(t) + ") = " + str(self.cc.barycenter(t)))
+                        print("      barycenter(" + str(s) + ") = " + str(self.cc.barycenter(s)))
+                        print("      CUT(" + str(self.cc.barycenter(t)) + ", " + str(self.cc.barycenter(s)) + ")")
+          
+    def Rule6(self):
+        """
+        Apply Rule 6 edge removals
+        """
+        print("** Rule 6 ********************************************")
+        print(self.EquilibriumCells())
+        for s in self.EquilibriumCells():
+            print("=====================")
+            print("Checking equilibrium cell s = " + str(s))
+            print("  topstar(s) = " + str(self.cc.topstar(s)))
+            print("  star(s) = " + str(self.cc.star({s})))
+            print("  fringe in star: " + str([(k, str(self.cc.coordinates(k)), self.cc.rightfringe(k)) for k in self.cc.star({s})]))
+            print("  dim s = " + str(self.cc.cell_dim(s)))
+            print("  Coordinates = " + str(self.cc.coordinates(s)))
+            print("  Barycenter = " + str(self.cc.barycenter(s)))
+            print("  NormalVariables = " + str(self.NormalVariables(s)))
+            print("  TangentVariables = " + str(self.TangentVariables(s)))
+            print("  RegulationMap = " + str(self.RegulationMap(s)))
+            print("  OpacityCycles = " + str(self.OpacityCycles(s)))
+            cycles = self.OpacityCycles(s)
+            for t in self.cc.star({s}):
+                print("  Checking top cell t = " + str(t))
+                q = self.RelativePositionVector(s,t)
+                print("    RelativePositionVector" + str((s,t)) + " = " + str(q))
+                for cycle in cycles:  # debug
+                    edges = list(zip(cycle[:-1],cycle[1:]))+[(cycle[-1],cycle[0])]
+                    print("    Cycle = " + str(cycle) )
+                    print("      len(cycle) = " + str(len(cycle)))
+                    print("      edges = " + str(edges))
+                    print("      feedback type = " + str(self.Feedback(cycle)))
+                    print("      crossing number = " + str(self.CrossingNumber(q,cycle)))
+                    print("      calc = " + str([ (1 if ((1 if self.network.interaction(i,j) else -1) != q[i]*q[j]) else 0,"delta[i,j]=" + str((1 if self.network.interaction(i,j) else -1)),"q[i]=" + str(q[i]),"q[j] = " + str(q[j]),"i = "+str(i),"j = " + str(j)) for (i,j) in edges]))
+                #print("    Unstable = " + str(unstable)) #debug end
 
-    def __init__(self, p, logging = 0):
+                # # skip if not order 2 coface
+                # if any([[q[i] for i in cycle].count(0) > 1 for cycle in cycles]):
+                #     continue
+                qplus = [ x if x != 0 else 1 for x in q ]
+                qminus = [ x if x != 0 else -1 for x in q ]   
+                def stability(cycle):
+                    unstab1 = (self.CrossingNumber(qplus,cycle) <= 
+                        (len(cycle)+self.Feedback(cycle))/2 + 1)
+                    unstab2 = (self.CrossingNumber(qminus,cycle) <= 
+                        (len(cycle)+self.Feedback(cycle))/2 + 1)
+                    print("    Analyzing w_k for cycle " + str(cycle))
+                    print("        qplus = " + str(qplus))
+                    print("        qminus = " + str(qminus))
+                    print("        qplus crossing = " + str(self.CrossingNumber(qplus,cycle)))
+                    print("        qminus crossing = " + str(self.CrossingNumber(qminus,cycle)))
+                    print("        unstab1 = " + str(unstab1) + "  unstab2 = " + str(unstab2))
+                    if unstab1 and unstab2:
+                        return 1
+                    elif (not unstab1 and not unstab2):
+                        return -1
+                    else:
+                        return 0
+                w = [ stability(cycle) for cycle in cycles ]
+                print("    w = " + str(w))
+                S = self.dc.dual(s)
+                T = self.dc.dual(t)
+                if all( x <= 0 for x in w) and any(x < 0 for x in w):
+                    if S in self.digraph.adjacencies(T):
+                        self.digraph.remove_edge(S,T)
+                        print("    Removing edge from " + str(s) + " to " + str(t))
+                        print("      barycenter(" + str(s) + ") = " + str(self.cc.barycenter(s)))
+                        print("      barycenter(" + str(t) + ") = " + str(self.cc.barycenter(t)))
+                        print("      CUT(" + str(self.cc.barycenter(s)) + ", " + str(self.cc.barycenter(t)) + ")")
+
+                if all( x >= 0 for x in w): # and any(x > 0 for x in w):
+                    if T in self.digraph.adjacencies(S):
+                        self.digraph.remove_edge(T,S)
+                        print("    Removing edge from " + str(t) + " to " + str(s))
+                        print("      barycenter(" + str(t) + ") = " + str(self.cc.barycenter(t)))
+                        print("      barycenter(" + str(s) + ") = " + str(self.cc.barycenter(s)))
+                        print("      CUT(" + str(self.cc.barycenter(t)) + ", " + str(self.cc.barycenter(s)) + ")")
+          
+
+    def __init__(self, p, level = 0):
         # initialize complex, graph, supporting data structures
         self.p = p
         self.network = self.p.network()
@@ -373,9 +569,17 @@ class BlowupGraph:
         # Apply rules
         self.Rule1()
         self.Rule2()
-        if logging >= 3:
+        if level == 3:
             self.Rule3()
-        if logging == 4:
+        if level == 4:
+            self.Rule3()
             self.Rule4()
-        if logging == 5:
+        if level == 5:
+            self.Rule3()
             self.Rule5()
+        if level == "5b":
+            self.Rule3()
+            self.Rule5b()
+        if level == 6:
+            self.Rule3()
+            self.Rule6()

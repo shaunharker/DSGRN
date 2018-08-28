@@ -135,7 +135,7 @@ number_of_gene_parameters(void) const {
 }
 /// number_of_reduced_parameters
 ///   Return number of reduced parameters associated with query object
-///   This is the size of the parameter grapph divided by the size of the 
+///   This is the size of the parameter graph divided by the size of the 
 ///   logic factor graph associated with the selected gene  
 
 inline uint64_t ComputeSingleGeneQuery::
