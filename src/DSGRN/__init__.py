@@ -11,6 +11,7 @@ from DSGRN.Query.Hexcodes import *
 from DSGRN.Query.MonostableQuery import *
 from DSGRN.Query.BistableQuery import *
 from DSGRN.Query.MultistableQuery import *
+from DSGRN.Query.NstableQuery import *
 from DSGRN.Query.SingleFixedPointQuery import *
 from DSGRN.Query.DoubleFixedPointQuery import *
 from DSGRN.Query.MonostableFixedPointQuery import *
