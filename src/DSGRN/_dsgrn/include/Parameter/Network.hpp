@@ -114,7 +114,7 @@ graphviz ( std::vector<std::string> const& theme ) const {
   result << "digraph {\n";
   result << "bgcolor = " << theme[0] << ";";
   for ( uint64_t i = 0; i < size (); ++ i ) {
-    result << name(i) << "[style=filled fillcolor=" << theme[1] << "];\n";
+    result << "\"" << name(i) << "\"" << " [style=filled fillcolor=" << theme[1] << "];\n";
   }
   std::string normalhead ("normal");
   std::string blunthead ("tee");
@@ -127,7 +127,7 @@ graphviz ( std::vector<std::string> const& theme ) const {
       for ( uint64_t source : part ) {
         // std::cout << "Checking type of edge from " << source << " to " << target << "\n";
         std::string head = interaction(source,target) ? normalhead : blunthead;
-        result << name(source) << " -> " << name(target) << "[color=" << theme[partnum+2] << " arrowhead=\"" << head << "\"];\n";
+        result << "\"" << name(source) << "\" -> \"" << name(target) << "\" [color=" << theme[partnum+2] << " arrowhead=\"" << head << "\"];\n";
       }
       ++ partnum;
       if ( partnum + 2 == theme . size () ) partnum = 0;

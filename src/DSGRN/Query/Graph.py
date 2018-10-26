@@ -59,8 +59,8 @@ class Graph:
     Return graphviz string for graph
     """
     return 'digraph {' + \
-  '\n'.join([ self.vertexname[v] + '[label="' + self.label(v) + '";style="filled";fillcolor="' + self.color(v) + '"];' for v in self.vertices ]) + \
-   '\n' + '\n'.join([ self.vertexname[u]  + " -> " + self.vertexname[v]  + ';' for (u, v) in self.edges ]) + \
+  '\n'.join([ '"' + self.vertexname[v] + '" [label="' + self.label(v) + '";style="filled";fillcolor="' + self.color(v) + '"];' for v in self.vertices ]) + \
+   '\n' + '\n'.join([ '"' + self.vertexname[u]  + '" -> "' + self.vertexname[v]  + '";' for (u, v) in self.edges ]) + \
    '\n' + '}\n'
 
   def adjacencies(self, p):
