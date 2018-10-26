@@ -45,8 +45,8 @@ class PosetOfExtrema(Pattern):
     Return graphviz string for visualization
     """ 
     N = len(self.labels_)
-    gv_vertices = [ str(i) + ' [label="' + self.labels_[i] + '"];' for i in range(0,N) ]
-    gv_edges = [ str(u) + " -> " + str(v) + ';' for u in range(0,N) for v in self.poset_.children(u) ]
+    gv_vertices = [ '"' + str(i) + '" [label="' + self.labels_[i] + '"];' for i in range(0,N) ]
+    gv_edges = [ '"' + str(u) + '" -> "' + str(v) + '";' for u in range(0,N) for v in self.poset_.children(u) ]
     return 'digraph {\n' + '\n'.join(gv_vertices) + '\n' + '\n'.join(gv_edges) + '\n}\n'
 
 
