@@ -21,35 +21,3 @@ This subproject provides the following features:
     descriptions (Cylindrical Algebraic Decompositions)
     used to describe the semialgebraic sets which 
     arise in the analysis of regulatory networks.
-3. A Gibbs sampling algorithm is provided which 
-    can sample from semialgebraic sets which describe
-    the parameter space regions corresponding to parameter
-    nodes. Currently, the Gibbs sampler assume an a-priori 
-    distribution X_i ~ Exp(1) for all variables X_i, 
-    conditioned on X being within the semialgebraic set.
-
-
-Usage:
-
-## ParameterSampler
-
-The ParameterSampler program takes a network_specification file as input. It 
-then reads parameter indices from standard input and returns a JSON string 
-representing a sampled parameter for each parameter index it reads. 
-
-Usage examples:
-
-Sample a parameter for a single parameter node with index "parameter_index":
-```bash
-./ParameterSampler network_spec.txt parameter_index
-```
-
-Given a file containing many parameter indices, return a file contaning JSON strings
-for samples corresponding to each parameter index (in the same order they are presented)
-```bash
-cat parameter_indices.txt | ./ParameterSampler network_spec.txt > parameters.json
-```
-
-Note: for multiple parameters the second is far more efficient than the looping over the first.
-
-

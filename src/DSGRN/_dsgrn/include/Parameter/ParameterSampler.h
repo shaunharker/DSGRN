@@ -6,6 +6,7 @@
 #pragma once 
 
 #include "common.h"
+#include <random>
 
 #include "Parameter/Network.h"
 #include "Parameter/Parameter.h" 
@@ -21,16 +22,17 @@ public:
   auto sample(uint64_t pi) const -> std::string;
 
 private:
-  Network network;
-  ParameterGraph pg;
-  std::vector<InstanceLookup> instancelookups;
-  std::default_random_engine generator;
-  std::uniform_real_distribution<double> distribution(0.0,1.0);
 
   typedef std::string HexCode;
   typedef std::string Variable;
   typedef std::map<Variable, double> Instance;
   typedef std::map<HexCode, Instance> InstanceLookup;
+
+  Network network;
+  ParameterGraph pg;
+  std::vector<InstanceLookup> instancelookups;
+  mutable std::default_random_engine generator;
+  mutable std::uniform_real_distribution<double> distribution;
 
   /// Gibbs_Sampler
   auto
@@ -44,14 +46,13 @@ private:
     Instance;
 
   /// Name_Parameters
-  ///   Given a network, a parameter node, and chosen instances for each network node
+  ///   Given a parameter node and chosen instances for each network node
   ///   determine the parameter names corresponding to each parameter in the instances
   ///   and construct a Instance suitable for export
   auto
   Name_Parameters(
-    Network const& network,
     Parameter const& p,
-    std::vector<Instance> const& instances) 
+    std::vector<Instance> const& instances) const
     -> 
     Instance;
 

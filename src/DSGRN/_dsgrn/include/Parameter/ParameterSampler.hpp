@@ -42,6 +42,8 @@ ParameterSampler::assign
 {
   pg = pg_arg;
   network = pg.network();
+  distribution = std::uniform_real_distribution<double>(0.0,1.0);
+
   //std::cout << "Loading databases.\n";
   std::vector<json> CAD_Databases;
   // Obtain folder path containing CAD databases
@@ -91,7 +93,6 @@ ParameterSampler::assign
       instancelookups[d][hex] = instance;
     }
   }
-  return instancelookups;
 }
 
 inline auto
@@ -123,14 +124,14 @@ ParameterSampler::Gibbs_Sampler
 
   const double Inf = std::numeric_limits<double>::infinity();
 
-  // sample
+  // expsample
   //   Sample according to exponential distribution conditioned on being
   //   in the interval pair = (min, max)
-  auto sample = [](std::pair<double,double> const& pair) {
+  auto expsample = [this](std::pair<double,double> const& pair) {
       double A = std::exp(-pair.first);
       double B = std::exp(-pair.second);
       double mu = distribution(generator);
-      //std::cout << "sample([" << pair.first << ", " << pair.second << "]) = " << -std::log(A - mu *(A-B)) << "\n";
+      //std::cout << "expsample([" << pair.first << ", " << pair.second << "]) = " << -std::log(A - mu *(A-B)) << "\n";
       return -std::log(A - mu *(A-B));
   };
 
@@ -266,7 +267,7 @@ ParameterSampler::Gibbs_Sampler
       //std::cout << "L[" << i << "] computation. interval = {" << 0 << ", " << U[i] << "}\n";
       scan(interval, k, 1 << i, 0, L[i]);
       //std::cout << "L[" << i << "] computation. interval after scan = {" << interval.first << ", " << interval.second << "}\n";
-      L[i] = sample(interval);
+      L[i] = expsample(interval);
       //std::cout << "L[" << i << "] = " << L[i] << "\n";
       fix(k, 1 << i, 0, L[i]);
     }
@@ -277,7 +278,7 @@ ParameterSampler::Gibbs_Sampler
       //std::cout << "U[" << i << "] computation. interval = {" << L[i] << ", " << Inf << "}\n";
       scan(interval, k, 1 << i, 1 << i, U[i]);
       //std::cout << "U[" << i << "] computation. interval after scan = {" << interval.first << ", " << interval.second << "}\n";
-      U[i] = sample(interval);
+      U[i] = expsample(interval);
       //std::cout << "U[" << i << "] = " << U[i] << "\n";
       fix(k, 1 << i, 1 << i, U[i]);
     }
@@ -292,7 +293,7 @@ ParameterSampler::Gibbs_Sampler
         if ( lower[j] == i ) max = std::min(max,products[j]);
         if ( upper[j] == i ) min = std::max(min,products[j]);
       }
-      T[i] = sample(interval);
+      T[i] = expsample(interval);
     }
   }
   // Create Instance object containing result
@@ -360,7 +361,7 @@ ParameterSampler::InstanceToString
 
 inline auto
 ParameterSampler::sample
-  (uint64_t pi)
+  (uint64_t pi) const
   ->
   std::string
 {
@@ -385,7 +386,7 @@ ParameterSampler::sample
     instances . push_back ( sampled );
   }
   // Combine instances into single instance with named parameters
-  Instance named_parameters = Name_Parameters ( network, p, instances );
+  Instance named_parameters = Name_Parameters ( p, instances );
   // Output to standard output
   std::stringstream ss;
   ss << "{\"ParameterIndex\":" << pi << ",\"Parameter\":" << InstanceToString(named_parameters) << "}";
