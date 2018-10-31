@@ -22,6 +22,7 @@
 #include "Parameter/Parameter.hpp"
 #include "Parameter/ParameterGraph.hpp"
 #include "Parameter/Configuration.h"
+#include "Parameter/ParameterSampler.hpp"
 #include "Phase/Domain.hpp"
 #include "Phase/DomainGraph.hpp"
 #include "Phase/Wall.hpp"

@@ -1,0 +1,3 @@
+[{"Hex":"0","Binning":"[0, 0]","Instance":{"L[1]" : 1.0, "U[1]" : 1.5, "T[1]" : 2.0},"Inequalities":"L[1] < T[1] && U[1] < T[1] && 0 < L[1] < U[1] && 0 < T[1]","CAD":"And[Greater[L[1], 0], Greater[U[1], L[1]], Greater[T[1], U[1]]]"},
+{"Hex":"2","Binning":"[0, 1]","Instance":{"L[1]" : 1.0, "U[1]" : 3.0, "T[1]" : 2.0},"Inequalities":"L[1] < T[1] && T[1] < U[1] && 0 < L[1] < U[1] && 0 < T[1]","CAD":"And[Greater[L[1], 0], Greater[U[1], L[1]], Inequality[L[1], Less, T[1], Less, U[1]]]"},
+{"Hex":"3","Binning":"[1, 1]","Instance":{"L[1]" : 2.0, "U[1]" : 3.0, "T[1]" : 1.0},"Inequalities":"T[1] < L[1] && T[1] < U[1] && 0 < L[1] < U[1] && 0 < T[1]","CAD":"And[Greater[L[1], 0], Greater[U[1], L[1]], Inequality[0, Less, T[1], Less, L[1]]]"}]

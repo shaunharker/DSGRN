@@ -27,4 +27,4 @@ import sys
 import os
 import pickle
 
-configuration().set_path(os.path.dirname(__file__) + '/Resources/logic')
+configuration().set_path(os.path.dirname(__file__) + '/Resources')

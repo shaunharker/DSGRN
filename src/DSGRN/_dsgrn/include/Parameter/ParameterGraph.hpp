@@ -22,7 +22,7 @@ ParameterGraph ( Network const& network ) {
 
 INLINE_IF_HEADER_ONLY void ParameterGraph::
 assign ( Network const& network ) {
-  std::string path = configuration() -> get_path();
+  std::string path = configuration() -> get_path() + "/logic";
   data_ . reset ( new ParameterGraph_ );
   data_ -> network_ = network;
   data_ -> reorderings_ = 1;

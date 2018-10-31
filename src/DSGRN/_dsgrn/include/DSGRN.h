@@ -9,6 +9,7 @@
 #include "Parameter/ParameterGraph.h"
 #include "Parameter/OrderParameter.h"
 #include "Parameter/LogicParameter.h"
+#include "Parameter/ParameterSampler.h"
 #include "Phase/Domain.h"
 #include "Phase/DomainGraph.h"
 #include "Phase/Wall.h"

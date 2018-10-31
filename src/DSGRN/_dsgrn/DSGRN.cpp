@@ -28,6 +28,7 @@ PYBIND11_MODULE( _dsgrn, m) {
   ParameterBinding(m);
   ParameterGraphBinding(m);
   ConfigurationBinding(m);
+  ParameterSamplerBinding(m);
   // Phase
   DomainBinding(m);
   DomainGraphBinding(m);
