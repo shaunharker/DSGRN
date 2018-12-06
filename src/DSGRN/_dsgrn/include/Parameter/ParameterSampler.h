@@ -16,10 +16,8 @@ class ParameterSampler {
 public:
   ParameterSampler();
   ParameterSampler(Network network);
-  ParameterSampler(ParameterGraph pg);
   auto assign(Network) -> void;
-  auto assign(ParameterGraph) -> void;
-  auto sample(uint64_t pi) const -> std::string;
+  auto sample(Parameter p) const -> std::string;
 
 private:
 
@@ -29,7 +27,6 @@ private:
   typedef std::map<HexCode, Instance> InstanceLookup;
 
   Network network;
-  ParameterGraph pg;
   std::vector<InstanceLookup> instancelookups;
   mutable std::default_random_engine generator;
   mutable std::uniform_real_distribution<double> distribution;
@@ -76,6 +73,5 @@ ParameterSamplerBinding (py::module &m) {
   py::class_<ParameterSampler, std::shared_ptr<ParameterSampler>>(m, "ParameterSampler")
     .def(py::init<>())
     .def(py::init<Network>())
-    .def(py::init<ParameterGraph>())
     .def("sample", &ParameterSampler::sample);
 }

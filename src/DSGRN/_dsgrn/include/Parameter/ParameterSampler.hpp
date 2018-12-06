@@ -18,12 +18,6 @@ ParameterSampler::ParameterSampler
   assign(network_arg);
 }
 
-inline
-ParameterSampler::ParameterSampler
-  (ParameterGraph pg_arg) 
-{
-  assign(pg_arg);
-}
 
 inline auto
 ParameterSampler::assign
@@ -31,17 +25,7 @@ ParameterSampler::assign
   ->
   void
 {
-  assign(ParameterGraph(network_arg));
-}
-
-inline auto
-ParameterSampler::assign
-  (ParameterGraph pg_arg)
-  ->
-  void
-{
-  pg = pg_arg;
-  network = pg.network();
+  network = network_arg;
   distribution = std::uniform_real_distribution<double>(0.0,1.0);
 
   //std::cout << "Loading databases.\n";
@@ -64,7 +48,7 @@ ParameterSampler::assign
     CAD_Databases . push_back ( json () );
     json & J = CAD_Databases . back ();
     // Load the file into the json object
-    //std::cout << "Reading " << ss.str () << "\n";
+    std::cout << "Reading " << ss.str () << "\n";
     std::ifstream infile (ss.str());
     if ( not infile.good() ) {
       throw std::runtime_error("Missing CAD database " + ss.str() );
@@ -122,6 +106,12 @@ ParameterSampler::Gibbs_Sampler
   uint64_t N = 1 << n;
   uint64_t K = logic . size ();
 
+  // std::cout << "\nGibbsSampler\n";
+  // std::cout << "n = " << n << "\n";
+  // std::cout << "m = " << n << "\n";
+  // std::cout << "N = " << N << "\n";
+  // std::cout << "K = " << K << "\n";
+
   const double Inf = std::numeric_limits<double>::infinity();
 
   // expsample
@@ -132,7 +122,11 @@ ParameterSampler::Gibbs_Sampler
       double B = std::exp(-pair.second);
       double mu = distribution(generator);
       //std::cout << "expsample([" << pair.first << ", " << pair.second << "]) = " << -std::log(A - mu *(A-B)) << "\n";
-      return -std::log(A - mu *(A-B));
+      double result = -std::log(A - mu *(A-B));
+      // if ( result < pair.first || result > pair.second ) {
+      //   throw std::logic_error("expsample did not return a value within bounds");
+      // }
+      return result;
   };
 
   // Read initial instance into faster data structure
@@ -168,45 +162,61 @@ ParameterSampler::Gibbs_Sampler
   std::vector<uint64_t> upper;
 
   // Compute "which_factor"
+  // std::cout << "Compute which_factor (maps variable index to formula factor).\n";
   which_factor . resize ( n );
   {
     uint64_t i = 0;
     for ( uint64_t k = 0; k < K; ++ k ) {
+      // std::cout << "  Inspecting factor " << k << "\n";
       uint64_t num_terms = logic [ k ] . size ();
+      // std::cout << "    There are " << num_terms << " summands in this factor\n";
       uint64_t start = i;
       uint64_t stop = i + num_terms;
-      for ( uint64_t i = start; i < stop; ++ i ) {
-        which_factor[i] = k;
+      for ( uint64_t j = start; j < stop; ++ j ) {
+        // std::cout << "  Assigning variable " << j << " to factor " << k << "\n";
+        // std::cout << "  e.g. which_factor[" << j << "] <- " << k << "\n";
+        which_factor[j] = k;
       }
+      i = stop;
     }
   }
 
   // Compute "sums"
+  // std::cout << "Compute sums.\n";
   sums . resize ( N, std::vector<double>(K, 0.0));;
   for ( uint64_t j = 0; j < N; ++ j ) {
     uint64_t bit = 1;
     for ( uint64_t i = 0; i < n; ++ i ) {
+      // std::cout << "  variable " << i << " is in factor " << which_factor[i] << "\n";
       sums[j][which_factor[i]] += ( j & bit ) ? U[i] : L[i];
       bit <<= 1;
+      // std::cout << "  sums[" << j << "][" << which_factor[i] << "] = " << sums[j][which_factor[i]] << "\n";
     }
   }
 
   // Compute "products"
+  // std::cout << "Compute products.\n";
   products . resize ( N, 1.0 );
   for ( uint64_t j = 0; j < N; ++ j ) {
+    // std::cout << "  products[" << j << "] = " << products[j] << "\n";
     for ( uint64_t k = 0; k < K; ++ k ) {
+      // std::cout << "    update via factor " << k << " with sums[" << j << "][" << k << "] = " << sums[j][k] << "\n";
       products[j] *= sums[j][k]; 
+      // std::cout << "    products[" << j << "] <- " << products[j] << "\n";
     }
+    // std::cout << "  products[ " << j << "] <- " << products[j] << "\n";
   }
 
   // Compute "lower" and "upper"
   lower . resize ( N );
   upper . resize ( N );
   LogicParameter lp ( n, m, hex );
+  // std::cout << "Scanning lower and upper threshold indices for each equation.\n";
   for ( uint64_t j = 0; j < N; ++ j ) {
     uint64_t bin = lp . bin ( j );
-    lower[j] = (bin == 0) ? (m+1) : bin - 1;
+    lower[j] = (bin == 0) ? m+1 : bin - 1;
     upper[j] = bin;
+    // std::cout << " inequality " << j << " : bin = " << bin << " lower = " << lower[j]+1 << " and upper = " << upper[j]+1 << "\n";
   }
   // Add special values to T so T[lower[j]] and T[[upper[j]] give what we want
   T . push_back ( Inf ); // T[m]
@@ -222,34 +232,47 @@ ParameterSampler::Gibbs_Sampler
   auto scan = [&](Interval & interval, uint64_t k, uint64_t mask, uint64_t bit, double var) {
     double & min = interval.first;
     double & max = interval.second;
+    // std::cout << "Scanning with initial interval (" << min << ", " << max << "), factor index = " 
+              // << k << ", mask = " << mask << ", bit = " << bit << ", var = " << var << "\n";
     for ( uint64_t j = 0; j < N; ++ j ) {
       if ( (j & mask) != bit ) continue; 
-      //std::cout << "Scanning inequality " << j << "\n";
+      // std::cout << "  inequality " << j << "\n";
       cofactor[j] = products[j]/sums[j][k];
       cosum[j] = sums[j][k] - var;
-      // std::cout << "Lower threshold = " << T[lower[j]] << "\n";
-      // std::cout << "Upper threshold = " << T[upper[j]] << "\n";
-      // std::cout << "cofactor["<<j<<"] = " << cofactor[j] << "\n";
-      // std::cout << "cosum["<<j<<"] = " << cosum[j] << "\n";
-      // std::cout << "products["<<j<<"] = " << products[j] << "\n";
-      // std::cout << "sums["<<j<<","<<k<<"] = " << sums[j][k] << "\n";
-      // std::cout << "var = " << var << "\n";
+      // std::cout << "    Lower threshold = " << T[lower[j]] << "\n";
+      // std::cout << "    Upper threshold = " << T[upper[j]] << "\n";
+      // std::cout << "    cofactor["<<j<<"] = " << cofactor[j] << "\n";
+      // std::cout << "    cosum["<<j<<"] = " << cosum[j] << "\n";
+      // std::cout << "    products["<<j<<"] = " << products[j] << "\n";
+      // std::cout << "    sums["<<j<<","<<k<<"] = " << sums[j][k] << "\n";
+      // std::cout << "    var = " << var << "\n";
+      // std::cout << "    Intersecting with (" << T[lower[j]]/cofactor[j] - cosum[j] << ", " << T[upper[j]]/cofactor[j] - cosum[j] << ")\n";
       min = std::max ( min, T[lower[j]]/cofactor[j] - cosum[j]);
       max = std::min ( max, T[upper[j]]/cofactor[j] - cosum[j]);
     }
+    // std::cout << "  returning with interval (" << min << ", " << max << ")\n";
   };
   auto fix = [&](uint64_t k, uint64_t mask, uint64_t bit, double var) {
     for ( uint64_t j = 0; j < N; ++ j ) {
       if ( (j & mask) != bit ) continue; 
+      // std::cout << "fix: inequality " << j << "\n";
       sums[j][k] = cosum[j] + var;
       products[j] = cofactor[j] * sums[j][k];
+      // std::cout << "  products["<<j<<"] = " << products[j] << "\n";
+      // std::cout << "  sums["<<j<<","<<k<<"] = " << sums[j][k] << "\n";
     }
   };
-  for ( uint64_t burn_in = 0; burn_in < 10; ++ burn_in ) {
+  int burn_in_limit = 10;
+  for ( uint64_t burn_in = 0; burn_in < burn_in_limit; ++ burn_in ) {
     // std::cout << "===== round = " << burn_in << "\n";
 
+    // // j indices LUT formulas, of which there are N := 2^n of. 
     // for ( uint64_t j = 0; j < N; ++ j ) {
-    //   std::cout << "T["<<lower[j] + 1 << "] = " << T[lower[j]] << " ";
+    //   std::cout << "j = " << j << "\n";
+    //   std::cout << "  lower threshold printindex for ineq j = " << lower[j]+1 << "\n";
+    //   std::cout << "  upper threshold printindex for ineq j = " << upper[j]+1 << "\n";
+
+    //   std::cout << "  T["<<lower[j] + 1 << "] = " << T[lower[j]] << " ";
     //   for ( uint64_t i = 0; i < n; ++ i ) {
     //     if ( ( j & (1 << i)) == 0 ) {
     //       std::cout << "L[" << i+1 << "] = " << L[i] << " ";
@@ -264,22 +287,24 @@ ParameterSampler::Gibbs_Sampler
     for ( uint64_t i = 0; i < n; ++ i ) {
       uint64_t k = which_factor[i];
       Interval interval = {0, U[i]};
-      //std::cout << "L[" << i << "] computation. interval = {" << 0 << ", " << U[i] << "}\n";
+      // std::cout << "L[" << i+1 << "] update (current value is " << L[i] << ")\n";
+      // std::cout << "  Initial interval is 0 < L[" << i+1 << "] < U[" << i+1 << "] which gives (" << 0 << ", " << U[i] << ")\n";
       scan(interval, k, 1 << i, 0, L[i]);
-      //std::cout << "L[" << i << "] computation. interval after scan = {" << interval.first << ", " << interval.second << "}\n";
+      // std::cout << "  Fixing all other variables gives L[" << i+1 << "] in (" << interval.first << ", " << interval.second << ")\n";
       L[i] = expsample(interval);
-      //std::cout << "L[" << i << "] = " << L[i] << "\n";
+      // std::cout << "  Updating L[" << i+1 << "] <- " << L[i] << "\n";
       fix(k, 1 << i, 0, L[i]);
     }
     // Update U's
     for ( uint64_t i = 0; i < n; ++ i ) {
       uint64_t k = which_factor[i];
       Interval interval = {L[i], Inf};
-      //std::cout << "U[" << i << "] computation. interval = {" << L[i] << ", " << Inf << "}\n";
+      // std::cout << "U[" << i+1 << "] update (current value is " << U[i] << ")\n";
+      // std::cout << "  Initial interval is L[" << i+1 << "] < U[" << i+1 << "] < inf which gives (" << U[i] << ", inf )\n";
       scan(interval, k, 1 << i, 1 << i, U[i]);
-      //std::cout << "U[" << i << "] computation. interval after scan = {" << interval.first << ", " << interval.second << "}\n";
+      // std::cout << "  Fixing all other variables gives gives U[" << i+1 << "]  (" << interval.first << ", " << interval.second << ")\n";
       U[i] = expsample(interval);
-      //std::cout << "U[" << i << "] = " << U[i] << "\n";
+      // std::cout << "  Updating U[" << i+1 << "] <- " << U[i] << "\n";
       fix(k, 1 << i, 1 << i, U[i]);
     }
     // Update T's
@@ -289,11 +314,21 @@ ParameterSampler::Gibbs_Sampler
       double & max = interval.second;
       min = ( i == 0 ) ? 0.0 : T[i-1];
       max = ( i == (m-1) ) ? Inf : T[i+1];
+      // std::cout << "T[" << (i+1) << "] (currently = " << T[i] << ")\n";
+      // std::cout << "  Initial interval is  ( T[" << i << "] = " << min << ", T[" << i+2 << "] = " << max << ")\n";
       for ( uint64_t j = 0; j < N; ++ j ) {
-        if ( lower[j] == i ) max = std::min(max,products[j]);
-        if ( upper[j] == i ) min = std::max(min,products[j]);
+        if ( lower[j] == i ) { 
+          // std::cout << "  Intersecting with (0, " << products[j] << ") due to inequality " << j << "\n";
+          max = std::min(max,products[j]);
+        }
+        if ( upper[j] == i ) { 
+          // std::cout << "  Intersecting with (" << products[j] << ", inf) due to inequality " << j << "\n";
+          min = std::max(min,products[j]);
+        }
       }
+      // std::cout << "  Constraints give interval is  [T[" << i << "] in (" << min << ", " << max << ")\n";
       T[i] = expsample(interval);
+      // std::cout << "  T[" << (i+1) << "] <- " << T[i] << "\n";
     }
   }
   // Create Instance object containing result
@@ -305,7 +340,7 @@ ParameterSampler::Gibbs_Sampler
   for ( uint64_t i = 0; i < m; ++ i ) {
     result["T[" + std::to_string(i+1) + "]"] = T[i];
   }
-  //std::cout << "DEBUG: Check this. Hex = " << hex << " and " << InstanceToString(result) << "\n";
+  // std::cout << "DEBUG: Check this. Hex = " << hex << " and " << InstanceToString(result) << "\n";
   return result;
 }
 
@@ -361,13 +396,11 @@ ParameterSampler::InstanceToString
 
 inline auto
 ParameterSampler::sample
-  (uint64_t pi) const
+  (Parameter p) const
   ->
   std::string
 {
   uint64_t D = network . size ();
-  // Compute the parameter associated with the parameter index pi
-  Parameter p = pg . parameter ( pi );
   std::vector<LogicParameter> const& logic = p . logic ();
   // Loop through network nodes and extract a sample
   std::vector<Instance> instances;
@@ -387,8 +420,8 @@ ParameterSampler::sample
   }
   // Combine instances into single instance with named parameters
   Instance named_parameters = Name_Parameters ( p, instances );
-  // Output to standard output
+  // Output
   std::stringstream ss;
-  ss << "{\"ParameterIndex\":" << pi << ",\"Parameter\":" << InstanceToString(named_parameters) << "}";
+  ss << "{\"Parameter\":" << InstanceToString(named_parameters) << "}";
   return ss . str ();
 }
