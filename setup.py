@@ -75,7 +75,7 @@ setup(
     url = 'https://github.com/shaunharker/DSGRN',
     download_url = 'https://github.com/shaunharker/DSGRN/archive/v1.1.0.tar.gz',
     include_package_data = True,
-    install_requires=['scipy', 'matplotlib', 'numpy', 'graphviz', 'progressbar2', 'jupyter'],
+    install_requires=['scipy', 'matplotlib', 'numpy', 'graphviz', 'progressbar2', 'jupyter','pychomp'],
     extras_require={
         'MPI':  ["mpi4py"]
     }
