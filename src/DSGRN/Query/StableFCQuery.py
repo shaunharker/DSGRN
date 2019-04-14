@@ -2,6 +2,8 @@
 # MIT LICENSE 2016
 # Shaun Harker
 
+from collections import defaultdict
+
 class StableFCQuery:
   def __init__ (self, database):
     self.database = database
