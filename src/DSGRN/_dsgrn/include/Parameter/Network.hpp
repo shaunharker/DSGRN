@@ -97,7 +97,7 @@ INLINE_IF_HEADER_ONLY  std::vector<uint64_t> Network::
 domains ( void ) const {
   std::vector<uint64_t> result;
   for ( auto const& output : data_ ->  outputs_ ) {
-     result . push_back ( output . size () + 1);
+    result . push_back ( output . size () + 1);
   }
   return result;
 }
