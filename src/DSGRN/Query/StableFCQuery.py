@@ -11,7 +11,7 @@ class StableFCQuery:
     query_result = [ row for row in c.execute('select ParameterIndex, Vertex from Signatures natural join (select MorseGraphIndex,Vertex from (select MorseGraphIndex,Vertex from MorseGraphAnnotations where Label="FC" except select MorseGraphIndex,Source from MorseGraphEdges));')]
     self.query_data = defaultdict(set)
     for parameter_index, morse_node in query_result:
-      query_data[parameter_index].add(morse_node)
+      self.query_data[parameter_index].add(morse_node)
     #result = [row[0] for row in c.execute('select distinct ParameterIndex from Matches natural join Signatures order by ParameterIndex;')]
 
   def matches(self):
